@@ -16,6 +16,13 @@ export namespace LibrariesApi {
   }
 
   /**
+   * Scan now. With `refresh`, details are fetched again for everything, not just new titles.
+   */
+  export function scan(id: number, refresh = false) {
+    return BaseApi.POST<LibraryInfo>(`/libraries/${id}/scan`, { refresh });
+  }
+
+  /**
    * Libraries the signed-in user can see.
    */
   export function useLibraries() {

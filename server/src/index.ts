@@ -3,6 +3,8 @@ import sequelize from "./models/index.ts";
 import { runPendingMigrations } from "./migrate.ts";
 import createApp from "./app.ts";
 import Ffmpeg from "./lib/Ffmpeg.ts";
+import LibraryWatcher from "./library/LibraryWatcher.ts";
+import ScanScheduler from "./library/ScanScheduler.ts";
 import log from "./lib/Logger.ts";
 
 addEventListener("unhandledrejection", (event) => {
@@ -42,9 +44,14 @@ const server = Deno.serve({
   },
 }, app.fetch);
 
+await LibraryWatcher.refresh();
+ScanScheduler.start();
+
 for (const signal of ["SIGINT", "SIGTERM"] as const) {
   Deno.addSignalListener(signal, async () => {
     log.info("Shutting down");
+    ScanScheduler.stop();
+    LibraryWatcher.stop();
     await server.shutdown();
     await sequelize.close();
     Deno.exit(0);

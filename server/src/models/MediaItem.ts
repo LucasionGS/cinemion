@@ -1,0 +1,132 @@
+import type { CreationOptional, ForeignKey, InferAttributes, InferCreationAttributes, NonAttribute } from "sequelize";
+import { DataTypes, Model } from "sequelize";
+import type { Artwork, ExternalIds, ItemSummary, ItemType, MatchStatus, Palette } from "@shared/media.ts";
+import sequelize, { ID_TYPE, jsonColumn } from "./sequelize.ts";
+import type Library from "./Library.ts";
+
+export const EMPTY_ARTWORK: Artwork = { poster: null, backdrop: null, logo: null, thumb: null };
+
+/**
+ * A movie, show, season or episode. Seasons belong to a show and episodes to a season, through `parentId`.
+ */
+export class MediaItem extends Model<InferAttributes<MediaItem>, InferCreationAttributes<MediaItem>> {
+  declare id: CreationOptional<number>;
+  declare libraryId: ForeignKey<Library["id"]>;
+  /**
+   * The show of a season, or the season of an episode. `null` for movies and shows.
+   */
+  declare parentId: CreationOptional<number | null>;
+  declare type: ItemType;
+  /**
+   * Folder a show was found in, so it's recognised on the next scan. `null` for other types.
+   */
+  declare folderPath: CreationOptional<string | null>;
+  declare title: string;
+  declare sortTitle: string;
+  declare originalTitle: CreationOptional<string | null>;
+  declare year: CreationOptional<number | null>;
+  declare seasonNumber: CreationOptional<number | null>;
+  declare episodeNumber: CreationOptional<number | null>;
+  /**
+   * Last episode in a multi-episode file (S01E01-E02). `null` for single episodes.
+   */
+  declare episodeEnd: CreationOptional<number | null>;
+  declare overview: CreationOptional<string | null>;
+  declare tagline: CreationOptional<string | null>;
+  /**
+   * Unit is in minutes.
+   */
+  declare runtime: CreationOptional<number | null>;
+  /**
+   * `YYYY-MM-DD`.
+   */
+  declare releaseDate: CreationOptional<string | null>;
+  declare rating: CreationOptional<number | null>;
+  declare contentRating: CreationOptional<string | null>;
+  declare genres: CreationOptional<string[]>;
+  declare studios: CreationOptional<string[]>;
+  declare externalIds: CreationOptional<ExternalIds>;
+  declare artwork: CreationOptional<Artwork>;
+  declare palette: CreationOptional<Palette | null>;
+  declare matchStatus: CreationOptional<MatchStatus>;
+  /**
+   * When metadata was last fetched. `null` = never, so the next scan fetches it.
+   */
+  declare metadataUpdatedAt: CreationOptional<Date | null>;
+  declare addedAt: CreationOptional<Date>;
+  declare createdAt: CreationOptional<Date>;
+  declare updatedAt: CreationOptional<Date>;
+
+  declare children?: NonAttribute<MediaItem[]>;
+
+  /**
+   * Title used for sorting: lowercase, without leading articles, so "The Matrix" sorts under M.
+   */
+  public static sortTitleFor(title: string) {
+    return title.trim().toLowerCase().normalize("NFKD").replace(/[̀-ͯ]/g, "").replace(/^(the|a|an|de|het|een|der|die|das|le|la|les|el|los)\s+/i, "").replace(/[^\p{L}\p{N} ]+/gu, "").trim();
+  }
+
+  public setTitle(title: string) {
+    this.title = title;
+    this.sortTitle = MediaItem.sortTitleFor(title);
+  }
+
+  /**
+   * @param childCount Seasons of a show or episodes of a season, when known.
+   */
+  public toSummary(childCount = 0): ItemSummary {
+    return {
+      id: this.id,
+      libraryId: this.libraryId,
+      type: this.type,
+      title: this.title,
+      year: this.year,
+      artwork: this.artwork,
+      palette: this.palette,
+      matchStatus: this.matchStatus,
+      contentRating: this.contentRating,
+      childCount,
+      seasonNumber: this.seasonNumber,
+      episodeNumber: this.episodeNumber,
+      addedAt: this.addedAt.toISOString(),
+    };
+  }
+
+  public override toJSON() {
+    return this.toSummary();
+  }
+}
+
+MediaItem.init({
+  id: { type: ID_TYPE, autoIncrement: true, primaryKey: true },
+  parentId: { type: ID_TYPE, allowNull: true, defaultValue: null },
+  type: { type: DataTypes.STRING(16), allowNull: false },
+  folderPath: { type: DataTypes.STRING(1024), allowNull: true, defaultValue: null },
+  title: { type: DataTypes.STRING(512), allowNull: false },
+  sortTitle: { type: DataTypes.STRING(512), allowNull: false },
+  originalTitle: { type: DataTypes.STRING(512), allowNull: true, defaultValue: null },
+  year: { type: DataTypes.INTEGER, allowNull: true, defaultValue: null },
+  seasonNumber: { type: DataTypes.INTEGER, allowNull: true, defaultValue: null },
+  episodeNumber: { type: DataTypes.INTEGER, allowNull: true, defaultValue: null },
+  episodeEnd: { type: DataTypes.INTEGER, allowNull: true, defaultValue: null },
+  overview: { type: DataTypes.TEXT, allowNull: true, defaultValue: null },
+  tagline: { type: DataTypes.STRING(512), allowNull: true, defaultValue: null },
+  runtime: { type: DataTypes.INTEGER, allowNull: true, defaultValue: null },
+  releaseDate: { type: DataTypes.STRING(10), allowNull: true, defaultValue: null },
+  rating: { type: DataTypes.FLOAT, allowNull: true, defaultValue: null },
+  contentRating: { type: DataTypes.STRING(16), allowNull: true, defaultValue: null },
+  genres: jsonColumn<string[], MediaItem>("genres", []),
+  studios: jsonColumn<string[], MediaItem>("studios", []),
+  externalIds: jsonColumn<ExternalIds, MediaItem>("externalIds", {}),
+  artwork: jsonColumn<Artwork, MediaItem>("artwork", EMPTY_ARTWORK),
+  palette: jsonColumn<Palette | null, MediaItem>("palette", null, true),
+  matchStatus: { type: DataTypes.STRING(16), allowNull: false, defaultValue: "unmatched" },
+  metadataUpdatedAt: { type: DataTypes.DATE, allowNull: true, defaultValue: null },
+  addedAt: { type: DataTypes.DATE, allowNull: false, defaultValue: DataTypes.NOW },
+  createdAt: DataTypes.DATE,
+  updatedAt: DataTypes.DATE,
+}, { sequelize, tableName: "media_items" });
+
+export type MediaItemAttributes = InferAttributes<MediaItem>;
+
+export default MediaItem;

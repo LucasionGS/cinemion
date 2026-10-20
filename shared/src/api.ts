@@ -1,4 +1,5 @@
 import type { Permission, ProfileColor } from "./profiles.ts";
+import type { TaskInfo } from "./media.ts";
 
 /**
  * Body of every error response from the API.
@@ -106,6 +107,15 @@ export interface LibraryInfo {
   name: string;
   type: LibraryType;
   paths: string[];
+  /**
+   * Movies, or shows, in the library.
+   */
+  itemCount: number;
+  lastScannedAt: string | null;
+  /**
+   * The running scan, or `null` when idle.
+   */
+  scan: TaskInfo | null;
 }
 
 export interface CreateLibraryRequest {

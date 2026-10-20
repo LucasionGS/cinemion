@@ -1,4 +1,5 @@
 import * as initial from "./20261020120000-initial.ts";
+import * as media from "./20261021090000-media.ts";
 
 /**
  * Every migration, oldest first. Listed by hand (not globbed) so they're included in compiled binaries.
@@ -6,4 +7,5 @@ import * as initial from "./20261020120000-initial.ts";
  */
 export const migrations = [
   { name: "20261020120000-initial", ...initial },
+  { name: "20261021090000-media", ...media },
 ];

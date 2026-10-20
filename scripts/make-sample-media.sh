@@ -1,0 +1,160 @@
+#!/bin/bash
+##########################################
+# Cinemion sample media, by Lucasion     #
+##########################################
+# Generates a small fake library with ffmpeg for trying out scanning, metadata and playback:
+# tidy and messy file names, several codecs, multiple audio and subtitle tracks, NFO files,
+# local artwork, multi-episode files, specials, extras and samples that should be skipped.
+#
+# Usage: scripts/make-sample-media.sh [FOLDER]
+#   FOLDER  Where to create "movies" and "shows". Default is data/media.
+
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+OUT="${1:-$ROOT/data/media}"
+MOVIES="$OUT/movies"
+SHOWS="$OUT/shows"
+SECONDS_PER_CLIP=6
+
+if ! command -v ffmpeg > /dev/null; then
+  if [[ -f /etc/arch-release ]]; then echo "ffmpeg is needed. Install it with: sudo pacman -S ffmpeg" >&2
+  elif [[ -f /etc/debian_version ]]; then echo "ffmpeg is needed. Install it with: sudo apt install ffmpeg" >&2
+  else echo "ffmpeg is needed. Install it and try again." >&2
+  fi
+  exit 1
+fi
+
+# Make a short clip: test pattern plus tone, with the given codec arguments
+# Usage: clip <output> <label> [extra ffmpeg output args...]
+clip() {
+  local OUTPUT="$1"
+  local LABEL="$2"
+  shift 2
+  mkdir -p "$(dirname "$OUTPUT")"
+  ffmpeg -loglevel error -y \
+    -f lavfi -i "testsrc2=size=1280x720:rate=24:duration=$SECONDS_PER_CLIP,drawtext=text='$LABEL':fontsize=48:fontcolor=white:box=1:boxcolor=black@0.5:x=(w-text_w)/2:y=h-120" \
+    -f lavfi -i "sine=frequency=440:duration=$SECONDS_PER_CLIP" \
+    "$@" "$OUTPUT"
+}
+
+# Make an artwork image: a two-colour gradient with a title
+# Usage: art <output> <width> <height> <colour1> <colour2> <title>
+art() {
+  local OUTPUT="$1"
+  mkdir -p "$(dirname "$OUTPUT")"
+  ffmpeg -loglevel error -y -f lavfi \
+    -i "gradients=s=$2x$3:c0=$4:c1=$5:x0=0:y0=0:x1=$2:y1=$3:duration=1,drawtext=text='$6':fontsize=$(( $2 / 10 )):fontcolor=white:x=(w-text_w)/2:y=h*0.75" \
+    -frames:v 1 "$OUTPUT"
+}
+
+echo "Creating sample media in $OUT..."
+rm -rf "$MOVIES" "$SHOWS"
+
+#region Movies
+echo "Movies..."
+
+# Tidy folder with NFO and artwork, plus a second version in another codec
+NB="$MOVIES/Northbound (2024)"
+clip "$NB/Northbound (2024).mkv" "Northbound" -c:v libx264 -preset veryfast -c:a aac -metadata:s:a:0 language=por
+clip "$NB/Northbound (2024) - 4K.mkv" "Northbound 4K version" -c:v libx265 -preset ultrafast -tag:v hvc1 -c:a ac3 -metadata:s:a:0 language=por
+art "$NB/poster.jpg" 600 900 0xC8642E 0x2A1208 "Northbound"
+art "$NB/fanart.jpg" 1920 1080 0xE08A4A 0x1E0E06 "Northbound"
+cat > "$NB/movie.nfo" <<'EOF'
+<?xml version="1.0" encoding="UTF-8"?>
+<movie>
+  <title>Northbound</title>
+  <year>2024</year>
+  <plot>Two estranged brothers drive a failing food truck from Lisbon to the Arctic Circle to scatter their father's ashes.</plot>
+  <tagline>Some roads only go one way.</tagline>
+  <runtime>128</runtime>
+  <mpaa>12</mpaa>
+  <genre>Drama</genre>
+  <genre>Adventure</genre>
+  <studio>Sample Pictures</studio>
+  <director>Inês Valadares</director>
+  <actor><name>Tomás Reis</name><role>Duarte</role><order>0</order></actor>
+  <actor><name>Bruno Seixas</name><role>Rui</role><order>1</order></actor>
+</movie>
+EOF
+
+# Release-style name straight in the library folder, MP4 with two audio tracks and a text subtitle
+cat > "/tmp/cinemion-sample-subs.srt" <<'EOF'
+1
+00:00:01,000 --> 00:00:04,000
+A sample subtitle line.
+EOF
+ffmpeg -loglevel error -y \
+  -f lavfi -i "testsrc2=size=1280x720:rate=24:duration=$SECONDS_PER_CLIP" \
+  -f lavfi -i "sine=frequency=330:duration=$SECONDS_PER_CLIP" \
+  -f lavfi -i "sine=frequency=550:duration=$SECONDS_PER_CLIP" \
+  -i "/tmp/cinemion-sample-subs.srt" \
+  -map 0 -map 1 -map 2 -map 3 -c:v libx264 -preset veryfast -c:a aac -c:s mov_text \
+  -metadata:s:a:0 language=eng -metadata:s:a:1 language=eng -metadata:s:a:1 title="Commentary" -metadata:s:s:0 language=eng \
+  "$MOVIES/Paper.Moons.2024.1080p.WEB-DL.x264-CINEMION.mp4"
+
+# ID tag in the folder name, 5.1 AC3 audio, a styled (ASS) subtitle and a forced SRT one
+GH="$MOVIES/Glass Harbor (2025) {imdb-tt0000001}"
+mkdir -p "$GH"
+ffmpeg -loglevel error -y \
+  -f lavfi -i "testsrc2=size=1280x720:rate=24:duration=$SECONDS_PER_CLIP" \
+  -f lavfi -i "sine=frequency=220:duration=$SECONDS_PER_CLIP" \
+  -i "/tmp/cinemion-sample-subs.srt" -i "/tmp/cinemion-sample-subs.srt" \
+  -map 0 -map 1 -map 2 -map 3 -c:v libx264 -preset veryfast -c:a ac3 -ac 6 -c:s:0 ass -c:s:1 srt \
+  -metadata:s:s:0 language=jpn -metadata:s:s:1 language=eng -disposition:s:1 forced \
+  "$GH/Glass Harbor.mkv"
+
+# Extras and samples that must be skipped
+TLM="$MOVIES/The Long Meridian (2023)"
+clip "$TLM/The Long Meridian (2023).mkv" "The Long Meridian" -c:v libx264 -preset veryfast -c:a aac
+clip "$TLM/Extras/Behind the Scenes.mkv" "Extra - should be skipped" -c:v libx264 -preset veryfast -c:a aac
+clip "$TLM/sample.mkv" "Sample - should be skipped" -c:v libx264 -preset veryfast -c:a aac
+clip "$TLM/The Long Meridian-trailer.mkv" "Trailer - should be skipped" -c:v libx264 -preset veryfast -c:a aac
+
+# A VP9/Opus WebM with no year at all
+clip "$MOVIES/Home Movie Night.webm" "Home Movie Night" -c:v libvpx-vp9 -deadline realtime -cpu-used 8 -b:v 1M -c:a libopus
+#endregion
+
+#region Shows
+echo "Shows..."
+
+SK="$SHOWS/Saltwater Kings (2023)"
+art "$SK/poster.jpg" 600 900 0x1F6F86 0x061A22 "Saltwater Kings"
+art "$SK/fanart.jpg" 1920 1080 0x5FA9BC 0x061A22 "Saltwater Kings"
+art "$SK/season01-poster.jpg" 600 900 0x2C7A90 0x061A22 "Season 1"
+cat > "$SK/tvshow.nfo" <<'EOF'
+<?xml version="1.0" encoding="UTF-8"?>
+<tvshow>
+  <title>Saltwater Kings</title>
+  <year>2023</year>
+  <plot>A family of oyster farmers on a shrinking island gets pulled into smuggling to keep the business, and the island, afloat.</plot>
+  <mpaa>16</mpaa>
+  <genre>Crime</genre>
+  <genre>Drama</genre>
+  <actor><name>Marta Couto</name><role>Mara</role></actor>
+</tvshow>
+EOF
+clip "$SK/Season 01/Saltwater Kings - S01E01 - Spat.mkv" "S01E01" -c:v libx264 -preset veryfast -c:a aac
+clip "$SK/Season 01/Saltwater Kings - S01E02 - Brackish.mkv" "S01E02" -c:v libx264 -preset veryfast -c:a aac
+clip "$SK/Season 01/Saltwater Kings - S01E03 - Low Water.mkv" "S01E03" -c:v libx264 -preset veryfast -c:a aac
+art "$SK/Season 01/Saltwater Kings - S01E03 - Low Water-thumb.jpg" 1280 720 0x2A6A78 0x061A22 "Low Water"
+cat > "$SK/Season 01/Saltwater Kings - S01E03 - Low Water.nfo" <<'EOF'
+<?xml version="1.0" encoding="UTF-8"?>
+<episodedetails>
+  <title>Low Water</title>
+  <season>1</season>
+  <episode>3</episode>
+  <plot>A shipment goes missing at the worst possible tide.</plot>
+  <aired>2023-03-14</aired>
+</episodedetails>
+EOF
+clip "$SK/Season 02/Saltwater Kings - S02E01-E02 - Silt.mkv" "S02E01-E02" -c:v libx264 -preset veryfast -c:a aac
+
+IW="$SHOWS/Ironwood"
+clip "$IW/Season 1/Ironwood.S01E01.1080p.WEB-DL.x265.mkv" "Ironwood S01E01" -c:v libx265 -preset ultrafast -c:a aac
+clip "$IW/Season 1/Ironwood.S01E02.1080p.WEB-DL.x265.mkv" "Ironwood S01E02" -c:v libx265 -preset ultrafast -c:a aac
+clip "$IW/Specials/Ironwood S00E01 Making Of.mkv" "Ironwood special" -c:v libx264 -preset veryfast -c:a aac
+#endregion
+
+rm -f "/tmp/cinemion-sample-subs.srt"
+echo "Done! Created $(find "$OUT" -type f | wc -l) files in $OUT"

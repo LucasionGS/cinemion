@@ -10,6 +10,10 @@ export class Library extends Model<InferAttributes<Library>, InferCreationAttrib
    * Absolute folder paths the library scans.
    */
   declare paths: string[];
+  /**
+   * When the last full scan finished. `null` = never scanned.
+   */
+  declare lastScannedAt: CreationOptional<Date | null>;
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
 
@@ -37,8 +41,22 @@ export class Library extends Model<InferAttributes<Library>, InferCreationAttrib
     return await Library.create(Library.verifyLibrary(data));
   }
 
-  public override toJSON(): LibraryInfo {
-    return { id: this.id, name: this.name, type: this.type, paths: this.paths };
+  /**
+   * @param extra Live details the model doesn't hold: the item count and the running scan.
+   */
+  public toInfo(extra: Pick<LibraryInfo, "itemCount" | "scan">): LibraryInfo {
+    return {
+      id: this.id,
+      name: this.name,
+      type: this.type,
+      paths: this.paths,
+      lastScannedAt: this.lastScannedAt?.toISOString() ?? null,
+      ...extra,
+    };
+  }
+
+  public override toJSON() {
+    return this.toInfo({ itemCount: 0, scan: null });
   }
 }
 
@@ -47,6 +65,7 @@ Library.init({
   name: { type: DataTypes.STRING(60), allowNull: false },
   type: { type: DataTypes.STRING(16), allowNull: false },
   paths: jsonColumn<string[], Library>("paths", []),
+  lastScannedAt: { type: DataTypes.DATE, allowNull: true, defaultValue: null },
   createdAt: DataTypes.DATE,
   updatedAt: DataTypes.DATE,
 }, { sequelize, tableName: "libraries" });

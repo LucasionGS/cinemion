@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ArrowDown, ArrowUp, Check, Clapperboard, Trash2, Tv } from "lucide-react";
+import { Check, Clapperboard, Trash2, Tv } from "lucide-react";
 import type { CreateLibraryRequest, LibraryType, MetadataSettings } from "@shared/api.ts";
 import ServerApi from "../../Api/ServerApi.ts";
 import { session } from "../../Session.ts";
@@ -10,9 +10,9 @@ import Logo from "../../components/Logo/Logo.tsx";
 import Button from "../../components/Button/Button.tsx";
 import IconButton from "../../components/IconButton/IconButton.tsx";
 import TextField from "../../components/TextField/TextField.tsx";
-import Select from "../../components/Select/Select.tsx";
 import SegmentedControl from "../../components/SegmentedControl/SegmentedControl.tsx";
 import FolderBrowser from "../../components/FolderBrowser/FolderBrowser.tsx";
+import MetadataForm, { COUNTRIES } from "../../components/MetadataForm/MetadataForm.tsx";
 import "./Setup.scss";
 
 const STEPS = [
@@ -20,39 +20,6 @@ const STEPS = [
   { label: "Libraries", sub: "Where your media lives" },
   { label: "Metadata", sub: "Posters, plots and cast" },
   { label: "Done", sub: "Start using Cinemion" },
-];
-
-const PROVIDERS: Record<string, { name: string; description: string }> = {
-  local: { name: "Your files", description: "NFO files and artwork next to your videos" },
-  tmdb: { name: "TMDB", description: "Online database for movies and shows" },
-};
-
-const LANGUAGES = [
-  { value: "en", label: "English" },
-  { value: "nl", label: "Dutch" },
-  { value: "de", label: "German" },
-  { value: "fr", label: "French" },
-  { value: "es", label: "Spanish" },
-  { value: "it", label: "Italian" },
-  { value: "pt", label: "Portuguese" },
-  { value: "sv", label: "Swedish" },
-  { value: "da", label: "Danish" },
-  { value: "no", label: "Norwegian" },
-  { value: "ja", label: "Japanese" },
-];
-
-const COUNTRIES = [
-  { value: "US", label: "United States" },
-  { value: "GB", label: "United Kingdom" },
-  { value: "NL", label: "Netherlands" },
-  { value: "DE", label: "Germany" },
-  { value: "FR", label: "France" },
-  { value: "ES", label: "Spain" },
-  { value: "IT", label: "Italy" },
-  { value: "SE", label: "Sweden" },
-  { value: "DK", label: "Denmark" },
-  { value: "NO", label: "Norway" },
-  { value: "JP", label: "Japan" },
 ];
 
 function usernameFrom(name: string) {
@@ -318,49 +285,13 @@ function LibrariesStep(props: { libraries: CreateLibraryRequest[]; onChange: (li
 
 function MetadataStep(props: { metadata: MetadataSettings; onChange: (metadata: MetadataSettings) => void }) {
   const { metadata, onChange } = props;
-
-  function moveProvider(index: number, by: number) {
-    const providers = [...metadata.providers];
-    const [moved] = providers.splice(index, 1);
-    providers.splice(index + by, 0, moved);
-    onChange({ ...metadata, providers });
-  }
-
   return (
     <section className="cn-setup__section cn-setup__section--narrow">
       <header className="cn-setup__header">
         <h1>Posters, plots and cast</h1>
         <p>Cinemion looks up details for everything it finds. Sources higher in the list win when they disagree.</p>
       </header>
-      <ol className="cn-setup__providers" aria-label="Metadata sources, in priority order">
-        {metadata.providers.map((id, i) => (
-          <li key={id} className="cn-setup__provider">
-            <div className="cn-setup__provider-row">
-              <span className="cn-setup__provider-rank">{i + 1}</span>
-              <div className="cn-setup__provider-text">
-                <strong>{PROVIDERS[id]?.name ?? id}</strong>
-                <span>{PROVIDERS[id]?.description}</span>
-              </div>
-              <IconButton label={`Move ${PROVIDERS[id]?.name} up`} icon={<ArrowUp />} size="sm" variant="ghost" disabled={i === 0} onClick={() => moveProvider(i, -1)} />
-              <IconButton label={`Move ${PROVIDERS[id]?.name} down`} icon={<ArrowDown />} size="sm" variant="ghost" disabled={i === metadata.providers.length - 1} onClick={() => moveProvider(i, 1)} />
-            </div>
-            {id === "tmdb" && (
-              <TextField
-                label="API key"
-                className="cn-setup__provider-field"
-                placeholder="Paste your TMDB API key"
-                value={metadata.tmdbApiKey ?? ""}
-                onChange={(e) => onChange({ ...metadata, tmdbApiKey: e.target.value })}
-                description={<>Free with a TMDB account. <a href="https://www.themoviedb.org/settings/api" target="_blank" rel="noreferrer">How to get one</a></>}
-              />
-            )}
-          </li>
-        ))}
-      </ol>
-      <div className="cn-setup__row">
-        <Select label="Language" value={metadata.language} options={LANGUAGES} onChange={(e) => onChange({ ...metadata, language: e.target.value })} />
-        <Select label="Country (for age ratings)" value={metadata.country} options={COUNTRIES} onChange={(e) => onChange({ ...metadata, country: e.target.value })} />
-      </div>
+      <MetadataForm value={metadata} onChange={onChange} />
     </section>
   );
 }

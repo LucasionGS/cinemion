@@ -228,6 +228,38 @@
   }
 }
 
+// Scan progress under a library
+.cn-settings__scan {
+  display: flex !important;
+  align-items: center;
+  gap: 0.625rem;
+  color: var(--cn-accent-text) !important;
+  font-weight: 600;
+}
+
+.cn-settings__scan-bar {
+  flex: 0 0 6rem;
+  height: 0.3rem;
+  border-radius: var(--cn-radius-pill);
+  background: rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+
+  span {
+    display: block;
+    height: 100%;
+    background: var(--cn-accent);
+    transition: width var(--cn-medium) var(--cn-ease);
+  }
+}
+
+:root[data-mode="mobile"] .cn-settings__item--library {
+  flex-wrap: wrap;
+
+  .cn-settings__item-text {
+    flex-basis: calc(100% - 3rem);
+  }
+}
+
 button.cn-settings__badge {
   border: 0;
   cursor: pointer;

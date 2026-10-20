@@ -35,6 +35,7 @@ export namespace Setting {
     SETUP_COMPLETE: "setupComplete",
     SERVER_NAME: "serverName",
     METADATA: "metadata",
+    SCAN_INTERVAL_HOURS: "scanIntervalHours",
   } as const;
 }
 

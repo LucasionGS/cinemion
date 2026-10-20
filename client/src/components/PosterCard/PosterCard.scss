@@ -1,0 +1,111 @@
+.cn-poster {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  min-width: 0;
+
+  &__button {
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    border-radius: var(--cn-radius-md);
+    background: transparent;
+    cursor: pointer;
+    transition: transform var(--cn-medium) var(--cn-ease);
+
+    &:hover {
+      transform: translateY(-0.2rem);
+    }
+  }
+
+  &__art {
+    position: relative;
+    display: block;
+    aspect-ratio: 2 / 3;
+    border-radius: var(--cn-radius-md);
+    overflow: hidden;
+    background: var(--cn-surface-2);
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  &__fallback {
+    position: absolute;
+    left: 0.875rem;
+    right: 0.875rem;
+    bottom: 1rem;
+    font-family: var(--cn-font-display);
+    font-weight: 700;
+    font-size: 1.15rem;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    text-align: left;
+    color: #fff;
+    overflow-wrap: anywhere;
+  }
+
+  &__badge {
+    position: absolute;
+    left: 0.5rem;
+    top: 0.5rem;
+    padding: 0.125rem 0.5rem;
+    border-radius: var(--cn-radius-pill);
+    background: rgba(0, 0, 0, 0.65);
+    color: var(--cn-warning);
+    font-size: 0.7rem;
+    font-weight: 800;
+  }
+
+  &__meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    min-width: 0;
+  }
+
+  &__title {
+    font-size: 0.925rem;
+    font-weight: 700;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__sub {
+    font-size: 0.8125rem;
+    color: var(--cn-text-subtle);
+  }
+
+  &__actions {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    opacity: 0;
+    transition: opacity var(--cn-fast);
+  }
+
+  &:hover &__actions,
+  &:focus-within &__actions {
+    opacity: 1;
+  }
+}
+
+:root[data-mode="mobile"] .cn-poster__actions {
+  opacity: 1;
+}
+
+// TV focus: lift and ring the artwork, not the whole card
+:root[data-mode="tv"] .cn-poster__button:focus {
+  box-shadow: none;
+  transform: scale(1.05);
+
+  .cn-poster__art {
+    box-shadow: 0 0 0 0.2rem var(--cn-text), 0 1rem 2.5rem rgba(0, 0, 0, 0.55);
+  }
+}

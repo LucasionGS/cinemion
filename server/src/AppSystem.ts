@@ -60,6 +60,10 @@ export namespace AppSystem {
    */
   export const avatarsDir = Path.join(config.CONFIG_DIR, "avatars");
   /**
+   * Artwork for movies, shows and people, as downloaded plus resized copies.
+   */
+  export const imagesDir = Path.join(config.CONFIG_DIR, "metadata", "images");
+  /**
    * Scratch space for uploads being processed.
    */
   export const tempDir = Path.join(config.CACHE_DIR, "tmp");
@@ -89,7 +93,7 @@ export namespace AppSystem {
    * Create the data folders and load or generate the token secret. Call once at startup.
    */
   export async function init() {
-    for (const dir of [config.CONFIG_DIR, config.CACHE_DIR, avatarsDir, tempDir]) {
+    for (const dir of [config.CONFIG_DIR, config.CACHE_DIR, avatarsDir, imagesDir, tempDir]) {
       await fsp.mkdir(dir, { recursive: true });
     }
 

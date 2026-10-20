@@ -3,6 +3,8 @@ import type { LoginResponse, MetadataSettings, SetupRequest } from "@shared/api.
 import { Library, Role, Setting, User } from "../models/index.ts";
 import ServerController from "./ServerController.ts";
 import MediaRoots from "../lib/MediaRoots.ts";
+import Scanner from "../library/Scanner.ts";
+import LibraryWatcher from "../library/LibraryWatcher.ts";
 import { errorMessage, readJson } from "../lib/http.ts";
 import log from "../lib/Logger.ts";
 import type { AppEnv } from "../lib/types.ts";
@@ -60,12 +62,17 @@ export namespace SetupController {
         role: Role.ADMIN,
         color: "sky",
       });
-      for (const library of verified) await Library.createLibrary(library);
+      const created = [];
+      for (const library of verified) created.push(await Library.createLibrary(library));
 
       await Setting.set(Setting.Keys.SERVER_NAME, serverName.slice(0, 60));
       await Setting.set(Setting.Keys.METADATA, { ...DEFAULT_METADATA, ...body.metadata });
       await Setting.set(Setting.Keys.SETUP_COMPLETE, true);
       log.info("First-run setup completed", { admin: user.username, libraries: libraries.length });
+
+      // Start filling the libraries straight away
+      await LibraryWatcher.refresh();
+      for (const library of created) Scanner.queue(library.id).catch(() => { });
 
       const response: LoginResponse = { token: await user.createToken(), user: await user.toClientJSON() };
       return c.json(response);
