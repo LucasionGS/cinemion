@@ -3,10 +3,12 @@ import sequelize, { User } from "./models/index.ts";
 import { runPendingMigrations } from "./migrate.ts";
 
 /**
- * Maintenance commands for the server: `deno task cli <command>`.
+ * Maintenance commands for the server: `cinemion <command>` with the binary, or `deno task cli <command>`.
  */
 
-const HELP = `Cinemion ${AppSystem.VERSION} maintenance commands
+const HELP = `Cinemion ${AppSystem.VERSION}
+
+Without a command, cinemion runs the server. Commands:
 
   help [command]                   Show this help
   version                          Show the version
@@ -14,19 +16,22 @@ const HELP = `Cinemion ${AppSystem.VERSION} maintenance commands
   reset-password <USERNAME>        Set a new password for a user
   remove-pin <USERNAME>            Remove the PIN from a profile
 
-Run "cli help <command>" for more information on a command.`;
+Commands use the same settings as the server (CONFIG_DIR, DB_DIALECT and so on), so run them as the
+user the server runs as, e.g. "sudo -u cinemion cinemion users".
+
+Run "cinemion help <command>" for more information on a command.`;
 
 const USAGE: Record<string, string> = {
   "reset-password": `Set a new password for a user, for example when the only admin is locked out.
-Usage: cli reset-password <USERNAME>`,
+Usage: cinemion reset-password <USERNAME>`,
   "remove-pin": `Remove the PIN from a profile, so it opens from the profile picker without one.
-Usage: cli remove-pin <USERNAME>`,
+Usage: cinemion remove-pin <USERNAME>`,
 };
 
 async function findUser(username: string | undefined) {
   if (!username) return null;
   const user = await User.findOne({ where: { username: username.toLowerCase() } });
-  if (!user) console.error(`There's no user named "${username}". Run "cli users" to see them.`);
+  if (!user) console.error(`There's no user named "${username}". Run "cinemion users" to see them.`);
   return user;
 }
 
@@ -79,16 +84,11 @@ async function removePin(username: string | undefined) {
   return 0;
 }
 
-async function main(args: string[]): Promise<number> {
-  const [command, ...rest] = args;
+/**
+ * Commands that need the database.
+ */
+async function run(command: string, rest: string[]): Promise<number> {
   switch (command) {
-    case undefined:
-    case "help":
-      console.log(rest[0] && USAGE[rest[0]] ? USAGE[rest[0]] : HELP);
-      return 0;
-    case "version":
-      console.log(AppSystem.VERSION);
-      return 0;
     case "users":
     case "ls":
       return await listUsers();
@@ -102,8 +102,29 @@ async function main(args: string[]): Promise<number> {
   }
 }
 
-await AppSystem.init();
-await runPendingMigrations();
-const code = await main(Deno.args);
-await sequelize.close();
-Deno.exit(code);
+async function main(args: string[]): Promise<number> {
+  const [command, ...rest] = args;
+  // Help and version don't touch the config folder, so they're safe to run anywhere (packaging checks run them)
+  switch (command) {
+    case undefined:
+    case "help":
+    case "--help":
+    case "-h":
+      console.log(rest[0] && USAGE[rest[0]] ? USAGE[rest[0]] : HELP);
+      return 0;
+    case "version":
+    case "--version":
+    case "-v":
+      console.log(AppSystem.VERSION);
+      return 0;
+  }
+  await AppSystem.init();
+  await runPendingMigrations();
+  try {
+    return await run(command, rest);
+  } finally {
+    await sequelize.close();
+  }
+}
+
+Deno.exit(await main(Deno.args));

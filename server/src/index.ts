@@ -11,6 +11,9 @@ import ActivePlayback from "./media/ActivePlayback.ts";
 import { Activity } from "./models/index.ts";
 import log from "./lib/Logger.ts";
 
+// The binary is also the maintenance CLI: "cinemion reset-password ion". Without arguments it runs the server.
+if (Deno.args.length > 0) await import("./cli.ts");
+
 addEventListener("unhandledrejection", (event) => {
   // One failed background task must not take the whole server down
   log.error("Unhandled promise rejection", { error: event.reason });

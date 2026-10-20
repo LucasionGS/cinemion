@@ -1,14 +1,14 @@
 # Cinemion handoff
 
 Everything an assistant needs to pick this project up with no earlier context. Read it fully before changing code.
-Last updated 2026-10-20, after milestone 6 and Videos libraries.
+Last updated 2026-10-20, after milestone 7.
 
 ## 1. What Cinemion is
 
 A self-hosted media server and player for movies and TV shows: very user friendly, with a fully custom, polished theme and
 proper desktop, mobile and TV (10-foot) layouts. It runs as **one self-contained Docker image** (no database container;
 volumes for config, cache and media) or as **one compiled binary**. License GPL-3.0-or-later. Owner: Lucasion
-(lucasion@hotmail.com, GitHub/GHCR user `lucasion`).
+(lucasion@hotmail.com). The GitHub repo is `LucasionGS/cinemion` (public), so the image is `ghcr.io/lucasiongs/cinemion`.
 
 ## 2. Rules from the owner (follow these exactly)
 
@@ -212,8 +212,9 @@ home, search), `playback.ts` (device capabilities, playback info, playback/subti
 ### Other files
 `Dockerfile` (deno 2.9.7 build stage compiles the binary → `debian:trixie-slim` with Debian ffmpeg, Mesa VA driver,
 and on amd64 Intel's non-free VA driver + Quick Sync runtime), `docker/entrypoint.sh` (PUID/PGID, GPU groups),
-`docker-compose.yml`, `.env.example`, `scripts/compile.sh`, `scripts/make-sample-media.sh`, `README.md` (app style),
-`docs/future-features.md`, `docs/design/decisions.md`, `LICENSE`.
+`docker-compose.yml`, `.env.example`, `scripts/compile.sh`, `scripts/make-sample-media.sh`, `scripts/archive.sh`,
+`scripts/aur-publish.sh`, `set_version.sh`, `.github/workflows/` (ci, release), `packaging/` (AUR + systemd),
+`README.md` (app style), `docs/screenshots/`, `docs/future-features.md`, `docs/design/decisions.md`, `LICENSE`.
 
 ## 5. Milestones
 
@@ -227,7 +228,7 @@ and on amd64 Intel's non-free VA driver + Quick Sync runtime), `docker/entrypoin
 | 5 | done `e310344` | Seek thumbnails (scrubber + TV filmstrip), subtitle files next to videos, OpenSubtitles search/download, watch together, Settings › Subtitles |
 | 6 | done | Admin & integrations: dashboard, activity feed, tasks and logs pages, Sonarr/Radarr receiver with path mappings, outgoing webhooks (below) |
 | 6b | done | Videos libraries: folders as groups, no online lookups, Edit details, automatic thumbnails, per-library rating for unrated videos (Round 4 in `docs/design/decisions.md`) |
-| 7 | **next** | Distribution (below) |
+| 7 | done | Distribution: CLI in the binary, CI and Release workflows, GHCR image (amd64 + arm64), AUR `cinemion-bin` with a systemd unit, `set_version.sh`, README with screenshots, MediaHub preset |
 
 ### Milestone 6: what was built
 Follows the Round 3 admin mockup (artboard `Admin.dc.html` in the Round 3 canvas): app top bar + left settings nav.
@@ -255,16 +256,28 @@ Follows the Round 3 admin mockup (artboard `Admin.dc.html` in the Round 3 canvas
   half-made folder (`Trickplay.cleanup()` now keeps `.tmp` folders of current files); `.cn-settings__row-text` grew to
   14rem tall inside cards (its flex basis is meant for rows), visible on Settings › Subtitles.
 
-### Milestone 7: distribution
-- `.github/workflows/release.yml`: on a version tag, build binaries for linux_x64 and linux_arm64 (`deno compile`
-  targets via `scripts/compile.sh`), attach them to a GitHub Release, and build/push a multi-arch (amd64 + arm64) image to
-  `ghcr.io/lucasion/cinemion`.
-- `packaging/PKGBUILD` (AUR, installs the binary + `cinemion.service` systemd unit, depends on ffmpeg), the systemd unit
-  (runs as a `cinemion` user, data in `/var/lib/cinemion`).
-- `set_version.sh <version>`: updates `AppSystem.VERSION`, the `deno.json` versions and the PKGBUILD in one go.
-- README polish with screenshots (`<sup>` captions), install instructions per method.
-- MediaHub preset (in the owner's separate MediaHub project, `mediahub/src/shared/presets.ts`): Cinemion at
-  `http://localhost:8600/?mode=tv` with `gamepadKeys: true`.
+### Milestone 7: what was built
+- **The binary is also the maintenance CLI**: `cinemion help|version|users|reset-password|remove-pin` (`index.ts`
+  hands any arguments to `cli.ts`). `help` and `version` don't touch the config folder, so packaging checks can run them.
+- **`.github/workflows/ci.yml`**: check, lint, `test.ts` and the client build on pushes to main and on pull requests.
+- **`.github/workflows/release.yml`** on `v*` tags: refuses a tag that doesn't match `AppSystem.VERSION`, runs the
+  checks, compiles linux_x64 + linux_arm64 (cross-compiling with `deno compile --target`), packs them with
+  `scripts/archive.sh` (reproducible tarballs: binary + LICENSE + README), writes `SHA256SUMS`, creates the release with
+  `gh release create` (a dash in the version makes it a prerelease), and pushes the amd64 + arm64 image to
+  `ghcr.io/lucasiongs/cinemion` (tags `x.y.z`, `x.y`, and `latest` for non-prereleases). The Dockerfile's build stage
+  runs on `$BUILDPLATFORM` and cross-compiles, so only the small runtime stage is emulated for arm64. Both workflows pass
+  actionlint (`docker run --rm -v "$(pwd):/repo" -w /repo rhysd/actionlint:latest`).
+- **`packaging/`**: `PKGBUILD` for `cinemion-bin` (`_version` holds the release name, `pkgver` swaps a dash for an
+  underscore; `!strip`, since stripping cuts the app off a `deno compile` binary; `check()` runs `cinemion version`),
+  `cinemion.service` (user `cinemion`, `StateDirectory`/`CacheDirectory`, `ProtectSystem=strict`, `ProtectHome=read-only`,
+  GPU groups; never add `MemoryDenyWriteExecute`, V8 needs it off), `cinemion.sysusers`, `cinemion.env` (backed up,
+  0640, `MEDIA_ROOTS=/srv:/mnt:/media:/home`). The checksums stay `SKIP` in the repo; `scripts/aur-publish.sh` fills
+  them from the published release, writes `.SRCINFO`, test-builds and asks before pushing (`-y` to skip).
+- **`set_version.sh <version>`** at the root: `AppSystem.VERSION`, the three `deno.json` versions and the PKGBUILD.
+- README: CI and release badges, screenshots in `docs/screenshots/*.webp` (made from the sample media with headless
+  Chrome), install per method (Docker, Compose, AUR, binary), maintenance commands, and how to release.
+- MediaHub (`~/development/mediahub`, `src/shared/presets.ts`): a Cinemion preset at `http://localhost:8600/?mode=tv`
+  with `gamepadKeys`, second in the list (the first is added to new hubs by default). Pushed there as `7fbc2c1`.
 
 ## 6. Design decisions
 

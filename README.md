@@ -2,7 +2,8 @@
 
 Your movies and shows, beautifully served from your own machine: a self-hosted media server that feels at home on the couch, at a desk and on a phone.
 
-> Cinemion is under active development. Everything below works; ready-made releases (GitHub, the AUR and GHCR) are next.
+[![CI](https://github.com/LucasionGS/cinemion/actions/workflows/ci.yml/badge.svg)](https://github.com/LucasionGS/cinemion/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/LucasionGS/cinemion?include_prereleases)](https://github.com/LucasionGS/cinemion/releases)
 
 ## Key Features
 
@@ -27,7 +28,35 @@ Your movies and shows, beautifully served from your own machine: a self-hosted m
 - **One container, nothing else**: the Docker image includes everything. No database server, no extra services. There's also a single-file binary if you'd rather skip Docker.
 - **Plays nice with MediaHub**: open it in MediaHub and it starts straight in the TV layout, controller included.
 
+## Screenshots
+
+![The home screen](docs/screenshots/home.webp)
+<sup>The home screen picks up where everyone left off, and takes its colours from whatever is selected.</sup>
+
+![A movie page](docs/screenshots/movie.webp)
+<sup>Movie pages put the poster next to the details, with versions, audio and subtitles to pick from.</sup>
+
+![A show page](docs/screenshots/show.webp)
+<sup>Shows have their episodes under season tabs, with what's watched and what's half done.</sup>
+
+![The player](docs/screenshots/player.webp)
+<sup>The player: seek thumbnails, tracks and quality in a side panel, and watch together one click away.</sup>
+
+![A Videos library](docs/screenshots/videos.webp)
+<sup>Videos libraries for everything else, with folders as groups and thumbnails from the videos themselves.</sup>
+
+![The server dashboard](docs/screenshots/dashboard.webp)
+<sup>The dashboard: who's watching what, whether it's converted (and why), and how busy the server is.</sup>
+
+<p>
+  <img src="docs/screenshots/mobile.webp" alt="The phone layout" width="240">
+  <img src="docs/screenshots/tv.webp" alt="The TV layout" width="540">
+</p>
+<sup>The same app on a phone and on a TV.</sup>
+
 ## Running it
+
+Cinemion runs on Linux (x64 and arm64). Pick whichever way of installing suits you; they all end up at `http://<your-server>:8600`, where a short setup creates your account and libraries.
 
 ### Docker
 
@@ -37,14 +66,56 @@ docker run -d --name cinemion \
   -v /path/to/config:/config \
   -v /path/to/movies:/media/movies:ro \
   -v /path/to/shows:/media/shows:ro \
-  ghcr.io/lucasion/cinemion
+  ghcr.io/lucasiongs/cinemion
 ```
 
-Open `http://<your-server>:8600` and follow the setup. Add `--device /dev/dri:/dev/dri` to let an Intel or AMD GPU help with video conversion, then pick it under Settings › Playback (there's a test button to check it works). `PUID` and `PGID` set which user owns the files in `/config` (default 1000).
+Add `--device /dev/dri:/dev/dri` to let an Intel or AMD GPU help with video conversion, then pick it under Settings › Playback (there's a test button to check it works). `PUID` and `PGID` set which user owns the files in `/config` (default 1000).
+
+Or with Docker Compose:
+
+```yaml
+services:
+  cinemion:
+    image: ghcr.io/lucasiongs/cinemion
+    restart: unless-stopped
+    ports:
+      - "8600:8600"
+    environment:
+      PUID: "1000"
+      PGID: "1000"
+      TZ: "Europe/Amsterdam"
+    volumes:
+      - ./config:/config
+      - ./cache:/cache
+      - /path/to/media:/media:ro
+    # devices:
+    #   - /dev/dri:/dev/dri
+```
+
+### Arch Linux (AUR)
+
+```sh
+yay -S cinemion-bin
+sudo systemctl enable --now cinemion
+```
+
+The service runs as the `cinemion` user, keeps its data in `/var/lib/cinemion`, and reads its settings from `/etc/cinemion/cinemion.env` (which folders the library browser may show, the port, API keys). The `cinemion` user has to be able to read your media folders.
 
 ### Single binary
 
-Grab `cinemion` for your platform, make sure `ffmpeg` is installed (`sudo pacman -S ffmpeg` or `sudo apt install ffmpeg`), and run it. For GPU conversion, also install your GPU's VA-API driver (`intel-media-driver` / `intel-media-va-driver-non-free` for Intel, `libva-mesa-driver` / `mesa-va-drivers` for AMD). Settings and the database go to `~/.cinemion`, and the folder browser starts in your home folder. See `.env.example` for everything you can change.
+Download `cinemion-<version>-linux_x64.tar.gz` (or `linux_arm64`) from the [releases](https://github.com/LucasionGS/cinemion/releases), unpack it, make sure `ffmpeg` is installed (`sudo pacman -S ffmpeg` or `sudo apt install ffmpeg`), and run `./cinemion`. For GPU conversion, also install your GPU's VA-API driver (`intel-media-driver` / `intel-media-va-driver-non-free` for Intel, `libva-mesa-driver` / `mesa-va-drivers` for AMD). Settings and the database go to `~/.cinemion`, and the folder browser starts in your home folder. See `.env.example` for everything you can change.
+
+### Locked out?
+
+The `cinemion` binary also has a few maintenance commands. Run `cinemion help` for all of them.
+
+```sh
+cinemion users                       # list everyone
+cinemion reset-password ion          # set a new password
+cinemion remove-pin mira             # take a profile's PIN off
+```
+
+Run them as the user the server runs as, so they use the same data: `sudo -u cinemion cinemion users` for the AUR package, or `docker exec -u 1000 cinemion cinemion users` in Docker.
 
 ## Development
 
@@ -65,10 +136,14 @@ Other tasks:
 | `deno task start` | Run the server in production mode, serving `client/dist` |
 | `deno task compile` | Build a single `cinemion` binary into `dist/<platform>/bin` |
 | `deno task migrate` | Apply database migrations (`migrate down` reverts the last one) |
-| `deno task cli help` | Maintenance commands, like resetting a password |
+| `deno task cli help` | Maintenance commands, like resetting a password (the same as `cinemion help`) |
 | `deno task check` / `lint` | Type-check and lint |
 
 `docker compose up --build` builds and runs the image with everything kept in `./data`.
+
+### Releasing
+
+`./set_version.sh 1.2.0` sets the version everywhere (the server, the `deno.json` files and the AUR package). Commit it as "Bumped to 1.2.0", then tag and push: `git tag v1.2.0 && git push origin v1.2.0`. The Release workflow checks the code, builds the x64 and arm64 binaries onto a GitHub release, and pushes the Docker image (amd64 and arm64) to `ghcr.io/lucasiongs/cinemion`. Once it's done, `scripts/aur-publish.sh` updates the `cinemion-bin` AUR package.
 
 `scripts/make-sample-media.sh` fills `data/media` with a small fake library (short ffmpeg clips with tidy and messy names, NFO files, artwork, extras and samples) for trying things out. Add a TMDB API key in Settings › Metadata to see online matching.
 

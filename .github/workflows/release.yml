@@ -1,0 +1,104 @@
+# Releases a version when its tag is pushed (v1.2.0): binaries on a GitHub release, and the Docker image on GHCR.
+# Bump the version first with ./set_version.sh, commit, then tag and push the tag.
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+  packages: write
+
+env:
+  DENO_VERSION: 2.9.7
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: ${{ env.DENO_VERSION }}
+      - name: The tag matches the version in the code
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          if ! grep -q "export const VERSION = \"$VERSION\";" server/src/AppSystem.ts; then
+            echo "::error::The tag $GITHUB_REF_NAME doesn't match AppSystem.VERSION. Run ./set_version.sh $VERSION, commit, and tag again."
+            exit 1
+          fi
+      - name: Install dependencies
+        run: deno install
+      - name: Type-check
+        run: deno task check
+      - name: Lint
+        run: deno lint
+      - name: Scratch checks
+        run: deno run -A server/src/test.ts
+
+  binaries:
+    needs: check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: ${{ env.DENO_VERSION }}
+      - name: Install dependencies
+        run: deno install
+      - name: Build the web client
+        run: deno task build
+      - name: Compile and pack
+        run: |
+          scripts/compile.sh x86_64-unknown-linux-gnu
+          scripts/compile.sh aarch64-unknown-linux-gnu
+          scripts/archive.sh linux_x64
+          scripts/archive.sh linux_arm64
+          cd dist && sha256sum cinemion-*.tar.gz > SHA256SUMS && cat SHA256SUMS
+      - name: Smoke test
+        run: |
+          test "$(dist/linux_x64/bin/cinemion version)" = "${GITHUB_REF_NAME#v}"
+      - name: Create the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          # Versions with a dash (2.0.0-alpha.0) are prereleases
+          PRERELEASE=""
+          [[ "$VERSION" == *-* ]] && PRERELEASE="--prerelease"
+          gh release create "$GITHUB_REF_NAME" $PRERELEASE --title "Cinemion $VERSION" --generate-notes \
+            dist/cinemion-*.tar.gz dist/SHA256SUMS
+
+  image:
+    needs: check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Image name
+        # GHCR names must be lowercase; the owner's name may not be
+        run: echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/cinemion" >> "$GITHUB_ENV"
+      - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.IMAGE }}
+          # 1.2.3 and 1.2 for every release; latest only for releases without a dash
+          tags: |
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

@@ -1,8 +1,9 @@
 # Cinemion: one self-contained image with the server, the web client and ffmpeg. No database container needed.
 ARG DENO_VERSION=2.9.7
 
-# Web client + compiled server binary
-FROM denoland/deno:${DENO_VERSION} AS build
+# Web client + compiled server binary. This stage runs on the build machine's own architecture and cross-compiles
+# for the target, so a multi-arch build only emulates the small runtime stage.
+FROM --platform=$BUILDPLATFORM denoland/deno:${DENO_VERSION} AS build
 ARG TARGETARCH
 RUN apt-get update && apt-get install -y --no-install-recommends python3 && rm -rf /var/lib/apt/lists/*
 WORKDIR /src
@@ -21,6 +22,11 @@ RUN case "$TARGETARCH" in \
 # Runtime
 FROM debian:trixie-slim
 ARG TARGETARCH
+# The source label links the image to the repository on GitHub's container registry
+LABEL org.opencontainers.image.title="Cinemion" \
+  org.opencontainers.image.description="Self-hosted media server and player for movies, shows and home videos" \
+  org.opencontainers.image.source="https://github.com/LucasionGS/cinemion" \
+  org.opencontainers.image.licenses="GPL-3.0-or-later"
 # ffmpeg for probing, profile pictures and conversion. The GPU drivers let Intel (VA-API and Quick Sync) and
 # AMD (VA-API) graphics convert video when /dev/dri is passed in. Intel's full driver is in Debian's non-free
 # section, and only exists for x86.

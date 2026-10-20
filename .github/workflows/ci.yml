@@ -1,0 +1,29 @@
+# Checks every push and pull request: types, lint, the scratch checks and the client build.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+env:
+  DENO_VERSION: 2.9.7
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: ${{ env.DENO_VERSION }}
+      - name: Install dependencies
+        run: deno install
+      - name: Type-check
+        run: deno task check
+      - name: Lint
+        run: deno lint
+      - name: Scratch checks
+        run: deno run -A server/src/test.ts
+      - name: Build the web client
+        run: deno task build
