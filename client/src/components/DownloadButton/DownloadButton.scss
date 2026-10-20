@@ -1,0 +1,45 @@
+// A ring around the button fills up while it downloads
+.cn-download-button {
+  &--busy {
+    background:
+      conic-gradient(var(--cn-accent) var(--download-progress, 0%), transparent 0) border-box,
+      var(--cn-glass) padding-box !important;
+    border: 2px solid transparent !important;
+  }
+
+  &--done {
+    color: var(--cn-success-text) !important;
+  }
+}
+
+.cn-download-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  &__option {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    padding: 0.875rem 1rem;
+    border: 1px solid var(--cn-border);
+    border-radius: var(--cn-radius-md);
+    background: transparent;
+    text-align: left;
+    cursor: pointer;
+
+    span {
+      font-size: 0.8125rem;
+      color: var(--cn-text-muted);
+    }
+
+    &:hover {
+      background: var(--cn-glass);
+    }
+
+    &--on {
+      border-color: var(--cn-accent);
+      background: var(--cn-accent-soft);
+    }
+  }
+}

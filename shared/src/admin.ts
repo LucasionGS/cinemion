@@ -120,7 +120,7 @@ export interface DashboardInfo {
 /**
  * What kind of thing happened, used for the dot colour in the feed.
  */
-export type ActivityKind = "added" | "watched" | "signIn" | "import" | "delete" | "subtitles" | "together";
+export type ActivityKind = "added" | "watched" | "signIn" | "import" | "delete" | "subtitles" | "together" | "download";
 
 export interface ActivityInfo {
   id: number;

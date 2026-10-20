@@ -14,6 +14,7 @@ import { initSpatialNavigation } from "./lib/spatialNavigation.ts";
 import { initGamepad } from "./lib/gamepad.ts";
 import { applyAmbient } from "./lib/ambient.ts";
 import { musicPlayer } from "./lib/MusicPlayer.ts";
+import offline from "./lib/Offline.ts";
 import Toaster from "./components/Toaster/Toaster.tsx";
 import MiniPlayer from "./components/MiniPlayer/MiniPlayer.tsx";
 import NowPlaying from "./components/NowPlaying/NowPlaying.tsx";
@@ -146,6 +147,20 @@ const routes: Route[] = [
     },
   }),
   requirement({ signedIn: true }, {
+    path: /^\/downloads\/?$/,
+    component: async () => {
+      const Downloads = (await import("./pages/Downloads/Downloads.tsx")).default;
+      return <Downloads />;
+    },
+  }),
+  {
+    path: /^\/offline\/([\w.-]+)\/?$/,
+    component: async ([key]) => {
+      const OfflinePlayer = (await import("./pages/Downloads/OfflinePlayer.tsx")).default;
+      return <OfflinePlayer key={key} downloadKey={key} />;
+    },
+  },
+  requirement({ signedIn: true }, {
     path: /^\/person\/(\d+)\/?$/,
     component: async ([id]) => {
       const Person = (await import("./pages/Person/Person.tsx")).default;
@@ -168,6 +183,24 @@ const routes: Route[] = [
   }),
 ];
 
+// When the server can't be reached, only what's on this device
+const offlineRoutes: Route[] = [
+  {
+    path: /^\/downloads\/?$/,
+    component: async () => {
+      const Downloads = (await import("./pages/Downloads/Downloads.tsx")).default;
+      return <Downloads offlineMode />;
+    },
+  },
+  {
+    path: /^\/offline\/([\w.-]+)\/?$/,
+    component: async ([key]) => {
+      const OfflinePlayer = (await import("./pages/Downloads/OfflinePlayer.tsx")).default;
+      return <OfflinePlayer key={key} downloadKey={key} />;
+    },
+  },
+];
+
 function App() {
   const { ready, server, user, error } = useController(session);
   const { path } = useController(router);
@@ -175,6 +208,7 @@ function App() {
 
   useEffect(() => {
     session.init();
+    offline.register();
     initSpatialNavigation();
     initGamepad();
     applyAmbient(null);
@@ -192,8 +226,23 @@ function App() {
     if (ready) musicPlayer.setUser(user?.id ?? null);
   }, [ready, user?.id]);
 
+  // Downloads carry on, and what was watched offline goes to the server
+  useEffect(() => {
+    if (!ready || !user) return;
+    offline.resumeAll();
+    offline.sync(user.id);
+  }, [ready, user?.id]);
+
   if (!ready) {
     return <div className="cn-boot"><Spinner size="2rem" label="Loading Cinemion" /></div>;
+  }
+  if ((error || !server) && offline.downloads.some((d) => d.status === "ready")) {
+    return (
+      <>
+        <RouterView routes={offlineRoutes} fallback={<Redirect to="/downloads" />} />
+        <Toaster />
+      </>
+    );
   }
   if (error || !server) {
     return (

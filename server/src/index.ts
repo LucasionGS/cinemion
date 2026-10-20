@@ -9,6 +9,7 @@ import TranscodeSession from "./media/TranscodeSession.ts";
 import WatchTogether from "./together/WatchTogether.ts";
 import ActivePlayback from "./media/ActivePlayback.ts";
 import SubtitleAutomation from "./subtitles/SubtitleAutomation.ts";
+import OfflineCopies from "./media/OfflineCopies.ts";
 import { Activity } from "./models/index.ts";
 import log from "./lib/Logger.ts";
 
@@ -57,10 +58,12 @@ const server = Deno.serve({
 await LibraryWatcher.refresh();
 ScanScheduler.start();
 
-// Once a day: the activity feed keeps a couple of months, and missing subtitles are looked for again
+// Once a day: the activity feed keeps a couple of months, missing subtitles are looked for again, and offline copies
+// nobody fetched lately are deleted
 const daily = () => {
   Activity.prune().catch((error) => log.warn("Could not clean up old activity", { error }));
   SubtitleAutomation.queue().catch(() => { });
+  OfflineCopies.prune();
 };
 // The first run waits for startup scans to settle
 const firstDaily = setTimeout(daily, 10 * 60 * 1000);

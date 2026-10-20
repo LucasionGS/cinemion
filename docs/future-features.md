@@ -10,7 +10,7 @@ Planned, but not part of the first version. Roughly in the order they're likely 
 
 ## Playback
 
-- **Offline downloads**: download (converted) copies to phones and laptops for watching without a connection, with progress synced back.
+- **Downloads over plain http**: offline downloads need https (browsers only allow service workers there). A small companion app, or a built-in https setup, would make them work on plain LAN addresses too.
 
 ## Clients
 

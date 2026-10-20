@@ -240,14 +240,15 @@ and on amd64 Intel's non-free VA driver + Quick Sync runtime), `docker/entrypoin
 | 13 | done | Audiobooks and books: chapters, progress, sleep timer (below) |
 | 14 | done | More metadata (TVDB, OMDb ratings) and Trakt scrobbling (below) |
 | 15 | done | More subtitle sources and automatic subtitle downloads (below) |
-| 16 | **next** | Offline downloads |
-| 17 | planned | Casting to Chromecast / Google TV, and a lighter layout for old smart-TV browsers |
-| 18 | planned | Android TV app (WebView wrapper; the SDK is in `~/Android/Sdk` on this machine) |
-| 19 | planned | Live TV: IPTV playlists, a guide and recordings |
+| 16 | done | Offline downloads (below) |
+| 17 | on hold | Casting to Chromecast / Google TV, and a lighter layout for old smart-TV browsers |
+| 18 | on hold | Android TV app (WebView wrapper; the SDK is in `~/Android/Sdk` on this machine) |
+| 19 | on hold | Live TV: IPTV playlists, a guide and recordings |
 
 Not planned in these rounds: **photos** (the owner wants them later; see section 8) and **built-in remote access** (needs a
 relay service on ionnet.io that doesn't exist yet). The owner asked for each milestone to be committed and pushed, and
 for the work to continue unattended; releases go out with `./set_version.sh` + a tag when a milestone is worth one.
+After milestone 13 the owner said to do up to and including 16 and leave 17–19 for now; don't start them until asked.
 
 ### Milestone 6: what was built
 Follows the Round 3 admin mockup (artboard `Admin.dc.html` in the Round 3 canvas): app top bar + left settings nav.
@@ -475,6 +476,33 @@ Follows the Round 3 admin mockup (artboard `Admin.dc.html` in the Round 3 canvas
   the run. Downloads go through `SubtitleManager.download()` like manual ones; `SubtitleManager.report()` sends the
   webhook (`subtitles.downloaded` now has `user: null` and `automatic: true` for these) and one activity line for
   runs with more than five.
+
+### Milestone 16: what was built
+- **Server** (`controllers/DownloadsController.ts`, permission `MEDIA_DOWNLOAD`, given to the `user` role by migration
+  `20261031090000-downloads`): `POST /api/downloads/options` offers the original when `PlaybackDecider` says this
+  browser plays it directly, plus 1080p/720p/480p copies no taller than the source (480p always), with size guesses.
+  `POST /api/downloads` starts one; download ids describe themselves (`<fileId>.<quality>.<audio or d>`), so there's
+  no table. Copies (`media/OfflineCopies.ts`) are H.264 + stereo AAC MP4s with faststart, tone-mapped from HDR,
+  made in the `downloads` task queue with progress from `-progress pipe:1`, shared between profiles, kept in
+  `CACHE_DIR/downloads` and deleted after a week without fetches. `GET /:id/file` serves ranges (with the sign-in
+  header, since `fetch` can send one) and `GET /:id/subtitles/:index.vtt` the text tracks. One activity line per
+  download ("Ion saved X to watch offline", de-duplicated for 12 hours; `Events.activity()` now honours
+  `dedupeHours`).
+- **Client storage** (`lib/Offline.ts`): videos go into Cache Storage `cn-media-v1` in 32 MB pieces
+  (`/offline-media/<id>/chunk/<n>`, fetched with `Range`), then a `manifest` entry; an interrupted download carries
+  on from the first missing piece (`resumeAll()` after sign-in). Poster and VTT subtitles sit next to them. The list
+  is in `localStorage["cn-offline"]`, with the profile that saved each one; offline progress is sent with the
+  regular progress call only for that profile (`sync(userId)`, on sign-in, coming back online, and leaving the
+  player).
+- **Service worker** (`client/public/sw.js`, registered only in built apps): pages network-first with the cached app
+  as the fallback, `/assets/*` cache-first, `/api` never cached, and `/offline-media/*/video` answered from the
+  pieces for whatever range the video element asks (`Blob.slice`, so it doesn't load the whole file).
+- **UI**: a Download button on title pages (a ring fills while it downloads) with a size picker, Downloads in the
+  profile menu (`/downloads`: progress, pause/carry on, retry, delete, space used), and `/offline/:id`: native video
+  controls with the saved subtitles, resuming at the saved place. When the server can't be reached and something is
+  downloaded, the app opens to an offline Downloads page instead of the "can't reach the server" screen.
+- **https only**: service workers and Cache Storage need a secure context (https, or localhost). On a plain http LAN
+  address the button explains that instead of downloading.
 
 ## 6. Design decisions
 

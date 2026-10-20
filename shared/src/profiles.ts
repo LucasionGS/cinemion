@@ -30,6 +30,7 @@ export const PERMISSIONS = [
   "SERVER_MANAGE",
   "TRANSCODE_ALLOW",
   "SUBTITLES_DOWNLOAD",
+  "MEDIA_DOWNLOAD",
 ] as const;
 
 export type Permission = typeof PERMISSIONS[number];

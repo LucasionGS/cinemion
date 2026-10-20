@@ -24,6 +24,7 @@ Your movies, shows, music and books, beautifully served from your own machine: a
 - **Sound for your speakers**: tell each device whether it plays stereo, surround or goes through a receiver, and Cinemion converts (or doesn't) to match.
 - **See where you're seeking**: thumbnails above the seek bar, and a filmstrip on the TV, so you land on the right scene.
 - **Subtitles, sorted**: subtitle files next to your videos just show up, anything missing is a search away (OpenSubtitles, SubDL and Podnapisi) without leaving the player, and new movies and episodes can get subtitles in your languages all by themselves.
+- **Take it with you**: save a movie or episode on your phone or laptop (the original, or a smaller copy the server makes) and watch it without a connection. Cinemion even opens offline, and what you watched catches up with the server once you're back. Needs Cinemion opened over https.
 - **Watch together**: start a session, share a code, and everyone's play, pause and seek stay in step, each on their own screen. Chat along and send reactions that float across everyone's video. Only the host's progress is saved, so nobody's "continue watching" gets spoiled.
 - **Picks up where you left off**: continue watching, next up, recently added and "because you watched", per profile. Collections, cast pages and search across titles, episodes and people.
 - **Safe for kids**: give a profile an age limit and anything rated above it (or not rated at all) simply isn't there. Family videos can get a library-wide rating so the kids see them too.

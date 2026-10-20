@@ -34,7 +34,10 @@ export namespace Events {
    * Add a line to the activity feed that has no webhook event, like an import reported by Sonarr.
    */
   export function activity(line: ActivityLine) {
-    Activity.record(line.kind, line.message, line).catch(() => { });
+    (async () => {
+      if (line.dedupeHours && await Activity.isRecent(line.kind, line.message, line.dedupeHours)) return;
+      await Activity.record(line.kind, line.message, line);
+    })().catch(() => { });
   }
 }
 

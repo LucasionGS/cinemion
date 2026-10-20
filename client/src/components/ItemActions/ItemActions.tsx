@@ -10,6 +10,7 @@ import Button from "../Button/Button.tsx";
 import IconButton from "../IconButton/IconButton.tsx";
 import FixMatchDialog from "../FixMatchDialog/FixMatchDialog.tsx";
 import EditDetailsDialog from "../EditDetailsDialog/EditDetailsDialog.tsx";
+import DownloadButton from "../DownloadButton/DownloadButton.tsx";
 import "./ItemActions.scss";
 
 export interface ItemActionsProps {
@@ -25,7 +26,8 @@ export interface ItemActionsProps {
 }
 
 /**
- * Play or Resume, Play from start, the watched toggle, and (for managers) Fix match or Edit details, and Refresh.
+ * Play or Resume, Play from start, the watched toggle, Download, and (for managers) Fix match or Edit details, and
+ * Refresh.
  */
 export default function ItemActions(props: ItemActionsProps) {
   const { item, playTarget, onChanged } = props;
@@ -79,6 +81,7 @@ export default function ItemActions(props: ItemActionsProps) {
           className={watched ? "cn-actions__watched cn-actions__watched--on" : "cn-actions__watched"}
           onClick={toggleWatched}
         />
+        {isPlayable(item.type) && session.can("MEDIA_DOWNLOAD") && <DownloadButton item={item} />}
         {session.can("LIBRARY_MANAGE") && (
           <Menu.Root>
             <Menu.Trigger className="cn-icon-button cn-icon-button--glass cn-icon-button--lg" aria-label="More options"><EllipsisVertical /></Menu.Trigger>
