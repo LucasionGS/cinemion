@@ -81,13 +81,14 @@ export default function FixMatchDialog(props: FixMatchDialogProps) {
         {searching && !results && <div className="cn-fix-match__empty"><Spinner size="2rem" /></div>}
         {error && <div className="cn-fix-match__empty cn-fix-match__empty--error">{error}</div>}
         {results && !error && results.length === 0 && (
-          <div className="cn-fix-match__empty">No results. Try another title, or check that a TMDB API key is set in Settings › Metadata.</div>
+          <div className="cn-fix-match__empty">No results. Try another title, or check that a TMDB or TheTVDB key is set in Settings › Metadata.</div>
         )}
         {results?.map((r) => (
           <div key={`${r.provider}:${r.id}`} className="cn-fix-match__result">
             <span className="cn-fix-match__poster">{r.posterUrl && <img src={r.posterUrl} alt="" loading="lazy" />}</span>
             <div className="cn-fix-match__text">
               <strong>{r.title}{r.year ? ` (${r.year})` : ""}</strong>
+              <span className="cn-fix-match__source">{r.provider === "tvdb" ? "TheTVDB" : "TMDB"}</span>
               {r.overview && <p>{r.overview}</p>}
             </div>
             <Button size="sm" variant="primary" onClick={() => pick(r)} loading={applying === r.id} disabled={applying !== null}>Use this</Button>

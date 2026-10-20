@@ -462,3 +462,29 @@ button.cn-settings__badge {
     bottom: 12%;
   }
 }
+
+// The code to enter on Trakt's site while linking
+.cn-trakt-code {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+  padding: 1rem 1.25rem;
+  border-radius: var(--cn-radius-md);
+  background: var(--cn-glass);
+
+  strong {
+    font-family: var(--cn-font-mono);
+    font-size: 1.5rem;
+    letter-spacing: 0.15em;
+    user-select: all;
+  }
+
+  &__wait {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+    color: var(--cn-text-muted);
+  }
+}

@@ -41,6 +41,12 @@
     }
   }
 
+  &__source {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--cn-text-subtle);
+  }
+
   &__text {
     flex: 1;
     min-width: 0;

@@ -22,11 +22,3 @@ Planned, but not part of the first version. Roughly in the order they're likely 
 ## Access & integrations
 
 - **Built-in remote access**: reach a server from outside the house without port forwarding, through a relay service on ionnet.io.
-- **Trakt scrobbling**: sync watch history and ratings to Trakt, per user.
-
-## Metadata
-
-- **More metadata providers**: TVDB for shows, and OMDb for IMDb and Rotten Tomatoes ratings, on top of TMDB and local files.
-
-## Look & feel
-

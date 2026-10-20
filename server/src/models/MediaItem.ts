@@ -1,6 +1,6 @@
 import type { CreationOptional, ForeignKey, InferAttributes, InferCreationAttributes, NonAttribute } from "sequelize";
 import { col, DataTypes, Model, Op, where } from "sequelize";
-import type { Artwork, ExternalIds, ItemSummary, ItemType, MatchStatus, Palette } from "@shared/media.ts";
+import type { Artwork, ExternalIds, ExternalRatings, ItemSummary, ItemType, MatchStatus, Palette } from "@shared/media.ts";
 import sequelize, { ID_TYPE, jsonColumn } from "./sequelize.ts";
 import type Library from "./Library.ts";
 
@@ -54,6 +54,10 @@ export class MediaItem extends Model<InferAttributes<MediaItem>, InferCreationAt
    */
   declare releaseDate: CreationOptional<string | null>;
   declare rating: CreationOptional<number | null>;
+  /**
+   * IMDb, Rotten Tomatoes and Metacritic ratings from OMDb. `null` = not looked up.
+   */
+  declare ratings: CreationOptional<ExternalRatings | null>;
   declare contentRating: CreationOptional<string | null>;
   declare genres: CreationOptional<string[]>;
   declare studios: CreationOptional<string[]>;
@@ -160,6 +164,7 @@ MediaItem.init({
   runtime: { type: DataTypes.INTEGER, allowNull: true, defaultValue: null },
   releaseDate: { type: DataTypes.STRING(10), allowNull: true, defaultValue: null },
   rating: { type: DataTypes.FLOAT, allowNull: true, defaultValue: null },
+  ratings: jsonColumn<ExternalRatings | null, MediaItem>("ratings", null, true),
   contentRating: { type: DataTypes.STRING(16), allowNull: true, defaultValue: null },
   genres: jsonColumn<string[], MediaItem>("genres", []),
   studios: jsonColumn<string[], MediaItem>("studios", []),

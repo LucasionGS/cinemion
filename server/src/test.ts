@@ -13,6 +13,9 @@ import Fingerprint from "./media/Fingerprint.ts";
 import MusicTags from "./music/MusicTags.ts";
 import BookLibrary from "./books/BookLibrary.ts";
 import Epub from "./books/Epub.ts";
+import Omdb from "./metadata/Omdb.ts";
+import TvdbProvider from "./metadata/providers/TvdbProvider.ts";
+import MetadataManager from "./metadata/MetadataManager.ts";
 import type MediaFile from "./models/MediaFile.ts";
 import { parseLrc } from "@shared/music.ts";
 
@@ -282,6 +285,15 @@ const marked = BookLibrary.layout([part(9, "/b/Book.m4b", 90, {}, [{ title: "One
 check("chapter marks inside a file", marked.chapters.map((c) => [c.title, c.start, c.end]), [["One", 0, 45], ["Chapter 2", 45, 90]]);
 check("natural file order", BookLibrary.orderFiles([part(1, "/b/Part 10.mp3", 1), part(2, "/b/Part 9.mp3", 1)]).map((f) => f.id), [2, 1]);
 check("escaped html description", Epub.plain("&lt;p&gt;Tides &amp;amp; ferries&lt;/p&gt;&lt;p&gt;More&lt;/p&gt;"), "Tides & ferries\nMore");
+//#endregion
+
+//#region Metadata sources
+console.log("Metadata sources");
+check("omdb ratings", Omdb.parse({ imdbRating: "7.1", imdbVotes: "2,001", Metascore: "N/A", Ratings: [{ Source: "Rotten Tomatoes", Value: "91%" }, { Source: "Metacritic", Value: "68/100" }] }), { imdb: 7.1, imdbVotes: 2001, rottenTomatoes: 91, metacritic: 68 });
+check("omdb without ratings", Omdb.parse({ imdbRating: "N/A", imdbVotes: "N/A", Metascore: "N/A" }), { imdb: null, imdbVotes: null, rottenTomatoes: null, metacritic: null });
+check("tvdb language codes", ["en", "nl", "de", "fr", "ja"].map(TvdbProvider.languageCode), ["eng", "nld", "deu", "fra", "jpn"]);
+check("older settings get new sources", MetadataManager.normalizeSettings({ tmdbApiKey: "k", providers: ["tmdb", "local"] }).providers, ["tmdb", "local", "tvdb"]);
+check("unknown sources are dropped", MetadataManager.normalizeSettings({ providers: ["gone", "local"] }).providers, ["local", "tmdb", "tvdb"]);
 //#endregion
 
 console.log(failed ? `\n${failed} failed` : "\nAll passed");

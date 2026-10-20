@@ -177,6 +177,15 @@ export interface FsListing {
 
 export interface MetadataSettings {
   tmdbApiKey: string | null;
+  /**
+   * TheTVDB project API key, and the subscriber PIN that goes with user-supported keys.
+   */
+  tvdbApiKey: string | null;
+  tvdbPin: string | null;
+  /**
+   * OMDb key, for IMDb, Rotten Tomatoes and Metacritic ratings.
+   */
+  omdbApiKey: string | null;
   language: string;
   country: string;
   /**

@@ -1,14 +1,17 @@
 import { Hono } from "hono";
 import type { PathMapping } from "@shared/admin.ts";
+import type { SaveTraktAppRequest } from "@shared/trakt.ts";
 import { User } from "../models/index.ts";
 import ArrWebhook from "../integrations/ArrWebhook.ts";
+import Trakt from "../integrations/Trakt.ts";
 import RateLimit from "../lib/RateLimit.ts";
 import Network from "../lib/Network.ts";
 import { readJson } from "../lib/http.ts";
 import type { AppEnv } from "../lib/types.ts";
 
 /**
- * Sonarr and Radarr: the address they send to, and the path mappings between their folders and ours.
+ * Sonarr and Radarr (the address they send to, and the path mappings between their folders and ours), and the
+ * server's Trakt app.
  */
 export namespace IntegrationsController {
   export const router = new Hono<AppEnv>();
@@ -44,6 +47,26 @@ export namespace IntegrationsController {
       mappings.push({ from, to });
     }
     return c.json(ArrWebhook.toClient(await ArrWebhook.save({ pathMappings: mappings })));
+  });
+
+  /**
+   * @swagger
+   * /api/integrations/trakt:
+   *   get:
+   *     summary: The server's Trakt app (client ID, and whether there's a secret).
+   */
+  router.get("/trakt", manage, async (c) => c.json(await Trakt.appSettings()));
+
+  /**
+   * @swagger
+   * /api/integrations/trakt:
+   *   put:
+   *     summary: Set the Trakt app's client ID and secret (`SaveTraktAppRequest`).
+   */
+  router.put("/trakt", manage, async (c) => {
+    const body = await readJson<SaveTraktAppRequest>(c);
+    if (!body) return c.json({ message: "Nothing to change." }, 400);
+    return c.json(await Trakt.saveApp(body));
   });
 
   /**

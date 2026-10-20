@@ -10,6 +10,7 @@ import VideoDetails from "../library/VideoDetails.ts";
 import FolderTree from "../library/FolderTree.ts";
 import ContentRatings from "../library/ContentRatings.ts";
 import Events from "../integrations/Events.ts";
+import Trakt from "../integrations/Trakt.ts";
 import { errorMessage, readJson } from "../lib/http.ts";
 import type { AppEnv } from "../lib/types.ts";
 
@@ -107,6 +108,7 @@ export namespace ItemsController {
       genres: item.genres,
       studios: item.studios,
       externalIds: item.externalIds,
+      ratings: item.ratings,
       parentId: item.parentId,
       credits: credits.map((cr) => cr.toInfo()),
       files: files.map((f) => f.toInfo()),
@@ -199,7 +201,9 @@ export namespace ItemsController {
     const body = await readJson<{ watched: boolean }>(c);
     if (typeof body?.watched !== "boolean") return c.json({ message: "Say whether it's watched: { \"watched\": true }." }, 400);
 
-    await WatchState.markWatched(user.id, await playableIds(item), body.watched);
+    const ids = await playableIds(item);
+    await WatchState.markWatched(user.id, ids, body.watched);
+    Trakt.syncHistory(user, ids, body.watched);
     return c.json(await Summaries.one(item, user));
   });
 

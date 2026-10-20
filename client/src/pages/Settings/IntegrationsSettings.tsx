@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { CircleAlert, CircleCheck, Copy, Plus, Trash2 } from "lucide-react";
 import type { IntegrationSettings, PathMapping } from "@shared/admin.ts";
+import type { TraktAppSettings } from "@shared/trakt.ts";
 import IntegrationsApi from "../../Api/IntegrationsApi.ts";
+import TraktApi from "../../Api/TraktApi.ts";
 import { toasts } from "../../lib/Toasts.ts";
 import { copyText } from "../../lib/clipboard.ts";
 import { timeAgo } from "../../lib/format.ts";
@@ -14,7 +16,8 @@ import { ConfirmDialog } from "../../components/Dialog/Dialog.tsx";
 import "./Admin.scss";
 
 /**
- * Sonarr and Radarr: the address to paste into them, and path mappings for when they see the media elsewhere.
+ * Sonarr and Radarr (the address to paste into them, and path mappings for when they see the media elsewhere), and
+ * the server's Trakt app.
  */
 export default function IntegrationsSettings() {
   const [settings, setSettings] = useState<IntegrationSettings | null>(null);
@@ -83,7 +86,7 @@ export default function IntegrationsSettings() {
       <header className="cn-settings__header">
         <div>
           <h1>Integrations</h1>
-          <p>Let Sonarr and Radarr tell Cinemion about new downloads, so they show up right away.</p>
+          <p>Let Sonarr and Radarr tell Cinemion about new downloads, so they show up right away, and let profiles keep their Trakt history up to date.</p>
         </div>
         <Button variant="primary" onClick={save} loading={saving} disabled={!changed}>Save changes</Button>
       </header>
@@ -144,6 +147,8 @@ export default function IntegrationsSettings() {
         </div>
       </section>
 
+      <TraktAppCard />
+
       <ConfirmDialog
         open={confirmNew}
         onOpenChange={setConfirmNew}
@@ -154,5 +159,65 @@ export default function IntegrationsSettings() {
         onConfirm={newAddress}
       />
     </>
+  );
+}
+
+/**
+ * The server's Trakt app, which every profile links its own Trakt account through.
+ */
+function TraktAppCard() {
+  const [settings, setSettings] = useState<TraktAppSettings | null>(null);
+  const [clientId, setClientId] = useState("");
+  const [clientSecret, setClientSecret] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    TraktApi.appSettings().then((s) => {
+      setSettings(s);
+      setClientId(s.clientId ?? "");
+    }).catch(() => { });
+  }, []);
+
+  async function save() {
+    setSaving(true);
+    try {
+      const result = await TraktApi.saveApp({ clientId, ...(clientSecret ? { clientSecret } : {}) });
+      setSettings(result);
+      setClientSecret("");
+      toasts.success("Trakt is set up", "Profiles can link their accounts in Settings › Your profile.");
+    } catch (error) {
+      toasts.error("Couldn't save", (error as Error).message);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  const changed = !!settings && (clientId !== (settings.clientId ?? "") || !!clientSecret);
+  return (
+    <section className="cn-settings__card">
+      <h2>Trakt</h2>
+      <p className="cn-settings__row-text">
+        <span>
+          With a Trakt app, every profile can link its own Trakt account: what they watch is scrobbled, and what they mark
+          watched shows up in their Trakt history. Make the app at{" "}
+          <a href="https://trakt.tv/oauth/applications/new" target="_blank" rel="noreferrer">trakt.tv/oauth/applications</a>{" "}
+          with <code>urn:ietf:wg:oauth:2.0:oob</code> as its redirect URI, then copy its keys here.
+        </span>
+      </p>
+      <div className="cn-integrations__trakt">
+        <TextField label="Client ID" value={clientId} autoComplete="off" spellCheck={false} onChange={(e) => setClientId(e.target.value)} />
+        <TextField
+          label="Client secret"
+          type="password"
+          value={clientSecret}
+          autoComplete="new-password"
+          placeholder={settings?.hasSecret ? "Saved (type to replace)" : ""}
+          onChange={(e) => setClientSecret(e.target.value)}
+        />
+      </div>
+      <div>
+        <Button variant="primary" size="sm" onClick={save} loading={saving} disabled={!changed}>Save Trakt app</Button>
+      </div>
+    </section>
   );
 }

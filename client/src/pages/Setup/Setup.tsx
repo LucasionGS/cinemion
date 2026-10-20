@@ -48,7 +48,7 @@ export default function Setup() {
   const [libraries, setLibraries] = useState<CreateLibraryRequest[]>([]);
 
   // Metadata
-  const [metadata, setMetadata] = useState<MetadataSettings>({ tmdbApiKey: null, language: "en", country: guessCountry(), providers: ["local", "tmdb"] });
+  const [metadata, setMetadata] = useState<MetadataSettings>({ tmdbApiKey: null, tvdbApiKey: null, tvdbPin: null, omdbApiKey: null, language: "en", country: guessCountry(), providers: ["local", "tmdb", "tvdb"] });
 
   const accountErrors = {
     name: !name.trim() ? "Enter your name." : null,
@@ -67,7 +67,7 @@ export default function Setup() {
         serverName: serverName.trim(),
         admin: { name: name.trim(), username, password, pin: pin || null },
         libraries,
-        metadata: { ...metadata, tmdbApiKey: metadata.tmdbApiKey?.trim() || null },
+        metadata: { ...metadata, tmdbApiKey: metadata.tmdbApiKey?.trim() || null, tvdbApiKey: metadata.tvdbApiKey?.trim() || null, tvdbPin: metadata.tvdbPin?.trim() || null, omdbApiKey: metadata.omdbApiKey?.trim() || null },
       });
       session.signIn(response);
       setStep(3);

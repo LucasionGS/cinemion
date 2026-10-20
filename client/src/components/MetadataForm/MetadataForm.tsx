@@ -8,6 +8,7 @@ import "./MetadataForm.scss";
 const PROVIDERS: Record<string, { name: string; description: string }> = {
   local: { name: "Your files", description: "NFO files and artwork next to your videos" },
   tmdb: { name: "TMDB", description: "Online database for movies and shows" },
+  tvdb: { name: "TheTVDB", description: "Online database for shows, strong on anime and episode orders" },
 };
 
 const LANGUAGES = [
@@ -44,7 +45,8 @@ export interface MetadataFormProps {
 }
 
 /**
- * Metadata sources in priority order, the TMDB key, and language and country. Used by setup and settings.
+ * Metadata sources in priority order with their keys, the OMDb key for ratings, and language and country. Used by
+ * setup and settings.
  */
 export default function MetadataForm(props: MetadataFormProps) {
   const { value, onChange } = props;
@@ -81,9 +83,38 @@ export default function MetadataForm(props: MetadataFormProps) {
                 description={<>Free with a TMDB account. <a href="https://www.themoviedb.org/settings/api" target="_blank" rel="noreferrer">How to get one</a></>}
               />
             )}
+            {id === "tvdb" && (
+              <div className="cn-metadata-form__keys">
+                <TextField
+                  label="API key"
+                  className="cn-metadata-form__field"
+                  placeholder="Paste your TheTVDB project API key"
+                  autoComplete="off"
+                  value={value.tvdbApiKey ?? ""}
+                  onChange={(e) => onChange({ ...value, tvdbApiKey: e.target.value })}
+                  description={<>From a TheTVDB account. <a href="https://thetvdb.com/api-information" target="_blank" rel="noreferrer">How to get one</a></>}
+                />
+                <TextField
+                  label="Subscriber PIN (optional)"
+                  className="cn-metadata-form__field"
+                  autoComplete="off"
+                  value={value.tvdbPin ?? ""}
+                  onChange={(e) => onChange({ ...value, tvdbPin: e.target.value })}
+                  description="Only for keys that come with a TheTVDB subscription."
+                />
+              </div>
+            )}
           </li>
         ))}
       </ol>
+      <TextField
+        label="OMDb API key, for ratings (optional)"
+        placeholder="Paste your OMDb API key"
+        autoComplete="off"
+        value={value.omdbApiKey ?? ""}
+        onChange={(e) => onChange({ ...value, omdbApiKey: e.target.value })}
+        description={<>Adds IMDb, Rotten Tomatoes and Metacritic scores to movies and shows that have an IMDb id. Free keys allow 1000 lookups a day. <a href="https://www.omdbapi.com/apikey.aspx" target="_blank" rel="noreferrer">How to get one</a></>}
+      />
       <div className="cn-metadata-form__row">
         <Select label="Language" value={value.language} options={LANGUAGES} onChange={(e) => onChange({ ...value, language: e.target.value })} />
         <Select label="Country (for age ratings)" value={value.country} options={COUNTRIES} onChange={(e) => onChange({ ...value, country: e.target.value })} />

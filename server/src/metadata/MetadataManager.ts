@@ -7,6 +7,8 @@ import VideoDetails from "../library/VideoDetails.ts";
 import type MetadataProvider from "./MetadataProvider.ts";
 import LocalProvider from "./providers/LocalProvider.ts";
 import TmdbProvider from "./providers/TmdbProvider.ts";
+import TvdbProvider from "./providers/TvdbProvider.ts";
+import Omdb from "./Omdb.ts";
 import ImageCache from "../images/ImageCache.ts";
 import Palette from "../images/Palette.ts";
 import log from "../lib/Logger.ts";
@@ -20,18 +22,41 @@ const ARTWORK_KINDS: ArtworkKind[] = ["poster", "backdrop", "logo", "thumb"];
  * Fetches details for movies and shows from the providers, in priority order, and stores them.
  */
 export namespace MetadataManager {
-  const ALL_PROVIDERS: MetadataProvider[] = [new LocalProvider(), new TmdbProvider()];
+  const ALL_PROVIDERS: MetadataProvider[] = [new LocalProvider(), new TmdbProvider(), new TvdbProvider()];
+
+  export const DEFAULT_SETTINGS: MetadataSettings = {
+    tmdbApiKey: null,
+    tvdbApiKey: null,
+    tvdbPin: null,
+    omdbApiKey: null,
+    language: "en",
+    country: "US",
+    providers: ALL_PROVIDERS.map((p) => p.id),
+  };
 
   export function provider(id: string) {
     return ALL_PROVIDERS.find((p) => p.id === id) ?? null;
   }
 
   /**
+   * Metadata settings with every field there, and every provider in the list: ones added in a newer version go
+   * at the end, so settings saved before keep their order.
+   */
+  export function normalizeSettings(stored: Partial<MetadataSettings> | null): MetadataSettings {
+    const order = (stored?.providers ?? DEFAULT_SETTINGS.providers).filter((id) => provider(id));
+    for (const p of ALL_PROVIDERS) if (!order.includes(p.id)) order.push(p.id);
+    return { ...DEFAULT_SETTINGS, ...stored, providers: order };
+  }
+
+  export async function settings() {
+    return normalizeSettings(await Setting.get<Partial<MetadataSettings> | null>(Setting.Keys.METADATA, null));
+  }
+
+  /**
    * Providers that are turned on and usable, highest priority first.
    */
   export async function activeProviders() {
-    const settings = await Setting.get<MetadataSettings | null>(Setting.Keys.METADATA, null);
-    const order = settings?.providers ?? ["local", "tmdb"];
+    const order = (await settings()).providers;
     const active: MetadataProvider[] = [];
     for (const id of order) {
       const p = provider(id);
@@ -166,9 +191,22 @@ export namespace MetadataManager {
       const file = await MediaFile.findOne({ where: { itemId: item.id }, attributes: ["duration"] });
       if (file?.duration) item.runtime = Math.max(1, Math.round(file.duration / 60));
     }
+    if ((item.type === "movie" || item.type === "show") && item.externalIds.imdb) item.ratings = await fetchRatings(item.externalIds.imdb) ?? item.ratings;
     item.metadataUpdatedAt = new Date();
     await item.save();
     await saveCredits(item, merged.credits);
+  }
+
+  /**
+   * IMDb, Rotten Tomatoes and Metacritic ratings, when OMDb is set up. A failure keeps the ratings there were.
+   */
+  async function fetchRatings(imdbId: string) {
+    try {
+      return await Omdb.ratings(imdbId);
+    } catch (error) {
+      log.warn("OMDb lookup failed", { imdb: imdbId, error });
+      return null;
+    }
   }
 
   async function saveCollection(libraryId: number, data: MetadataProvider.CollectionMetadata) {
@@ -261,8 +299,8 @@ export namespace MetadataManager {
    * Tie an item to a provider's entry chosen by hand, then fetch its details again.
    */
   export async function setMatch(item: MediaItem, providerId: string, id: string) {
-    if (providerId !== "tmdb") throw new Error(`Matching by hand only works with TMDB, not "${providerId}".`);
-    item.externalIds = { tmdb: id };
+    if (providerId !== "tmdb" && providerId !== "tvdb") throw new Error(`Matching by hand works with TMDB and TheTVDB, not "${providerId}".`);
+    item.externalIds = providerId === "tmdb" ? { tmdb: id } : { tvdb: id };
     item.matchStatus = "manual";
     await item.save();
     await refresh(item);

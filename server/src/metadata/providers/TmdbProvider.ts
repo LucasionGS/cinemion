@@ -47,7 +47,9 @@ export class TmdbProvider extends MetadataProvider {
   private _collections = new Map<string, Promise<MetadataProvider.CollectionMetadata | null>>();
 
   private async settings(): Promise<MetadataSettings> {
-    return await Setting.get<MetadataSettings>(Setting.Keys.METADATA, { tmdbApiKey: null, language: "en", country: "US", providers: ["local", "tmdb"] });
+    // Settings saved by older versions miss the newer keys
+    const stored = await Setting.get<Partial<MetadataSettings> | null>(Setting.Keys.METADATA, null);
+    return { tmdbApiKey: null, tvdbApiKey: null, tvdbPin: null, omdbApiKey: null, language: "en", country: "US", providers: [], ...stored };
   }
 
   private async apiKey() {

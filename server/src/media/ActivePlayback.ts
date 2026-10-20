@@ -5,6 +5,7 @@ import { MediaItem, type MediaFile, User } from "../models/index.ts";
 import ItemLabels from "../library/ItemLabels.ts";
 import PlaybackDecider from "./PlaybackDecider.ts";
 import Events from "../integrations/Events.ts";
+import Trakt from "../integrations/Trakt.ts";
 import log from "../lib/Logger.ts";
 
 /**
@@ -129,8 +130,12 @@ export namespace ActivePlayback {
     return { user, item, device: entry.device, isRemote: entry.isRemote, mode: entry.mode, position: Math.round(entry.position), duration: Math.round(entry.duration) };
   }
 
+  // What each event is to Trakt: resuming starts the scrobble again
+  const TRAKT_ACTIONS = { "playback.started": "start", "playback.resumed": "start", "playback.paused": "pause", "playback.stopped": "stop" } as const;
+
   function emit(event: "playback.started" | "playback.paused" | "playback.resumed" | "playback.stopped", entry: Entry) {
     eventData(entry).then((data) => Events.emit(event, data)).catch(() => { });
+    Trakt.scrobble(TRAKT_ACTIONS[event], entry.userId, entry.itemId, entry.position, entry.duration);
   }
 
   function startReaper() {

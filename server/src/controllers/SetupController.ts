@@ -1,23 +1,17 @@
 import { Hono } from "hono";
-import type { LoginResponse, MetadataSettings, SetupRequest } from "@shared/api.ts";
+import type { LoginResponse, SetupRequest } from "@shared/api.ts";
 import { Library, Role, Setting, User } from "../models/index.ts";
 import ServerController from "./ServerController.ts";
 import MediaRoots from "../lib/MediaRoots.ts";
 import Scanner from "../library/Scanner.ts";
 import LibraryWatcher from "../library/LibraryWatcher.ts";
+import MetadataManager from "../metadata/MetadataManager.ts";
 import { errorMessage, readJson } from "../lib/http.ts";
 import log from "../lib/Logger.ts";
 import type { AppEnv } from "../lib/types.ts";
 
 export namespace SetupController {
   export const router = new Hono<AppEnv>();
-
-  export const DEFAULT_METADATA: MetadataSettings = {
-    tmdbApiKey: null,
-    language: "en",
-    country: "US",
-    providers: ["local", "tmdb"],
-  };
 
   /**
    * @swagger
@@ -72,7 +66,7 @@ export namespace SetupController {
       for (const library of verified) created.push(await Library.createLibrary(library));
 
       await Setting.set(Setting.Keys.SERVER_NAME, serverName.slice(0, 60));
-      await Setting.set(Setting.Keys.METADATA, { ...DEFAULT_METADATA, ...body.metadata });
+      await Setting.set(Setting.Keys.METADATA, MetadataManager.normalizeSettings(body.metadata ?? null));
       await Setting.set(Setting.Keys.SETUP_COMPLETE, true);
       log.info("First-run setup completed", { admin: user.username, libraries: libraries.length });
 

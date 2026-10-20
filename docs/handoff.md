@@ -238,8 +238,8 @@ and on amd64 Intel's non-free VA driver + Quick Sync runtime), `docker/entrypoin
 | 11 | done | Light theme (below) |
 | 12 | done | Music libraries: artists, albums, tracks, a mini-player that keeps playing, playlists, lyrics (below) |
 | 13 | done | Audiobooks and books: chapters, progress, sleep timer (below) |
-| 14 | **next** | More metadata (TVDB, OMDb ratings) and Trakt scrobbling |
-| 15 | planned | More subtitle sources and automatic subtitle downloads |
+| 14 | done | More metadata (TVDB, OMDb ratings) and Trakt scrobbling (below) |
+| 15 | **next** | More subtitle sources and automatic subtitle downloads |
 | 16 | planned | Offline downloads |
 | 17 | planned | Casting to Chromecast / Google TV, and a lighter layout for old smart-TV browsers |
 | 18 | planned | Android TV app (WebView wrapper; the SDK is in `~/Android/Sdk` on this machine) |
@@ -430,6 +430,32 @@ Follows the Round 3 admin mockup (artboard `Admin.dc.html` in the Round 3 canvas
   reader's buttons readable on light pages), chapter picker, arrow keys, and the place saved while scrolling. PDFs
   use the browser's viewer with "Mark as finished".
 
+### Milestone 14: what was built
+- **TheTVDB** (`metadata/providers/TvdbProvider.ts`, API v4): shows only. Logs in with the project key (+ subscriber
+  PIN) and keeps the token for 20 days, logging in again on a 401. Finds the series by `ids.tvdb`, then the IMDb id
+  (`/search/remoteid`), then a title/year search scored like TMDB's. Uses `/series/:id/extended`, translations and
+  `/series/:id/episodes/default/:lang` (ISO 639-2/T codes via `TvdbProvider.languageCode`), artwork by type (2
+  poster, 3 background, 23 clear logo), age ratings by country (`usa`, `nld`… mapped from the 2-letter setting),
+  actors as cast. "Fix match" lists TheTVDB results too, and matching by hand stores `{ tvdb: id }`.
+- **Settings**: `MetadataSettings` gained `tvdbApiKey`, `tvdbPin`, `omdbApiKey`. `MetadataManager.normalizeSettings()`
+  fills in missing keys and appends providers added in newer versions to a saved order (unknown ids are dropped);
+  setup, the settings API and `activeProviders()` all go through it. Env fallbacks `TVDB_API_KEY`, `TVDB_PIN`,
+  `OMDB_API_KEY`.
+- **OMDb** (`metadata/Omdb.ts`): after a movie's or show's details are saved, its IMDb id is looked up once
+  (`media_items.ratings`: IMDb score and votes, Tomatometer, Metascore; migration `20261029090000-trakt-ratings`).
+  A failed lookup keeps the old ratings. The title page shows them as small "IMDb 7.1 · RT 91% · MC 68" scores and
+  hides TMDB's star when there's an IMDb score.
+- **Trakt** (`integrations/Trakt.ts`): the admin sets the app's client ID and secret in Settings › Integrations (setting
+  `trakt`, env `TRAKT_CLIENT_ID`/`TRAKT_CLIENT_SECRET`). Profiles link in Settings › Your profile with Trakt's
+  device sign-in (`/api/trakt/link`, then `/api/trakt/link/poll` every `interval` seconds); tokens live in
+  `users.trakt` and are never sent to clients, refreshed a day before they run out, and dropped when the refresh
+  fails. Scrobbles go out from `ActivePlayback`'s playback events (start/resume → start, pause, stop; Trakt counts a
+  stop past 80% as watched). Marking watched/unwatched by hand updates `/sync/history`. "Bring it in" imports
+  `/sync/watched/movies|shows`, matching by TMDB, TheTVDB or IMDb id, only marking what isn't watched yet.
+  Only movies and episodes with ids are sent; videos, music and books never are.
+- **Testing**: no real keys were available. `TVDB_API_URL`, `OMDB_API_URL` and `TRAKT_API_URL` point the server at
+  a mock instead (the scratch `mocks.ts` served all three), the same way `OPENSUBTITLES_API_URL` did.
+
 ## 6. Design decisions
 
 All picks are in `docs/design/decisions.md`, with links to the three mockup artifacts on claude.ai (owner's account).
@@ -479,7 +505,8 @@ optional uploaded pictures, watch together as a side panel.
 
 - **OpenSubtitles needs a real API key** (free at opensubtitles.com, "API consumers"); set it in Settings › Subtitles
   or `OPENSUBTITLES_API_KEY`. Only tested against a local mock so far.
-- **TMDB is untested** (no key).
+- **TMDB is untested** (no key). **TheTVDB, OMDb and Trakt** are only tested against a mock written from their API
+  docs; worth a run with real keys (TVDB's `/series/:id/extended` and episode paging, Trakt's token refresh).
 - **Not tested:** picture subtitles (PGS) drawn into the video (no sample can be generated with ffmpeg), NVENC
   (no NVIDIA GPU), older iPhones (native HLS without MSE), watch together across two real devices, the TV remote inside
   the watch together panel.

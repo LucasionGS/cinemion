@@ -41,6 +41,10 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
    * The profile's own preferences, like how subtitles look. Read through `normalizePreferences`.
    */
   declare preferences: CreationOptional<ProfilePreferences>;
+  /**
+   * The profile's Trakt account. `null` = not connected. Holds tokens, so it never goes to the client.
+   */
+  declare trakt: CreationOptional<User.TraktLink | null>;
   declare roleId: ForeignKey<Role["id"]>;
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
@@ -280,6 +284,19 @@ export namespace User {
     admin?: boolean;
     permissions?: Permission[];
   }
+
+  /**
+   * A profile's connection to its Trakt account.
+   */
+  export interface TraktLink {
+    accessToken: string;
+    refreshToken: string;
+    /**
+     * When the access token runs out, in ms since the epoch.
+     */
+    expiresAt: number;
+    username: string | null;
+  }
 }
 
 User.init({
@@ -294,6 +311,7 @@ User.init({
   maxRating: { type: DataTypes.STRING(16), allowNull: true, defaultValue: null },
   libraryAccess: jsonColumn<number[] | null, User>("libraryAccess", null, true),
   preferences: jsonColumn<ProfilePreferences, User>("preferences", normalizePreferences({})),
+  trakt: jsonColumn<User.TraktLink | null, User>("trakt", null, true),
   createdAt: DataTypes.DATE,
   updatedAt: DataTypes.DATE,
 }, { sequelize, tableName: "users" });

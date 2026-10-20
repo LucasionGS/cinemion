@@ -49,6 +49,25 @@ export interface Artwork {
   thumb: string | null;
 }
 
+/**
+ * Ratings from other sites, through OMDb. `null` fields are unknown.
+ */
+export interface ExternalRatings {
+  /**
+   * 0 to 10.
+   */
+  imdb: number | null;
+  imdbVotes: number | null;
+  /**
+   * The Tomatometer, 0 to 100.
+   */
+  rottenTomatoes: number | null;
+  /**
+   * 0 to 100.
+   */
+  metacritic: number | null;
+}
+
 export interface ExternalIds {
   tmdb?: string;
   imdb?: string;
@@ -194,6 +213,10 @@ export interface ItemDetail extends ItemSummary {
    */
   runtime: number | null;
   rating: number | null;
+  /**
+   * IMDb, Rotten Tomatoes and Metacritic, when OMDb is set up. `null` = not looked up.
+   */
+  ratings: ExternalRatings | null;
   genres: string[];
   studios: string[];
   externalIds: ExternalIds;

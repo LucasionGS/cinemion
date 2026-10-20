@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { Camera } from "lucide-react";
 import type { ProfileColor, SubtitleStyle } from "@shared/profiles.ts";
+import type { TraktLinkStart, TraktStatus } from "@shared/trakt.ts";
 import UsersApi from "../../Api/UsersApi.ts";
+import TraktApi from "../../Api/TraktApi.ts";
 import { session } from "../../Session.ts";
 import { toasts } from "../../lib/Toasts.ts";
 import useController from "../../lib/useController.ts";
@@ -13,6 +15,7 @@ import ColorPicker from "../../components/ColorPicker/ColorPicker.tsx";
 import Dialog from "../../components/Dialog/Dialog.tsx";
 import SegmentedControl from "../../components/SegmentedControl/SegmentedControl.tsx";
 import Switch from "../../components/Switch/Switch.tsx";
+import Spinner from "../../components/Spinner/Spinner.tsx";
 import cx from "../../lib/cx.ts";
 import "../../components/Player/Player.scss";
 
@@ -107,6 +110,7 @@ export default function ProfileSettings() {
       </section>
 
       <SubtitleStyleCard />
+      <TraktCard />
 
       <AvatarEditor open={editorOpen} onOpenChange={setEditorOpen} user={user} onSaved={(u) => session.setUser(u)} />
       <PinDialog open={pinOpen} onOpenChange={setPinOpen} />
@@ -264,6 +268,123 @@ function SubtitleStyleCard() {
         checked={style.keepStyling}
         onChange={(keepStyling) => update({ keepStyling })}
       />
+    </section>
+  );
+}
+
+/**
+ * This profile's Trakt account: link it with a code, bring its history in, or unlink it.
+ */
+function TraktCard() {
+  const [status, setStatus] = useState<TraktStatus | null>(null);
+  const [link, setLink] = useState<TraktLinkStart | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    TraktApi.status().then(setStatus).catch(() => { });
+  }, []);
+
+  // While a code is showing, ask now and then whether it was entered
+  useEffect(() => {
+    if (!link) return;
+    let stopped = false;
+    const timer = setInterval(async () => {
+      try {
+        const result = await TraktApi.poll();
+        if (stopped || result.status === "pending") return;
+        setLink(null);
+        if (result.status === "linked") {
+          setStatus({ available: true, connected: true, username: result.username });
+          toasts.success("Trakt is linked", result.username ? `Signed in as ${result.username}.` : undefined);
+        }
+        else toasts.error(result.status === "denied" ? "Trakt sign-in was declined" : "The code ran out", "Start again to get a new code.");
+      } catch (error) {
+        setLink(null);
+        toasts.error("Couldn't link Trakt", (error as Error).message);
+      }
+    }, Math.max(1, link.interval) * 1000);
+    return () => {
+      stopped = true;
+      clearInterval(timer);
+    };
+  }, [link]);
+
+  async function start() {
+    setBusy(true);
+    try {
+      setLink(await TraktApi.startLink());
+    } catch (error) {
+      toasts.error("Couldn't start linking", (error as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function importHistory() {
+    setBusy(true);
+    try {
+      const result = await TraktApi.importHistory();
+      const total = result.movies + result.episodes;
+      toasts.success(total ? `Marked ${result.movies} ${result.movies === 1 ? "movie" : "movies"} and ${result.episodes} ${result.episodes === 1 ? "episode" : "episodes"} as watched` : "Everything was up to date already");
+    } catch (error) {
+      toasts.error("Couldn't bring the history in", (error as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function unlink() {
+    setBusy(true);
+    try {
+      await TraktApi.unlink();
+      setStatus({ available: true, connected: false, username: null });
+    } catch (error) {
+      toasts.error("Couldn't unlink Trakt", (error as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  if (!status?.available && !status?.connected) return null;
+  return (
+    <section className="cn-settings__card">
+      <h2>Trakt</h2>
+      {status.connected && (
+        <>
+          <div className="cn-settings__row">
+            <div className="cn-settings__row-text">
+              <strong>Linked{status.username ? ` as ${status.username}` : ""}</strong>
+              <span>What you watch is sent to your Trakt history as it plays, and so is marking things watched.</span>
+            </div>
+            <Button variant="ghost" onClick={unlink} disabled={busy}>Unlink</Button>
+          </div>
+          <div className="cn-settings__divider" />
+          <div className="cn-settings__row">
+            <div className="cn-settings__row-text">
+              <strong>Bring your history in</strong>
+              <span>Marks everything you watched on Trakt as watched here too, for what's in your libraries.</span>
+            </div>
+            <Button onClick={importHistory} loading={busy}>Bring it in</Button>
+          </div>
+        </>
+      )}
+      {!status.connected && !link && (
+        <div className="cn-settings__row">
+          <div className="cn-settings__row-text">
+            <strong>Keep your Trakt history up to date</strong>
+            <span>Link your Trakt account and what you watch here is added to it.</span>
+          </div>
+          <Button variant="primary" onClick={start} loading={busy}>Link Trakt</Button>
+        </div>
+      )}
+      {link && (
+        <div className="cn-trakt-code" role="status">
+          <span>Go to <a href={link.verificationUrl} target="_blank" rel="noreferrer">{link.verificationUrl.replace(/^https?:\/\//, "")}</a> and enter</span>
+          <strong>{link.userCode}</strong>
+          <span className="cn-trakt-code__wait"><Spinner size="1rem" /> Waiting for Trakt…</span>
+          <Button variant="ghost" size="sm" onClick={() => setLink(null)}>Cancel</Button>
+        </div>
+      )}
     </section>
   );
 }

@@ -7,3 +7,4 @@ export * from "./languages.ts";
 export * from "./admin.ts";
 export * from "./music.ts";
 export * from "./books.ts";
+export * from "./trakt.ts";
