@@ -3,6 +3,12 @@
   flex-direction: column;
   gap: 2.75rem;
 
+  // What comes after the hero sits above its backdrop, which reaches down behind it
+  > :not(.cn-hero) {
+    position: relative;
+    z-index: 1;
+  }
+
   &__loading {
     display: flex;
     justify-content: center;
