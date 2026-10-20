@@ -14,6 +14,7 @@ import cx from "../../lib/cx.ts";
 import AppShell from "../../components/AppShell/AppShell.tsx";
 import Button from "../../components/Button/Button.tsx";
 import Row from "../../components/Row/Row.tsx";
+import { AlbumCard } from "../../components/MusicCard/MusicCard.tsx";
 import PosterCard from "../../components/PosterCard/PosterCard.tsx";
 import WideCard from "../../components/WideCard/WideCard.tsx";
 import Spinner from "../../components/Spinner/Spinner.tsx";
@@ -45,7 +46,7 @@ export default function Home() {
   }, [spotlight?.palette?.accent]);
   useEffect(() => () => applyAmbient(null), []);
 
-  const isEmpty = home && !home.continueWatching.length && !home.nextUp.length && !home.recentlyAdded.length;
+  const isEmpty = home && !home.continueWatching.length && !home.nextUp.length && !home.recentlyAdded.length && !home.recentlyAddedMusic.length;
 
   return (
     <AppShell>
@@ -77,6 +78,12 @@ export default function Home() {
               {row.items.map((item) => <PosterCard key={item.id} item={item} onSelect={() => setSelected(item)} />)}
             </Row>
           ))}
+
+        {home?.recentlyAddedMusic.map((row) => (
+          <Row key={row.libraryId} title={`New in ${row.libraryName}`} href={`/library/${row.libraryId}`} kind="square">
+            {row.albums.map((album) => <AlbumCard key={album.id} album={album} />)}
+          </Row>
+        ))}
 
         {home?.becauseYouWatched && (
           <Row title={`Because you watched ${home.becauseYouWatched.title}`} kind="poster">
@@ -160,7 +167,7 @@ function useHome() {
   useEffect(() => {
     ItemsApi.home().then(setHome).catch((e: Error) => {
       toasts.error("Couldn't load the home screen", e.message);
-      setHome({ continueWatching: [], nextUp: [], recentlyAdded: [], becauseYouWatched: null });
+      setHome({ continueWatching: [], nextUp: [], recentlyAdded: [], recentlyAddedMusic: [], becauseYouWatched: null });
     });
   }, []);
   return home;

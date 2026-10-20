@@ -24,7 +24,7 @@ export class Library extends Model<InferAttributes<Library>, InferCreationAttrib
   declare updatedAt: CreationOptional<Date>;
 
   public static validateType(type: unknown): type is LibraryType {
-    return type === "movies" || type === "shows" || type === "videos";
+    return type === "movies" || type === "shows" || type === "videos" || type === "music";
   }
 
   /**
@@ -41,7 +41,7 @@ export class Library extends Model<InferAttributes<Library>, InferCreationAttrib
    * The age that unrated items in this library count as. `null` = unrated stays unrated.
    */
   public defaultAge() {
-    return this.type === "videos" ? ContentRatings.ageFor(this.defaultRating) : null;
+    return this.type === "videos" || this.type === "music" ? ContentRatings.ageFor(this.defaultRating) : null;
   }
 
   /**
@@ -75,9 +75,9 @@ export class Library extends Model<InferAttributes<Library>, InferCreationAttrib
   public static verifyLibrary(data: CreateLibraryRequest): CreateLibraryRequest {
     const name = data.name?.trim();
     if (!name || name.length > 60) throw new Error("The library name must be between 1 and 60 characters long.");
-    if (!Library.validateType(data.type)) throw new Error(`Unknown library type "${data.type}". Use "movies", "shows" or "videos".`);
+    if (!Library.validateType(data.type)) throw new Error(`Unknown library type "${data.type}". Use "movies", "shows", "videos" or "music".`);
     const paths = Library.verifyPaths(data.paths, name);
-    const defaultRating = data.type === "videos" ? Library.verifyDefaultRating(data.defaultRating) : null;
+    const defaultRating = data.type === "videos" || data.type === "music" ? Library.verifyDefaultRating(data.defaultRating) : null;
     return { name, type: data.type, paths, defaultRating };
   }
 

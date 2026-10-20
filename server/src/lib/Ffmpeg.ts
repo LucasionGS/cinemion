@@ -22,7 +22,7 @@ export namespace Ffmpeg {
     color_transfer?: string;
     side_data_list?: { side_data_type?: string }[];
     disposition?: { default?: number; forced?: number; attached_pic?: number; hearing_impaired?: number };
-    tags?: { language?: string; title?: string };
+    tags?: { language?: string; title?: string } & Record<string, string>;
   }
 
   export interface ProbeResult {
@@ -32,6 +32,7 @@ export namespace Ffmpeg {
       duration?: string;
       size?: string;
       bit_rate?: string;
+      tags?: Record<string, string>;
     };
   }
 

@@ -11,6 +11,7 @@ import WatchState from "./WatchState.ts";
 import Collection from "./Collection.ts";
 import Activity from "./Activity.ts";
 import Webhook from "./Webhook.ts";
+import Playlist, { PlaylistItem } from "./Playlist.ts";
 
 //#region Associations
 User.belongsTo(Role, { as: "role", foreignKey: "roleId" });
@@ -38,10 +39,16 @@ Collection.hasMany(MediaItem, { as: "items", foreignKey: "collectionId", onDelet
 MediaItem.belongsTo(Collection, { as: "collection", foreignKey: "collectionId" });
 Activity.belongsTo(User, { as: "user", foreignKey: "userId", constraints: false });
 Activity.belongsTo(MediaItem, { as: "item", foreignKey: "itemId", constraints: false });
+User.hasMany(Playlist, { as: "playlists", foreignKey: "userId", onDelete: "CASCADE" });
+Playlist.belongsTo(User, { as: "user", foreignKey: "userId" });
+Playlist.hasMany(PlaylistItem, { as: "entries", foreignKey: "playlistId", onDelete: "CASCADE" });
+PlaylistItem.belongsTo(Playlist, { as: "playlist", foreignKey: "playlistId" });
+MediaItem.hasMany(PlaylistItem, { as: "playlistEntries", foreignKey: "itemId", onDelete: "CASCADE" });
+PlaylistItem.belongsTo(MediaItem, { as: "item", foreignKey: "itemId" });
 //#endregion
 
 // Every user lookup needs the role for permission checks
 User.addScope("defaultScope", { include: [{ model: Role, as: "role" }] }, { override: true });
 
-export { Activity, Collection, Credit, Library, MediaFile, MediaItem, Person, Role, Setting, User, WatchState, Webhook };
+export { Activity, Collection, Credit, Library, MediaFile, MediaItem, Person, Playlist, PlaylistItem, Role, Setting, User, WatchState, Webhook };
 export default sequelize;

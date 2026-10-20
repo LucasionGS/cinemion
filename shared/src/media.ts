@@ -1,4 +1,5 @@
 import type { LibraryType } from "./api.ts";
+import type { AlbumSummary, ArtistSummary, TrackInfo } from "./music.ts";
 
 /**
  * Types for movies, shows, seasons, episodes, videos and their folders, and the files behind them.
@@ -6,11 +7,13 @@ import type { LibraryType } from "./api.ts";
 
 /**
  * `video` and `folder` live in Videos libraries: every file is a video, and the folders holding them are groups.
+ * `artist`, `album` and `track` live in Music libraries (see `music.ts`).
  */
-export type ItemType = "movie" | "show" | "season" | "episode" | "video" | "folder";
+export type ItemType = "movie" | "show" | "season" | "episode" | "video" | "folder" | "artist" | "album" | "track";
 
 /**
- * Whether items of this type play by themselves (rather than holding things that play).
+ * Whether items of this type play in the video player by themselves (rather than holding things that play).
+ * Tracks play in the music player instead.
  */
 export function isPlayable(type: ItemType) {
   return type === "movie" || type === "episode" || type === "video";
@@ -299,6 +302,9 @@ export interface SearchResults {
   videos: ItemSummary[];
   people: PersonSummary[];
   collections: CollectionSummary[];
+  artists: ArtistSummary[];
+  albums: AlbumSummary[];
+  tracks: TrackInfo[];
 }
 
 export interface HomeData {
@@ -311,6 +317,10 @@ export interface HomeData {
    */
   nextUp: ItemSummary[];
   recentlyAdded: { libraryId: number; libraryName: string; libraryType: LibraryType; items: ItemSummary[] }[];
+  /**
+   * New albums in Music libraries.
+   */
+  recentlyAddedMusic: { libraryId: number; libraryName: string; albums: AlbumSummary[] }[];
   /**
    * Titles like the one you watched last. `null` until something has been watched.
    */

@@ -5,6 +5,7 @@ import { Library, MediaItem, User, WatchState } from "../models/index.ts";
 import ItemsController from "./ItemsController.ts";
 import Visibility from "../library/Visibility.ts";
 import Summaries from "../library/Summaries.ts";
+import MusicSummaries from "../music/MusicSummaries.ts";
 import type { AppEnv } from "../lib/types.ts";
 
 export namespace HomeController {
@@ -80,7 +81,7 @@ export namespace HomeController {
   async function recentlyAdded(user: User) {
     const rows: HomeData["recentlyAdded"] = [];
     for (const library of await Library.findAll({ order: [["id", "ASC"]] })) {
-      if (!Visibility.canSeeLibrary(user, library.id)) continue;
+      if (!Visibility.canSeeLibrary(user, library.id) || library.type === "music") continue;
       let items: MediaItem[];
       if (library.type === "movies" || library.type === "videos") {
         const type = library.type === "movies" ? "movie" : "video";
@@ -101,10 +102,25 @@ export namespace HomeController {
   }
 
   /**
-   * Titles like the one the profile watched last.
+   * Newest albums per Music library.
+   */
+  async function recentlyAddedMusic(user: User) {
+    const rows: HomeData["recentlyAddedMusic"] = [];
+    for (const library of await Library.findAll({ where: { type: "music" }, order: [["id", "ASC"]] })) {
+      if (!Visibility.canSeeLibrary(user, library.id)) continue;
+      const albums = await MediaItem.findAll({ where: { [Op.and]: [Visibility.where(user), { libraryId: library.id, type: "album" }] }, order: [["addedAt", "DESC"]], limit: ROW_SIZE });
+      if (albums.length) rows.push({ libraryId: library.id, libraryName: library.name, albums: await MusicSummaries.albums(albums) });
+    }
+    return rows;
+  }
+
+  /**
+   * Titles like the one the profile watched last. Music doesn't count.
    */
   async function becauseYouWatched(user: User): Promise<HomeData["becauseYouWatched"]> {
-    const last = await WatchState.findOne({ where: { userId: user.id }, order: [["lastWatchedAt", "DESC"]] });
+    const recent = await WatchState.findAll({ where: { userId: user.id }, order: [["lastWatchedAt", "DESC"]], limit: 30, attributes: ["itemId"] });
+    const watchable = recent.length ? await MediaItem.findAll({ where: { id: recent.map((s) => s.itemId), type: ["movie", "episode", "video"] }, attributes: ["id"] }) : [];
+    const last = recent.find((s) => watchable.some((i) => i.id === s.itemId));
     let item = last ? await MediaItem.findByPk(last.itemId) : null;
     // For an episode, recommend from its show
     while (item && (item.type === "episode" || item.type === "season")) item = item.parentId ? await MediaItem.findByPk(item.parentId) : null;
@@ -127,6 +143,7 @@ export namespace HomeController {
       continueWatching: await Summaries.build(resume, user),
       nextUp: await Summaries.build(next, user),
       recentlyAdded: await recentlyAdded(user),
+      recentlyAddedMusic: await recentlyAddedMusic(user),
       becauseYouWatched: await becauseYouWatched(user),
     };
     return c.json(data);

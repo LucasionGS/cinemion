@@ -9,10 +9,12 @@ import PosterCard from "../../components/PosterCard/PosterCard.tsx";
 import WideCard from "../../components/WideCard/WideCard.tsx";
 import PersonCard from "../../components/PersonCard/PersonCard.tsx";
 import Spinner from "../../components/Spinner/Spinner.tsx";
+import TrackList from "../../components/TrackList/TrackList.tsx";
+import { AlbumCard, ArtistCard } from "../../components/MusicCard/MusicCard.tsx";
 import "./Search.scss";
 
 /**
- * Find movies, shows, episodes, people and collections as you type.
+ * Find movies, shows, episodes, videos, people, collections and music as you type.
  */
 export default function Search() {
   const { query: params } = useController(router);
@@ -33,7 +35,7 @@ export default function Search() {
       try {
         setResults(await ItemsApi.search(q));
       } catch {
-        setResults({ titles: [], episodes: [], videos: [], people: [], collections: [] });
+        setResults({ titles: [], episodes: [], videos: [], people: [], collections: [], artists: [], albums: [], tracks: [] });
       } finally {
         setLoading(false);
       }
@@ -41,7 +43,7 @@ export default function Search() {
     return () => clearTimeout(timer);
   }, [query]);
 
-  const empty = results && !results.titles.length && !results.episodes.length && !results.videos.length && !results.people.length && !results.collections.length;
+  const empty = results && [results.titles, results.episodes, results.videos, results.people, results.collections, results.artists, results.albums, results.tracks].every((list) => list.length === 0);
 
   return (
     <AppShell>
@@ -49,7 +51,7 @@ export default function Search() {
         <label className="cn-search__box">
           <SearchIcon aria-hidden="true" />
           <span className="cn-visually-hidden">Search</span>
-          <input type="search" autoFocus data-autofocus placeholder="Movies, shows, episodes, videos and people" value={query} onChange={(e) => setQuery(e.target.value)} />
+          <input type="search" autoFocus data-autofocus placeholder="Movies, shows, videos, people and music" value={query} onChange={(e) => setQuery(e.target.value)} />
           {loading && <Spinner size="1.25rem" />}
           {query && !loading && (
             <button type="button" className="cn-search__clear" aria-label="Clear" onClick={() => setQuery("")}><X /></button>
@@ -91,6 +93,31 @@ export default function Search() {
             <div className="cn-search__episodes">
               {results.videos.map((item) => <WideCard key={item.id} item={item} variant="video" />)}
             </div>
+          </section>
+        )}
+
+        {results && results.artists.length > 0 && (
+          <section className="cn-search__section">
+            <h2>Artists</h2>
+            <div className="cn-search__grid">
+              {results.artists.map((a) => <ArtistCard key={a.id} artist={a} />)}
+            </div>
+          </section>
+        )}
+
+        {results && results.albums.length > 0 && (
+          <section className="cn-search__section">
+            <h2>Albums</h2>
+            <div className="cn-search__grid">
+              {results.albums.map((a) => <AlbumCard key={a.id} album={a} />)}
+            </div>
+          </section>
+        )}
+
+        {results && results.tracks.length > 0 && (
+          <section className="cn-search__section">
+            <h2>Songs</h2>
+            <TrackList tracks={results.tracks} label="Songs" />
           </section>
         )}
 

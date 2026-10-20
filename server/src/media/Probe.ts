@@ -1,8 +1,9 @@
 import type { AudioTrack, SubtitleTrack } from "@shared/media.ts";
 import Ffmpeg from "../lib/Ffmpeg.ts";
+import MusicTags from "../music/MusicTags.ts";
 
 /**
- * Turns ffprobe output into what Cinemion stores about a video file.
+ * Turns ffprobe output into what Cinemion stores about a video or music file.
  */
 export namespace Probe {
   export interface FileDetails {
@@ -15,12 +16,16 @@ export namespace Probe {
     hdr: string | null;
     audio: AudioTrack[];
     subtitles: SubtitleTrack[];
+    /**
+     * Tags of the file and its first audio stream, cleaned up by `MusicTags.clean()`. Only kept for music files.
+     */
+    tags: Record<string, string>;
   }
 
   const IMAGE_SUBTITLES = new Set(["hdmv_pgs_subtitle", "dvd_subtitle", "dvb_subtitle", "xsub"]);
 
   /**
-   * Read a video file's container, streams and length.
+   * Read a file's container, streams, length and tags.
    * @throws When ffprobe can't read the file.
    */
   export async function read(path: string): Promise<FileDetails> {
@@ -28,6 +33,7 @@ export namespace Probe {
     // Cover art in MKV/MP4 shows up as a video stream; skip it
     const video = probe.streams.find((s) => s.codec_type === "video" && !s.disposition?.attached_pic);
     const duration = probe.format.duration ? parseFloat(probe.format.duration) : null;
+    const firstAudio = probe.streams.find((s) => s.codec_type === "audio");
 
     return {
       container: containerName(probe.format.format_name, path),
@@ -56,6 +62,7 @@ export namespace Probe {
         external: false,
         isHearingImpaired: !!s.disposition?.hearing_impaired || /\b(sdh|cc|hearing)/i.test(s.tags?.title ?? ""),
       })),
+      tags: MusicTags.clean(probe.format.tags, firstAudio?.tags),
     };
   }
 

@@ -1,0 +1,247 @@
+:root {
+  --mini-player-height: 4.75rem;
+}
+
+.cn-mini-player {
+  position: fixed;
+  left: 1rem;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  height: var(--mini-player-height);
+  padding: 0 0.75rem 0 0.625rem;
+  border: 1px solid var(--cn-border);
+  border-radius: var(--cn-radius-lg);
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--mini-tint, var(--cn-accent)) 18%, transparent), transparent 45%),
+    var(--cn-topbar-glass);
+  backdrop-filter: blur(22px);
+  box-shadow: 0 1rem 2.5rem var(--cn-shadow);
+  animation: cn-mini-in var(--cn-medium) var(--cn-ease);
+
+  &__track {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    padding: 0.25rem;
+    border: 0;
+    border-radius: var(--cn-radius-md);
+    background: transparent;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  &__cover {
+    flex-shrink: 0;
+    width: 3.25rem;
+    border-radius: var(--cn-radius-sm);
+  }
+
+  &__text {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+
+    strong,
+    span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    strong {
+      font-size: 0.9375rem;
+    }
+
+    span {
+      font-size: 0.8125rem;
+      color: var(--cn-text-muted);
+    }
+  }
+
+  &__controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  &__extras {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.25rem;
+  }
+
+  &__time {
+    margin-right: 0.5rem;
+    font-variant-numeric: tabular-nums;
+    font-size: 0.8125rem;
+    color: var(--cn-text-subtle);
+    white-space: nowrap;
+  }
+
+  &__volume {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+
+    .cn-seek {
+      width: 6rem;
+    }
+  }
+}
+
+@keyframes cn-mini-in {
+  from {
+    opacity: 0;
+    transform: translateY(1rem);
+  }
+}
+
+// Phones: a slim bar resting on the tab bar
+:root[data-mode="mobile"] {
+  --mini-player-height: 3.75rem;
+
+  .cn-mini-player {
+    left: 0.75rem;
+    right: 0.75rem;
+    bottom: calc(5.25rem + env(safe-area-inset-bottom));
+    gap: 0.5rem;
+    padding-right: 0.375rem;
+    border-radius: var(--cn-radius-md);
+  }
+
+  .cn-mini-player__cover {
+    width: 2.75rem;
+  }
+}
+
+// Pages leave room for the bar, and toasts move above it
+:root[data-mini-player] .cn-shell__main {
+  padding-bottom: calc(var(--mini-player-height) + 4rem);
+}
+
+:root[data-mini-player][data-mode="mobile"] .cn-shell__main {
+  padding-bottom: calc(var(--mini-player-height) + 7.5rem + env(safe-area-inset-bottom));
+}
+
+:root[data-mini-player] .cn-toaster {
+  bottom: calc(var(--mini-player-height) + 2rem);
+}
+
+:root[data-mini-player][data-mode="mobile"] .cn-toaster {
+  bottom: calc(var(--mini-player-height) + 6rem + env(safe-area-inset-bottom));
+}
+
+.cn-play-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 0;
+  border-radius: 50%;
+  background: var(--cn-text);
+  color: var(--cn-bg);
+  cursor: pointer;
+  transition: transform var(--cn-fast) var(--cn-ease);
+
+  &:hover {
+    transform: scale(1.06);
+  }
+
+  svg {
+    width: 1.25rem;
+    height: 1.25rem;
+    fill: currentColor;
+  }
+
+  &--lg {
+    width: 4.25rem;
+    height: 4.25rem;
+
+    svg {
+      width: 1.75rem;
+      height: 1.75rem;
+    }
+  }
+}
+
+// A range input drawn as a thin track filled up to `--progress`
+.cn-seek {
+  appearance: none;
+  width: 100%;
+  height: 1rem;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+
+  &::-webkit-slider-runnable-track {
+    height: 0.25rem;
+    border-radius: var(--cn-radius-pill);
+    background: linear-gradient(90deg, var(--cn-text) var(--progress, 0%), rgba(var(--cn-fg-rgb), 0.2) var(--progress, 0%));
+  }
+
+  &::-moz-range-track {
+    height: 0.25rem;
+    border-radius: var(--cn-radius-pill);
+    background: linear-gradient(90deg, var(--cn-text) var(--progress, 0%), rgba(var(--cn-fg-rgb), 0.2) var(--progress, 0%));
+  }
+
+  &::-webkit-slider-thumb {
+    appearance: none;
+    width: 0.875rem;
+    height: 0.875rem;
+    margin-top: -0.3125rem;
+    border-radius: 50%;
+    background: var(--cn-text);
+    opacity: 0;
+    transition: opacity var(--cn-fast);
+  }
+
+  &::-moz-range-thumb {
+    width: 0.875rem;
+    height: 0.875rem;
+    border: 0;
+    border-radius: 50%;
+    background: var(--cn-text);
+    opacity: 0;
+  }
+
+  &:hover,
+  &:focus-visible {
+    &::-webkit-slider-thumb {
+      opacity: 1;
+    }
+
+    &::-moz-range-thumb {
+      opacity: 1;
+    }
+  }
+
+  // Along the top edge of the mini player
+  &--compact {
+    position: absolute;
+    left: 1rem;
+    right: 1rem;
+    top: -0.5rem;
+    width: auto;
+
+    &::-webkit-slider-runnable-track {
+      height: 0.1875rem;
+      background: linear-gradient(90deg, var(--mini-tint, var(--cn-accent)) var(--progress, 0%), transparent var(--progress, 0%));
+    }
+
+    &::-moz-range-track {
+      height: 0.1875rem;
+      background: linear-gradient(90deg, var(--mini-tint, var(--cn-accent)) var(--progress, 0%), transparent var(--progress, 0%));
+    }
+  }
+}

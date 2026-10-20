@@ -13,7 +13,11 @@ import "./lib/Theme.ts";
 import { initSpatialNavigation } from "./lib/spatialNavigation.ts";
 import { initGamepad } from "./lib/gamepad.ts";
 import { applyAmbient } from "./lib/ambient.ts";
+import { musicPlayer } from "./lib/MusicPlayer.ts";
 import Toaster from "./components/Toaster/Toaster.tsx";
+import MiniPlayer from "./components/MiniPlayer/MiniPlayer.tsx";
+import NowPlaying from "./components/NowPlaying/NowPlaying.tsx";
+import AddToPlaylist from "./components/AddToPlaylist/AddToPlaylist.tsx";
 import Spinner from "./components/Spinner/Spinner.tsx";
 import Button from "./components/Button/Button.tsx";
 import Logo from "./components/Logo/Logo.tsx";
@@ -107,6 +111,27 @@ const routes: Route[] = [
     },
   }),
   requirement({ signedIn: true }, {
+    path: /^\/album\/(\d+)\/?$/,
+    component: async ([id]) => {
+      const Album = (await import("./pages/Music/Album.tsx")).default;
+      return <Album key={id} id={Number(id)} />;
+    },
+  }),
+  requirement({ signedIn: true }, {
+    path: /^\/artist\/(\d+)\/?$/,
+    component: async ([id]) => {
+      const Artist = (await import("./pages/Music/Artist.tsx")).default;
+      return <Artist key={id} id={Number(id)} />;
+    },
+  }),
+  requirement({ signedIn: true }, {
+    path: /^\/playlist\/(\d+)\/?$/,
+    component: async ([id]) => {
+      const Playlist = (await import("./pages/Music/Playlist.tsx")).default;
+      return <Playlist key={id} id={Number(id)} />;
+    },
+  }),
+  requirement({ signedIn: true }, {
     path: /^\/person\/(\d+)\/?$/,
     component: async ([id]) => {
       const Person = (await import("./pages/Person/Person.tsx")).default;
@@ -148,6 +173,11 @@ function App() {
     else if (!server.needsSetup && path === "/setup" && !user) router.navigate("/profiles", { replace: true });
   }, [ready, server?.needsSetup, path, user]);
 
+  // Each profile has its own queue; switching profiles stops the music
+  useEffect(() => {
+    if (ready) musicPlayer.setUser(user?.id ?? null);
+  }, [ready, user?.id]);
+
   if (!ready) {
     return <div className="cn-boot"><Spinner size="2rem" label="Loading Cinemion" /></div>;
   }
@@ -164,6 +194,13 @@ function App() {
   return (
     <>
       <RouterView routes={routes} fallback={<Redirect to="/" />} />
+      {user && (
+        <>
+          <MiniPlayer />
+          <NowPlaying />
+          <AddToPlaylist />
+        </>
+      )}
       <Toaster />
     </>
   );

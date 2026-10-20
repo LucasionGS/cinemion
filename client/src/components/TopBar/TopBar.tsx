@@ -73,7 +73,7 @@ export default function TopBar(props: TopBarProps) {
         {mode === "desktop" && (
           <Link href="/search" className="cn-topbar__search">
             <Search aria-hidden="true" />
-            <span>{libraries.some((l) => l.type === "videos") ? "Search movies, shows and videos" : "Search movies and shows"}</span>
+            <span>{searchLabel(libraries)}</span>
           </Link>
         )}
         {user && <ProfileMenu />}
@@ -112,4 +112,14 @@ function ProfileMenu() {
       </Menu.Portal>
     </Menu.Root>
   );
+}
+
+/**
+ * "Search movies, shows and music": what the search box finds, from the kinds of libraries there are.
+ */
+function searchLabel(libraries: LibraryInfo[]) {
+  const words = ["movies", "shows"];
+  if (libraries.some((l) => l.type === "videos")) words.push("videos");
+  if (libraries.some((l) => l.type === "music")) words.push("music");
+  return `Search ${words.slice(0, -1).join(", ")} and ${words[words.length - 1]}`;
 }

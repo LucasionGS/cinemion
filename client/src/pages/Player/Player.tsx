@@ -5,6 +5,7 @@ import { router } from "../../lib/Router.tsx";
 import { applyAmbient } from "../../lib/ambient.ts";
 import useController from "../../lib/useController.ts";
 import { together } from "../../lib/Together.ts";
+import { musicPlayer } from "../../lib/MusicPlayer.ts";
 import PlayerController from "../../components/Player/PlayerController.ts";
 import PlayerView from "../../components/Player/PlayerView.tsx";
 import Spinner from "../../components/Spinner/Spinner.tsx";
@@ -27,6 +28,9 @@ export default function Player(props: PlayerProps) {
   // After a reload, rejoin the session this tab was in
   const [code] = useState(() => query.get("together") ?? together.rememberedCode());
   const [joined, setJoined] = useState(!code);
+
+  // Videos and music don't play over each other
+  useEffect(() => musicPlayer.pause(), []);
 
   useEffect(() => {
     ItemsApi.get(id).then((detail) => {

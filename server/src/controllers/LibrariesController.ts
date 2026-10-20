@@ -11,6 +11,7 @@ import Visibility from "../library/Visibility.ts";
 import Summaries from "../library/Summaries.ts";
 import VideoDetails from "../library/VideoDetails.ts";
 import CollectionsController from "./CollectionsController.ts";
+import MusicLibrary from "../music/MusicLibrary.ts";
 import { errorMessage, readJson } from "../lib/http.ts";
 import type { AppEnv } from "../lib/types.ts";
 
@@ -27,10 +28,10 @@ export namespace LibrariesController {
   }
 
   /**
-   * The item type a library counts and lists: its movies, shows or videos.
+   * The item type a library counts and lists: its movies, shows, videos or albums.
    */
   function mainType(library: Library) {
-    return library.type === "movies" ? "movie" : library.type === "shows" ? "show" : "video";
+    return { movies: "movie", shows: "show", videos: "video", music: "album" }[library.type] as "movie" | "show" | "video" | "album";
   }
 
   /**
@@ -105,7 +106,7 @@ export namespace LibrariesController {
         if (!name || name.length > 60) throw new Error("The library name must be between 1 and 60 characters long.");
         library.name = name;
       }
-      const ratingChanged = body.defaultRating !== undefined && library.type === "videos" && Library.verifyDefaultRating(body.defaultRating) !== library.defaultRating;
+      const ratingChanged = body.defaultRating !== undefined && (library.type === "videos" || library.type === "music") && Library.verifyDefaultRating(body.defaultRating) !== library.defaultRating;
       if (ratingChanged) library.defaultRating = Library.verifyDefaultRating(body.defaultRating);
 
       let pathsChanged = false;
@@ -122,7 +123,8 @@ export namespace LibrariesController {
       }
 
       await library.save();
-      if (ratingChanged) await VideoDetails.applyDefaultRating(library);
+      if (ratingChanged && library.type === "videos") await VideoDetails.applyDefaultRating(library);
+      if (ratingChanged && library.type === "music") await MusicLibrary.applyDefaultRating(library);
       if (pathsChanged) {
         await LibraryWatcher.refresh();
         // This library lets go of files in folders it no longer has; then the others can pick them up
@@ -195,6 +197,7 @@ export namespace LibrariesController {
     const user = c.get("user")!;
     const library = await Library.findByPk(Number(c.req.param("id")));
     if (!library || !canSee(user, library.id)) return c.json({ message: "That library doesn't exist." }, 404);
+    if (library.type === "music") return c.json({ message: "Music libraries list their albums, artists and tracks under /api/music." }, 400);
 
     const sort = (c.req.query("sort") ?? "title") as SortOrder;
     const isVideos = library.type === "videos";
@@ -206,7 +209,7 @@ export namespace LibrariesController {
     const offset = Math.max(parseInt(c.req.query("offset") ?? "0") || 0, 0);
     const unwatched = c.req.query("unwatched") === "1";
     const genre = c.req.query("genre");
-    const type = mainType(library);
+    const type = mainType(library) as "movie" | "show" | "video";
     // Folders stay together in front, like in a file manager; filtering looks at videos wherever they are
     const flat = !isVideos || unwatched || !!genre;
     const order: Order = isVideos && !flat ? [["type", "ASC"], [column, direction], ["sortTitle", "ASC"]] : [[column, direction], ["sortTitle", "ASC"]];

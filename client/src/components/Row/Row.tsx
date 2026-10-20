@@ -12,9 +12,9 @@ export interface RowProps {
    */
   href?: string;
   /**
-   * `wide` for 16:9 cards, `poster` for 2:3 posters, `person` for round photos.
+   * `wide` for 16:9 cards, `poster` for 2:3 posters, `person` for round photos, `square` for albums and artists.
    */
-  kind: "wide" | "poster" | "person";
+  kind: "wide" | "poster" | "person" | "square";
   children: ReactNode;
   className?: string;
 }

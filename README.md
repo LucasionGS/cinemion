@@ -1,6 +1,6 @@
 # Cinemion
 
-Your movies and shows, beautifully served from your own machine: a self-hosted media server that feels at home on the couch, at a desk and on a phone.
+Your movies, shows and music, beautifully served from your own machine: a self-hosted media server that feels at home on the couch, at a desk and on a phone.
 
 [![CI](https://github.com/LucasionGS/cinemion/actions/workflows/ci.yml/badge.svg)](https://github.com/LucasionGS/cinemion/actions/workflows/ci.yml)
 [![Release](https://img.shields.io/github/v/release/LucasionGS/cinemion?include_prereleases)](https://github.com/LucasionGS/cinemion/releases)
@@ -12,6 +12,7 @@ Your movies and shows, beautifully served from your own machine: a self-hosted m
 - **Who's watching?**: a profile for everyone in the household, with optional PINs, age limits and profile pictures (upload a photo, crop it, done).
 - **Set up in a minute**: a first-run wizard creates your account, points Cinemion at your movie and show folders, and picks where posters and plots come from.
 - **Knows what your files are**: tidy folders, messy release names, multi-episode files and specials are all recognised. New and removed files are noticed by themselves.
+- **Music, with a mini-player that keeps going**: albums, artists and songs sorted by their tags, covers from the files or a `cover.jpg`, a player that keeps playing while you browse (and on your lock screen), playlists for every profile, and lyrics that follow along when there's an LRC file. FLAC, ALAC and friends play everywhere: whatever a browser can't play is converted once.
 - **Home videos too**: a Videos library takes anything that isn't a movie or show (holidays, drone footage, recordings) without looking anything up. Folders become groups, titles come from the file names and dates from the recording, thumbnails are picked from the video itself, and you can edit it all by hand.
 - **Posters, plots and cast**: from NFO files and artwork next to your videos, from TMDB, or both, in the order you choose. Wrong match? Fix it in two clicks.
 - **Plays (almost) anything, anywhere**: files your device can play go straight through untouched. Anything else is repackaged or converted on the fly, on the CPU or an Intel, AMD or NVIDIA GPU, with HDR turned into SDR for screens that need it. Pick audio tracks, subtitles and quality while you watch, or let Automatic quality follow your connection.

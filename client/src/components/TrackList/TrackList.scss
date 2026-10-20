@@ -1,0 +1,246 @@
+.cn-tracks {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  &__disc {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1.25rem 0.75rem 0.5rem;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: var(--cn-text-muted);
+
+    svg {
+      width: 1rem;
+      height: 1rem;
+    }
+  }
+
+  &__row {
+    position: relative;
+    display: flex;
+    align-items: center;
+    border-radius: var(--cn-radius-md);
+
+    &:hover {
+      background: var(--cn-glass);
+    }
+
+    &--current {
+      .cn-tracks__title strong,
+      .cn-tracks__number {
+        color: var(--cn-accent-text);
+      }
+    }
+  }
+
+  &__main {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    min-height: 3.5rem;
+    padding: 0.375rem 0.5rem 0.375rem 0.75rem;
+    border: 0;
+    border-radius: var(--cn-radius-md);
+    background: transparent;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  // Number or cover, with a play button or the playing bars on top
+  &__lead {
+    position: relative;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2.75rem;
+
+    .cn-tracks--list & {
+      width: 2.75rem;
+    }
+
+    > .cn-bars,
+    > .cn-tracks__play {
+      position: absolute;
+    }
+  }
+
+  &__cover {
+    width: 2.75rem;
+    border-radius: var(--cn-radius-xs);
+  }
+
+  &__number {
+    font-variant-numeric: tabular-nums;
+    font-size: 0.9375rem;
+    color: var(--cn-text-subtle);
+  }
+
+  &__play {
+    width: 1.1rem;
+    height: 1.1rem;
+    fill: currentColor;
+    opacity: 0;
+  }
+
+  // On hover, the play button takes the number's place
+  &__row:hover &__play,
+  &__main:focus-visible &__play {
+    opacity: 1;
+  }
+
+  &--album &__row:hover &__number,
+  &--album &__row--current &__number,
+  &--album &__main:focus-visible &__number {
+    visibility: hidden;
+  }
+
+  &--list &__row:hover &__cover,
+  &--list &__row--current &__cover {
+    filter: brightness(0.45);
+  }
+
+  &--list &__play {
+    color: #fff;
+  }
+
+  &__title {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+
+    strong,
+    span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    strong {
+      font-size: 0.9375rem;
+      font-weight: 700;
+    }
+
+    span {
+      font-size: 0.8125rem;
+      color: var(--cn-text-subtle);
+    }
+  }
+
+  &__album {
+    flex: 0 1 30%;
+    min-width: 0;
+    font-size: 0.875rem;
+    color: var(--cn-text-muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__time {
+    flex-shrink: 0;
+    font-variant-numeric: tabular-nums;
+    font-size: 0.875rem;
+    color: var(--cn-text-subtle);
+  }
+
+  &__menu {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    margin-right: 0.25rem;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--cn-text-muted);
+    cursor: pointer;
+    opacity: 0;
+
+    &:hover,
+    &[data-popup-open] {
+      background: var(--cn-glass-hover);
+      color: var(--cn-text);
+    }
+
+    svg {
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+  }
+
+  &__row:hover &__menu,
+  &__menu:focus-visible,
+  &__menu[data-popup-open] {
+    opacity: 1;
+  }
+}
+
+// Touch screens and remotes have no hover: the menu is always there, and the album column is left out
+:root[data-mode="mobile"],
+:root[data-mode="tv"] {
+  .cn-tracks__menu {
+    opacity: 1;
+  }
+
+  .cn-tracks__album {
+    display: none;
+  }
+}
+
+// The playing track's bars, like a tiny equaliser
+.cn-bars {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 0.15rem;
+  height: 1rem;
+  color: var(--cn-accent);
+
+  span {
+    width: 0.2rem;
+    height: 100%;
+    border-radius: 1px;
+    background: currentColor;
+    animation: cn-bars 0.9s ease-in-out infinite;
+    transform-origin: bottom;
+
+    &:nth-child(2) {
+      animation-delay: -0.3s;
+    }
+
+    &:nth-child(3) {
+      animation-delay: -0.6s;
+    }
+  }
+
+  .cn-tracks--list & {
+    color: #fff;
+  }
+}
+
+@keyframes cn-bars {
+  0%, 100% {
+    transform: scaleY(0.3);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cn-bars span {
+    animation: none;
+    transform: scaleY(0.7);
+  }
+}

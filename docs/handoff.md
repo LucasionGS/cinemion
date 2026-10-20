@@ -135,7 +135,8 @@ embedded), `check`, `lint`.
 ### shared/src (types used by both sides, imported as `@shared/…`)
 `api.ts` (setup, users, libraries, settings), `profiles.ts` (colours, permissions), `media.ts` (items, files, tracks,
 home, search), `playback.ts` (device capabilities, playback info, playback/subtitle settings, trickplay),
-`together.ts` (watch together protocol), `languages.ts` (ISO 639-1/2 table), `mod.ts`.
+`together.ts` (watch together protocol), `music.ts` (albums, artists, tracks, playlists, lyrics, `parseLrc`),
+`languages.ts` (ISO 639-1/2 table), `mod.ts`.
 
 ### server/src
 - `index.ts` startup (AppSystem → DB → migrations → transcode cleanup → Hono app on `Deno.serve` → watcher + scheduler
@@ -186,12 +187,14 @@ home, search), `playback.ts` (device capabilities, playback info, playback/subti
 - `subtitles/`: SubtitleProvider base, providers/OpenSubtitlesProvider (REST API v1, key + optional login),
   SubtitleManager (settings, OpenSubtitles file hash, search, download and save).
 - `together/WatchTogether.ts`: in-memory rooms, WebSocket connection handling, sync state.
+- `music/`: MusicTags (tags or folders → artist, album, disc, track), MusicLibrary (sorting tracks into albums,
+  covers, artist pictures), MusicSummaries, AudioStream (direct or converted once to AAC), Lyrics (LRC files, tags).
 - `cli.ts` maintenance CLI (`deno task cli help`), `test.ts` scratch checks.
 
 ### client/src (React 19 + Vite + SCSS, lucide-react icons, hls.js)
 - `main.tsx` route table with regex paths, lazy pages and a `requirement()` guard. Routes: `/setup`, `/profiles`,
   `/sign-in`, `/`, `/library/:id`, `/item/:id`, `/collection/:id`, `/person/:id`, `/search`, `/settings/:tab`,
-  `/watch/:id` (`?from=start`, `?together=CODE`), `/together[/:code]`.
+  `/watch/:id` (`?from=start`, `?together=CODE`), `/together[/:code]`, `/album/:id`, `/artist/:id`, `/playlist/:id`.
 - `theme/` tokens (`--cn-*`, TV scales rem with `calc(100vw/80)`) and base styles. Fonts Sora + Manrope via @fontsource.
 - `lib/`: Controller + useController, Router, DeviceMode (desktop/mobile/TV, MediaHub detection), spatialNavigation
   (TV D-pad focus engine), gamepad, ambient (title colours), Toasts, playback helpers, capabilities (what the browser
@@ -203,7 +206,7 @@ home, search), `playback.ts` (device capabilities, playback info, playback/subti
   variant: length in the corner, folders as a stack with a count), rows, hero, item actions, folder browser, fix-match
   dialog, EditDetailsDialog (videos and folders, with the thumbnail picker), LibraryIcon, and `Player/` (PlayerController, PlayerView, Scrubber, Thumbnail, TrackPanel,
   SubtitleSearchDialog, TogetherPanel, Player.scss).
-- `pages/`: Setup, Profiles, SignIn, Home, Library (16:9 grid for Videos libraries), Item (also VideoView and
+- `pages/`: Setup, Profiles, SignIn, Home, Library (16:9 grid for Videos libraries, Music/MusicLibrary for music), Item (also VideoView and
   FolderView with the folder path), Search, Person, Collection, Player, Together, Settings
   (nav groups "You": Profile, Device; "Server": Dashboard, Libraries, Users, Playback, Metadata, Subtitles,
   Integrations, Webhooks, Tasks (badge with the running count), Logs; the server pages share `Admin.scss`).
@@ -233,8 +236,8 @@ and on amd64 Intel's non-free VA driver + Quick Sync runtime), `docker/entrypoin
 | 9 | done | Automatic quality: adaptive HLS with several qualities at once (below) |
 | 10 | done | Watch together chat and reactions (below) |
 | 11 | done | Light theme (below) |
-| 12 | **next** | Music libraries: artists, albums, tracks, a mini-player that keeps playing, playlists, lyrics |
-| 13 | planned | Audiobooks and books: chapters, progress, sleep timer |
+| 12 | done | Music libraries: artists, albums, tracks, a mini-player that keeps playing, playlists, lyrics (below) |
+| 13 | **next** | Audiobooks and books: chapters, progress, sleep timer |
 | 14 | planned | More metadata (TVDB, OMDb ratings) and Trakt scrobbling |
 | 15 | planned | More subtitle sources and automatic subtitle downloads |
 | 16 | planned | Offline downloads |
@@ -367,6 +370,40 @@ Follows the Round 3 admin mockup (artboard `Admin.dc.html` in the Round 3 canvas
   script in `index.html` sets `data-theme` before the first paint; the controller updates the `theme-color` and
   `color-scheme` meta tags.
 
+### Milestone 12: what was built
+- **Model**: Music libraries (`LibraryType` "music") hold `artist` → `album` → `track` items through `parentId`.
+  Tracks keep the disc in `seasonNumber`, the track number in `episodeNumber`, and who performs them in the new
+  `media_items.artist` when that isn't the album's artist. `media_files.tags` keeps the file's tags (lowercase names,
+  no lyrics). New tables `playlists` and `playlist_items` (per profile, ordered by `position`, a track can repeat).
+  Migration `20261027090000-music`. Libraries' "rating for unrated" works for music too.
+- **Scanning** (`music/MusicLibrary.ts`): audio files only (`MusicTags.AUDIO_EXTENSIONS`). Albums group by album
+  artist (or `compilation=1` → "Various Artists") and album name, compared without case or accents
+  (`MusicTags.key`). Without tags, `Artist/Album (Year)/01 - Title.ext` works, and `2-05 Title` gives disc 2.
+  A re-tagged file keeps its track (playlists keep it) and moves album when needed. Covers: `cover`/`folder`/`front`/…
+  pictures in the album folder (or one up from `CD1`), else the picture inside the first files; artists get
+  `artist.jpg`/`folder.jpg` from their folder, otherwise the client draws initials. One activity line per album.
+- **API**: `/api/music/libraries/:id/{albums,artists,tracks,overview,genres,shuffle}`, `/api/music/albums/:id`,
+  `/api/music/artists/:id[/tracks]`, `/api/music/tracks/:id/{stream,played,lyrics}`, `/api/music/tracks?ids=`,
+  `/api/music/stream/:token[?converted=1]`, `/api/playlists[/:id[/tracks|/entries/:entryId|/order]]`. Search returns
+  artists, albums and tracks; home has `recentlyAddedMusic`. Stream tokens moved to `media/StreamGrants.ts` and range
+  serving to `sendFile()` in `lib/http.ts`, shared with video.
+- **Playing** (`client/src/lib/MusicPlayer.ts`): one `Audio` element for the whole app. The browser lists what it
+  plays (`detectAudioFormats()`); anything else (ALAC on Chrome, WMA, APE) is converted to 256k AAC once into
+  `CACHE_DIR/audio` before the URL is handed out, so seeking works; unplayed conversions go after 30 days. Queue,
+  shuffle (only what comes after the current track; turning it off restores the order), repeat off/all/one, volume,
+  a play counted after 30 s or half the track (`WatchState.recordPlay`), Media Session (lock screen, media keys),
+  and the queue saved per profile in `localStorage["cn-music-<userId>"]`, restored paused. Media keys work on any page
+  except the video player, which pauses the music when it opens.
+- **UI**: MiniPlayer (floating bar, above the phone tab bar; pages get room through `:root[data-mini-player]`),
+  NowPlaying (full screen, the cover's colours, Up next and Lyrics tabs; synced lyrics highlight and scroll, a click
+  seeks), TrackList (album or list layout, disc headings, a menu with Play next, Add to queue, Add to playlist, Go to
+  album/artist), MusicCard (`Cover`, AlbumCard, ArtistCard, PlaylistCard, play from the card), AddToPlaylist (one
+  dialog at the app root, opened with `addToPlaylist.show(ids)`), pages Music/{MusicLibrary,Album,Artist,Playlist}.
+- **Sample media**: `scripts/make-sample-media.sh` makes `music/` (MP3 with embedded covers and an LRC file, two-disc
+  FLAC with a cover one folder up and lyrics in a tag, an M4A compilation, ALAC with an artist picture, an untagged
+  Opus file).
+- **Not done**: the dashboard's "Now playing" doesn't list music yet; no online artist/album info.
+
 ## 6. Design decisions
 
 All picks are in `docs/design/decisions.md`, with links to the three mockup artifacts on claude.ai (owner's account).
@@ -377,6 +414,10 @@ optional uploaded pictures, watch together as a side panel.
 
 ## 7. Things learned the hard way
 
+- **A positioned element's shadow paints over later siblings that aren't positioned**, like the Now Playing cover's
+  shadow over the title under it. Give the sibling `position: relative`.
+- **`scrollIntoView` scrolls every scrollable parent**, the page too. To scroll inside a panel only, set its
+  `scrollTop` (`scrollInside()` in NowPlaying).
 - **CDP network throttling ends when its connection closes.** Throttle and watch from the same connection.
   The sample videos are 90 s long, so the player finishing and going back can look like a bug in long tests.
 

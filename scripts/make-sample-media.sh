@@ -4,12 +4,14 @@
 ##########################################
 # Generates a small fake library with ffmpeg for trying out scanning, metadata and playback:
 # tidy and messy file names, several codecs, multiple audio and subtitle tracks, NFO files,
-# local artwork, multi-episode files, specials, extras and samples that should be skipped, and a folder of
-# home videos with recording dates, a folder picture and nested folders.
+# local artwork, multi-episode files, specials, extras and samples that should be skipped, a folder of
+# home videos with recording dates, a folder picture and nested folders, and music: tagged albums with covers,
+# a two-disc album, a compilation, lyrics, a format browsers can't play and an untagged file.
 #
 # Usage: scripts/make-sample-media.sh [FOLDER]
-#   FOLDER        Where to create "movies", "shows" and "videos". Default is data/media.
-#   CLIP_SECONDS  Length of each clip (environment variable). Default is 90.
+#   FOLDER         Where to create "movies", "shows", "videos" and "music". Default is data/media.
+#   CLIP_SECONDS   Length of each clip (environment variable). Default is 90.
+#   TRACK_SECONDS  Length of each music track (environment variable). Default is 30.
 
 set -euo pipefail
 
@@ -18,7 +20,9 @@ OUT="${1:-$ROOT/data/media}"
 MOVIES="$OUT/movies"
 SHOWS="$OUT/shows"
 VIDEOS="$OUT/videos"
+MUSIC="$OUT/music"
 SECONDS_PER_CLIP="${CLIP_SECONDS:-90}"
+SECONDS_PER_TRACK="${TRACK_SECONDS:-30}"
 # Running time burned into every clip, to check seeking and resume
 TIMER="drawtext=text='%{pts\\:hms}':fontsize=36:fontcolor=white:box=1:boxcolor=black@0.5:x=24:y=24"
 
@@ -83,8 +87,28 @@ art() {
     -frames:v 1 "$OUTPUT"
 }
 
+# Make a music track: a little tune from a base note, with the given codec and tag arguments. With COVER set to a
+# picture, it's embedded as the cover (pass the codec for it, like -c:v mjpeg, along with the other arguments).
+# Usage: tune <output> <base frequency> [extra ffmpeg output args...]
+tune() {
+  local OUTPUT="$1"
+  local BASE="$2"
+  shift 2
+  local COVER_INPUT=()
+  local COVER_MAP=()
+  if [[ -n "${COVER:-}" ]]; then
+    COVER_INPUT=(-i "$COVER")
+    COVER_MAP=(-map 0:a -map 1:v -disposition:v:0 attached_pic)
+  fi
+  mkdir -p "$(dirname "$OUTPUT")"
+  ffmpeg -loglevel error -y \
+    -f lavfi -i "aevalsrc='0.3*sin(2*PI*($BASE*(1+0.25*floor(mod(t*2,4))))*t)+0.15*sin(2*PI*($BASE*1.5)*t)':s=44100:d=$SECONDS_PER_TRACK" \
+    "${COVER_INPUT[@]}" "${COVER_MAP[@]}" \
+    "$@" "$OUTPUT"
+}
+
 echo "Creating sample media in $OUT..."
-rm -rf "$MOVIES" "$SHOWS" "$VIDEOS"
+rm -rf "$MOVIES" "$SHOWS" "$VIDEOS" "$MUSIC"
 
 #region Movies
 echo "Movies..."
@@ -297,6 +321,69 @@ cat > "$VIDEOS/Birthday_party_2025.nfo" <<'EOF'
 </movie>
 EOF
 clip "$VIDEOS/Our short film-trailer.mkv" "Our short film (trailer)" -c:v libx264 -preset veryfast -crf 30 -c:a aac
+#endregion
+
+#region Music
+echo "Music..."
+COVERS="$(mktemp -d)"
+
+# MP3s with ID3 tags and the cover inside each file, and timed lyrics in an LRC file next to one track
+HL="$MUSIC/Harbour Lights/Night Ferry (2021)"
+art "$COVERS/night-ferry.jpg" 600 600 0x1B2A49 0xE07A5F "Night Ferry"
+TRACK=1
+for TITLE in "Departure" "Lanterns on the Water" "Below Deck" "Arrival"; do
+  COVER="$COVERS/night-ferry.jpg" tune "$HL/0$TRACK - $TITLE.mp3" $(( 220 + TRACK * 30 )) -c:a libmp3lame -q:a 4 -c:v mjpeg -id3v2_version 3 \
+    -metadata title="$TITLE" -metadata artist="Harbour Lights" -metadata album="Night Ferry" -metadata track="$TRACK/4" -metadata date=2021 -metadata genre="Indie; Folk"
+  TRACK=$(( TRACK + 1 ))
+done
+cat > "$HL/02 - Lanterns on the Water.lrc" <<'EOF'
+[ar:Harbour Lights]
+[ti:Lanterns on the Water]
+[00:00.50]Lanterns on the water
+[00:05.00]Drifting past the pier
+[00:10.00]Every light a story
+[00:15.00]Of the ones who brought us here
+[00:20.00](instrumental)
+[00:25.00]Lanterns on the water
+EOF
+
+# FLAC across two discs, with the cover one folder up and plain lyrics in a tag
+SM="$MUSIC/Saltmarsh/Low Tide (2019)"
+art "$SM/cover.jpg" 600 600 0x2F4F4F 0x9AC1A6 "Low Tide"
+for DISC in 1 2; do
+  for TRACK in 1 2; do
+    TITLE=$([[ $DISC == 1 ]] && echo "Mudflats $TRACK" || echo "Tidepool $TRACK")
+    EXTRA=()
+    [[ $DISC == 1 && $TRACK == 1 ]] && EXTRA=(-metadata "LYRICS=Out where the water goes
+the reeds lean low
+and the evening comes in slow")
+    tune "$SM/CD$DISC/$DISC-0$TRACK $TITLE.flac" $(( 180 + DISC * 40 + TRACK * 20 )) -c:a flac \
+      -metadata title="$TITLE" -metadata artist="Saltmarsh" -metadata album_artist="Saltmarsh" -metadata album="Low Tide" \
+      -metadata disc="$DISC/2" -metadata track="$TRACK" -metadata date=2019-05-03 -metadata genre=Ambient "${EXTRA[@]}"
+  done
+done
+
+# A compilation in M4A: each track by someone else, under "Various Artists"
+CR="$MUSIC/Compilations/Coastal Roads"
+art "$COVERS/coastal-roads.jpg" 600 600 0xF2C14E 0x2E8BC0 "Coastal Roads"
+TRACK=1
+for PAIR in "Harbour Lights|Seaside Motel" "June Okafor|Route 1" "The Tidewaters|Gull Song"; do
+  COVER="$COVERS/coastal-roads.jpg" tune "$CR/0$TRACK ${PAIR#*|}.m4a" $(( 300 + TRACK * 25 )) -c:a aac -b:a 128k -c:v mjpeg \
+    -metadata title="${PAIR#*|}" -metadata artist="${PAIR%%|*}" -metadata album_artist="Various Artists" -metadata album="Coastal Roads" \
+    -metadata track="$TRACK" -metadata date=2022 -metadata genre=Pop -metadata compilation=1
+  TRACK=$(( TRACK + 1 ))
+done
+
+# Apple Lossless, which most browsers can't play (Cinemion converts it), with an artist picture and folder.jpg
+JO="$MUSIC/June Okafor"
+art "$JO/artist.jpg" 600 600 0x6B3FA0 0xF0A6CA "June Okafor"
+art "$JO/Paper Boats (2023)/folder.jpg" 600 600 0xF0A6CA 0x6B3FA0 "Paper Boats"
+tune "$JO/Paper Boats (2023)/01 Paper Boats.m4a" 262 -c:a alac -metadata title="Paper Boats" -metadata artist="June Okafor" -metadata album="Paper Boats" -metadata track=1 -metadata date=2023 -metadata genre=Soul
+tune "$JO/Paper Boats (2023)/02 Folded.m4a" 294 -c:a alac -metadata title="Folded" -metadata artist="June Okafor" -metadata album="Paper Boats" -metadata track=2 -metadata date=2023 -metadata genre=Soul
+
+# No tags at all: the folder and file name have to do
+tune "$MUSIC/Field recordings/03 Morning birds.ogg" 520 -c:a libopus -map_metadata -1
+rm -rf "$COVERS"
 #endregion
 
 rm -f "/tmp/cinemion-sample-subs.srt"

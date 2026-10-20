@@ -5,7 +5,7 @@ import type MediaItem from "./MediaItem.ts";
 import type User from "./User.ts";
 
 /**
- * One profile's progress on a movie or episode.
+ * One profile's progress on a movie or episode, or how often it played a track.
  */
 export class WatchState extends Model<InferAttributes<WatchState>, InferCreationAttributes<WatchState>> {
   declare id: CreationOptional<number>;
@@ -76,6 +76,17 @@ export class WatchState extends Model<InferAttributes<WatchState>, InferCreation
     }
     await state.save();
     return { state, finished };
+  }
+
+  /**
+   * Count a play of a track. Tracks have no resume position; `lastWatchedAt` is when it was last played.
+   */
+  public static async recordPlay(userId: number, itemId: number) {
+    const state = await WatchState.findOrBuildState(userId, itemId);
+    state.playCount = (state.playCount ?? 0) + 1;
+    state.lastWatchedAt = new Date();
+    await state.save();
+    return state;
   }
 }
 

@@ -10,6 +10,8 @@ import Webhooks from "./integrations/Webhooks.ts";
 import VideoDetails from "./library/VideoDetails.ts";
 import Library from "./models/Library.ts";
 import Fingerprint from "./media/Fingerprint.ts";
+import MusicTags from "./music/MusicTags.ts";
+import { parseLrc } from "@shared/music.ts";
 
 /**
  * Scratch runner for the parts that are easy to get subtly wrong. Run with `deno run -A server/src/test.ts`.
@@ -242,6 +244,24 @@ check("edge isn't chrome", UserAgent.describe(ua.edge), "Desktop · Edge");
 check("smart tv", UserAgent.describe(ua.tizen), "TV · Samsung Internet");
 check("tv layout on a pc", UserAgent.describe(ua.chrome, "tv"), "TV · Chrome");
 check("phrase", UserAgent.phrase("Phone · Safari"), "a phone with Safari");
+//#endregion
+
+//#region Music
+console.log("Music");
+const music = (path: string, tags: Record<string, string> = {}) => {
+  const d = MusicTags.details(`/music/${path}`, tags, "/music");
+  return [d.albumArtist, d.album, d.disc, d.number, d.title, d.artist];
+};
+check("tagged track", music("x.mp3", { title: "Departure", artist: "Harbour Lights", album: "Night Ferry", track: "1/4", disc: "1/1" }), ["Harbour Lights", "Night Ferry", 1, 1, "Departure", "Harbour Lights"]);
+check("album artist wins", music("x.m4a", { title: "Route 1", artist: "June Okafor", album_artist: "Various Artists", album: "Coastal Roads", track: "2" })[0], "Various Artists");
+check("compilation flag", music("x.m4a", { title: "Song", artist: "Someone", album: "Hits", compilation: "1" })[0], "Various Artists");
+check("folders without tags", music("Saltmarsh/Low Tide (2019)/03 - Shallows.flac"), ["Saltmarsh", "Low Tide", null, 3, "Shallows", "Saltmarsh"]);
+check("disc in the file name", music("Band/Album/2-05 Song.mp3").slice(2, 5), [2, 5, "Song"]);
+check("loose file", music("Morning birds.ogg").slice(0, 2), [MusicTags.UNKNOWN_ARTIST, MusicTags.UNKNOWN_ALBUM]);
+check("same artist, other spelling", MusicTags.key("Beyoncé  Knowles") === MusicTags.key("beyonce knowles"), true);
+check("lyric tags aren't kept", Object.keys(MusicTags.clean({ TITLE: "A", "lyrics-eng": "la la", ENCODER: "x" })), ["title"]);
+check("lrc lines", parseLrc("[ar:Someone]\n[00:05.00]Two\n[00:01.50][00:10.00]One"), [{ time: 1.5, text: "One" }, { time: 5, text: "Two" }, { time: 10, text: "One" }]);
+check("no stamps is plain", parseLrc("Just words\nmore words"), null);
 //#endregion
 
 console.log(failed ? `\n${failed} failed` : "\nAll passed");

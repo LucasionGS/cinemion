@@ -7,7 +7,8 @@ import type Library from "./Library.ts";
 import type MediaItem from "./MediaItem.ts";
 
 /**
- * A video file on disk and what ffprobe found in it. A movie can have several (versions); an episode usually has one.
+ * A video or music file on disk and what ffprobe found in it. A movie can have several (versions); an episode or
+ * track usually has one.
  */
 export class MediaFile extends Model<InferAttributes<MediaFile>, InferCreationAttributes<MediaFile>> {
   declare id: CreationOptional<number>;
@@ -55,6 +56,11 @@ export class MediaFile extends Model<InferAttributes<MediaFile>, InferCreationAt
    * Which version of the intro and credits detection last looked at this file. 0 = never, so it's looked at.
    */
   declare markersVersion: CreationOptional<number>;
+  /**
+   * Music files: their tags, with lowercase names (`title`, `artist`, `album_artist`, `album`, `track`, `disc`,
+   * `date`, `genre`…). Lyrics aren't kept here. `null` for videos.
+   */
+  declare tags: CreationOptional<Record<string, string> | null>;
   /**
    * When ffprobe last read the file. `null` = not read yet.
    */
@@ -151,6 +157,7 @@ MediaFile.init({
   sidecars: jsonColumn<MediaFile.Sidecar[], MediaFile>("sidecars", []),
   markers: jsonColumn<Marker[], MediaFile>("markers", []),
   markersVersion: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 },
+  tags: jsonColumn<Record<string, string> | null, MediaFile>("tags", null, true),
   probedAt: { type: DataTypes.DATE, allowNull: true, defaultValue: null },
   createdAt: DataTypes.DATE,
   updatedAt: DataTypes.DATE,

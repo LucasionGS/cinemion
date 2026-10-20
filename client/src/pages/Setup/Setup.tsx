@@ -210,13 +210,13 @@ function guessCountry() {
   return COUNTRIES.some((c) => c.value === region) ? region! : "US";
 }
 
-const TYPE_NAMES: Record<LibraryType, string> = { movies: "Movies", shows: "Shows", videos: "Videos" };
+const TYPE_NAMES: Record<LibraryType, string> = { movies: "Movies", shows: "Shows", videos: "Videos", music: "Music" };
 
 /**
  * The kind of library not added yet, in the usual order.
  */
 function nextType(libraries: CreateLibraryRequest[]): LibraryType {
-  return (["movies", "shows", "videos"] as const).find((t) => !libraries.some((l) => l.type === t)) ?? "movies";
+  return (["movies", "shows", "videos", "music"] as const).find((t) => !libraries.some((l) => l.type === t)) ?? "movies";
 }
 
 function LibrariesStep(props: { libraries: CreateLibraryRequest[]; onChange: (libraries: CreateLibraryRequest[]) => void }) {
@@ -245,7 +245,7 @@ function LibrariesStep(props: { libraries: CreateLibraryRequest[]; onChange: (li
     <section className="cn-setup__section">
       <header className="cn-setup__header">
         <h1>Add your libraries</h1>
-        <p>Point Cinemion at the folders that hold your movies and shows, and any other videos, like home videos. A library can use several folders.</p>
+        <p>Point Cinemion at the folders that hold your movies and shows, any other videos (like home videos) and your music. A library can use several folders.</p>
       </header>
 
       {libraries.length > 0 && (
@@ -265,7 +265,7 @@ function LibrariesStep(props: { libraries: CreateLibraryRequest[]; onChange: (li
 
       <div className="cn-setup__library">
         <div className="cn-setup__library-head">
-          <SegmentedControl<LibraryType> label="Library type" value={type} onChange={changeType} options={[{ value: "movies", label: "Movies" }, { value: "shows", label: "Shows" }, { value: "videos", label: "Videos" }]} />
+          <SegmentedControl<LibraryType> label="Library type" value={type} onChange={changeType} options={[{ value: "movies", label: "Movies" }, { value: "shows", label: "Shows" }, { value: "videos", label: "Videos" }, { value: "music", label: "Music" }]} />
           <TextField
             label="Name"
             value={name}

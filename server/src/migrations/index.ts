@@ -5,6 +5,7 @@ import * as extras from "./20261023090000-extras.ts";
 import * as admin from "./20261024090000-admin.ts";
 import * as videos from "./20261025090000-videos.ts";
 import * as playbackExtras from "./20261026090000-playback-extras.ts";
+import * as music from "./20261027090000-music.ts";
 
 /**
  * Every migration, oldest first. Listed by hand (not globbed) so they're included in compiled binaries.
@@ -18,4 +19,5 @@ export const migrations = [
   { name: "20261024090000-admin", ...admin },
   { name: "20261025090000-videos", ...videos },
   { name: "20261026090000-playback-extras", ...playbackExtras },
+  { name: "20261027090000-music", ...music },
 ];

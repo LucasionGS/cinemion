@@ -5,6 +5,7 @@ import { Credit, MediaItem, Person, User } from "../models/index.ts";
 import CollectionsController from "./CollectionsController.ts";
 import Visibility from "../library/Visibility.ts";
 import Summaries from "../library/Summaries.ts";
+import MusicSummaries from "../music/MusicSummaries.ts";
 import type { AppEnv } from "../lib/types.ts";
 
 export namespace SearchController {
@@ -22,13 +23,13 @@ export namespace SearchController {
    * @swagger
    * /api/search:
    *   get:
-   *     summary: Find movies, shows, episodes, videos, people and collections by name. Query `q`.
+   *     summary: Find movies, shows, episodes, videos, people, collections, artists, albums and tracks by name. Query `q`.
    */
   router.get("/", User.$middleware(), async (c) => {
     const user = c.get("user")!;
     const query = (c.req.query("q") ?? "").trim();
     if (query.length < 2) {
-      const empty: SearchResults = { titles: [], episodes: [], videos: [], people: [], collections: [] };
+      const empty: SearchResults = { titles: [], episodes: [], videos: [], people: [], collections: [], artists: [], albums: [], tracks: [] };
       return c.json(empty);
     }
 
@@ -53,6 +54,14 @@ export namespace SearchController {
     // Folders before videos, then by title
     const videos = await MediaItem.findAll({ where: { [Op.and]: [visible, nameMatch, { type: ["folder", "video"] }] }, limit: 24, order: [["type", "ASC"], ["sortTitle", "ASC"]] });
 
+    // Music: artists and albums like titles, tracks also by who performs them
+    const artists = await MediaItem.findAll({ where: { [Op.and]: [visible, nameMatch, { type: "artist" }] }, limit: 12, order: [["sortTitle", "ASC"]] });
+    const albums = await MediaItem.findAll({ where: { [Op.and]: [visible, nameMatch, { type: "album" }] }, limit: 24, order: [["sortTitle", "ASC"]] });
+    const tracks = await MediaItem.findAll({ where: { [Op.and]: [visible, { [Op.or]: [nameMatch, { artist: { [Op.like]: pattern } }] }, { type: "track" }] }, limit: 20, order: [["sortTitle", "ASC"]] });
+    artists.sort((a, b) => rank(a) - rank(b));
+    albums.sort((a, b) => rank(a) - rank(b));
+    tracks.sort((a, b) => rank(a) - rank(b));
+
     // People only count when they're in something this profile can see
     const people = await Person.findAll({ where: { name: { [Op.like]: pattern } }, limit: 40, order: [["name", "ASC"]] });
     const credits = people.length ? await Credit.findAll({ where: { personId: people.map((p) => p.id) }, attributes: ["personId", "itemId"] }) : [];
@@ -75,6 +84,9 @@ export namespace SearchController {
       videos: await Summaries.build(videos, user),
       people: peopleWithTitles,
       collections: collections.slice(0, 12),
+      artists: await MusicSummaries.artists(artists),
+      albums: await MusicSummaries.albums(albums),
+      tracks: await MusicSummaries.tracks(tracks, user),
     };
     return c.json(results);
   });

@@ -1,6 +1,5 @@
 import fsp from "node:fs/promises";
 import { type Context, Hono } from "hono";
-import { encodeHex } from "@std/encoding/hex";
 import type { AudioOption, DeviceCapabilities, HardwareAcceleration as Kind, PlaybackInfo, PlaybackSettings, StartPlaybackRequest, SubtitleOption, TrickplayInfo } from "@shared/playback.ts";
 import { type AudioTrack, isPlayable, type SubtitleTrack } from "@shared/media.ts";
 import { languageName } from "@shared/languages.ts";
@@ -13,48 +12,20 @@ import Subtitles from "../media/Subtitles.ts";
 import Trickplay from "../media/Trickplay.ts";
 import Fonts from "../media/Fonts.ts";
 import ActivePlayback from "../media/ActivePlayback.ts";
+import StreamGrants from "../media/StreamGrants.ts";
 import SubtitleManager from "../subtitles/SubtitleManager.ts";
 import Network from "../lib/Network.ts";
 import UserAgent from "../lib/UserAgent.ts";
-import { errorMessage, readJson } from "../lib/http.ts";
+import { errorMessage, readJson, sendFile } from "../lib/http.ts";
 import log from "../lib/Logger.ts";
 import type { AppEnv } from "../lib/types.ts";
 
 /**
- * Starting playback, and the stream URLs the player loads.
- * Stream and session URLs carry a random id instead of a sign-in token, because video elements
- * and HLS players can't send headers. Anyone with the URL can load that one stream while it lives.
+ * Starting playback, and the stream URLs the player loads. Stream URLs carry a `StreamGrants` id instead of a
+ * sign-in token, because video elements and HLS players can't send headers.
  */
 export namespace PlaybackController {
   export const router = new Hono<AppEnv>();
-
-  interface StreamGrant {
-    fileId: number;
-    userId: number;
-    lastUsed: number;
-  }
-
-  /**
-   * Stream ids stay valid this long after their last use.
-   */
-  const GRANT_LIFETIME = 6 * 60 * 60 * 1000;
-  const _grants = new Map<string, StreamGrant>();
-
-  function grant(fileId: number, userId: number) {
-    for (const [token, g] of _grants) {
-      if (Date.now() - g.lastUsed > GRANT_LIFETIME) _grants.delete(token);
-    }
-    const token = encodeHex(crypto.getRandomValues(new Uint8Array(16)));
-    _grants.set(token, { fileId, userId, lastUsed: Date.now() });
-    return token;
-  }
-
-  function useGrant(token: string) {
-    const g = _grants.get(token);
-    if (!g || Date.now() - g.lastUsed > GRANT_LIFETIME) return null;
-    g.lastUsed = Date.now();
-    return g;
-  }
 
   function channelLabel(channels: number) {
     return channels === 1 ? "Mono" : channels === 2 ? "Stereo" : channels === 6 ? "5.1" : channels === 8 ? "7.1" : `${channels} channels`;
@@ -166,7 +137,7 @@ export namespace PlaybackController {
       }
     }
 
-    const token = grant(file.id, user.id);
+    const token = StreamGrants.grant(file.id, user.id);
     const startAt = Math.max(0, Math.min(Number(body.startAt) || 0, (file.duration ?? Infinity) - 1));
     let url = `/api/playback/stream/${token}/file`;
     let sessionId: string | null = null;
@@ -339,67 +310,12 @@ export namespace PlaybackController {
    *     summary: The original video file, with range requests for seeking.
    */
   router.get("/stream/:token/file", async (c) => {
-    const g = useGrant(c.req.param("token"));
+    const g = StreamGrants.use(c.req.param("token"));
     const file = g ? await MediaFile.findByPk(g.fileId) : null;
     if (!file) return c.json({ message: "This stream has expired. Start playback again." }, 404);
 
-    const stat = await fsp.stat(file.path).catch(() => null);
-    if (!stat) return c.json({ message: "The video file can't be found on disk." }, 404);
-    const size = stat.size;
-    const headers: Record<string, string> = {
-      "Content-Type": VIDEO_TYPES[file.container ?? ""] ?? "application/octet-stream",
-      "Accept-Ranges": "bytes",
-      "Cache-Control": "private, no-transform",
-    };
-
-    // Example: Range: bytes=1000-  or  bytes=1000-1999
-    const range = c.req.header("Range")?.match(/^bytes=(\d*)-(\d*)$/);
-    let start = 0;
-    let end = size - 1;
-    if (range) {
-      if (range[1] === "") {
-        start = Math.max(0, size - Number(range[2]));
-      }
-      else {
-        start = Number(range[1]);
-        if (range[2] !== "") end = Math.min(Number(range[2]), size - 1);
-      }
-      if (start >= size || start > end) {
-        return c.body(null, 416, { "Content-Range": `bytes */${size}` });
-      }
-      headers["Content-Range"] = `bytes ${start}-${end}/${size}`;
-    }
-    headers["Content-Length"] = String(end - start + 1);
-    if (c.req.method === "HEAD") return c.body(null, range ? 206 : 200, headers);
-
-    const handle = await Deno.open(file.path, { read: true });
-    await handle.seek(start, Deno.SeekMode.Start);
-    let remaining = end - start + 1;
-    const body = new ReadableStream<Uint8Array>({
-      async pull(controller) {
-        const buffer = new Uint8Array(Math.min(256 * 1024, remaining));
-        const read = await handle.read(buffer);
-        if (read === null || read === 0) {
-          handle.close();
-          controller.close();
-          return;
-        }
-        remaining -= read;
-        controller.enqueue(buffer.subarray(0, read));
-        if (remaining <= 0) {
-          handle.close();
-          controller.close();
-        }
-      },
-      cancel() {
-        try {
-          handle.close();
-        } catch {
-          // Already closed
-        }
-      },
-    });
-    return c.body(body, range ? 206 : 200, headers);
+    const response = await sendFile(c, file.path, VIDEO_TYPES[file.container ?? ""] ?? "application/octet-stream");
+    return response ?? c.json({ message: "The video file can't be found on disk." }, 404);
   });
 
   /**
@@ -409,7 +325,7 @@ export namespace PlaybackController {
    *     summary: A text subtitle track of the file as WebVTT.
    */
   router.get("/stream/:token/subtitles/:index{[0-9]+\\.vtt}", async (c) => {
-    const g = useGrant(c.req.param("token"));
+    const g = StreamGrants.use(c.req.param("token"));
     const file = g ? await MediaFile.findByPk(g.fileId) : null;
     if (!file) return c.json({ message: "This stream has expired. Start playback again." }, 404);
     try {
@@ -427,7 +343,7 @@ export namespace PlaybackController {
    *     summary: An ASS subtitle track as it is, for drawing with its own styling.
    */
   router.get("/stream/:token/subtitles/:index{[0-9]+\\.ass}", async (c) => {
-    const g = useGrant(c.req.param("token"));
+    const g = StreamGrants.use(c.req.param("token"));
     const file = g ? await MediaFile.findByPk(g.fileId) : null;
     if (!file) return c.json({ message: "This stream has expired. Start playback again." }, 404);
     try {
@@ -445,7 +361,7 @@ export namespace PlaybackController {
    *     summary: Addresses of the fonts attached to the stream's file, for styled subtitles.
    */
   router.get("/stream/:token/fonts", async (c) => {
-    const g = useGrant(c.req.param("token"));
+    const g = StreamGrants.use(c.req.param("token"));
     const file = g ? await MediaFile.findByPk(g.fileId) : null;
     if (!file) return c.json({ message: "This stream has expired. Start playback again." }, 404);
     const names = await Fonts.list(file);
@@ -459,7 +375,7 @@ export namespace PlaybackController {
    *     summary: One font attached to the stream's file.
    */
   router.get("/stream/:token/fonts/:name", async (c) => {
-    const g = useGrant(c.req.param("token"));
+    const g = StreamGrants.use(c.req.param("token"));
     const file = g ? await MediaFile.findByPk(g.fileId) : null;
     if (!file) return c.json({ message: "This stream has expired. Start playback again." }, 404);
     const path = await Fonts.path(file, c.req.param("name"));
@@ -474,7 +390,7 @@ export namespace PlaybackController {
    *     summary: Seek thumbnails of the stream's file, or `null` while they're being made.
    */
   router.get("/stream/:token/trickplay", async (c) => {
-    const g = useGrant(c.req.param("token"));
+    const g = StreamGrants.use(c.req.param("token"));
     const file = g ? await MediaFile.findByPk(g.fileId) : null;
     if (!file) return c.json({ message: "This stream has expired. Start playback again." }, 404);
     return c.json(await trickplayInfo(file, c.req.param("token"), false));
@@ -487,7 +403,7 @@ export namespace PlaybackController {
    *     summary: One sheet of seek thumbnails.
    */
   router.get("/stream/:token/trickplay/:sheet{[0-9]+\\.jpg}", async (c) => {
-    const g = useGrant(c.req.param("token"));
+    const g = StreamGrants.use(c.req.param("token"));
     const file = g ? await MediaFile.findByPk(g.fileId) : null;
     if (!file) return c.json({ message: "This stream has expired. Start playback again." }, 404);
     const path = await Trickplay.sheetPath(file, parseInt(c.req.param("sheet")));

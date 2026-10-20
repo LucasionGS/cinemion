@@ -7,13 +7,15 @@ import type Library from "./Library.ts";
 export const EMPTY_ARTWORK: Artwork = { poster: null, backdrop: null, logo: null, thumb: null };
 
 /**
- * A movie, show, season or episode. Seasons belong to a show and episodes to a season, through `parentId`.
+ * A movie, show, season or episode, a video or folder, or an artist, album or track. Seasons belong to a show and
+ * episodes to a season through `parentId`; albums to their artist and tracks to their album the same way.
  */
 export class MediaItem extends Model<InferAttributes<MediaItem>, InferCreationAttributes<MediaItem>> {
   declare id: CreationOptional<number>;
   declare libraryId: ForeignKey<Library["id"]>;
   /**
-   * The show of a season, or the season of an episode. `null` for movies and shows.
+   * The show of a season, the season of an episode, the folder of a video, the artist of an album or the album of
+   * a track. `null` for movies, shows, artists and things in a library folder itself.
    */
   declare parentId: CreationOptional<number | null>;
   declare type: ItemType;
@@ -25,8 +27,18 @@ export class MediaItem extends Model<InferAttributes<MediaItem>, InferCreationAt
   declare sortTitle: string;
   declare originalTitle: CreationOptional<string | null>;
   declare year: CreationOptional<number | null>;
+  /**
+   * For tracks: the disc number.
+   */
   declare seasonNumber: CreationOptional<number | null>;
+  /**
+   * For tracks: the track number.
+   */
   declare episodeNumber: CreationOptional<number | null>;
+  /**
+   * For tracks: who performs it, when it isn't the album's artist (compilations, guests). `null` otherwise.
+   */
+  declare artist: CreationOptional<string | null>;
   /**
    * Last episode in a multi-episode file (S01E01-E02). `null` for single episodes.
    */
@@ -141,6 +153,7 @@ MediaItem.init({
   year: { type: DataTypes.INTEGER, allowNull: true, defaultValue: null },
   seasonNumber: { type: DataTypes.INTEGER, allowNull: true, defaultValue: null },
   episodeNumber: { type: DataTypes.INTEGER, allowNull: true, defaultValue: null },
+  artist: { type: DataTypes.STRING(512), allowNull: true, defaultValue: null },
   episodeEnd: { type: DataTypes.INTEGER, allowNull: true, defaultValue: null },
   overview: { type: DataTypes.TEXT, allowNull: true, defaultValue: null },
   tagline: { type: DataTypes.STRING(512), allowNull: true, defaultValue: null },

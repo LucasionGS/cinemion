@@ -10,14 +10,16 @@ import Markers from "../media/Markers.ts";
 import MetadataManager from "../metadata/MetadataManager.ts";
 import ItemLabels from "./ItemLabels.ts";
 import VideoDetails from "./VideoDetails.ts";
+import MusicLibrary from "../music/MusicLibrary.ts";
+import MusicTags from "../music/MusicTags.ts";
 import Events from "../integrations/Events.ts";
 import Tasks from "../lib/Tasks.ts";
 import { forEachLimit } from "../lib/async.ts";
 import log from "../lib/Logger.ts";
 
 /**
- * Finds the video files in a library, works out what they are, and keeps the database in step with the disk.
- * Unchanged files (same size and modification time) are skipped, so rescans are cheap.
+ * Finds the video or music files in a library, works out what they are, and keeps the database in step with the
+ * disk. Unchanged files (same size and modification time) are skipped, so rescans are cheap.
  */
 export namespace Scanner {
   export interface ScanOptions {
@@ -30,6 +32,15 @@ export namespace Scanner {
      * A folder that's gone (a deleted show) is looked at from the nearest folder that's still there.
      */
     folders?: string[];
+  }
+
+  /**
+   * What a library looks for: movies and episodes (skipping extras and samples), any video, or music.
+   */
+  type WalkMode = "titles" | "videos" | "music";
+
+  function walkMode(library: Library): WalkMode {
+    return library.type === "videos" ? "videos" : library.type === "music" ? "music" : "titles";
   }
 
   interface FoundFile {
@@ -108,13 +119,15 @@ export namespace Scanner {
   }
 
   /**
-   * Every video file under `start` (default `root`), following symlinked folders but never looping.
-   * @param anyVideo For Videos libraries: keep extras, trailers and samples, which are just videos there.
+   * Every video or music file under `start` (default `root`), following symlinked folders but never looping.
+   * @param mode `videos` keeps extras, trailers and samples, which are just videos in a Videos library.
    */
-  async function walk(root: string, start = root, anyVideo = false): Promise<FoundFile[]> {
+  async function walk(root: string, start = root, mode: WalkMode = "titles"): Promise<FoundFile[]> {
     const found: FoundFile[] = [];
     const visited = new Set<string>();
-    const shouldSkip = (relative: string) => anyVideo ? relative.split(/[\\/]/).some((p) => p.startsWith(".")) : NameParser.shouldSkip(relative);
+    const anyFile = mode !== "titles";
+    const shouldSkip = (relative: string) => anyFile ? relative.split(/[\\/]/).some((p) => p.startsWith(".")) : NameParser.shouldSkip(relative);
+    const wanted = mode === "music" ? MusicTags.isAudio : NameParser.isVideo;
 
     async function visit(folder: string) {
       const real = await fsp.realpath(folder).catch(() => null);
@@ -131,10 +144,10 @@ export namespace Scanner {
           if (!shouldSkip(Path.relative(root, full) + "/x")) await visit(full);
           continue;
         }
-        if (!NameParser.isVideo(entry.name) || shouldSkip(Path.relative(root, full))) continue;
+        if (!wanted(entry.name) || shouldSkip(Path.relative(root, full))) continue;
         const info = stat ?? await fsp.stat(full).catch(() => null);
         if (!info?.isFile()) continue;
-        if (!anyVideo && /sample/i.test(entry.name) && info.size < SAMPLE_MAX_BYTES) continue;
+        if (!anyFile && /sample/i.test(entry.name) && info.size < SAMPLE_MAX_BYTES) continue;
         found.push({ path: full, root, size: info.size, mtime: info.mtime?.getTime() ?? 0 });
       }
     }
@@ -183,7 +196,7 @@ export namespace Scanner {
         scope = scope.filter((s) => !isInside(s, start));
         scope.push(start);
       }
-      for (const start of scope) found.push(...await walk(library.paths.find((p) => isInside(start, p))!, start, library.type === "videos"));
+      for (const start of scope) found.push(...await walk(library.paths.find((p) => isInside(start, p))!, start, walkMode(library)));
       if (scope.length === 0) return;
     }
     else {
@@ -194,7 +207,7 @@ export namespace Scanner {
           log.warn(`The folder ${root} of library "${library.name}" isn't there. Skipping this scan so nothing gets removed.`);
           return;
         }
-        found.push(...await walk(root, root, library.type === "videos"));
+        found.push(...await walk(root, root, walkMode(library)));
       }
     }
     const onDisk = new Map(found.map((f) => [f.path, f]));
@@ -220,13 +233,14 @@ export namespace Scanner {
     }
 
     // Read the files ffprobe hasn't seen yet
+    const isMusic = library.type === "music";
     const toProbe = await MediaFile.findAll({ where: { libraryId: library.id, probedAt: null } });
     let probed = 0;
     await forEachLimit(toProbe, PROBE_CONCURRENCY, async (file) => {
       task.update("Reading files", probed / toProbe.length);
       try {
-        const details = await Probe.read(file.path);
-        await file.update({ ...details, probedAt: new Date() });
+        const { tags, ...details } = await Probe.read(file.path);
+        await file.update({ ...details, tags: isMusic ? tags : null, probedAt: new Date() });
       } catch (error) {
         log.warn(`Could not read ${file.path}`, { error });
         await file.update({ probedAt: new Date() });
@@ -236,17 +250,25 @@ export namespace Scanner {
 
     // Subtitle files come and go without the video changing, so look for them every scan
     task.update("Looking for subtitles");
-    for (const file of await MediaFile.findAll({ where: { libraryId: library.id } })) {
+    for (const file of isMusic ? [] : await MediaFile.findAll({ where: { libraryId: library.id } })) {
       if (!inScope(file.path)) continue;
       await Sidecars.refresh(file).catch((error) => log.warn(`Could not look for subtitles of ${file.path}`, { error }));
     }
 
     task.update("Sorting files");
     const roots = new Map(found.map((f) => [f.path, f.root]));
-    const added = library.type === "movies" ? await assignMovies(library, roots) : library.type === "videos" ? await assignVideos(library, roots) : await assignEpisodes(library, roots);
-    await removeEmptyItems(library);
+    let added: number[];
+    if (isMusic) added = await MusicLibrary.assign(library, roots, new Set(toProbe.map((f) => f.id)));
+    else if (library.type === "movies") added = await assignMovies(library, roots);
+    else if (library.type === "videos") added = await assignVideos(library, roots);
+    else added = await assignEpisodes(library, roots);
+    if (isMusic) await MusicLibrary.removeEmpty(library);
+    else await removeEmptyItems(library);
 
-    const refreshed = library.type === "videos" ? await refreshVideos(library, task, opts) : await refreshMetadata(library, task, opts);
+    let refreshed: number;
+    if (isMusic) refreshed = await MusicLibrary.refresh(library, task, { regenerate: opts.refreshMetadata });
+    else if (library.type === "videos") refreshed = await refreshVideos(library, task, opts);
+    else refreshed = await refreshMetadata(library, task, opts);
 
     // Only a full scan counts for the schedule
     if (!scope) {
@@ -254,8 +276,10 @@ export namespace Scanner {
       await library.save();
     }
     await Trickplay.cleanup().catch((error) => log.warn("Could not clean up seek thumbnails", { error }));
-    Trickplay.queueLibrary(library.id);
-    Markers.queueLibrary(library.id);
+    if (!isMusic) {
+      Trickplay.queueLibrary(library.id);
+      Markers.queueLibrary(library.id);
+    }
     await reportAdded(library, added, firstScan).catch((error) => log.warn("Could not report new titles", { error }));
     const seconds = Math.round((Date.now() - started) / 100) / 10;
     if (scope) {
@@ -278,14 +302,29 @@ export namespace Scanner {
     for (const item of items) shows.set(item.id, item.type === "episode" ? await ItemLabels.showOf(item) : null);
 
     if (firstScan) {
-      const count = library.type === "shows" ? new Set([...shows.values()].map((s) => s?.id)).size : items.length;
-      const nouns = { movies: ["movie", "movies"], shows: ["show", "shows"], videos: ["video", "videos"] }[library.type];
+      const count = library.type === "shows" ? new Set([...shows.values()].map((s) => s?.id)).size : library.type === "music" ? new Set(items.map((i) => i.parentId)).size : items.length;
+      const nouns = { movies: ["movie", "movies"], shows: ["show", "shows"], videos: ["video", "videos"], music: ["album", "albums"] }[library.type];
       const noun = nouns[count === 1 ? 0 : 1];
       Events.activity({ kind: "added", message: `${library.name} is ready, with ${count} ${noun}` });
       return;
     }
 
     const ref = { id: library.id, name: library.name };
+    if (library.type === "music") {
+      // One line and one webhook per album, not per track
+      const byAlbum = new Map<number, MediaItem[]>();
+      for (const item of items) if (item.parentId) byAlbum.set(item.parentId, [...byAlbum.get(item.parentId) ?? [], item]);
+      for (const [albumId, tracks] of byAlbum) {
+        const album = await MediaItem.findByPk(albumId);
+        if (!album) continue;
+        const artist = album.parentId ? await MediaItem.findByPk(album.parentId, { attributes: ["title"] }) : null;
+        Events.emit("item.added", { library: ref, item: await ItemLabels.forWebhook(album) });
+        const what = `${album.title}${artist ? ` by ${artist.title}` : ""}`;
+        const message = tracks.length === 1 ? `${tracks[0].title} from ${what} was added to ${library.name}` : `${what} was added to ${library.name}`;
+        Events.activity({ kind: "added", message, itemId: album.id });
+      }
+      return;
+    }
     for (const item of items) Events.emit("item.added", { library: ref, item: await ItemLabels.forWebhook(item, shows.get(item.id)) });
 
     if (library.type === "videos") {
