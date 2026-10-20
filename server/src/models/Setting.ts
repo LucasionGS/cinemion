@@ -38,6 +38,7 @@ export namespace Setting {
     SCAN_INTERVAL_HOURS: "scanIntervalHours",
     PLAYBACK: "playback",
     SUBTITLES: "subtitles",
+    INTEGRATIONS: "integrations",
   } as const;
 }
 

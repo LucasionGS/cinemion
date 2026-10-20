@@ -1,7 +1,10 @@
-import { Hono } from "hono";
+import { Hono, type Context } from "hono";
 import type { LoginResponse } from "@shared/api.ts";
 import { User } from "../models/index.ts";
 import RateLimit from "../lib/RateLimit.ts";
+import Network from "../lib/Network.ts";
+import UserAgent from "../lib/UserAgent.ts";
+import Events from "../integrations/Events.ts";
 import { readJson } from "../lib/http.ts";
 import type { AppEnv } from "../lib/types.ts";
 
@@ -11,7 +14,16 @@ export namespace AuthController {
   // 5 wrong guesses lock that profile (or username) for 30 seconds
   const limiter = new RateLimit(5, 30);
 
-  async function respond(user: User): Promise<LoginResponse> {
+  async function respond(c: Context<AppEnv>, user: User): Promise<LoginResponse> {
+    const device = UserAgent.fromRequest(c);
+    const isRemote = Network.isRemote(c);
+    // Switching profiles on the same TV all evening is one line in the feed, not ten
+    Events.emit("user.signedIn", { user: { id: user.id, name: user.name }, device, isRemote }, {
+      kind: "signIn",
+      message: `${user.name} signed in on ${UserAgent.phrase(device)}${isRemote ? ", away from home" : ""}`,
+      userId: user.id,
+      dedupeHours: 6,
+    });
     return { token: await user.createToken(), user: await user.toClientJSON() };
   }
 
@@ -41,7 +53,7 @@ export namespace AuthController {
       return c.json({ message: "That username and password don't match." }, 401);
     }
     limiter.reset(key);
-    return c.json(await respond(user));
+    return c.json(await respond(c, user));
   });
 
   /**
@@ -70,7 +82,7 @@ export namespace AuthController {
       return c.json({ message: user.pin !== null ? "That PIN isn't right." : "That password isn't right." }, 401);
     }
     limiter.reset(key);
-    return c.json(await respond(user));
+    return c.json(await respond(c, user));
   });
 
   /**

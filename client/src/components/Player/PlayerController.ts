@@ -142,8 +142,13 @@ export class PlayerController extends Controller {
     video.addEventListener("error", this._onVideoError);
     video.addEventListener("volumechange", this._onVolume);
     document.addEventListener("fullscreenchange", this._onFullscreen);
+    addEventListener("pagehide", this._onPageHide);
+    addEventListener("pageshow", this._onPageShow);
 
-    this._progressTimer = setInterval(() => this.saveProgress(), PlayerController.PROGRESS_EVERY_MS);
+    this._progressTimer = setInterval(() => {
+      this.saveProgress();
+      this._report();
+    }, PlayerController.PROGRESS_EVERY_MS);
     this._pingTimer = setInterval(() => {
       if (this.info?.sessionId) PlaybackApi.ping(this.info.sessionId);
     }, PlayerController.PING_EVERY_MS);
@@ -171,11 +176,14 @@ export class PlayerController extends Controller {
     this.saveProgress(true);
     this.disconnectTogether();
     if (this.info?.sessionId) PlaybackApi.stop(this.info.sessionId);
+    if (this.info) PlaybackApi.ended(this.info.playbackId);
     if (this._progressTimer) clearInterval(this._progressTimer);
     if (this._pingTimer) clearInterval(this._pingTimer);
     if (this._hideTimer) clearTimeout(this._hideTimer);
     if (this._trickplayTimer) clearTimeout(this._trickplayTimer);
     document.removeEventListener("fullscreenchange", this._onFullscreen);
+    removeEventListener("pagehide", this._onPageHide);
+    removeEventListener("pageshow", this._onPageShow);
     if (document.fullscreenElement) document.exitFullscreen().catch(() => { });
     this._hls?.destroy();
     this._hls = null;
@@ -218,6 +226,7 @@ export class PlayerController extends Controller {
       startAt: opts.startAt,
       quality: opts.quality ?? previous?.quality ?? "original",
       capabilities: detectCapabilities(),
+      playbackId: previous?.playbackId,
     };
 
     let info: PlaybackInfo;
@@ -232,6 +241,8 @@ export class PlayerController extends Controller {
     }
     if (loadId !== this._loadId || this._destroyed) {
       if (info.sessionId) PlaybackApi.stop(info.sessionId);
+      // The same viewing carries on when the server reused the previous id
+      if (info.playbackId !== previous?.playbackId) PlaybackApi.ended(info.playbackId);
       return;
     }
     if (previous?.sessionId) PlaybackApi.stop(previous.sessionId);
@@ -368,8 +379,26 @@ export class PlayerController extends Controller {
     this.notify();
   };
 
+  /**
+   * Closing the tab doesn't unmount anything, so save and let go here; the conversion and the dashboard entry
+   * would otherwise linger until they time out.
+   */
+  private _onPageHide = () => {
+    this.saveProgress(true);
+    if (this.info?.sessionId) PlaybackApi.stop(this.info.sessionId);
+    if (this.info) PlaybackApi.ended(this.info.playbackId);
+  };
+
+  /**
+   * Back from the browser's back/forward cache: the stream was let go on the way out, so start it again.
+   */
+  private _onPageShow = (event: PageTransitionEvent) => {
+    if (event.persisted && !this._destroyed) this.load({ startAt: this.position });
+  };
+
   private _onPlayState = () => {
     this.playing = !this._video!.paused;
+    this._report();
     if (!this.playing) {
       this.saveProgress();
       this.showControls();
@@ -799,6 +828,14 @@ export class PlayerController extends Controller {
     if (!force && Math.abs(position - this._lastSaved) < 2) return;
     this._lastSaved = position;
     PlaybackApi.saveProgress(this.item.id, this.ended ? this.duration : position, this.duration || null);
+  }
+
+  /**
+   * Tell the dashboard where playback is and whether it's paused.
+   */
+  private _report() {
+    if (!this.info || this._destroyed) return;
+    PlaybackApi.report(this.info.playbackId, this.position, !this.playing);
   }
 
   private _updateNextUp() {

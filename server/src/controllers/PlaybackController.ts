@@ -11,8 +11,10 @@ import PlaybackDecider from "../media/PlaybackDecider.ts";
 import TranscodeSession from "../media/TranscodeSession.ts";
 import Subtitles from "../media/Subtitles.ts";
 import Trickplay from "../media/Trickplay.ts";
+import ActivePlayback from "../media/ActivePlayback.ts";
 import SubtitleManager from "../subtitles/SubtitleManager.ts";
 import Network from "../lib/Network.ts";
+import UserAgent from "../lib/UserAgent.ts";
 import { errorMessage, readJson } from "../lib/http.ts";
 import log from "../lib/Logger.ts";
 import type { AppEnv } from "../lib/types.ts";
@@ -173,10 +175,25 @@ export namespace PlaybackController {
       }
     }
 
+    const entry = ActivePlayback.register({
+      previousId: typeof body.playbackId === "string" ? body.playbackId : undefined,
+      userId: user.id,
+      itemId: item.id,
+      file,
+      decision,
+      hardware,
+      sessionId,
+      position: startAt,
+      duration: file.duration ?? 0,
+      device: UserAgent.fromRequest(c),
+      isRemote,
+    });
+
     const info: PlaybackInfo = {
       mode: decision.mode,
       url,
       sessionId,
+      playbackId: entry.id,
       startOffset,
       duration: file.duration ?? 0,
       fileId: file.id,
@@ -202,6 +219,30 @@ export namespace PlaybackController {
       canSearchSubtitles: await user.hasPermission("SUBTITLES_DOWNLOAD") && await SubtitleManager.isAvailable(),
     };
     return c.json(info);
+  });
+
+  /**
+   * @swagger
+   * /api/playback/active/{playbackId}:
+   *   post:
+   *     summary: The player's regular report for the dashboard. Body `{ "position": 754, "paused": false }`.
+   *       Answers 404 when the viewing has ended.
+   */
+  router.post("/active/:id", async (c) => {
+    const body = await readJson<{ position: number; paused: boolean }>(c);
+    if (!ActivePlayback.report(c.req.param("id"), body ?? {})) return c.json({ message: "That viewing has ended." }, 404);
+    return c.body(null, 204);
+  });
+
+  /**
+   * @swagger
+   * /api/playback/active/{playbackId}:
+   *   delete:
+   *     summary: The player closed.
+   */
+  router.delete("/active/:id", (c) => {
+    ActivePlayback.end(c.req.param("id"));
+    return c.body(null, 204);
   });
 
   /**

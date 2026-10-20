@@ -8,6 +8,12 @@
     flex: 0 0 15rem;
     display: flex;
     flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  &__nav-group {
+    display: flex;
+    flex-direction: column;
     gap: 0.125rem;
   }
 
@@ -53,6 +59,17 @@
     }
   }
 
+  &__link-badge {
+    margin-left: auto;
+    min-width: 1.4rem;
+    padding: 0.05rem 0.45rem;
+    border-radius: var(--cn-radius-pill);
+    background: var(--cn-warning-soft);
+    color: var(--cn-warning);
+    font-size: 0.75rem;
+    text-align: center;
+  }
+
   &__content {
     flex: 999 1 30rem;
     min-width: 0;
@@ -60,6 +77,11 @@
     display: flex;
     flex-direction: column;
     gap: 2rem;
+
+    // The dashboard and logs have more side by side than a settings form
+    &--wide {
+      max-width: none;
+    }
   }
 
   &__header {
@@ -114,6 +136,11 @@
     span {
       font-size: 0.85rem;
       color: var(--cn-text-subtle);
+    }
+
+    // The basis is a width inside a row; in a card or dialog (column layouts) it would be a 14rem height
+    :not(.cn-settings__row) > & {
+      flex: 0 0 auto;
     }
   }
 
@@ -208,6 +235,11 @@
 
   &__nav-title {
     display: none;
+  }
+
+  // One scrolling row of pills, across both groups
+  &__nav-group {
+    display: contents;
   }
 
   &__link {

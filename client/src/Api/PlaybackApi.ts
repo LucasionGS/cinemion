@@ -26,6 +26,27 @@ export namespace PlaybackApi {
   }
 
   /**
+   * Tell the dashboard where playback is and whether it's paused. Returns `false` once the server has forgotten
+   * this viewing.
+   * @param position Unit is in seconds.
+   */
+  export async function report(playbackId: string, position: number, paused: boolean) {
+    const res = await fetch(`/api/playback/active/${playbackId}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ position, paused }),
+    }).catch(() => null);
+    return res?.ok ?? true;
+  }
+
+  /**
+   * The player closed. Uses `keepalive` so it still goes out while the page closes.
+   */
+  export function ended(playbackId: string) {
+    fetch(`/api/playback/active/${playbackId}`, { method: "DELETE", keepalive: true }).catch(() => { });
+  }
+
+  /**
    * Remember where playback is. Uses `keepalive` so the last position is saved when the page closes.
    * @param position Unit is in seconds.
    * @param duration Unit is in seconds.

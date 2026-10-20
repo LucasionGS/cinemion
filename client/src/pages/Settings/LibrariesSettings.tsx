@@ -4,6 +4,7 @@ import { Clapperboard, EllipsisVertical, Plus, RefreshCw, ScanSearch, Trash2, Tv
 import type { LibraryInfo, LibraryType } from "@shared/api.ts";
 import LibrariesApi from "../../Api/LibrariesApi.ts";
 import { toasts } from "../../lib/Toasts.ts";
+import { timeAgo } from "../../lib/format.ts";
 import Button from "../../components/Button/Button.tsx";
 import TextField from "../../components/TextField/TextField.tsx";
 import SegmentedControl from "../../components/SegmentedControl/SegmentedControl.tsx";
@@ -104,16 +105,6 @@ export default function LibrariesSettings() {
       />
     </>
   );
-}
-
-function timeAgo(iso: string) {
-  const minutes = Math.round((Date.now() - new Date(iso).getTime()) / 60000);
-  if (minutes < 1) return "just now";
-  if (minutes < 60) return `${minutes} min ago`;
-  const hours = Math.round(minutes / 60);
-  if (hours < 24) return `${hours} ${hours === 1 ? "hour" : "hours"} ago`;
-  const days = Math.round(hours / 24);
-  return `${days} ${days === 1 ? "day" : "days"} ago`;
 }
 
 /**

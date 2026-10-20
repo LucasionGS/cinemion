@@ -9,6 +9,8 @@ import Person from "./Person.ts";
 import Credit from "./Credit.ts";
 import WatchState from "./WatchState.ts";
 import Collection from "./Collection.ts";
+import Activity from "./Activity.ts";
+import Webhook from "./Webhook.ts";
 
 //#region Associations
 User.belongsTo(Role, { as: "role", foreignKey: "roleId" });
@@ -34,10 +36,12 @@ Library.hasMany(Collection, { as: "collections", foreignKey: "libraryId", onDele
 Collection.belongsTo(Library, { as: "library", foreignKey: "libraryId" });
 Collection.hasMany(MediaItem, { as: "items", foreignKey: "collectionId", onDelete: "SET NULL" });
 MediaItem.belongsTo(Collection, { as: "collection", foreignKey: "collectionId" });
+Activity.belongsTo(User, { as: "user", foreignKey: "userId", constraints: false });
+Activity.belongsTo(MediaItem, { as: "item", foreignKey: "itemId", constraints: false });
 //#endregion
 
 // Every user lookup needs the role for permission checks
 User.addScope("defaultScope", { include: [{ model: Role, as: "role" }] }, { override: true });
 
-export { Collection, Credit, Library, MediaFile, MediaItem, Person, Role, Setting, User, WatchState };
+export { Activity, Collection, Credit, Library, MediaFile, MediaItem, Person, Role, Setting, User, WatchState, Webhook };
 export default sequelize;

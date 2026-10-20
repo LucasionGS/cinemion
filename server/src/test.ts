@@ -3,6 +3,10 @@ import type { DeviceCapabilities, PlaybackSettings } from "@shared/playback.ts";
 import NameParser from "./library/NameParser.ts";
 import PlaybackDecider from "./media/PlaybackDecider.ts";
 import Network from "./lib/Network.ts";
+import UserAgent from "./lib/UserAgent.ts";
+import SystemStats from "./lib/SystemStats.ts";
+import ArrWebhook from "./integrations/ArrWebhook.ts";
+import Webhooks from "./integrations/Webhooks.ts";
 
 /**
  * Scratch runner for the parts that are easy to get subtly wrong. Run with `deno run -A server/src/test.ts`.
@@ -103,6 +107,52 @@ check("remote bitrate is capped", PlaybackDecider.decide(file({ bitrate: 30_000_
 console.log("Network");
 check("lan", ["192.168.1.20", "10.0.0.5", "172.20.1.1", "127.0.0.1", "::1", "::ffff:192.168.0.2", "fd12::1"].every(Network.isPrivate), true);
 check("internet", ["8.8.8.8", "172.32.0.1", "2a02:1810::1", "100.64.0.1"].some(Network.isPrivate), false);
+//#endregion
+
+//#region Sonarr and Radarr
+console.log("Sonarr and Radarr");
+const mappings = [{ from: "/tv", to: "/media/shows" }, { from: "/tv/kids", to: "/media/kids" }, { from: "D:\\Media\\Movies", to: "/media/movies" }];
+check("mapped prefix", ArrWebhook.mapPath("/tv/Low Tide/Season 02/x.mkv", mappings), "/media/shows/Low Tide/Season 02/x.mkv");
+check("longest mapping wins", ArrWebhook.mapPath("/tv/kids/Bluey", mappings), "/media/kids/Bluey");
+check("prefix must be a whole folder", ArrWebhook.mapPath("/tvshows/x.mkv", mappings), "/tvshows/x.mkv");
+check("windows path, any case", ArrWebhook.mapPath("d:\\media\\movies\\Nowhere (2020)\\Nowhere.mkv", mappings), "/media/movies/Nowhere (2020)/Nowhere.mkv");
+check("unmapped stays", ArrWebhook.mapPath("/media/shows/x.mkv", mappings), "/media/shows/x.mkv");
+const sonarr = ArrWebhook.parse({ eventType: "Download", instanceName: "Sonarr 4K", series: { title: "Low Tide", path: "/tv/Low Tide" }, episodes: [{ seasonNumber: 2, episodeNumber: 4 }], episodeFile: { path: "/tv/Low Tide/Season 02/e4.mkv" } });
+check("sonarr import", [sonarr?.app, sonarr?.targets, sonarr?.activity?.message], ["Sonarr 4K", [{ path: "/tv/Low Tide/Season 02/e4.mkv", isFile: true }], "Sonarr 4K imported Low Tide S2 E4"]);
+const pack = ArrWebhook.parse({ eventType: "Download", series: { title: "Low Tide", path: "/tv/Low Tide" }, episodes: [{ seasonNumber: 2, episodeNumber: 1 }, { seasonNumber: 2, episodeNumber: 2 }], episodeFile: { relativePath: "Season 02/e1-e2.mkv" } });
+check("season pack, relative path", [pack?.targets[0].path, pack?.activity?.message], ["/tv/Low Tide/Season 02/e1-e2.mkv", "Sonarr imported Low Tide season 2 (2 episodes)"]);
+check("upgrade delete is quiet", ArrWebhook.parse({ eventType: "EpisodeFileDelete", series: { title: "x", path: "/tv/x" }, episodeFile: { path: "/tv/x/a.mkv" }, deleteReason: "upgrade" })?.activity, null);
+check("show removed without files does nothing", ArrWebhook.parse({ eventType: "SeriesDelete", series: { title: "x", path: "/tv/x" }, deletedFiles: false })?.targets, []);
+const radarr = ArrWebhook.parse({ eventType: "Download", isUpgrade: true, movie: { title: "Nowhere", year: 2020, folderPath: "/movies/Nowhere (2020)" }, movieFile: { relativePath: "Nowhere.mkv" } });
+check("radarr upgrade", [radarr?.app, radarr?.targets[0].path, radarr?.activity?.message], ["Radarr", "/movies/Nowhere (2020)/Nowhere.mkv", "Radarr upgraded Nowhere (2020)"]);
+check("rename scans the folder", ArrWebhook.parse({ eventType: "Rename", movie: { title: "x", folderPath: "/movies/x" } })?.targets, [{ path: "/movies/x", isFile: false }]);
+check("grab is ignored", ArrWebhook.parse({ eventType: "Grab", series: { title: "x", path: "/tv/x" } })?.targets, []);
+check("not a webhook", ArrWebhook.parse({ hello: "world" }), null);
+//#endregion
+
+//#region Webhooks
+console.log("Webhooks");
+// Known HMAC-SHA256 test vector
+check("signature", await Webhooks.sign("key", "The quick brown fox jumps over the lazy dog"), "sha256=f7bc83f430538424b13298e6aa6fb143ef4d59a14946175997479dbc2d1a3cd8");
+//#endregion
+
+//#region Dashboard
+console.log("Dashboard");
+check("proc stat", SystemStats.parseProcStat("cpu  100 0 50 800 50 0 0 0 0 0\ncpu0 1 2 3 4"), { busy: 150, total: 1000 });
+const df = "Filesystem     1024-blocks       Used Available Capacity Mounted on\n/dev/sda1 1000 600 300 67% /media\n/dev/sdb1 2000 500 1500 25% /mnt/big disk\n/dev/sda1 1000 600 300 67% /media\n";
+check("df, one entry per drive", SystemStats.parseDf(df), { used: 1100 * 1024, total: 2900 * 1024, mounts: ["/media", "/mnt/big disk"] });
+const ua = {
+  chrome: "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0 Safari/537.36",
+  iphone: "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1",
+  edge: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0 Safari/537.36 Edg/141.0",
+  tizen: "Mozilla/5.0 (SMART-TV; Linux; Tizen 7.0) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/5.0 Chrome/94.0 TV Safari/537.36",
+};
+check("desktop chrome", UserAgent.describe(ua.chrome), "Desktop · Chrome");
+check("iphone safari", UserAgent.describe(ua.iphone), "Phone · Safari");
+check("edge isn't chrome", UserAgent.describe(ua.edge), "Desktop · Edge");
+check("smart tv", UserAgent.describe(ua.tizen), "TV · Samsung Internet");
+check("tv layout on a pc", UserAgent.describe(ua.chrome, "tv"), "TV · Chrome");
+check("phrase", UserAgent.phrase("Phone · Safari"), "a phone with Safari");
 //#endregion
 
 console.log(failed ? `\n${failed} failed` : "\nAll passed");

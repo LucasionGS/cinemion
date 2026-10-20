@@ -6,6 +6,8 @@ import { MediaItem, User } from "../models/index.ts";
 import Visibility from "../library/Visibility.ts";
 import Summaries from "../library/Summaries.ts";
 import WatchTogether from "../together/WatchTogether.ts";
+import ItemLabels from "../library/ItemLabels.ts";
+import Events from "../integrations/Events.ts";
 import { readJson } from "../lib/http.ts";
 import type { AppEnv } from "../lib/types.ts";
 
@@ -25,6 +27,13 @@ export namespace TogetherController {
     if (!item || !Visibility.canSee(user, item)) return c.json({ message: "That title doesn't exist." }, 404);
     if (item.type !== "movie" && item.type !== "episode") return c.json({ message: "Only movies and episodes can be watched together." }, 400);
     const room = WatchTogether.create(user, item.id, Math.max(0, Number(body?.position) || 0));
+    const label = await ItemLabels.describe(item);
+    Events.emit("together.started", { host: { id: user.id, name: user.name }, item: await ItemLabels.forWebhook(item, label.show), code: room.code }, {
+      kind: "together",
+      message: `${user.name} started watching ${label.inline} together`,
+      userId: user.id,
+      itemId: item.id,
+    });
     return c.json({ code: room.code });
   });
 

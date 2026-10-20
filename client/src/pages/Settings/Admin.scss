@@ -1,0 +1,592 @@
+// Server pages in Settings: dashboard, tasks, logs, integrations and webhooks.
+// Layout follows the Round 3 admin mockup (docs/design/decisions.md).
+
+.cn-settings code {
+  padding: 0.05rem 0.3rem;
+  border-radius: var(--cn-radius-xs);
+  background: var(--cn-glass);
+  font-family: var(--cn-font-mono);
+  font-size: 0.85em;
+  color: var(--cn-text);
+}
+
+// A thin progress bar; the inner span's width is the value
+.cn-meter {
+  display: block;
+  height: 0.3rem;
+  border-radius: var(--cn-radius-pill);
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+
+  span {
+    display: block;
+    height: 100%;
+    background: var(--cn-accent);
+    transition: width var(--cn-medium) var(--cn-ease);
+  }
+}
+
+//#region Dashboard
+.cn-dashboard {
+  &__stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+    gap: 1rem;
+  }
+
+  &__tile {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+    min-width: 0;
+    padding: 1.125rem;
+    border-radius: var(--cn-radius-lg);
+    background: var(--cn-surface);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  &__tile-label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--cn-text-subtle);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__tile-value {
+    font-family: var(--cn-font-display);
+    font-size: 1.875rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+
+  &__tile-sub {
+    font-size: 0.75rem;
+    color: var(--cn-text-subtle);
+  }
+
+  &__columns {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 1.5rem;
+  }
+
+  &__section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+    min-width: 0;
+
+    h2 {
+      font-size: 1.25rem;
+    }
+
+    &--main {
+      flex: 999 1 32rem;
+    }
+  }
+
+  &__side {
+    flex: 1 1 20rem;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  &__section-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+
+    a {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--cn-accent-text);
+    }
+  }
+
+  &__panel {
+    display: flex;
+    flex-direction: column;
+    padding: 0.375rem 1rem;
+    border-radius: var(--cn-radius-lg);
+    background: var(--cn-surface);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  &__task {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.75rem 0;
+
+    .cn-dashboard__panel > & + & {
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+  }
+
+  &__task-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.75rem;
+    font-size: 0.875rem;
+
+    > :first-child {
+      font-weight: 600;
+    }
+
+    > :last-child {
+      color: var(--cn-text-subtle);
+      white-space: nowrap;
+    }
+  }
+
+  &__empty {
+    font-size: 0.9rem;
+    color: var(--cn-text-subtle);
+  }
+}
+
+.cn-activity {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+
+  &__item {
+    display: flex;
+    gap: 0.75rem;
+    font-size: 0.875rem;
+    line-height: 1.4;
+  }
+
+  &__dot {
+    flex-shrink: 0;
+    width: 0.5rem;
+    height: 0.5rem;
+    margin-top: 0.375rem;
+    border-radius: 50%;
+    background: var(--cn-accent);
+
+    &--success {
+      background: var(--cn-success);
+    }
+
+    &--warning {
+      background: var(--cn-warning);
+    }
+
+    &--danger {
+      background: var(--cn-danger);
+    }
+
+    &--muted {
+      background: var(--cn-text-subtle);
+    }
+  }
+
+  &__text {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__time {
+    font-size: 0.75rem;
+    color: var(--cn-text-subtle);
+    white-space: nowrap;
+  }
+}
+
+.cn-stream {
+  display: flex;
+  gap: 1rem;
+  padding: 0.875rem;
+  border-radius: var(--cn-radius-lg);
+  background: var(--cn-surface);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+
+  &__poster {
+    flex-shrink: 0;
+    width: 4rem;
+    height: 6rem;
+    border-radius: var(--cn-radius-sm);
+    overflow: hidden;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  &__body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+  }
+
+  &__head {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.4rem 0.625rem;
+
+    strong {
+      font-size: 0.95rem;
+    }
+  }
+
+  &__device {
+    font-size: 0.8rem;
+    color: var(--cn-text-subtle);
+  }
+
+  &__badge {
+    margin-left: auto;
+    padding: 0.2rem 0.625rem;
+    border-radius: var(--cn-radius-pill);
+    font-size: 0.75rem;
+    font-weight: 800;
+    white-space: nowrap;
+
+    &--direct {
+      background: var(--cn-success-soft);
+      color: var(--cn-success-text);
+    }
+
+    &--converting {
+      background: var(--cn-warning-soft);
+      color: var(--cn-warning);
+    }
+  }
+
+  &__title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--cn-text);
+  }
+
+  &__detail {
+    font-size: 0.8rem;
+    color: var(--cn-text-muted);
+  }
+
+  &__reason {
+    font-size: 0.8rem;
+    color: var(--cn-text-subtle);
+  }
+
+  &__progress {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 0.125rem;
+  }
+
+  &__paused {
+    flex-shrink: 0;
+    width: 0.9rem;
+    height: 0.9rem;
+    color: var(--cn-text-subtle);
+  }
+
+  &__bar {
+    flex: 1;
+    height: 0.25rem;
+    border-radius: var(--cn-radius-pill);
+    background: rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+
+    span {
+      display: block;
+      height: 100%;
+      background: var(--cn-text);
+    }
+  }
+
+  &__time {
+    font-size: 0.75rem;
+    color: var(--cn-text-subtle);
+    white-space: nowrap;
+  }
+}
+
+:root[data-mode="mobile"] {
+  .cn-dashboard__stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+  }
+
+  .cn-dashboard__tile-value {
+    font-size: 1.5rem;
+  }
+
+  .cn-stream__progress {
+    flex-wrap: wrap;
+  }
+
+  .cn-stream__bar {
+    flex-basis: 100%;
+  }
+}
+//#endregion
+
+//#region Tasks
+.cn-tasks {
+  &__row {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 0.25rem 0.75rem;
+    font-size: 0.9rem;
+
+    > span {
+      font-size: 0.85rem;
+      color: var(--cn-text-subtle);
+    }
+  }
+
+  &__icon {
+    flex-shrink: 0;
+    align-self: center;
+    width: 1rem;
+    height: 1rem;
+    color: var(--cn-success-text);
+
+    &--failed {
+      color: var(--cn-danger-text);
+    }
+  }
+}
+//#endregion
+
+//#region Logs
+.cn-logs {
+  margin: 0;
+  padding: 0.5rem 0;
+  list-style: none;
+  border-radius: var(--cn-radius-lg);
+  background: var(--cn-surface);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  font-family: var(--cn-font-mono);
+  font-size: 0.8rem;
+  line-height: 1.5;
+
+  &__toolbar {
+    display: flex;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  &__search {
+    flex: 0 1 20rem;
+  }
+
+  &__line {
+    display: flex;
+    gap: 0.875rem;
+    padding: 0.2rem 1rem;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.03);
+    }
+  }
+
+  &__time {
+    flex-shrink: 0;
+    color: var(--cn-text-subtle);
+  }
+
+  &__level {
+    flex: 0 0 4.5rem;
+    font-weight: 700;
+    color: var(--cn-text-subtle);
+
+    .cn-logs__line--info & {
+      color: var(--cn-accent-text);
+    }
+
+    .cn-logs__line--warn & {
+      color: var(--cn-warning);
+    }
+
+    .cn-logs__line--error & {
+      color: var(--cn-danger-text);
+    }
+  }
+
+  &__message {
+    flex: 1;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  &__data {
+    margin-left: 0.5rem;
+    color: var(--cn-text-subtle);
+  }
+}
+
+:root[data-mode="mobile"] .cn-logs__line {
+  flex-wrap: wrap;
+  gap: 0.125rem 0.75rem;
+
+  .cn-logs__message {
+    flex-basis: 100%;
+  }
+}
+//#endregion
+
+//#region Integrations and webhooks
+.cn-integrations {
+  &__address {
+    display: flex;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+
+    // Line the buttons up with the field, not its description
+    &:has(.cn-field__description) > .cn-button {
+      margin-bottom: 1.6rem;
+    }
+  }
+
+  &__address-field {
+    flex: 1 1 20rem;
+    min-width: 0;
+
+    .cn-field__input {
+      font-family: var(--cn-font-mono);
+      font-size: 0.85rem;
+    }
+  }
+
+  &__hint {
+    padding: 0.75rem 1rem;
+    border-radius: var(--cn-radius-md);
+    background: var(--cn-warning-soft);
+    color: var(--cn-warning);
+    font-size: 0.85rem;
+    line-height: 1.5;
+  }
+
+  &__steps {
+    margin: 0;
+    padding-left: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: var(--cn-text-muted);
+
+    strong {
+      color: var(--cn-text);
+    }
+  }
+
+  &__status {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.625rem;
+    padding: 0.75rem 1rem;
+    border-radius: var(--cn-radius-md);
+    background: var(--cn-surface-2);
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: var(--cn-text-muted);
+
+    svg {
+      flex-shrink: 0;
+      width: 1.1rem;
+      height: 1.1rem;
+      margin-top: 0.1rem;
+      color: var(--cn-success-text);
+    }
+
+    &--problem svg {
+      color: var(--cn-warning);
+    }
+  }
+
+  &__mapping {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    align-items: flex-end;
+    gap: 0.75rem;
+  }
+}
+
+:root[data-mode="mobile"] .cn-integrations__mapping {
+  grid-template-columns: 1fr auto;
+
+  > :nth-child(2) {
+    grid-row: 2;
+  }
+}
+
+.cn-webhooks {
+  &__item {
+    flex-wrap: wrap;
+
+    .cn-settings__item-text {
+      flex-basis: 16rem;
+
+      span {
+        white-space: normal;
+      }
+    }
+
+    &--off > svg {
+      color: var(--cn-text-subtle);
+    }
+  }
+
+  &__off {
+    margin-left: 0.5rem;
+    vertical-align: middle;
+  }
+
+  &__status {
+    &--ok {
+      color: var(--cn-success-text) !important;
+    }
+
+    &--failed {
+      color: var(--cn-danger-text) !important;
+    }
+  }
+
+  &__events {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+  }
+
+  &__events-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+  }
+
+  &__all {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--cn-accent-text);
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+}
+//#endregion

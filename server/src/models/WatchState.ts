@@ -56,13 +56,18 @@ export class WatchState extends Model<InferAttributes<WatchState>, InferCreation
    * Remember where playback is. Near the end, the item becomes watched instead.
    * @param position Unit is in seconds.
    * @param duration Unit is in seconds.
+   * @returns The state, and whether this report finished it.
    */
   public static async saveProgress(userId: number, itemId: number, position: number, duration: number | null) {
     const state = await WatchState.findOrBuildState(userId, itemId);
+    let finished = false;
     state.duration = duration;
     state.lastWatchedAt = new Date();
     if (duration && position / duration >= WatchState.WATCHED_AT) {
-      if (!state.watched) state.playCount = (state.playCount ?? 0) + 1;
+      if (!state.watched) {
+        state.playCount = (state.playCount ?? 0) + 1;
+        finished = true;
+      }
       state.watched = true;
       state.position = 0;
     }
@@ -70,7 +75,7 @@ export class WatchState extends Model<InferAttributes<WatchState>, InferCreation
       state.position = position < WatchState.MIN_RESUME ? 0 : position;
     }
     await state.save();
-    return state;
+    return { state, finished };
   }
 }
 

@@ -15,6 +15,10 @@ function env(key: string, fallback: string): string {
 export namespace AppSystem {
   export const APP_NAME = "Cinemion";
   export const VERSION = "0.1.0";
+  /**
+   * When this server process started, for the dashboard's uptime.
+   */
+  export const startedAt = new Date();
 
   /**
    * `true` when running inside the official Docker image.

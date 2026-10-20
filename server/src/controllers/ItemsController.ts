@@ -5,6 +5,8 @@ import { Collection, Credit, MediaFile, MediaItem, Person, User, WatchState } fr
 import MetadataManager from "../metadata/MetadataManager.ts";
 import Visibility from "../library/Visibility.ts";
 import Summaries from "../library/Summaries.ts";
+import ItemLabels from "../library/ItemLabels.ts";
+import Events from "../integrations/Events.ts";
 import { errorMessage, readJson } from "../lib/http.ts";
 import type { AppEnv } from "../lib/types.ts";
 
@@ -174,7 +176,16 @@ export namespace ItemsController {
     const body = await readJson<{ position: number; duration: number | null }>(c);
     if (typeof body?.position !== "number" || body.position < 0) return c.json({ message: "A position in seconds is required." }, 400);
 
-    await WatchState.saveProgress(user.id, item.id, body.position, typeof body.duration === "number" ? body.duration : null);
+    const { finished } = await WatchState.saveProgress(user.id, item.id, body.position, typeof body.duration === "number" ? body.duration : null);
+    if (finished) {
+      const label = await ItemLabels.describe(item);
+      Events.emit("item.watched", { user: { id: user.id, name: user.name }, item: await ItemLabels.forWebhook(item, label.show) }, {
+        kind: "watched",
+        message: `${user.name} finished ${label.inline}`,
+        userId: user.id,
+        itemId: item.id,
+      });
+    }
     return c.json(await Summaries.one(item, user));
   });
 

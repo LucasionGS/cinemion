@@ -4,3 +4,4 @@ export * from "./media.ts";
 export * from "./playback.ts";
 export * from "./together.ts";
 export * from "./languages.ts";
+export * from "./admin.ts";

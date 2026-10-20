@@ -1,4 +1,6 @@
 import type { TaskInfo } from "@shared/media.ts";
+import type { TaskRecord } from "@shared/admin.ts";
+import { errorMessage } from "./http.ts";
 import log from "./Logger.ts";
 
 /**
@@ -18,7 +20,13 @@ export namespace Tasks {
     promise: Promise<unknown>;
   }
 
+  /**
+   * Finished jobs kept for the Tasks page.
+   */
+  const HISTORY_SIZE = 50;
+
   const _running = new Map<string, Running>();
+  const _history: TaskRecord[] = [];
   // Jobs in the same queue run one after another; SQLite only has one writer anyway
   const _queues = new Map<string, Promise<unknown>>();
 
@@ -43,18 +51,26 @@ export namespace Tasks {
     const promise = previous.catch(() => { }).then(async () => {
       info.status = "Starting";
       info.startedAt = new Date().toISOString();
+      let error: unknown = null;
       try {
         return await job(handle);
-      } catch (error) {
+      } catch (e) {
+        error = e;
         log.error(`${label} failed`, { error });
-        throw error;
+        throw e;
       } finally {
         _running.delete(id);
+        remember({ ...info, finishedAt: new Date().toISOString(), outcome: error ? "failed" : "done", error: error ? errorMessage(error) : null });
       }
     });
     _running.set(id, { info, promise });
     _queues.set(queue, promise);
     return promise;
+  }
+
+  function remember(record: TaskRecord) {
+    _history.unshift(record);
+    if (_history.length > HISTORY_SIZE) _history.length = HISTORY_SIZE;
   }
 
   export function list(): TaskInfo[] {
@@ -64,6 +80,13 @@ export namespace Tasks {
   export function get(id: string): TaskInfo | null {
     const running = _running.get(id);
     return running ? { ...running.info } : null;
+  }
+
+  /**
+   * Finished jobs since startup, newest first.
+   */
+  export function history(): TaskRecord[] {
+    return _history.map((r) => ({ ...r }));
   }
 }
 

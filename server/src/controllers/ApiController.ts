@@ -16,6 +16,9 @@ import PeopleController from "./PeopleController.ts";
 import PlaybackController from "./PlaybackController.ts";
 import SubtitlesController from "./SubtitlesController.ts";
 import TogetherController from "./TogetherController.ts";
+import AdminController from "./AdminController.ts";
+import IntegrationsController from "./IntegrationsController.ts";
+import WebhooksController from "./WebhooksController.ts";
 import type { AppEnv } from "../lib/types.ts";
 
 /**
@@ -41,6 +44,9 @@ export namespace ApiController {
   router.route("/playback", PlaybackController.router);
   router.route("/subtitles", SubtitlesController.router);
   router.route("/together", TogetherController.router);
+  router.route("/admin", AdminController.router);
+  router.route("/integrations", IntegrationsController.router);
+  router.route("/webhooks", WebhooksController.router);
 
   router.all("*", (c) => c.json({ message: `There's no API endpoint at ${c.req.method} ${c.req.path}.` }, 404));
 }

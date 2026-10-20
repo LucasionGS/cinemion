@@ -48,6 +48,11 @@ export interface StartPlaybackRequest {
   startAt?: number;
   quality?: QualityPreset;
   capabilities: DeviceCapabilities;
+  /**
+   * The `playbackId` of the stream this one replaces, like after picking another quality, so the dashboard
+   * keeps showing one stream.
+   */
+  playbackId?: string;
 }
 
 export type PlaybackMode = "direct" | "remux" | "transcode";
@@ -92,6 +97,10 @@ export interface PlaybackInfo {
    * The HLS session, to stop it when playback ends. `null` for direct play.
    */
   sessionId: string | null;
+  /**
+   * This viewing, for the dashboard. The player reports position and pauses with it, and ends it when it closes.
+   */
+  playbackId: string;
   /**
    * Where the stream really starts, in seconds. The player adds this to the video's own time.
    */

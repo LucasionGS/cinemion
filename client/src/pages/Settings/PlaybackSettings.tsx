@@ -3,6 +3,7 @@ import { CircleAlert, CircleCheck } from "lucide-react";
 import type { HardwareAcceleration, HardwareTestResult, PlaybackDevices, PlaybackSettings as Settings } from "@shared/playback.ts";
 import PlaybackApi from "../../Api/PlaybackApi.ts";
 import { toasts } from "../../lib/Toasts.ts";
+import { formatBytes } from "../../lib/format.ts";
 import cx from "../../lib/cx.ts";
 import Button from "../../components/Button/Button.tsx";
 import Select from "../../components/Select/Select.tsx";
@@ -26,12 +27,6 @@ const DECODE_CODECS = [
 ];
 
 const REMOTE_LIMITS = [0, 20_000_000, 12_000_000, 8_000_000, 4_000_000, 2_000_000];
-
-function formatBytes(bytes: number) {
-  if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`;
-  if (bytes < 1024 ** 3) return `${(bytes / 1024 ** 2).toFixed(1)} MB`;
-  return `${(bytes / 1024 ** 3).toFixed(1)} GB`;
-}
 
 /**
  * How the server converts video: GPU acceleration, limits and the conversion cache.

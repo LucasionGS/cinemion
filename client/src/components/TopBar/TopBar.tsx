@@ -1,5 +1,5 @@
 import { Menu } from "@base-ui/react/menu";
-import { Clapperboard, House, LogOut, Popcorn, Search, Settings, Tv, Users } from "lucide-react";
+import { Clapperboard, House, LayoutDashboard, LogOut, Popcorn, Search, Settings, Tv, Users } from "lucide-react";
 import type { LibraryInfo } from "@shared/api.ts";
 import { Link, router } from "../../lib/Router.tsx";
 import useController from "../../lib/useController.ts";
@@ -101,6 +101,7 @@ function ProfileMenu() {
               </div>
             </div>
             <Menu.Item className="cn-menu__item" onClick={() => router.navigate("/settings/profile")}><Settings /> Profile &amp; settings</Menu.Item>
+            {session.can("SERVER_MANAGE") && <Menu.Item className="cn-menu__item" onClick={() => router.navigate("/settings/dashboard")}><LayoutDashboard /> Server dashboard</Menu.Item>}
             <Menu.Item className="cn-menu__item" onClick={() => router.navigate("/together")}><Popcorn /> Join watch together</Menu.Item>
             <Menu.Item className="cn-menu__item" onClick={() => router.navigate("/profiles")}><Users /> Switch profile</Menu.Item>
             <Menu.Separator className="cn-menu__separator" />

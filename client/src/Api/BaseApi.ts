@@ -1,3 +1,5 @@
+import { deviceMode } from "../lib/DeviceMode.ts";
+
 /**
  * Thin wrapper around `fetch` for the Cinemion API. Holds the login token.
  */
@@ -40,6 +42,8 @@ export namespace BaseApi {
     const headers: Record<string, string> = {};
     if (json) headers["Content-Type"] = "application/json";
     if (_token) headers["Authorization"] = `Bearer ${_token}`;
+    // Lets the server name this device ("TV · Chrome") on the dashboard and in the activity feed
+    headers["X-Cinemion-Device-Mode"] = deviceMode.mode;
     return headers;
   }
 

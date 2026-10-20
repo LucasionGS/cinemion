@@ -179,7 +179,18 @@ export namespace Trickplay {
     if (names.length === 0) return;
     const current = new Set((await MediaFile.findAll({ attributes: ["id", "mtime"] })).map((f) => `${f.id}-${f.mtime}`));
     for (const name of names) {
-      if (!current.has(name)) await fsp.rm(Path.join(rootDir, name), { recursive: true, force: true });
+      // A folder being made right now ends in .tmp; it belongs to its file, which may well still be there
+      const base = name.endsWith(".tmp") ? name.slice(0, -4) : name;
+      if (!current.has(base)) await fsp.rm(Path.join(rootDir, name), { recursive: true, force: true });
+    }
+  }
+
+  /**
+   * Delete every finished set of thumbnails, so they're made again. Ones being made right now are left alone.
+   */
+  export async function clear() {
+    for (const name of await fsp.readdir(rootDir).catch(() => [] as string[])) {
+      if (!name.endsWith(".tmp")) await fsp.rm(Path.join(rootDir, name), { recursive: true, force: true });
     }
   }
 

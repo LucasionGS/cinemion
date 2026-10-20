@@ -1,7 +1,7 @@
 # Cinemion handoff
 
 Everything an assistant needs to pick this project up with no earlier context. Read it fully before changing code.
-Last updated 2026-10-20, after milestone 5 (commit `e310344`).
+Last updated 2026-10-20, after milestone 6.
 
 ## 1. What Cinemion is
 
@@ -63,13 +63,17 @@ The owner develops on Arch Linux (deploys to Debian/Ubuntu). Needed:
 1. **Deno 2.9 or newer** (`curl -fsSL https://deno.land/install.sh | sh`, or `sudo pacman -S deno`).
 2. **ffmpeg and ffprobe** with libx264, libx265, libvpx, libopus, libwebp, zscale (zimg) and VA-API/QSV:
    `sudo pacman -S ffmpeg` (Arch) or `sudo apt install ffmpeg` (Debian/Ubuntu).
-3. **Docker** with buildx, for the image (`docker build -t cinemion .`).
+3. **Docker** with buildx, for the image (`docker build -t cinemion .`). On Arch, buildx is its own package: `sudo pacman -S docker-buildx`.
 4. Optional, for GPU conversion on the host: Intel `sudo pacman -S intel-media-driver vpl-gpu-rt` (Debian:
    `intel-media-va-driver-non-free libmfx-gen1.2`), AMD `libva-mesa-driver` / `mesa-va-drivers`. The user must be in the
    `video`/`render` groups. Without host drivers, test GPU paths through the Docker image with `--device /dev/dri`
    (the image ships the Intel and Mesa drivers). The old machine has an Intel Arc GPU; VA-API and Quick Sync both worked
    through Docker.
-5. Optional: Python 3 (only used in throwaway shell one-liners), `lsof`.
+   The second machine (set up for milestone 6) has an **NVIDIA RTX 4070** with the `nvidia-open` driver: NVENC works on
+   the host (Settings › Playback › Run a test: about 10× real time), and the dashboard reads its usage from `nvidia-smi`.
+   NVENC inside Docker needs the NVIDIA container toolkit and is still untested.
+5. Optional: Python 3 (only used in throwaway shell one-liners), `lsof`, and `gamescope` + `google-chrome-stable` for
+   screenshots while the owner's screen is locked (see below).
 
 Then, in the repo:
 
@@ -95,7 +99,17 @@ set one in Settings › Metadata or `TMDB_API_KEY`.
 - Second profile: `POST /api/users {"name":"Mira","color":"coral","showOnPicker":true}` (admin token), then
   `POST /api/auth/profile {"userId":2}` gives Mira's token. Browser tabs share `localStorage`, and the client reads the token
   once at startup, so set the token right before loading each tab.
-- Stop servers with `lsof -ti tcp:PORT | xargs -r kill` (avoid `pkill -f`).
+- Stop servers with `lsof -ti tcp:PORT | xargs -r kill`. Avoid `pkill -f` and `ps | grep` on command text: they match
+  the shell running the command itself and kill it (exit code 144). Save PIDs to a file and kill those instead.
+- **Screenshots without a screen:** run Chrome inside a headless gamescope and drive it over the DevTools protocol:
+  `env -u WAYLAND_DISPLAY XDG_RUNTIME_DIR=/run/user/1000 gamescope --backend headless -W 1440 -H 1000 -- google-chrome-stable --ozone-platform=x11 --autoplay-policy=no-user-gesture-required --user-data-dir=<scratch>/chrome --remote-debugging-port=9222 about:blank`
+  (without `XDG_RUNTIME_DIR` gamescope can't open its socket; without `--ozone-platform=x11` Chrome finds no display).
+  A small Deno script then takes `http://127.0.0.1:9222/json/list`, opens the page's WebSocket, sets
+  `localStorage["cn-token"]`, navigates, and calls `Page.captureScreenshot` (`Emulation.setDeviceMetricsOverride` for
+  phone and TV sizes and full-page shots).
+- Webhook receiver for tests: a few lines of `Deno.serve` that log each request and check `X-Cinemion-Signature` with
+  the webhook's secret. Sonarr/Radarr events can be sent by hand with curl to the address in Settings › Integrations;
+  the payload shapes are in `server/src/integrations/ArrWebhook.ts` and the checks in `test.ts`.
 - Browser automation quirks seen: hover actions don't fire pointer events, and key presses sometimes stop reaching the
   page; dispatching `KeyboardEvent`s from JavaScript works. Phone and TV layouts can be tested in an iframe
   (390×844, or 1920×1080) or with `?mode=mobile` / `?mode=tv` (note: `?mode=` is remembered in localStorage).
@@ -118,32 +132,43 @@ home, search), `playback.ts` (device capabilities, playback info, playback/subti
 `together.ts` (watch together protocol), `languages.ts` (ISO 639-1/2 table), `mod.ts`.
 
 ### server/src
-- `index.ts` startup (AppSystem → DB → migrations → transcode cleanup → Hono app on `Deno.serve` → watcher + scheduler;
-  graceful shutdown). `app.ts` (API under `/api`, dev proxy to Vite, production static client with SPA fallback).
+- `index.ts` startup (AppSystem → DB → migrations → transcode cleanup → Hono app on `Deno.serve` → watcher + scheduler
+  → daily activity pruning; graceful shutdown). `app.ts` (API under `/api`, dev proxy to Vite, production static client with SPA fallback).
 - `AppSystem.ts` config from env (see `.env.example`), folders (`CONFIG_DIR`, `CACHE_DIR`, avatars, images, temp),
-  `isDocker` via `CINEMION_DOCKER=1`, JWT secret generated into `secret.key`. Version constant `VERSION = "0.1.0"`.
+  `isDocker` via `CINEMION_DOCKER=1`, JWT secret generated into `secret.key`. Version constant `VERSION = "0.1.0"`,
+  `startedAt` for the dashboard's uptime.
 - `lib/`: `sqlite.ts` (Sequelize dialect shim over Deno's `node:sqlite`, so `deno compile` works), `Ffmpeg.ts`,
-  `Tasks.ts` (background jobs with progress and queues), `Logger.ts`, `Network.ts` (LAN vs remote, trusts
-  X-Forwarded-For only from private proxies), `RateLimit.ts`, `Avatars.ts`, `MediaRoots.ts`, `http.ts`, `async.ts`.
+  `Tasks.ts` (background jobs with progress and queues, plus the last 50 finished ones), `Logger.ts` (also keeps the
+  last 1000 lines for the Logs page), `Network.ts` (LAN vs remote, trusts X-Forwarded-For only from private proxies),
+  `RateLimit.ts`, `Avatars.ts`, `MediaRoots.ts`, `http.ts`, `async.ts`, `SystemStats.ts` (CPU from `/proc/stat`
+  deltas, memory, GPU usage from `nvidia-smi` / AMD `gpu_busy_percent` / Intel idle residency, disk use via `df -P`),
+  `UserAgent.ts` (device names like "TV · Chrome" from the user agent plus the client's `X-Cinemion-Device-Mode` header).
 - `models/`: Role, User (bcrypt, JWT, `User.$middleware({ required, admin, permissions })`, `User.fromToken`),
   Setting (JSON per key, `Setting.Keys`), Library, MediaItem (movie/show/season/episode), MediaFile (probe data,
-  `sidecars`, `allSubtitles()`; subtitle files get track indexes from 10000), Person, Credit, WatchState, Collection.
+  `sidecars`, `allSubtitles()`; subtitle files get track indexes from 10000), Person, Credit, WatchState, Collection,
+  Activity (the dashboard feed, messages stored ready to show, kept 60 days), Webhook (URL, secret, events, last delivery).
   `models/index.ts` has associations. Primary keys are auto-increment integers.
 - `migrations/` (Umzug; listed by hand in `migrations/index.ts` so they compile into the binary): initial, media,
-  browsing, extras (`media_files.sidecars`).
+  browsing, extras (`media_files.sidecars`), admin (`activities`, `webhooks`).
 - `controllers/` (one namespace per resource exporting a Hono `router`, mounted in `ApiController.ts`): server, setup,
   auth, profiles, users, libraries, fs, items, images, settings, home, search, collections, people, playback, subtitles,
-  together.
-- `library/`: NameParser, Scanner (walk → probe → sidecar subtitles → sort into items → metadata → queue thumbnails),
-  LibraryWatcher (`Deno.watchFs`, 15 s debounce), ScanScheduler (every 6 h), Sidecars (subtitle files), Visibility
-  (library access + age limits), Summaries, ContentRatings.
+  together, admin (dashboard, activity, tasks, logs), integrations (Sonarr/Radarr receiver + path mappings), webhooks.
+- `library/`: NameParser, Scanner (walk → probe → sidecar subtitles → sort into items → metadata → queue thumbnails →
+  report new titles; `queueFolders()` scans only some folders, debounced 5 s, for Sonarr/Radarr), LibraryWatcher
+  (`Deno.watchFs`, 15 s debounce), ScanScheduler (interval setting, `upcoming()`), Sidecars (subtitle files), Visibility
+  (library access + age limits), Summaries, ContentRatings, ItemLabels ("Saltwater Kings · S1 E3", show posters for
+  episodes, webhook item payloads).
 - `metadata/`: MetadataProvider base, providers/LocalProvider (NFO + local artwork), providers/TmdbProvider,
   MetadataManager (priority merge, artwork, palettes, credits, collections, "Fix match"), Nfo.
 - `images/`: ImageCache (WebP variants via ffmpeg), Palette (ambient colours).
 - `media/`: Probe, HardwareAcceleration (GPU detection, test encode, playback settings), PlaybackDecider (direct /
   remux / transcode with plain-language reasons), TranscodeSession (ffmpeg HLS fMP4 sessions in `CACHE_DIR/transcodes`,
   idle reaper, GPU → GPU-encode-only → CPU fallback), Subtitles (WebVTT extraction), Trickplay (seek thumbnail sheets
-  in `CACHE_DIR/trickplay`).
+  in `CACHE_DIR/trickplay`), ActivePlayback (in-memory registry of who's watching what: registered by `/start`, reported
+  every 10 s by the player, ended on close or after 150 s of silence; fires the playback webhooks).
+- `integrations/`: Events (one call sends a webhook event and, optionally, an activity line with de-duplication),
+  Webhooks (HMAC-SHA256 `X-Cinemion-Signature: sha256=…`, retries after 10 s / 1 min / 5 min for network errors, 429
+  and 5xx, a test send), ArrWebhook (Sonarr/Radarr payload parsing, path mappings with Windows paths, token in the URL).
 - `subtitles/`: SubtitleProvider base, providers/OpenSubtitlesProvider (REST API v1, key + optional login),
   SubtitleManager (settings, OpenSubtitles file hash, search, download and save).
 - `together/WatchTogether.ts`: in-memory rooms, WebSocket connection handling, sync state.
@@ -156,14 +181,17 @@ home, search), `playback.ts` (device capabilities, playback info, playback/subti
 - `theme/` tokens (`--cn-*`, TV scales rem with `calc(100vw/80)`) and base styles. Fonts Sora + Manrope via @fontsource.
 - `lib/`: Controller + useController, Router, DeviceMode (desktop/mobile/TV, MediaHub detection), spatialNavigation
   (TV D-pad focus engine), gamepad, ambient (title colours), Toasts, playback helpers, capabilities (what the browser
-  decodes), vtt parser, Together (watch together client session).
-- `Api/`: BaseApi (token in `localStorage["cn-token"]`), plus one namespace per resource (Server, Auth, Users,
-  Libraries, Items, Settings, Playback, Subtitles).
+  decodes), vtt parser, Together (watch together client session), format (bytes, bitrates, relative times), usePoll
+  (load every N ms while the tab is visible), clipboard (falls back to `execCommand` on plain-http LAN addresses).
+- `Api/`: BaseApi (token in `localStorage["cn-token"]`, sends `X-Cinemion-Device-Mode`), plus one namespace per
+  resource (Server, Auth, Users, Libraries, Items, Settings, Playback, Subtitles, Admin, Integrations, Webhooks).
 - `components/`: buttons, fields, dialogs, avatar + editor, top bar, app shell, cards, rows, hero, item actions,
   folder browser, fix-match dialog, and `Player/` (PlayerController, PlayerView, Scrubber, Thumbnail, TrackPanel,
   SubtitleSearchDialog, TogetherPanel, Player.scss).
 - `pages/`: Setup, Profiles, SignIn, Home, Library, Item, Search, Person, Collection, Player, Together, Settings
-  (Profile, Device, Users, Libraries, Metadata, Playback, Subtitles tabs).
+  (nav groups "You": Profile, Device; "Server": Dashboard, Libraries, Users, Playback, Metadata, Subtitles,
+  Integrations, Webhooks, Tasks (badge with the running count), Logs; the server pages share `Admin.scss`).
+  The top bar's profile menu has "Server dashboard" for people with `SERVER_MANAGE`.
 
 ### Other files
 `Dockerfile` (deno 2.9.7 build stage compiles the binary → `debian:trixie-slim` with Debian ffmpeg, Mesa VA driver,
@@ -181,32 +209,34 @@ and on amd64 Intel's non-free VA driver + Quick Sync runtime), `docker/entrypoin
 | 3 | done `fbabbdd` | Browsing: home rows, library grids with sort/filter, movie/show/season/episode pages, collections, people, search, watch state, age limits |
 | 4 | done `8265cbe` | Playback: decision engine, direct play, remux, HLS conversion, GPU acceleration, HDR→SDR, remote limit, player for all layouts, track panel, resume, next-episode countdown, Settings › Playback |
 | 5 | done `e310344` | Seek thumbnails (scrubber + TV filmstrip), subtitle files next to videos, OpenSubtitles search/download, watch together, Settings › Subtitles |
-| 6 | **next** | Admin & integrations (below) |
-| 7 | to do | Distribution (below) |
+| 6 | done | Admin & integrations: dashboard, activity feed, tasks and logs pages, Sonarr/Radarr receiver with path mappings, outgoing webhooks (below) |
+| 7 | **next** | Distribution (below) |
 
-### Milestone 6: admin & integrations (nothing written yet)
-Follow the Round 3 admin mockup: app top bar + the existing left settings nav. Planned nav: Dashboard, Libraries,
-Users, Playback, Metadata, Subtitles, Integrations, Webhooks, Tasks, Logs (several already exist as Settings tabs in
-`client/src/pages/Settings/`).
-- **Dashboard** (`SERVER_MANAGE`): header "server name · Cinemion version · up N days" and a "Scan all libraries"
-  button; four stat tiles (streams with direct/converting split, CPU, GPU if known, storage of the media folders);
-  "Now playing" cards (profile, device, title, direct/converting badge with the reason, codec details, progress, bitrate);
-  tasks (running with progress, plus the next scheduled scan); an activity feed ("Mira finished Paper Moons",
-  "Glass Harbor was added to Movies", "Sonarr imported …", "Subtitles downloaded for …", new sign-ins).
-  Needs: an in-memory registry of active playback (from `/api/playback/:id/start`, progress reports, session pings,
-  direct streams), an activity log (probably a small `activities` table via a new migration), system stats
-  (`Deno.systemMemoryInfo`, `/proc/stat` or `os.loadavg()`, `Deno.statfs`-like disk usage for media roots).
-  Refresh by polling, or push over a WebSocket.
-- **Tasks page:** running and recent tasks (keep a short history in `lib/Tasks.ts`), scheduled scans, buttons to scan or
-  refresh metadata, regenerate thumbnails.
-- **Logs page:** keep the last ~1000 log lines in memory in `lib/Logger.ts` and show them with level filters.
-- **Sonarr/Radarr receiver:** a webhook endpoint (token in the URL, generated and shown in Settings › Integrations).
-  On "Download"/"Import"/"Rename"/"Delete" events, map the reported path through configurable path mappings
-  (their path prefix → our path prefix) and rescan only the affected folder (the scanner needs a "scan these folders"
-  mode). Show the URL to paste into Sonarr/Radarr (Settings → Connect → Webhook).
-- **Outgoing webhooks:** configurable URLs with event selection (playback started/stopped, item added, user signed in,
-  together session started…), JSON payloads signed with HMAC-SHA256 (header like `X-Cinemion-Signature`), retries with
-  backoff, a "Send test" button and a last-delivery status.
+### Milestone 6: what was built
+Follows the Round 3 admin mockup (artboard `Admin.dc.html` in the Round 3 canvas): app top bar + left settings nav.
+- **Dashboard** (`/settings/dashboard`, `SERVER_MANAGE`, polls every 3 s): "server name · Cinemion version · up N";
+  "Scan all libraries"; tiles for streams (direct/converting split, meter = conversions vs. the limit), CPU (+ memory),
+  GPU when hardware acceleration is on (otherwise a memory tile) and storage of the library folders; "Now playing"
+  cards (poster, profile, device, badge, codec line like "HEVC → H.264 480p with NVENC · AAC stereo", the decider's
+  reason, progress, bitrate, a pause icon); running tasks + the next scheduled scan; the last 12 activity lines.
+- **Activity feed** (`activities` table): new titles (grouped per show; the first scan of a library is one line),
+  "Mira finished Paper Moons", sign-ins (the same profile on the same device only once per 6 h), Sonarr/Radarr imports
+  and deletes, subtitle downloads, watch together sessions.
+- **Tasks page**: running tasks, buttons (scan all, refresh all details, make missing / remake all seek thumbnails),
+  the scan interval (1–48 h, the existing `scanIntervalHours` setting) with each library's next scan, and recent tasks.
+- **Logs page**: the last 1000 lines (newest first), level filter, search, download as a text file; only new lines are
+  fetched every 3 s, and a server restart is noticed.
+- **Settings › Integrations**: the Sonarr/Radarr address (`/api/integrations/arr/<token>`, copy button, warning when
+  the page was opened as localhost, "Make new address"), setup steps, the last event received, and path mappings.
+  Download/Rename/Delete events rescan only the affected folders (nearest existing folder for deletes); a reported
+  folder outside every library is flagged in the UI and the log. Wrong tokens are rate limited per address.
+- **Settings › Webhooks**: add/edit (name, URL, events as chips, on/off, secret with copy and "New"), "Send test",
+  last delivery status with the retry time. Events: `playback.started|paused|resumed|stopped`, `item.watched`,
+  `item.added`, `library.scanned`, `user.signedIn`, `together.started`, `subtitles.downloaded` (types and payloads in
+  `shared/src/admin.ts`). Body `{ event, id, sentAt, server: { name, version }, data }`.
+- Fixed on the way: a scan finishing while another library's seek thumbnails were being made deleted that
+  half-made folder (`Trickplay.cleanup()` now keeps `.tmp` folders of current files); `.cn-settings__row-text` grew to
+  14rem tall inside cards (its flex basis is meant for rows), visible on Settings › Subtitles.
 
 ### Milestone 7: distribution
 - `.github/workflows/release.yml`: on a version tag, build binaries for linux_x64 and linux_arm64 (`deno compile`
@@ -244,6 +274,13 @@ optional uploaded pictures, watch together as a side panel.
   because the player stops following a moment before it moves on to the next episode.
 - Subtitle files from the web are often Windows-1252; `Subtitles.ts` detects non-UTF-8 and passes `-sub_charenc CP1252`.
 - `deno lint` enforces `verbatim-module-syntax`: use `import type` when only types are used.
+- **Closing a tab doesn't unmount React**, so cleanup in `destroy()` never runs. The player also listens to `pagehide`
+  (save progress, stop the conversion, end the dashboard entry) and reloads its stream on a back/forward-cache `pageshow`.
+- **Background tabs run timers about once a minute**, so the dashboard keeps a silent player for 150 s before
+  ending it.
+- **Deno's `fetch` errors say only "fetch failed"**; the reason ("Connection refused", a DNS error) is in
+  `error.cause.message`. `Webhooks.ts` turns those into readable sentences.
+- A webhook test receiver must check the signature over the raw body, before any JSON parsing.
 
 ## 8. Open items
 
@@ -253,4 +290,12 @@ optional uploaded pictures, watch together as a side panel.
 - **Not tested:** picture subtitles (PGS) drawn into the video (no sample can be generated with ffmpeg), NVENC
   (no NVIDIA GPU), older iPhones (native HLS without MSE), watch together across two real devices, the TV remote inside
   the watch together panel.
+- **Sonarr and Radarr are only tested with hand-made payloads** (shapes from their docs: `series.path`,
+  `episodeFile.path`, `movie.folderPath`, `movieFile.path`, `renamedEpisodeFiles`, `deleteReason`, `deletedFiles`).
+  Worth one run against real instances, especially Sonarr v4's season-pack imports.
+- **Dashboard GPU usage**: NVIDIA (`nvidia-smi`) is tested; AMD (`gpu_busy_percent`) and Intel (i915 `rc6_residency_ms`
+  / xe `idle_residency_ms` deltas) are written to the kernel docs but untested. The Intel value needs two looks, so the
+  first poll shows "—". Storage uses `df -P`, so it shows "—" where `df` is missing (Windows).
+- Possible later additions: a full activity history page (the API already pages with `before`), stopping a stream from
+  the dashboard, and pushing dashboard updates over a WebSocket instead of polling.
 - Ideas for later live in `docs/future-features.md`.

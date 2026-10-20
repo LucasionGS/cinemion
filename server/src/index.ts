@@ -7,6 +7,8 @@ import LibraryWatcher from "./library/LibraryWatcher.ts";
 import ScanScheduler from "./library/ScanScheduler.ts";
 import TranscodeSession from "./media/TranscodeSession.ts";
 import WatchTogether from "./together/WatchTogether.ts";
+import ActivePlayback from "./media/ActivePlayback.ts";
+import { Activity } from "./models/index.ts";
 import log from "./lib/Logger.ts";
 
 addEventListener("unhandledrejection", (event) => {
@@ -51,11 +53,18 @@ const server = Deno.serve({
 await LibraryWatcher.refresh();
 ScanScheduler.start();
 
+// The activity feed keeps a couple of months
+const pruneActivity = () => Activity.prune().catch((error) => log.warn("Could not clean up old activity", { error }));
+pruneActivity();
+const pruneTimer = setInterval(pruneActivity, 24 * 60 * 60 * 1000);
+
 for (const signal of ["SIGINT", "SIGTERM"] as const) {
   Deno.addSignalListener(signal, async () => {
     log.info("Shutting down");
     ScanScheduler.stop();
     LibraryWatcher.stop();
+    ActivePlayback.shutdown();
+    clearInterval(pruneTimer);
     await TranscodeSession.shutdown();
     WatchTogether.shutdown();
     await server.shutdown();

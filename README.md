@@ -2,7 +2,7 @@
 
 Your movies and shows, beautifully served from your own machine: a self-hosted media server that feels at home on the couch, at a desk and on a phone.
 
-> Cinemion is under active development. Everything below works; admin tools (a dashboard, Sonarr/Radarr and webhooks) are next.
+> Cinemion is under active development. Everything below works; ready-made releases (GitHub, the AUR and GHCR) are next.
 
 ## Key Features
 
@@ -19,6 +19,10 @@ Your movies and shows, beautifully served from your own machine: a self-hosted m
 - **Watch together**: start a session, share a code, and everyone's play, pause and seek stay in step, each on their own screen. Only the host's progress is saved, so nobody's "continue watching" gets spoiled.
 - **Picks up where you left off**: continue watching, next up, recently added and "because you watched", per profile. Collections, cast pages and search across titles, episodes and people.
 - **Safe for kids**: give a profile an age limit and anything rated above it (or not rated at all) simply isn't there.
+- **A dashboard for the server**: who's watching what and on which device, whether it plays directly or is being converted (and why), CPU, GPU and disk use, running tasks, and a feed of what happened lately. "Mira finished Paper Moons" included.
+- **Sonarr and Radarr, connected**: paste one address into Sonarr or Radarr, and new downloads show up within seconds instead of at the next scan. Their folders look different in their container? A path mapping sorts that out.
+- **Webhooks for everything else**: tell Home Assistant, a chat bot or your own script when playback starts, pauses or stops, a new episode arrives or someone signs in. Every message is signed, failed ones are retried, and there's a test button.
+- **Tasks and logs at hand**: start scans and thumbnail jobs, choose how often libraries are scanned, and read the server log with filters, all in Settings. No terminal needed when something acts up.
 - **One container, nothing else**: the Docker image includes everything. No database server, no extra services. There's also a single-file binary if you'd rather skip Docker.
 - **Plays nice with MediaHub**: open it in MediaHub and it starts straight in the TV layout, controller included.
 
@@ -67,7 +71,7 @@ Other tasks:
 
 `scripts/make-sample-media.sh` fills `data/media` with a small fake library (short ffmpeg clips with tidy and messy names, NFO files, artwork, extras and samples) for trying things out. Add a TMDB API key in Settings › Metadata to see online matching.
 
-`deno run -A server/src/test.ts` runs the file name parser checks.
+`deno run -A server/src/test.ts` runs the scratch checks: file names, playback decisions, Sonarr/Radarr payloads, webhook signatures and more.
 
 ### Layout
 
