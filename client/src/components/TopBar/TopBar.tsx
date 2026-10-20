@@ -1,5 +1,5 @@
 import { Menu } from "@base-ui/react/menu";
-import { Clapperboard, House, LogOut, Settings, Tv, Users } from "lucide-react";
+import { Clapperboard, House, LogOut, Search, Settings, Tv, Users } from "lucide-react";
 import type { LibraryInfo } from "@shared/api.ts";
 import { Link, router } from "../../lib/Router.tsx";
 import useController from "../../lib/useController.ts";
@@ -35,7 +35,11 @@ export default function TopBar(props: TopBarProps) {
   ];
   const isActive = (href: string) => href === "/" ? path === "/" : path.startsWith(href);
 
+  const searchItem: NavItem = { href: "/search", label: "Search", icon: <Search /> };
+
   if (mode === "mobile") {
+    // Room for four tabs: Home, up to two libraries, and Search
+    const tabs = [...items.slice(0, 3), searchItem];
     return (
       <>
         <header className="cn-topbar cn-topbar--mobile">
@@ -43,7 +47,7 @@ export default function TopBar(props: TopBarProps) {
           {user && <ProfileMenu />}
         </header>
         <nav className="cn-tabbar" aria-label="Main">
-          {items.slice(0, 4).map((item) => (
+          {tabs.map((item) => (
             <Link key={item.href} href={item.href} className={cx("cn-tabbar__item", isActive(item.href) && "cn-tabbar__item--active")} aria-current={isActive(item.href) ? "page" : undefined}>
               {item.icon}
               <span>{item.label}</span>
@@ -58,13 +62,19 @@ export default function TopBar(props: TopBarProps) {
     <header className="cn-topbar">
       <Link href="/" className="cn-topbar__logo"><Logo /></Link>
       <nav className="cn-topbar__nav" aria-label="Main">
-        {items.map((item) => (
+        {(mode === "tv" ? [...items, searchItem] : items).map((item) => (
           <Link key={item.href} href={item.href} className={cx("cn-topbar__link", isActive(item.href) && "cn-topbar__link--active")} aria-current={isActive(item.href) ? "page" : undefined}>
             {item.label}
           </Link>
         ))}
       </nav>
       <div className="cn-topbar__end">
+        {mode === "desktop" && (
+          <Link href="/search" className="cn-topbar__search">
+            <Search aria-hidden="true" />
+            <span>Search movies and shows</span>
+          </Link>
+        )}
         {user && <ProfileMenu />}
       </div>
     </header>

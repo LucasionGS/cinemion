@@ -5,12 +5,11 @@
   &__main {
     position: relative;
     z-index: 1;
-    padding: 2rem var(--cn-gutter) 4rem;
+    padding: var(--cn-page-top) var(--cn-gutter) 4rem;
   }
 }
 
 // Room for the floating tab bar
 :root[data-mode="mobile"] .cn-shell__main {
-  padding-top: 1rem;
   padding-bottom: calc(6.5rem + env(safe-area-inset-bottom));
 }

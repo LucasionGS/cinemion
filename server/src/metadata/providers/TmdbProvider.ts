@@ -43,6 +43,9 @@ export class TmdbProvider extends MetadataProvider {
   public readonly id = "tmdb";
   public readonly name = "TMDB";
 
+  // Collections are shared by several movies; fetch each one once per run of the server
+  private _collections = new Map<string, Promise<MetadataProvider.CollectionMetadata | null>>();
+
   private async settings(): Promise<MetadataSettings> {
     return await Setting.get<MetadataSettings>(Setting.Keys.METADATA, { tmdbApiKey: null, language: "en", country: "US", providers: ["local", "tmdb"] });
   }
@@ -188,6 +191,7 @@ export class TmdbProvider extends MetadataProvider {
       poster_path: string | null;
       backdrop_path: string | null;
       imdb_id: string | null;
+      belongs_to_collection: { id: number; name: string } | null;
       credits: { cast: TmdbCredit[]; crew: TmdbCredit[] };
       release_dates: { results: { iso_3166_1: string; release_dates: { certification: string; type: number }[] }[] };
       images: { logos: TmdbImage[] };
@@ -218,7 +222,24 @@ export class TmdbProvider extends MetadataProvider {
         logo: this.pickLogo(movie.images?.logos, language),
       },
       credits: this.credits(movie.credits),
+      collection: movie.belongs_to_collection ? await this.collection(String(movie.belongs_to_collection.id), language) : null,
     };
+  }
+
+  private collection(id: string, language: string) {
+    let pending = this._collections.get(id);
+    if (!pending) {
+      pending = this.request<{ id: number; name: string; overview: string; poster_path: string | null; backdrop_path: string | null }>(`/collection/${id}`, { language })
+        .then((c) => ({
+          name: c.name,
+          tmdbId: String(c.id),
+          overview: c.overview || null,
+          artwork: { poster: this.image(c.poster_path, "w780"), backdrop: this.image(c.backdrop_path, "original") },
+        }))
+        .catch(() => null);
+      this._collections.set(id, pending);
+    }
+    return pending;
   }
 
   public override async show(query: MetadataProvider.ShowQuery): Promise<MetadataProvider.ShowMetadata | null> {

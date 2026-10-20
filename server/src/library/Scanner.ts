@@ -1,7 +1,7 @@
 import fsp from "node:fs/promises";
 import Path from "node:path";
 import { Op } from "sequelize";
-import { Library, MediaFile, MediaItem } from "../models/index.ts";
+import { Collection, Library, MediaFile, MediaItem } from "../models/index.ts";
 import NameParser from "./NameParser.ts";
 import Probe from "../media/Probe.ts";
 import MetadataManager from "../metadata/MetadataManager.ts";
@@ -264,6 +264,10 @@ export namespace Scanner {
       for (const parent of parents) {
         if (await MediaItem.count({ where: { parentId: parent.id } }) === 0) await parent.destroy();
       }
+    }
+
+    for (const collection of await Collection.findAll({ where: { libraryId: library.id }, attributes: ["id"] })) {
+      if (await MediaItem.count({ where: { collectionId: collection.id } }) === 0) await collection.destroy();
     }
   }
 }

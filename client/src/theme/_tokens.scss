@@ -53,6 +53,7 @@
   // Layout
   --cn-gutter: 3rem; // Page side margin
   --cn-topbar-height: 4.75rem;
+  --cn-page-top: 2rem; // Space between the top bar and page content
   --cn-control-height: 3rem;
 
   // Motion
@@ -69,6 +70,7 @@
 :root[data-mode="mobile"] {
   --cn-gutter: 1.25rem;
   --cn-topbar-height: 3.75rem;
+  --cn-page-top: 1rem;
 }
 
 // TV (10-foot): everything is sized in rem, so scaling the root font scales the whole UI with the screen.

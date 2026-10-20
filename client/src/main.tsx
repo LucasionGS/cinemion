@@ -77,6 +77,34 @@ const routes: Route[] = [
     },
   }),
   requirement({ signedIn: true }, {
+    path: /^\/item\/(\d+)\/?$/,
+    component: async ([id]) => {
+      const Item = (await import("./pages/Item/Item.tsx")).default;
+      return <Item key={id} id={Number(id)} />;
+    },
+  }),
+  requirement({ signedIn: true }, {
+    path: /^\/collection\/(\d+)\/?$/,
+    component: async ([id]) => {
+      const Collection = (await import("./pages/Collection/Collection.tsx")).default;
+      return <Collection key={id} id={Number(id)} />;
+    },
+  }),
+  requirement({ signedIn: true }, {
+    path: /^\/person\/(\d+)\/?$/,
+    component: async ([id]) => {
+      const Person = (await import("./pages/Person/Person.tsx")).default;
+      return <Person key={id} id={Number(id)} />;
+    },
+  }),
+  requirement({ signedIn: true }, {
+    path: /^\/search\/?$/,
+    component: async () => {
+      const Search = (await import("./pages/Search/Search.tsx")).default;
+      return <Search />;
+    },
+  }),
+  requirement({ signedIn: true }, {
     path: /^\/$/,
     component: async () => {
       const Home = (await import("./pages/Home/Home.tsx")).default;

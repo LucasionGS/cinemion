@@ -1,0 +1,51 @@
+.cn-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 0.25rem;
+
+  &__buttons {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  &__play svg.cn-play-ring {
+    width: 1.6em;
+    height: 1.6em;
+  }
+
+  &__watched--on {
+    background: var(--cn-accent-soft);
+    border-color: transparent;
+    color: var(--cn-accent-text);
+  }
+
+  &__progress {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    max-width: 26rem;
+    font-size: 0.85rem;
+    color: var(--cn-text-muted);
+  }
+
+  &__bar {
+    flex: 1;
+    height: 0.25rem;
+    border-radius: var(--cn-radius-pill);
+    background: rgba(255, 255, 255, 0.2);
+    overflow: hidden;
+
+    span {
+      display: block;
+      height: 100%;
+      background: var(--cn-accent);
+    }
+  }
+}
+
+:root[data-mode="mobile"] .cn-actions__play {
+  flex: 1 1 100%;
+}

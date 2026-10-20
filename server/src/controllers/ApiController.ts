@@ -9,6 +9,10 @@ import FilesystemController from "./FilesystemController.ts";
 import ItemsController from "./ItemsController.ts";
 import ImagesController from "./ImagesController.ts";
 import SettingsController from "./SettingsController.ts";
+import HomeController from "./HomeController.ts";
+import SearchController from "./SearchController.ts";
+import CollectionsController from "./CollectionsController.ts";
+import PeopleController from "./PeopleController.ts";
 import type { AppEnv } from "../lib/types.ts";
 
 /**
@@ -27,6 +31,10 @@ export namespace ApiController {
   router.route("/items", ItemsController.router);
   router.route("/images", ImagesController.router);
   router.route("/settings", SettingsController.router);
+  router.route("/home", HomeController.router);
+  router.route("/search", SearchController.router);
+  router.route("/collections", CollectionsController.router);
+  router.route("/people", PeopleController.router);
 
   router.all("*", (c) => c.json({ message: `There's no API endpoint at ${c.req.method} ${c.req.path}.` }, 404));
 }

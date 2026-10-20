@@ -1,5 +1,5 @@
 import type { CreationOptional, ForeignKey, InferAttributes, InferCreationAttributes, NonAttribute } from "sequelize";
-import { DataTypes, Model } from "sequelize";
+import { col, DataTypes, Model, Op, where } from "sequelize";
 import type { Artwork, ExternalIds, ItemSummary, ItemType, MatchStatus, Palette } from "@shared/media.ts";
 import sequelize, { ID_TYPE, jsonColumn } from "./sequelize.ts";
 import type Library from "./Library.ts";
@@ -50,6 +50,14 @@ export class MediaItem extends Model<InferAttributes<MediaItem>, InferCreationAt
   declare palette: CreationOptional<Palette | null>;
   declare matchStatus: CreationOptional<MatchStatus>;
   /**
+   * Collection a movie belongs to. `null` = none.
+   */
+  declare collectionId: CreationOptional<number | null>;
+  /**
+   * Minimum age from `contentRating`. Seasons and episodes copy their show's. `null` = unrated.
+   */
+  declare ageRating: CreationOptional<number | null>;
+  /**
    * When metadata was last fetched. `null` = never, so the next scan fetches it.
    */
   declare metadataUpdatedAt: CreationOptional<Date | null>;
@@ -66,29 +74,45 @@ export class MediaItem extends Model<InferAttributes<MediaItem>, InferCreationAt
     return title.trim().toLowerCase().normalize("NFKD").replace(/[̀-ͯ]/g, "").replace(/^(the|a|an|de|het|een|der|die|das|le|la|les|el|los)\s+/i, "").replace(/[^\p{L}\p{N} ]+/gu, "").trim();
   }
 
+  /**
+   * Condition for items with `genre`. Genres are stored as JSON text, so this matches the quoted name.
+   */
+  public static genreCondition(genre: string) {
+    return where(col("genres"), { [Op.like]: `%${JSON.stringify(genre)}%` });
+  }
+
   public setTitle(title: string) {
     this.title = title;
     this.sortTitle = MediaItem.sortTitleFor(title);
   }
 
   /**
-   * @param childCount Seasons of a show or episodes of a season, when known.
+   * @param extra What the item doesn't know by itself: child count, the profile's progress, the show it's in.
+   *   `Summaries.build()` fills these in for lists.
    */
-  public toSummary(childCount = 0): ItemSummary {
+  public toSummary(extra?: Partial<Pick<ItemSummary, "childCount" | "userData" | "showId" | "showTitle">>): ItemSummary {
     return {
       id: this.id,
       libraryId: this.libraryId,
       type: this.type,
       title: this.title,
       year: this.year,
+      overview: this.overview,
+      runtime: this.runtime,
+      genres: this.genres,
+      rating: this.rating,
       artwork: this.artwork,
       palette: this.palette,
       matchStatus: this.matchStatus,
       contentRating: this.contentRating,
-      childCount,
+      childCount: extra?.childCount ?? 0,
       seasonNumber: this.seasonNumber,
       episodeNumber: this.episodeNumber,
+      showId: extra?.showId ?? null,
+      showTitle: extra?.showTitle ?? null,
+      collectionId: this.collectionId,
       addedAt: this.addedAt.toISOString(),
+      userData: extra?.userData ?? null,
     };
   }
 
@@ -121,6 +145,8 @@ MediaItem.init({
   artwork: jsonColumn<Artwork, MediaItem>("artwork", EMPTY_ARTWORK),
   palette: jsonColumn<Palette | null, MediaItem>("palette", null, true),
   matchStatus: { type: DataTypes.STRING(16), allowNull: false, defaultValue: "unmatched" },
+  collectionId: { type: ID_TYPE, allowNull: true, defaultValue: null },
+  ageRating: { type: DataTypes.INTEGER, allowNull: true, defaultValue: null },
   metadataUpdatedAt: { type: DataTypes.DATE, allowNull: true, defaultValue: null },
   addedAt: { type: DataTypes.DATE, allowNull: false, defaultValue: DataTypes.NOW },
   createdAt: DataTypes.DATE,

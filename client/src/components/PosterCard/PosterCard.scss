@@ -47,7 +47,8 @@
     letter-spacing: -0.02em;
     text-align: left;
     color: #fff;
-    overflow-wrap: anywhere;
+    overflow-wrap: break-word;
+    hyphens: auto;
   }
 
   &__badge {
@@ -60,6 +61,46 @@
     color: var(--cn-warning);
     font-size: 0.7rem;
     font-weight: 800;
+  }
+
+  // Watched tick, or the number of episodes left, in the bottom corner
+  &__corner {
+    position: absolute;
+    right: 0.5rem;
+    bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.6rem;
+    height: 1.6rem;
+    padding: 0 0.35rem;
+    border-radius: var(--cn-radius-pill);
+    background: var(--cn-accent);
+    color: var(--cn-on-accent);
+    font-size: 0.75rem;
+    font-weight: 800;
+    box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.4);
+
+    svg {
+      width: 0.95rem;
+      height: 0.95rem;
+      stroke-width: 3;
+    }
+  }
+
+  &__progress {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 0.25rem;
+    background: rgba(255, 255, 255, 0.25);
+
+    span {
+      display: block;
+      height: 100%;
+      background: var(--cn-accent);
+    }
   }
 
   &__meta {
@@ -96,8 +137,16 @@
   }
 }
 
+// Phones manage titles from the title page instead; the menu would cover the artwork
 :root[data-mode="mobile"] .cn-poster__actions {
-  opacity: 1;
+  display: none;
+}
+
+:root[data-mode="mobile"] .cn-poster__fallback {
+  left: 0.5rem;
+  right: 0.5rem;
+  bottom: 0.625rem;
+  font-size: 0.85rem;
 }
 
 // TV focus: lift and ring the artwork, not the whole card

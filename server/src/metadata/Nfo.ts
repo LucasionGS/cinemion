@@ -85,7 +85,12 @@ export namespace Nfo {
     all(body, "director").forEach((name, i) => credits.push({ name, kind: "director", order: i }));
     all(body, "credits").forEach((name, i) => credits.push({ name, kind: "writer", order: i }));
 
+    // <set><name>Trilogy</name></set>, or the older <set>Trilogy</set>
+    const setBlock = blocks(body, "set")[0];
+    const setName = setBlock ? (first(setBlock, "name") ?? decode(setBlock)) : null;
+
     return {
+      collection: setName && !setName.includes("<") ? { name: setName, overview: setBlock ? first(setBlock, "overview") : null } : null,
       title: first(body, "title"),
       originalTitle: first(body, "originaltitle"),
       year: year ? parseInt(year) : released ? parseInt(released.slice(0, 4)) : null,

@@ -1,0 +1,144 @@
+.cn-wide {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--cn-radius-lg);
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  transition: transform var(--cn-medium) var(--cn-ease);
+
+  &:hover {
+    transform: translateY(-0.2rem);
+  }
+
+  &__art {
+    position: relative;
+    display: block;
+    aspect-ratio: 16 / 9;
+    border-radius: var(--cn-radius-lg);
+    overflow: hidden;
+    background: var(--cn-surface-2);
+    transition: box-shadow var(--cn-medium) var(--cn-ease);
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  &--selected &__art {
+    box-shadow: 0 0 0 3px var(--cn-accent);
+  }
+
+  &__shade {
+    position: absolute;
+    inset: 40% 0 0;
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.75), transparent);
+  }
+
+  &__title {
+    position: absolute;
+    left: 1.25rem;
+    right: 1.25rem;
+    bottom: 1.75rem;
+    font-family: var(--cn-font-display);
+    font-weight: 700;
+    font-size: 1.6rem;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    color: #fff;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__number {
+    position: absolute;
+    left: 0.625rem;
+    top: 0.625rem;
+    padding: 0.125rem 0.5rem;
+    border-radius: var(--cn-radius-xs);
+    background: rgba(0, 0, 0, 0.6);
+    font-size: 0.75rem;
+    font-weight: 800;
+  }
+
+  &__watched {
+    position: absolute;
+    top: 0.625rem;
+    right: 0.625rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.6rem;
+    height: 1.6rem;
+    border-radius: 50%;
+    background: var(--cn-accent);
+    color: var(--cn-on-accent);
+
+    svg {
+      width: 0.95rem;
+      height: 0.95rem;
+      stroke-width: 3;
+    }
+  }
+
+  &__progress {
+    position: absolute;
+    left: 1.25rem;
+    right: 1.25rem;
+    bottom: 0.875rem;
+    height: 0.25rem;
+    border-radius: var(--cn-radius-pill);
+    background: rgba(255, 255, 255, 0.22);
+    overflow: hidden;
+
+    span {
+      display: block;
+      height: 100%;
+      background: var(--cn-accent);
+    }
+  }
+
+  &__meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    min-width: 0;
+  }
+
+  &__line1 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__line2 {
+    font-size: 0.825rem;
+    color: var(--cn-text-subtle);
+  }
+}
+
+// Episode thumbnails have the progress bar flush along the bottom
+.cn-wide__art:has(.cn-wide__number) .cn-wide__progress {
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 0;
+}
+
+:root[data-mode="tv"] .cn-wide:focus {
+  box-shadow: none;
+  transform: scale(1.04);
+
+  .cn-wide__art {
+    box-shadow: 0 0 0 0.2rem var(--cn-text), 0 1.25rem 3rem rgba(0, 0, 0, 0.55);
+  }
+}

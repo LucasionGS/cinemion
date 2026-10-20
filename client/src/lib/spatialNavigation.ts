@@ -83,14 +83,38 @@ export function move(direction: Direction) {
   }
 
   const from = current.getBoundingClientRect();
+  const horizontal = direction === "left" || direction === "right";
   let best: HTMLElement | null = null;
-  let bestScore = Infinity;
-  for (const candidate of candidates) {
-    if (candidate === current) continue;
-    const s = score(from, candidate.getBoundingClientRect(), direction);
-    if (s < bestScore) {
-      bestScore = s;
-      best = candidate;
+
+  if (horizontal) {
+    let bestScore = Infinity;
+    for (const candidate of candidates) {
+      if (candidate === current) continue;
+      const rect = candidate.getBoundingClientRect();
+      // Left and right only move along the same row; jumping to the top bar from the end of a row feels broken
+      if (!(rect.bottom > from.top + 1 && rect.top < from.bottom - 1)) continue;
+      const s = score(from, rect, direction);
+      if (s < bestScore) {
+        bestScore = s;
+        best = candidate;
+      }
+    }
+  }
+  else {
+    // Up and down go to the nearest row first, then to the item in it closest to where focus is now
+    const ahead = candidates
+      .filter((c) => c !== current)
+      .map((c) => ({ el: c, rect: c.getBoundingClientRect() }))
+      .filter(({ rect }) => direction === "down" ? rect.top >= from.bottom - 4 : rect.bottom <= from.top + 4);
+    if (ahead.length) {
+      const edge = (r: DOMRect) => direction === "down" ? r.top : -r.bottom;
+      const nearest = Math.min(...ahead.map(({ rect }) => edge(rect)));
+      const row = ahead.filter(({ rect }) => edge(rect) - nearest < Math.max(24, from.height * 0.5));
+      const center = from.left + from.width / 2;
+      const offset = (r: DOMRect) => center < r.left ? r.left - center : center > r.right ? center - r.right : 0;
+      // Entering a tab list or nav lands on the selected item, like a TV remote expects
+      const selected = row.find(({ el }) => el.getAttribute("aria-selected") === "true" || (el.hasAttribute("aria-current") && el.getAttribute("aria-current") !== "false"));
+      best = selected?.el ?? row.sort((a, b) => offset(a.rect) - offset(b.rect))[0].el;
     }
   }
 

@@ -72,6 +72,7 @@ cat > "$NB/movie.nfo" <<'EOF'
   <genre>Drama</genre>
   <genre>Adventure</genre>
   <studio>Sample Pictures</studio>
+  <set><name>Open Roads Collection</name><overview>Long drives and the people who take them.</overview></set>
   <director>Inês Valadares</director>
   <actor><name>Tomás Reis</name><role>Duarte</role><order>0</order></actor>
   <actor><name>Bruno Seixas</name><role>Rui</role><order>1</order></actor>
@@ -107,6 +108,19 @@ ffmpeg -loglevel error -y \
 # Extras and samples that must be skipped
 TLM="$MOVIES/The Long Meridian (2023)"
 clip "$TLM/The Long Meridian (2023).mkv" "The Long Meridian" -c:v libx264 -preset veryfast -c:a aac
+cat > "$TLM/movie.nfo" <<'EOF'
+<?xml version="1.0" encoding="UTF-8"?>
+<movie>
+  <title>The Long Meridian</title>
+  <year>2023</year>
+  <plot>A surveyor walks the length of a forgotten border to settle a bet with his dead brother.</plot>
+  <mpaa>PG</mpaa>
+  <genre>Western</genre>
+  <genre>Drama</genre>
+  <set><name>Open Roads Collection</name></set>
+  <actor><name>Tomás Reis</name><role>Elias</role></actor>
+</movie>
+EOF
 clip "$TLM/Extras/Behind the Scenes.mkv" "Extra - should be skipped" -c:v libx264 -preset veryfast -c:a aac
 clip "$TLM/sample.mkv" "Sample - should be skipped" -c:v libx264 -preset veryfast -c:a aac
 clip "$TLM/The Long Meridian-trailer.mkv" "Trailer - should be skipped" -c:v libx264 -preset veryfast -c:a aac

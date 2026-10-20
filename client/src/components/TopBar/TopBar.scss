@@ -53,6 +53,32 @@
     gap: 0.875rem;
   }
 
+  &__search {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    width: 18rem;
+    height: 2.65rem;
+    padding: 0 1rem;
+    border-radius: var(--cn-radius-pill);
+    background: var(--cn-glass);
+    border: 1px solid var(--cn-border);
+    backdrop-filter: blur(18px);
+    color: var(--cn-text-subtle);
+    font-size: 0.875rem;
+
+    svg {
+      width: 1.1rem;
+      height: 1.1rem;
+    }
+
+    &:hover {
+      text-decoration: none;
+      background: var(--cn-glass-strong);
+      color: var(--cn-text-muted);
+    }
+  }
+
   &__profile {
     padding: 0;
     border: 0;

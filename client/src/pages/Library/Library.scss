@@ -20,8 +20,15 @@
     }
   }
 
-  &__sort {
-    width: 13rem;
+  &__filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 0.75rem;
+  }
+
+  &__select {
+    width: 12rem;
   }
 
   &__grid {
@@ -78,8 +85,13 @@
     font-size: 1.75rem;
   }
 
-  &__sort {
+  &__filters {
     width: 100%;
+  }
+
+  &__select {
+    flex: 1 1 8rem;
+    width: auto;
   }
 
   &__grid {

@@ -59,6 +59,17 @@ export namespace MetadataProvider {
     ids?: ExternalIds;
     artwork?: Partial<Record<keyof Artwork, ImageCache.Source>>;
     credits?: CreditMetadata[];
+    /**
+     * Collection a movie belongs to, like a trilogy.
+     */
+    collection?: CollectionMetadata | null;
+  }
+
+  export interface CollectionMetadata {
+    name: string;
+    tmdbId?: string | null;
+    overview?: string | null;
+    artwork?: Partial<Record<keyof Artwork, ImageCache.Source>>;
   }
 
   export interface SeasonMetadata extends ItemMetadata {

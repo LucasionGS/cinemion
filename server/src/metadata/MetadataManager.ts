@@ -1,7 +1,8 @@
 import Path from "node:path";
 import type { MetadataSettings } from "@shared/api.ts";
 import type { Artwork, ExternalIds, ItemType, MatchCandidate } from "@shared/media.ts";
-import { Credit, Library, MediaFile, MediaItem, Person, Setting } from "../models/index.ts";
+import { Collection, Credit, Library, MediaFile, MediaItem, Person, Setting } from "../models/index.ts";
+import ContentRatings from "../library/ContentRatings.ts";
 import type MetadataProvider from "./MetadataProvider.ts";
 import LocalProvider from "./providers/LocalProvider.ts";
 import TmdbProvider from "./providers/TmdbProvider.ts";
@@ -89,7 +90,10 @@ export namespace MetadataManager {
     if (data.runtime) item.runtime = data.runtime;
     if (data.releaseDate) item.releaseDate = data.releaseDate;
     if (data.rating) item.rating = data.rating;
-    if (data.contentRating) item.contentRating = data.contentRating;
+    if (data.contentRating) {
+      item.contentRating = data.contentRating;
+      item.ageRating = ContentRatings.ageFor(data.contentRating);
+    }
     if (data.genres?.length) item.genres = data.genres;
     if (data.studios?.length) item.studios = data.studios;
   }
@@ -155,9 +159,26 @@ export namespace MetadataManager {
     }
     // Only real details count as a match; artwork alone doesn't
     if (item.matchStatus !== "manual") item.matchStatus = results.some((r) => r.title) ? "matched" : "unmatched";
+    if (item.type === "movie") item.collectionId = merged.collection ? (await saveCollection(item.libraryId, merged.collection)).id : null;
+    // No provider knows the length: use the file's
+    if (!item.runtime && (item.type === "movie" || item.type === "episode")) {
+      const file = await MediaFile.findOne({ where: { itemId: item.id }, attributes: ["duration"] });
+      if (file?.duration) item.runtime = Math.max(1, Math.round(file.duration / 60));
+    }
     item.metadataUpdatedAt = new Date();
     await item.save();
     await saveCredits(item, merged.credits);
+  }
+
+  async function saveCollection(libraryId: number, data: MetadataProvider.CollectionMetadata) {
+    const collection = await Collection.findOrCreateCollection(libraryId, data);
+    if (data.overview && !collection.overview) collection.overview = data.overview;
+    const candidates = Object.fromEntries(Object.entries(data.artwork ?? {}).map(([kind, source]) => [kind, [source]]));
+    collection.artwork = await storeArtwork(candidates, collection.artwork);
+    const source = collection.artwork.backdrop ?? collection.artwork.poster;
+    if (source && !collection.palette) collection.palette = await Palette.fromImage(source);
+    await collection.save();
+    return collection;
   }
 
   /**
@@ -186,17 +207,25 @@ export namespace MetadataManager {
 
     for (const season of seasons) {
       const number = season.seasonNumber!;
+      // Seasons and episodes share their show's rating, so age limits treat them alike
+      const inherit = (child: MediaItem) => {
+        child.contentRating = show.contentRating;
+        child.ageRating = show.ageRating;
+      };
       const seasonResults = results.map((r) => r.result.seasons.get(number)).filter((s): s is MetadataProvider.SeasonMetadata => !!s);
       season.palette = show.palette;
       await save(season, seasonResults.map((s) => ({ ...s, episodes: undefined })), { palette: false });
       // Providers often call season 1 "Season 1"; specials get a friendlier default
       if (!seasonResults.some((s) => s.title)) season.setTitle(number === 0 ? "Specials" : `Season ${number}`);
+      inherit(season);
       await season.save();
 
       for (const episode of episodesBySeason.get(number) ?? []) {
         const episodeResults = seasonResults.map((s) => s.episodes.get(episode.episodeNumber!)).filter((e): e is ItemMetadata => !!e);
         episode.palette = show.palette;
         await save(episode, episodeResults, { palette: false });
+        inherit(episode);
+        await episode.save();
       }
     }
   }

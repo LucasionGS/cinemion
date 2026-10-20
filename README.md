@@ -2,7 +2,7 @@
 
 Your movies and shows, beautifully served from your own machine: a self-hosted media server that feels at home on the couch, at a desk and on a phone.
 
-> Cinemion is under active development. Setup, profiles, library scanning and metadata work; browsing pages and playback are next.
+> Cinemion is under active development. Setup, profiles, scanning, metadata and browsing work; playback is next.
 
 ## Key Features
 
@@ -12,6 +12,8 @@ Your movies and shows, beautifully served from your own machine: a self-hosted m
 - **Set up in a minute**: a first-run wizard creates your account, points Cinemion at your movie and show folders, and picks where posters and plots come from.
 - **Knows what your files are**: tidy folders, messy release names, multi-episode files and specials are all recognised. New and removed files are noticed by themselves.
 - **Posters, plots and cast**: from NFO files and artwork next to your videos, from TMDB, or both, in the order you choose. Wrong match? Fix it in two clicks.
+- **Picks up where you left off**: continue watching, next up, recently added and "because you watched", per profile. Collections, cast pages and search across titles, episodes and people.
+- **Safe for kids**: give a profile an age limit and anything rated above it (or not rated at all) simply isn't there.
 - **One container, nothing else**: the Docker image includes everything. No database server, no extra services. There's also a single-file binary if you'd rather skip Docker.
 - **Plays nice with MediaHub**: open it in MediaHub and it starts straight in the TV layout, controller included.
 

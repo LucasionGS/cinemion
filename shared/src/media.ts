@@ -39,6 +39,29 @@ export interface ExternalIds {
 }
 
 /**
+ * The signed-in profile's progress on an item.
+ */
+export interface UserData {
+  /**
+   * For shows and seasons: every episode has been watched.
+   */
+  watched: boolean;
+  /**
+   * Where playback stopped, in seconds. 0 = not started (or finished).
+   */
+  position: number;
+  /**
+   * `position` as 0 to 1 of the length, or `null` when the length isn't known.
+   */
+  progress: number | null;
+  /**
+   * Episodes still to watch, for shows and seasons. `null` for movies and episodes.
+   */
+  unwatchedCount: number | null;
+  lastWatchedAt: string | null;
+}
+
+/**
  * What lists and rows need to show an item.
  */
 export interface ItemSummary {
@@ -47,6 +70,13 @@ export interface ItemSummary {
   type: ItemType;
   title: string;
   year: number | null;
+  overview: string | null;
+  /**
+   * Length in minutes.
+   */
+  runtime: number | null;
+  genres: string[];
+  rating: number | null;
   artwork: Artwork;
   palette: Palette | null;
   matchStatus: MatchStatus;
@@ -57,7 +87,14 @@ export interface ItemSummary {
   childCount: number;
   seasonNumber: number | null;
   episodeNumber: number | null;
+  /**
+   * The show a season or episode belongs to. `null` for movies and shows.
+   */
+  showId: number | null;
+  showTitle: string | null;
+  collectionId: number | null;
   addedAt: string;
+  userData: UserData | null;
 }
 
 export interface CreditInfo {
@@ -118,6 +155,11 @@ export interface MediaFileInfo {
  * Everything the detail page shows.
  */
 export interface ItemDetail extends ItemSummary {
+  collection: CollectionSummary | null;
+  /**
+   * Titles from the same library that share genres.
+   */
+  similar: ItemSummary[];
   originalTitle: string | null;
   overview: string | null;
   tagline: string | null;
@@ -171,4 +213,54 @@ export type SortOrder = "title" | "added" | "year" | "rating";
 export interface ItemPage {
   items: ItemSummary[];
   total: number;
+}
+
+export interface CollectionSummary {
+  id: number;
+  libraryId: number;
+  name: string;
+  overview: string | null;
+  artwork: Artwork;
+  palette: Palette | null;
+  itemCount: number;
+}
+
+export interface CollectionDetail extends CollectionSummary {
+  items: ItemSummary[];
+}
+
+export interface PersonSummary {
+  id: number;
+  name: string;
+  photo: string | null;
+}
+
+export interface PersonDetail extends PersonSummary {
+  credits: { item: ItemSummary; kind: string; character: string | null }[];
+}
+
+export interface SearchResults {
+  /**
+   * Movies and shows.
+   */
+  titles: ItemSummary[];
+  episodes: ItemSummary[];
+  people: PersonSummary[];
+  collections: CollectionSummary[];
+}
+
+export interface HomeData {
+  /**
+   * Movies and episodes started but not finished, most recent first.
+   */
+  continueWatching: ItemSummary[];
+  /**
+   * The next episode of shows you're in the middle of.
+   */
+  nextUp: ItemSummary[];
+  recentlyAdded: { libraryId: number; libraryName: string; items: ItemSummary[] }[];
+  /**
+   * Titles like the one you watched last. `null` until something has been watched.
+   */
+  becauseYouWatched: { title: string; items: ItemSummary[] } | null;
 }
