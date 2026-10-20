@@ -1,0 +1,89 @@
+.cn-pinpad {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.75rem;
+
+  &__dots {
+    display: flex;
+    gap: 1.1rem;
+
+    &--error {
+      animation: cn-shake 400ms var(--cn-ease);
+    }
+  }
+
+  &__dot {
+    width: 1.125rem;
+    height: 1.125rem;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.35);
+    transition: background-color var(--cn-fast), border-color var(--cn-fast);
+
+    &--filled {
+      background: var(--cn-text);
+      border-color: var(--cn-text);
+    }
+  }
+
+  &__dots--error &__dot--filled {
+    background: var(--cn-danger);
+    border-color: var(--cn-danger);
+  }
+
+  &__keys {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.875rem;
+  }
+
+  &__key {
+    width: 5.25rem;
+    height: 5.25rem;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    font-family: var(--cn-font-display);
+    font-size: 1.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color var(--cn-fast), transform var(--cn-fast) var(--cn-ease);
+
+    &:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.14);
+    }
+
+    &:active:not(:disabled) {
+      transform: scale(0.95);
+    }
+
+    &--ghost {
+      background: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      svg {
+        width: 1.75rem;
+        height: 1.75rem;
+      }
+    }
+  }
+}
+
+// On TV the focused key fills in, like the mockup
+:root[data-mode="tv"] .cn-pinpad__key:focus {
+  background: var(--cn-text);
+  color: var(--cn-bg);
+  transform: scale(1.08);
+}
+
+@keyframes cn-shake {
+  20%, 60% {
+    transform: translateX(-0.5rem);
+  }
+
+  40%, 80% {
+    transform: translateX(0.5rem);
+  }
+}

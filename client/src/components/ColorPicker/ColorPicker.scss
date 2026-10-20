@@ -1,0 +1,39 @@
+.cn-colors {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+
+  &__label {
+    font-size: 0.875rem;
+    font-weight: 700;
+  }
+
+  &__swatches {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+  }
+
+  &__swatch {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    padding: 0;
+    border: 0;
+    border-radius: var(--cn-avatar-radius);
+    cursor: pointer;
+    transition: transform var(--cn-fast) var(--cn-ease);
+
+    &:hover {
+      transform: scale(1.08);
+    }
+
+    svg {
+      width: 1.25rem;
+      height: 1.25rem;
+      stroke-width: 3;
+    }
+  }
+}

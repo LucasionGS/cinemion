@@ -1,0 +1,34 @@
+.cn-segmented {
+  display: inline-flex;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  border-radius: var(--cn-radius-md);
+  background: var(--cn-bg);
+  border: 1px solid var(--cn-border);
+
+  &__option {
+    height: 2.5rem;
+    padding: 0 1.1rem;
+    border: 0;
+    border-radius: var(--cn-radius-sm);
+    background: transparent;
+    color: var(--cn-text-muted);
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color var(--cn-fast), color var(--cn-fast);
+
+    &:hover {
+      color: var(--cn-text);
+    }
+
+    &--active {
+      background: var(--cn-accent);
+      color: var(--cn-on-accent);
+
+      &:hover {
+        color: var(--cn-on-accent);
+      }
+    }
+  }
+}

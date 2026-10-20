@@ -1,0 +1,59 @@
+.cn-icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 50%;
+  color: var(--cn-text);
+  cursor: pointer;
+  transition: background-color var(--cn-fast) var(--cn-ease);
+
+  svg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  &:disabled {
+    opacity: 0.3;
+    cursor: default;
+    pointer-events: none;
+  }
+
+  &--glass {
+    background: var(--cn-glass);
+    border-color: var(--cn-border);
+    backdrop-filter: blur(18px);
+
+    &:hover {
+      background: var(--cn-glass-hover);
+    }
+  }
+
+  &--ghost {
+    background: transparent;
+
+    &:hover {
+      background: var(--cn-glass);
+    }
+  }
+
+  &--sm {
+    width: 2.25rem;
+    height: 2.25rem;
+
+    svg {
+      width: 1.1rem;
+      height: 1.1rem;
+    }
+  }
+
+  &--lg {
+    width: 3.25rem;
+    height: 3.25rem;
+    border-radius: var(--cn-radius-md);
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "workspace": [
+    "./shared",
+    "./server",
+    "./client"
+  ],
+  "nodeModulesDir": "auto",
+  "tasks": {
+    "dev": "deno task -f @cinemion/server dev",
+    "dev:client": "deno task -f @cinemion/client dev",
+    "build": "deno task -f @cinemion/client build",
+    "start": "deno task -f @cinemion/server start",
+    "migrate": "deno task -f @cinemion/server migrate",
+    "cli": "deno task -f @cinemion/server cli",
+    "compile": "scripts/compile.sh",
+    "check": "deno check shared/src/mod.ts server/src/index.ts server/src/cli.ts client/src/main.tsx",
+    "lint": "deno lint"
+  },
+  "lint": {
+    "exclude": [
+      "client/dist",
+      "dist",
+      "node_modules",
+      "data"
+    ],
+    "rules": {
+      "exclude": [
+        "no-namespace",
+        "no-slow-types"
+      ]
+    }
+  },
+  "compilerOptions": {
+    "strict": true
+  }
+}

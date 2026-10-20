@@ -1,0 +1,80 @@
+// Design tokens. Everything visual reads these variables, so the ambient theme can retint the app at runtime.
+// Picks and reasoning: docs/design/decisions.md
+
+:root {
+  // Grounds and surfaces
+  --cn-bg: #08090B;
+  --cn-surface: #111318;
+  --cn-surface-2: #171A20;
+  --cn-surface-3: #1E2129;
+  --cn-glass: rgba(255, 255, 255, 0.07);
+  --cn-glass-strong: rgba(255, 255, 255, 0.12);
+  --cn-glass-hover: rgba(255, 255, 255, 0.16);
+  --cn-border: rgba(255, 255, 255, 0.1);
+  --cn-border-strong: rgba(255, 255, 255, 0.16);
+  --cn-overlay: rgba(4, 5, 7, 0.72);
+
+  // Text
+  --cn-text: #F3F4F6;
+  --cn-text-muted: #B4B9C3;
+  --cn-text-subtle: #8E95A1;
+
+  // Accent: the selected title's colour in ambient mode, or the user's pick. Sky is the fallback.
+  --cn-accent: #5B9DFF;
+  --cn-accent-rgb: 91, 157, 255;
+  --cn-on-accent: #06121F;
+  --cn-accent-soft: rgba(var(--cn-accent-rgb), 0.14);
+  --cn-accent-text: #A9CBFF;
+
+  // Ambient ground, tinted by the selected title
+  --cn-ambient-base: var(--cn-bg);
+  --cn-ambient-glow: rgba(var(--cn-accent-rgb), 0.12);
+
+  // Status
+  --cn-success: #3DDC97;
+  --cn-success-text: #7EEBB8;
+  --cn-warning: #F5C46B;
+  --cn-danger: #FF6B5A;
+  --cn-danger-text: #FF8A7D;
+
+  // Type
+  --cn-font-display: "Sora Variable", "Sora", system-ui, sans-serif;
+  --cn-font-body: "Manrope Variable", "Manrope", system-ui, sans-serif;
+
+  // Shape
+  --cn-radius-xs: 0.5rem;
+  --cn-radius-sm: 0.625rem;
+  --cn-radius-md: 0.875rem;
+  --cn-radius-lg: 1.25rem;
+  --cn-radius-xl: 1.5rem;
+  --cn-radius-pill: 999px;
+  --cn-avatar-radius: 21%; // Rounded-square profile tiles
+
+  // Layout
+  --cn-gutter: 3rem; // Page side margin
+  --cn-topbar-height: 4.75rem;
+  --cn-control-height: 3rem;
+
+  // Motion
+  --cn-ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --cn-fast: 150ms;
+  --cn-medium: 240ms;
+  --cn-slow: 600ms;
+
+  // Focus ring, used for keyboard focus everywhere and for remote focus on TV
+  --cn-focus-ring: 0 0 0 3px var(--cn-bg), 0 0 0 5px var(--cn-text);
+}
+
+// Mobile: tighter margins
+:root[data-mode="mobile"] {
+  --cn-gutter: 1.25rem;
+  --cn-topbar-height: 3.75rem;
+}
+
+// TV (10-foot): everything is sized in rem, so scaling the root font scales the whole UI with the screen.
+// 1920 px wide gives 24 px per rem, 1.5x desktop.
+:root[data-mode="tv"] {
+  font-size: calc(100vw / 80);
+  --cn-gutter: 4rem; // Overscan-safe side margin
+  --cn-focus-ring: 0 0 0 0.2rem var(--cn-text), 0 1rem 2.5rem rgba(0, 0, 0, 0.55);
+}

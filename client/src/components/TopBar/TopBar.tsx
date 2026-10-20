@@ -1,0 +1,102 @@
+import { Menu } from "@base-ui/react/menu";
+import { Clapperboard, House, LogOut, Settings, Tv, Users } from "lucide-react";
+import type { LibraryInfo } from "@shared/api.ts";
+import { Link, router } from "../../lib/Router.tsx";
+import useController from "../../lib/useController.ts";
+import { deviceMode } from "../../lib/DeviceMode.ts";
+import cx from "../../lib/cx.ts";
+import { session } from "../../Session.ts";
+import Logo from "../Logo/Logo.tsx";
+import Avatar from "../Avatar/Avatar.tsx";
+import "./TopBar.scss";
+
+export interface TopBarProps {
+  libraries: LibraryInfo[];
+}
+
+interface NavItem {
+  href: string;
+  label: string;
+  icon: React.ReactNode;
+}
+
+/**
+ * The app's main navigation: a top bar with pill tabs, or a floating tab bar on phones.
+ */
+export default function TopBar(props: TopBarProps) {
+  const { libraries } = props;
+  const { path } = useController(router);
+  const { mode } = useController(deviceMode);
+  const { user } = useController(session);
+
+  const items: NavItem[] = [
+    { href: "/", label: "Home", icon: <House /> },
+    ...libraries.map((l) => ({ href: `/library/${l.id}`, label: l.name, icon: l.type === "shows" ? <Tv /> : <Clapperboard /> })),
+  ];
+  const isActive = (href: string) => href === "/" ? path === "/" : path.startsWith(href);
+
+  if (mode === "mobile") {
+    return (
+      <>
+        <header className="cn-topbar cn-topbar--mobile">
+          <Link href="/" className="cn-topbar__logo"><Logo size={1.6} /></Link>
+          {user && <ProfileMenu />}
+        </header>
+        <nav className="cn-tabbar" aria-label="Main">
+          {items.slice(0, 4).map((item) => (
+            <Link key={item.href} href={item.href} className={cx("cn-tabbar__item", isActive(item.href) && "cn-tabbar__item--active")} aria-current={isActive(item.href) ? "page" : undefined}>
+              {item.icon}
+              <span>{item.label}</span>
+            </Link>
+          ))}
+        </nav>
+      </>
+    );
+  }
+
+  return (
+    <header className="cn-topbar">
+      <Link href="/" className="cn-topbar__logo"><Logo /></Link>
+      <nav className="cn-topbar__nav" aria-label="Main">
+        {items.map((item) => (
+          <Link key={item.href} href={item.href} className={cx("cn-topbar__link", isActive(item.href) && "cn-topbar__link--active")} aria-current={isActive(item.href) ? "page" : undefined}>
+            {item.label}
+          </Link>
+        ))}
+      </nav>
+      <div className="cn-topbar__end">
+        {user && <ProfileMenu />}
+      </div>
+    </header>
+  );
+}
+
+function ProfileMenu() {
+  const { user } = useController(session);
+  if (!user) return null;
+
+  return (
+    <Menu.Root>
+      <Menu.Trigger className="cn-topbar__profile" aria-label={`Profile: ${user.name}`}>
+        <Avatar profile={user} size={2.6} />
+      </Menu.Trigger>
+      <Menu.Portal>
+        <Menu.Positioner sideOffset={10} align="end" className="cn-menu__positioner">
+          <Menu.Popup className="cn-menu">
+            <div className="cn-menu__header">
+              <Avatar profile={user} size={2.25} />
+              <div>
+                <strong>{user.name}</strong>
+                <span>{user.role === "admin" ? "Admin" : "Profile"}</span>
+              </div>
+            </div>
+            <Menu.Item className="cn-menu__item" onClick={() => router.navigate("/settings/profile")}><Settings /> Profile &amp; settings</Menu.Item>
+            <Menu.Item className="cn-menu__item" onClick={() => router.navigate("/profiles")}><Users /> Switch profile</Menu.Item>
+            <Menu.Separator className="cn-menu__separator" />
+            <Menu.Item className="cn-menu__item" onClick={() => session.signOut()}><LogOut /> Sign out</Menu.Item>
+          </Menu.Popup>
+        </Menu.Positioner>
+      </Menu.Portal>
+    </Menu.Root>
+  );
+}

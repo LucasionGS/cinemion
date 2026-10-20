@@ -1,0 +1,60 @@
+.cn-switch {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  cursor: pointer;
+
+  &__text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  &__label {
+    font-size: 0.95rem;
+    font-weight: 700;
+  }
+
+  &__description {
+    font-size: 0.8125rem;
+    color: var(--cn-text-subtle);
+  }
+
+  &__root {
+    position: relative;
+    flex-shrink: 0;
+    width: 2.875rem;
+    height: 1.75rem;
+    padding: 0;
+    border: 0;
+    border-radius: var(--cn-radius-pill);
+    background: rgba(255, 255, 255, 0.14);
+    cursor: pointer;
+    transition: background-color var(--cn-fast);
+
+    &[data-checked] {
+      background: var(--cn-accent);
+    }
+
+    &[data-disabled] {
+      opacity: 0.5;
+    }
+  }
+
+  &__thumb {
+    position: absolute;
+    top: 0.25rem;
+    left: 0.25rem;
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 50%;
+    background: var(--cn-text-muted);
+    transition: transform var(--cn-fast) var(--cn-ease), background-color var(--cn-fast);
+
+    &[data-checked] {
+      transform: translateX(1.125rem);
+      background: var(--cn-on-accent);
+    }
+  }
+}

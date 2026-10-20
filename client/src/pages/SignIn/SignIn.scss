@@ -1,0 +1,39 @@
+.cn-signin {
+  position: relative;
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem var(--cn-gutter);
+
+  &__card {
+    position: relative;
+    z-index: 1;
+    width: min(24rem, 100%);
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  &__text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin: 1rem 0 0.5rem;
+
+    h1 {
+      font-size: 2rem;
+    }
+
+    p {
+      color: var(--cn-text-muted);
+    }
+  }
+
+  &__alt {
+    align-self: center;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--cn-text-muted);
+  }
+}

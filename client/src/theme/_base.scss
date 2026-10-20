@@ -1,0 +1,120 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  background: var(--cn-ambient-base);
+  color: var(--cn-text);
+  font-family: var(--cn-font-body);
+  font-size: 1rem;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color var(--cn-slow) var(--cn-ease);
+}
+
+h1, h2, h3, h4 {
+  margin: 0;
+  font-family: var(--cn-font-display);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: var(--cn-accent-text);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+// Keyboard and remote focus. Mouse clicks don't show a ring.
+:focus {
+  outline: none;
+}
+
+:focus-visible {
+  box-shadow: var(--cn-focus-ring);
+  outline: none;
+}
+
+// On TV, focus is the only way to know where you are, so it always shows
+:root[data-mode="tv"] :focus {
+  box-shadow: var(--cn-focus-ring);
+}
+
+::selection {
+  background: rgba(var(--cn-accent-rgb), 0.35);
+}
+
+// Thin, quiet scrollbars
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.16) transparent;
+}
+
+// TV and mobile don't need visible scrollbars
+:root[data-mode="tv"] *,
+:root[data-mode="mobile"] * {
+  scrollbar-width: none;
+}
+
+.cn-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+// Soft colour glow from the top of the page, tinted by the ambient accent
+.cn-ambient-glow {
+  position: fixed;
+  inset: 0 0 auto 0;
+  height: 48rem;
+  pointer-events: none;
+  background: radial-gradient(ellipse 70% 90% at 75% 0%, var(--cn-ambient-glow) 0%, transparent 70%);
+  transition: background var(--cn-slow) var(--cn-ease);
+  z-index: 0;
+}
+
+// Shown while the app starts, or when the server can't be reached
+.cn-boot {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  padding: 2rem;
+  text-align: center;
+  color: var(--cn-text-muted);
+}

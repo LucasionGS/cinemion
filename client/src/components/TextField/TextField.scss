@@ -1,0 +1,65 @@
+// Shared by TextField and Select
+.cn-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0;
+
+  &__label {
+    font-size: 0.875rem;
+    font-weight: 700;
+  }
+
+  &__input {
+    height: var(--cn-control-height);
+    width: 100%;
+    padding: 0 0.9rem;
+    border-radius: var(--cn-radius-md);
+    border: 1px solid var(--cn-border-strong);
+    background: var(--cn-surface);
+    font-size: 0.95rem;
+    transition: border-color var(--cn-fast), box-shadow var(--cn-fast);
+
+    &::placeholder {
+      color: #7E8592;
+    }
+
+    &:focus {
+      border-color: var(--cn-accent);
+      box-shadow: 0 0 0 3px rgba(var(--cn-accent-rgb), 0.25);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+    }
+  }
+
+  select.cn-field__input {
+    appearance: none;
+    padding-right: 2.5rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238E95A1' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.9rem center;
+    background-size: 1rem;
+
+    option {
+      background: var(--cn-surface-2);
+      color: var(--cn-text);
+    }
+  }
+
+  &__description {
+    font-size: 0.8125rem;
+    color: var(--cn-text-subtle);
+  }
+
+  &__error {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--cn-danger-text);
+  }
+
+  &--invalid &__input {
+    border-color: var(--cn-danger);
+  }
+}

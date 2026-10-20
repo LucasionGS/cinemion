@@ -1,0 +1,17 @@
+.cn-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--cn-text);
+
+  &__symbol circle {
+    transition: fill var(--cn-slow) var(--cn-ease);
+  }
+
+  &__wordmark {
+    font-family: var(--cn-font-display);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+}

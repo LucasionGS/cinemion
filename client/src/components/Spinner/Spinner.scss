@@ -1,0 +1,15 @@
+.cn-spinner {
+  display: inline-block;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: 0.15em solid currentColor;
+  border-right-color: transparent;
+  opacity: 0.8;
+  animation: cn-spin 700ms linear infinite;
+}
+
+@keyframes cn-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

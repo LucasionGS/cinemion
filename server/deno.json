@@ -1,0 +1,21 @@
+{
+  "name": "@cinemion/server",
+  "version": "0.1.0",
+  "exports": "./src/index.ts",
+  "tasks": {
+    "dev": "deno run -A --watch=src/ --env-file=../.env src/index.ts",
+    "start": "deno run -A src/index.ts",
+    "migrate": "deno run -A --env-file=../.env src/migrate.ts",
+    "cli": "deno run -A --env-file=../.env src/cli.ts"
+  },
+  "imports": {
+    "@shared/": "../shared/src/",
+    "hono": "npm:hono@^4.13.0",
+    "sequelize": "npm:sequelize@^6.37.8",
+    "mariadb": "npm:mariadb@~2.5.6",
+    "umzug": "npm:umzug@^3.8.3",
+    "bcryptjs": "npm:bcryptjs@^3.0.2",
+    "@std/path": "jsr:@std/path@^1",
+    "@std/encoding": "jsr:@std/encoding@^1"
+  }
+}

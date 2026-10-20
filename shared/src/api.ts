@@ -1,0 +1,168 @@
+import type { Permission, ProfileColor } from "./profiles.ts";
+
+/**
+ * Body of every error response from the API.
+ */
+export interface ApiError {
+  message: string;
+}
+
+//#region Server
+
+export interface ServerInfo {
+  name: string;
+  version: string;
+  /**
+   * `true` until the first-run setup has been completed.
+   */
+  needsSetup: boolean;
+}
+
+//#endregion
+
+//#region Users and profiles
+
+/**
+ * What the profile picker shows about a user. Safe to show before anyone signs in.
+ */
+export interface ProfileSummary {
+  id: number;
+  name: string;
+  color: ProfileColor;
+  /**
+   * Version of the uploaded profile picture. `null` = no picture, show initials.
+   */
+  avatar: string | null;
+  hasPin: boolean;
+  isAdmin: boolean;
+  /**
+   * Highest content rating this profile may watch. `null` = no limit.
+   */
+  maxRating: string | null;
+}
+
+/**
+ * The full view of a user, for the user themselves and for admins.
+ */
+export interface UserInfo extends ProfileSummary {
+  username: string;
+  /**
+   * `false` for profiles that can only be opened from the profile picker.
+   */
+  hasPassword: boolean;
+  role: string;
+  permissions: Permission[];
+  showOnPicker: boolean;
+  /**
+   * Library ids this user can see. `null` = all libraries.
+   */
+  libraryAccess: number[] | null;
+}
+
+export interface LoginResponse {
+  token: string;
+  user: UserInfo;
+}
+
+export interface CreateUserRequest {
+  name: string;
+  username?: string;
+  password?: string;
+  pin?: string | null;
+  color?: ProfileColor;
+  role?: string;
+  showOnPicker?: boolean;
+  maxRating?: string | null;
+  libraryAccess?: number[] | null;
+}
+
+export type UpdateUserRequest = Partial<CreateUserRequest>;
+
+/**
+ * What a user may change about their own account.
+ */
+export interface UpdateSelfRequest {
+  name?: string;
+  color?: ProfileColor;
+  /**
+   * New PIN, or `null` to remove it.
+   */
+  pin?: string | null;
+  newPassword?: string;
+  /**
+   * Required when changing the password.
+   */
+  currentPassword?: string;
+}
+
+//#endregion
+
+//#region Libraries
+
+export type LibraryType = "movies" | "shows";
+
+export interface LibraryInfo {
+  id: number;
+  name: string;
+  type: LibraryType;
+  paths: string[];
+}
+
+export interface CreateLibraryRequest {
+  name: string;
+  type: LibraryType;
+  paths: string[];
+}
+
+//#endregion
+
+//#region Filesystem
+
+export interface FsEntry {
+  name: string;
+  path: string;
+}
+
+export interface FsListing {
+  /**
+   * The folder being listed. `null` = the list of allowed roots.
+   */
+  path: string | null;
+  /**
+   * The media root `path` is inside. `null` when listing the roots.
+   */
+  root: string | null;
+  /**
+   * Folder one level up, or `null` when `path` is a root.
+   */
+  parent: string | null;
+  entries: FsEntry[];
+}
+
+//#endregion
+
+//#region Setup
+
+export interface MetadataSettings {
+  tmdbApiKey: string | null;
+  language: string;
+  country: string;
+  /**
+   * Provider ids in priority order, highest first.
+   */
+  providers: string[];
+}
+
+export interface SetupRequest {
+  serverName: string;
+  admin: {
+    name: string;
+    username: string;
+    password: string;
+    pin?: string | null;
+  };
+  libraries: CreateLibraryRequest[];
+  metadata: MetadataSettings;
+}
+
+//#endregion
