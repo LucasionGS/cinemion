@@ -91,6 +91,13 @@ const routes: Route[] = [
     },
   }),
   requirement({ signedIn: true }, {
+    path: /^\/together(?:\/([A-Za-z0-9-]+))?\/?$/,
+    component: async ([code]) => {
+      const Together = (await import("./pages/Together/Together.tsx")).default;
+      return <Together code={code ?? null} />;
+    },
+  }),
+  requirement({ signedIn: true }, {
     path: /^\/collection\/(\d+)\/?$/,
     component: async ([id]) => {
       const Collection = (await import("./pages/Collection/Collection.tsx")).default;

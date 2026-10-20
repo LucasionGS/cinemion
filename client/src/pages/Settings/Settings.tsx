@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Clapperboard, FolderOpen, Library as LibraryIcon, MonitorSmartphone, UserRound, Users } from "lucide-react";
+import { Captions, Clapperboard, FolderOpen, Library as LibraryIcon, MonitorSmartphone, UserRound, Users } from "lucide-react";
 import { session } from "../../Session.ts";
 import { Link } from "../../lib/Router.tsx";
 import useController from "../../lib/useController.ts";
@@ -11,6 +11,7 @@ import UsersSettings from "./UsersSettings.tsx";
 import LibrariesSettings from "./LibrariesSettings.tsx";
 import MetadataSettings from "./MetadataSettings.tsx";
 import PlaybackSettings from "./PlaybackSettings.tsx";
+import SubtitleSettings from "./SubtitleSettings.tsx";
 import "./Settings.scss";
 
 interface Tab {
@@ -36,6 +37,7 @@ export default function Settings(props: SettingsProps) {
     { id: "libraries", label: "Libraries", icon: <FolderOpen />, visible: session.can("LIBRARY_MANAGE"), render: () => <LibrariesSettings /> },
     { id: "metadata", label: "Metadata", icon: <LibraryIcon />, visible: session.can("SERVER_MANAGE"), render: () => <MetadataSettings /> },
     { id: "playback", label: "Playback", icon: <Clapperboard />, visible: session.can("SERVER_MANAGE"), render: () => <PlaybackSettings /> },
+    { id: "subtitles", label: "Subtitles", icon: <Captions />, visible: session.can("SERVER_MANAGE"), render: () => <SubtitleSettings /> },
   ];
   const visible = tabs.filter((t) => t.visible);
   const current = visible.find((t) => t.id === tab) ?? visible[0];

@@ -133,6 +133,40 @@ export interface PlaybackInfo {
    * The server sees this device as outside the home network.
    */
   isRemote: boolean;
+  /**
+   * Seek thumbnails, or `null` while they haven't been made yet. `{streamBase}/trickplay` answers once they're ready.
+   */
+  trickplay: TrickplayInfo | null;
+  /**
+   * Base URL of this stream's extras (subtitles, thumbnails).
+   */
+  streamBase: string;
+  /**
+   * Whether this profile may search and download subtitles.
+   */
+  canSearchSubtitles: boolean;
+}
+
+/**
+ * Seek thumbnails: small frames every `interval` seconds, packed into grid images ("sheets").
+ */
+export interface TrickplayInfo {
+  /**
+   * Seconds between thumbnails. Thumbnail `n` shows the frame at `n * interval`.
+   */
+  interval: number;
+  /**
+   * Size of one thumbnail, in pixels.
+   */
+  width: number;
+  height: number;
+  columns: number;
+  rows: number;
+  count: number;
+  /**
+   * URL of sheet `n`, with `{n}` to replace.
+   */
+  sheetUrl: string;
 }
 
 export type HardwareAcceleration = "none" | "vaapi" | "qsv" | "nvenc";
@@ -161,6 +195,10 @@ export interface PlaybackSettings {
    */
   remoteMaxBitrate: number;
   allowRemoteConversion: boolean;
+  /**
+   * Make seek thumbnails for new videos in the background.
+   */
+  seekThumbnails: boolean;
 }
 
 export interface HardwareDevice {
@@ -187,4 +225,66 @@ export interface PlaybackDevices {
    */
   cacheSize: number;
   cacheDir: string;
+  /**
+   * Size of the seek thumbnails, in bytes.
+   */
+  thumbnailsSize: number;
 }
+
+//#region Subtitles
+
+export interface SubtitleSettings {
+  /**
+   * OpenSubtitles API key ("consumer"), from opensubtitles.com. `null` = not set up.
+   */
+  openSubtitlesApiKey: string | null;
+  /**
+   * Optional OpenSubtitles account, for a bigger daily download allowance.
+   */
+  openSubtitlesUsername: string | null;
+  /**
+   * Write-only: the server never sends it back. `null` keeps the saved one; empty clears it.
+   */
+  openSubtitlesPassword?: string | null;
+  hasOpenSubtitlesPassword?: boolean;
+  /**
+   * Languages offered first when searching, as ISO 639-1 codes.
+   */
+  languages: string[];
+  /**
+   * Save downloads next to the video file. When the folder is read-only (or this is off), they go to the config folder.
+   */
+  saveNextToVideo: boolean;
+}
+
+export interface SubtitleSearchResult {
+  provider: string;
+  /**
+   * Provider's id for the download.
+   */
+  id: string;
+  name: string;
+  language: string;
+  isHearingImpaired: boolean;
+  /**
+   * Made for this exact file (same file hash), so the timing is right.
+   */
+  matchesFile: boolean;
+  downloads: number;
+  rating: number | null;
+  uploadedAt: string | null;
+  /**
+   * Plain-language notes, like "Machine translated" or "Different frame rate".
+   */
+  notes: string[];
+}
+
+export interface SubtitleDownloadRequest {
+  fileId: number;
+  provider: string;
+  id: string;
+  language: string;
+  isHearingImpaired: boolean;
+}
+
+//#endregion

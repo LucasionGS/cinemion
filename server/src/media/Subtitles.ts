@@ -17,20 +17,28 @@ export namespace Subtitles {
    * @throws When the stream isn't a text subtitle or ffmpeg can't read it.
    */
   export function toWebVtt(file: MediaFile, index: number): Promise<string> {
-    const track = file.subtitles.find((s) => s.index === index);
+    const track = file.allSubtitles().find((s) => s.index === index);
     if (!track) return Promise.reject(new Error("That subtitle track doesn't exist."));
     if (track.isImage) return Promise.reject(new Error("Picture subtitles can't be turned into text. They are drawn into the video instead."));
 
-    // The file's modification time is part of the name, so a replaced file gets fresh subtitles
-    const target = Path.join(cacheDir, `${file.id}-${index}-${file.mtime}.vtt`);
+    // Subtitle files are converted on their own; tracks are pulled out of the video. The modification time is part
+    // of the name, so a replaced file gets fresh subtitles.
+    const sidecar = file.sidecarFor(index);
+    const source = sidecar?.path ?? file.path;
+    const key = sidecar ? `${file.id}-file-${hash(sidecar.path)}` : `${file.id}-${index}`;
+    const target = Path.join(cacheDir, `${key}-${file.mtime}.vtt`);
     const pending = _pending.get(target);
     if (pending) return pending;
 
     const job = (async () => {
-      if (await fsp.stat(target).then(() => true).catch(() => false)) return target;
+      // A subtitle file can change without the video changing
+      const sourceTime = sidecar ? (await fsp.stat(sidecar.path).catch(() => null))?.mtimeMs ?? 0 : 0;
+      const cached = await fsp.stat(target).catch(() => null);
+      if (cached && cached.mtimeMs >= sourceTime) return target;
       await fsp.mkdir(cacheDir, { recursive: true });
       const temp = `${target}.${crypto.randomUUID()}.tmp`;
-      const result = await Ffmpeg.run(["-y", "-i", file.path, "-map", `0:${index}`, "-c:s", "webvtt", "-f", "webvtt", temp]);
+      const encoding = sidecar ? await textEncoding(sidecar.path) : null;
+      const result = await Ffmpeg.run(["-y", ...(encoding ? ["-sub_charenc", encoding] : []), "-i", source, "-map", sidecar ? "0:s:0" : `0:${index}`, "-c:s", "webvtt", "-f", "webvtt", temp]);
       if (result.code !== 0) {
         await fsp.rm(temp, { force: true });
         throw new Error(`Could not read the subtitles: ${result.stderr.trim().split("\n").pop()}`);
@@ -41,6 +49,30 @@ export namespace Subtitles {
     _pending.set(target, job);
     return job;
   }
+}
+
+/**
+ * `null` for UTF-8 files, otherwise the most likely older encoding. Subtitle files from the web are often Windows-1252.
+ */
+async function textEncoding(path: string) {
+  const bytes = await Deno.readFile(path).catch(() => null);
+  if (!bytes) return null;
+  try {
+    new TextDecoder("utf-8", { fatal: true }).decode(bytes);
+    return null;
+  } catch {
+    return "CP1252";
+  }
+}
+
+function hash(value: string) {
+  // FNV-1a: short, stable names for cache files
+  let h = 0x811c9dc5;
+  for (let i = 0; i < value.length; i++) {
+    h ^= value.charCodeAt(i);
+    h = Math.imul(h, 0x01000193);
+  }
+  return (h >>> 0).toString(16);
 }
 
 export default Subtitles;

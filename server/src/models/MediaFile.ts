@@ -38,7 +38,14 @@ export class MediaFile extends Model<InferAttributes<MediaFile>, InferCreationAt
   declare height: CreationOptional<number | null>;
   declare hdr: CreationOptional<string | null>;
   declare audio: CreationOptional<AudioTrack[]>;
+  /**
+   * Subtitle tracks inside the file.
+   */
   declare subtitles: CreationOptional<SubtitleTrack[]>;
+  /**
+   * Subtitle files next to the video, or downloaded for it.
+   */
+  declare sidecars: CreationOptional<MediaFile.Sidecar[]>;
   /**
    * When ffprobe last read the file. `null` = not read yet.
    */
@@ -59,12 +66,62 @@ export class MediaFile extends Model<InferAttributes<MediaFile>, InferCreationAt
       hdr: this.hdr,
       bitrate: this.bitrate,
       audio: this.audio,
-      subtitles: this.subtitles,
+      subtitles: this.allSubtitles(),
     };
+  }
+
+  /**
+   * Tracks inside the file followed by subtitle files, which get indexes from `MediaFile.SIDECAR_INDEX` up.
+   */
+  public allSubtitles(): SubtitleTrack[] {
+    const embedded = this.subtitles.map((s) => ({ ...s, external: false, isHearingImpaired: s.isHearingImpaired ?? false }));
+    return [
+      ...embedded,
+      ...this.sidecars.map((s, i) => ({
+        index: MediaFile.SIDECAR_INDEX + i,
+        codec: s.codec,
+        language: s.language,
+        title: s.title,
+        isDefault: false,
+        isForced: s.isForced,
+        isImage: false,
+        external: true,
+        isHearingImpaired: s.isHearingImpaired,
+      })),
+    ];
+  }
+
+  /**
+   * The subtitle file for a track index, or `null` for tracks inside the video.
+   */
+  public sidecarFor(index: number) {
+    return index >= MediaFile.SIDECAR_INDEX ? this.sidecars[index - MediaFile.SIDECAR_INDEX] ?? null : null;
   }
 
   public override toJSON() {
     return this.toInfo();
+  }
+}
+
+export namespace MediaFile {
+  /**
+   * Subtitle files count from here, well past any stream index inside a video.
+   */
+  export const SIDECAR_INDEX = 10_000;
+
+  export interface Sidecar {
+    path: string;
+    /**
+     * `subrip`, `webvtt`, `ass` or `ssa`, like ffprobe names them.
+     */
+    codec: string;
+    /**
+     * ISO 639-1 code, or `null` when the name doesn't say.
+     */
+    language: string | null;
+    title: string | null;
+    isForced: boolean;
+    isHearingImpaired: boolean;
   }
 }
 
@@ -82,6 +139,7 @@ MediaFile.init({
   hdr: { type: DataTypes.STRING(16), allowNull: true, defaultValue: null },
   audio: jsonColumn<AudioTrack[], MediaFile>("audio", []),
   subtitles: jsonColumn<SubtitleTrack[], MediaFile>("subtitles", []),
+  sidecars: jsonColumn<MediaFile.Sidecar[], MediaFile>("sidecars", []),
   probedAt: { type: DataTypes.DATE, allowNull: true, defaultValue: null },
   createdAt: DataTypes.DATE,
   updatedAt: DataTypes.DATE,

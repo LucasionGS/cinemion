@@ -128,6 +128,11 @@ export interface SubtitleTrack {
    * Image-based subtitles (PGS, VobSub) have to be burned into the video.
    */
   isImage: boolean;
+  /**
+   * A separate file next to the video (or downloaded), rather than a track inside it.
+   */
+  external: boolean;
+  isHearingImpaired: boolean;
 }
 
 export interface MediaFileInfo {

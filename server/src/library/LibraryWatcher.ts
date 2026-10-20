@@ -2,6 +2,7 @@ import Path from "node:path";
 import { Library } from "../models/index.ts";
 import NameParser from "./NameParser.ts";
 import Scanner from "./Scanner.ts";
+import Sidecars from "./Sidecars.ts";
 import log from "../lib/Logger.ts";
 
 /**
@@ -16,8 +17,8 @@ export namespace LibraryWatcher {
   const _timers = new Map<number, ReturnType<typeof setTimeout>>();
 
   function relevant(event: Deno.FsEvent) {
-    // Folder changes have no extension; anything else must be a video to matter
-    return event.paths.some((p) => NameParser.isVideo(p) || Path.extname(p) === "");
+    // Folder changes have no extension; anything else must be a video or subtitle file to matter
+    return event.paths.some((p) => NameParser.isVideo(p) || Sidecars.isSubtitle(p) || Path.extname(p) === "");
   }
 
   function schedule(libraryId: number) {

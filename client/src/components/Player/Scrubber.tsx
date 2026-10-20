@@ -2,6 +2,9 @@ import { useRef, useState } from "react";
 import type { PointerEvent } from "react";
 import { formatClock } from "../../lib/playback.ts";
 import useController from "../../lib/useController.ts";
+import { deviceMode } from "../../lib/DeviceMode.ts";
+import cx from "../../lib/cx.ts";
+import Thumbnail from "./Thumbnail.tsx";
 import type PlayerController from "./PlayerController.ts";
 
 export interface ScrubberProps {
@@ -14,7 +17,8 @@ export interface ScrubberProps {
  */
 export default function Scrubber(props: ScrubberProps) {
   const { controller } = props;
-  const { position, duration, bufferedEnd, scrubTarget } = useController(controller);
+  const { position, duration, bufferedEnd, scrubTarget, trickplay } = useController(controller);
+  const { mode } = useController(deviceMode);
   const track = useRef<HTMLDivElement>(null);
   const [hover, setHover] = useState<number | null>(null);
   const [dragging, setDragging] = useState<number | null>(null);
@@ -51,6 +55,8 @@ export default function Scrubber(props: ScrubberProps) {
   }
 
   const bubble = dragging ?? scrubTarget ?? hover;
+  // On TV the filmstrip shows the thumbnails (and the time) instead
+  const showThumbnail = !!trickplay && mode !== "tv";
 
   return (
     <div
@@ -69,8 +75,15 @@ export default function Scrubber(props: ScrubberProps) {
       onPointerCancel={() => setDragging(null)}
       onPointerLeave={() => setHover(null)}
     >
-      {bubble !== null && (
-        <span className="cn-scrubber__bubble" style={{ left: percent(bubble) }}>{formatClock(bubble)}</span>
+      {bubble !== null && !(mode === "tv" && trickplay) && (
+        // With a thumbnail, keep the bubble inside the bar instead of hanging off the screen's edge
+        <span
+          className={cx("cn-scrubber__bubble", showThumbnail && "cn-scrubber__bubble--thumbnail")}
+          style={{ left: showThumbnail ? `clamp(var(--scrubber-thumbnail-half), ${percent(bubble)}, calc(100% - var(--scrubber-thumbnail-half)))` : percent(bubble) }}
+        >
+          {showThumbnail && <Thumbnail trickplay={trickplay!} time={bubble} className="cn-scrubber__thumbnail" />}
+          <span className="cn-scrubber__time">{formatClock(bubble)}</span>
+        </span>
       )}
       <div ref={track} className="cn-scrubber__track">
         <span className="cn-scrubber__buffered" style={{ width: percent(Math.max(bufferedEnd, position)) }} />

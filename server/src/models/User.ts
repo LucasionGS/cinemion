@@ -220,6 +220,18 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
   //#endregion
 
   /**
+   * The user a login token belongs to, or `null` when the token is invalid or expired.
+   */
+  public static async fromToken(token: string): Promise<User | null> {
+    try {
+      const payload = await verify(token, AppSystem.jwtSecret(), "HS256");
+      return await User.findByPk(Number(payload.sub));
+    } catch {
+      return null;
+    }
+  }
+
+  /**
    * Route middleware that reads the `Authorization: Bearer <token>` header and sets `c.get("user")`.
    * @param opts.required Reject requests without a valid token. Default is `true`.
    * @param opts.admin Only allow admins.
@@ -234,14 +246,7 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
       const token = header?.startsWith("Bearer ") ? header.slice(7) : null;
       let user: User | null = null;
 
-      if (token) {
-        try {
-          const payload = await verify(token, AppSystem.jwtSecret(), "HS256");
-          user = await User.findByPk(Number(payload.sub));
-        } catch {
-          user = null;
-        }
-      }
+      if (token) user = await User.fromToken(token);
 
       if (!user) {
         if (required) return c.json({ message: "You need to sign in first." }, 401);

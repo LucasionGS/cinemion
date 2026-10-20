@@ -1,10 +1,11 @@
 import { useEffect, useRef } from "react";
-import { Check, X } from "lucide-react";
+import { Check, Search, X } from "lucide-react";
 import type { PlaybackInfo, QualityPreset } from "@shared/playback.ts";
 import useController from "../../lib/useController.ts";
 import { deviceMode } from "../../lib/DeviceMode.ts";
 import cx from "../../lib/cx.ts";
 import IconButton from "../IconButton/IconButton.tsx";
+import Button from "../Button/Button.tsx";
 import type { PanelTab, PlayerController } from "./PlayerController.ts";
 
 export interface TrackPanelProps {
@@ -140,6 +141,11 @@ export default function TrackPanel(props: TrackPanelProps) {
           <OptionRow key={option.key} option={option} sectionBefore={panelTab === "quality" && item.files.length > 1 && option.key.startsWith("file-") && !options[i - 1]?.key.startsWith("file-") ? "Version" : null} />
         ))}
       </div>
+      {panelTab === "subtitles" && info.canSearchSubtitles && (
+        <div className="cn-track-panel__actions">
+          <Button variant="secondary" icon={<Search />} block onClick={() => controller.setSubtitleSearchOpen(true)}>Search online</Button>
+        </div>
+      )}
       {panelTab === "quality" && (
         <div className="cn-track-panel__status">
           <strong className={cx("cn-track-panel__mode", `cn-track-panel__mode--${info.mode}`)}>{modeLabel(info)}</strong>

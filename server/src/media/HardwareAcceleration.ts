@@ -18,6 +18,7 @@ export namespace HardwareAcceleration {
     toneMapping: true,
     remoteMaxBitrate: 8_000_000,
     allowRemoteConversion: true,
+    seekThumbnails: true,
   };
 
   export async function settings(): Promise<PlaybackSettings> {

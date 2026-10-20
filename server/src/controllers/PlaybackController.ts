@@ -1,14 +1,17 @@
 import fsp from "node:fs/promises";
 import { Hono } from "hono";
 import { encodeHex } from "@std/encoding/hex";
-import type { AudioOption, DeviceCapabilities, HardwareAcceleration as Kind, PlaybackInfo, PlaybackSettings, StartPlaybackRequest, SubtitleOption } from "@shared/playback.ts";
+import type { AudioOption, DeviceCapabilities, HardwareAcceleration as Kind, PlaybackInfo, PlaybackSettings, StartPlaybackRequest, SubtitleOption, TrickplayInfo } from "@shared/playback.ts";
 import type { AudioTrack, SubtitleTrack } from "@shared/media.ts";
+import { languageName } from "@shared/languages.ts";
 import { MediaFile, MediaItem, User } from "../models/index.ts";
 import Visibility from "../library/Visibility.ts";
 import HardwareAcceleration from "../media/HardwareAcceleration.ts";
 import PlaybackDecider from "../media/PlaybackDecider.ts";
 import TranscodeSession from "../media/TranscodeSession.ts";
 import Subtitles from "../media/Subtitles.ts";
+import Trickplay from "../media/Trickplay.ts";
+import SubtitleManager from "../subtitles/SubtitleManager.ts";
 import Network from "../lib/Network.ts";
 import { errorMessage, readJson } from "../lib/http.ts";
 import log from "../lib/Logger.ts";
@@ -50,19 +53,6 @@ export namespace PlaybackController {
     return g;
   }
 
-  const LANGUAGES = new Intl.DisplayNames(["en"], { type: "language" });
-
-  function languageName(code: string | null) {
-    if (!code) return null;
-    try {
-      // ffprobe gives ISO 639-2 codes like "por"; Intl knows most of them
-      const name = LANGUAGES.of(code);
-      return name && name !== code ? name : code.toUpperCase();
-    } catch {
-      return code.toUpperCase();
-    }
-  }
-
   function channelLabel(channels: number) {
     return channels === 1 ? "Mono" : channels === 2 ? "Stereo" : channels === 6 ? "5.1" : channels === 8 ? "7.1" : `${channels} channels`;
   }
@@ -82,11 +72,29 @@ export namespace PlaybackController {
       index: t.index,
       label: t.title ?? languageName(t.language) ?? `Subtitles ${i + 1}`,
       language: t.language,
-      detail: [t.isForced ? "Forced" : null, t.isImage ? "Picture subtitles, drawn into the video" : t.codec === "ass" || t.codec === "ssa" ? "Styled text" : "Text"].filter(Boolean).join(" · "),
+      detail: [
+        t.external ? "File" : null,
+        t.isForced ? "Forced" : null,
+        t.isHearingImpaired ? "SDH" : null,
+        t.isImage ? "Picture subtitles, drawn into the video" : t.codec === "ass" || t.codec === "ssa" ? "Styled text" : "Text",
+      ].filter(Boolean).join(" · "),
       isForced: t.isForced,
       isDefault: t.isDefault,
       url: t.isImage ? null : `/api/playback/stream/${token}/subtitles/${t.index}.vtt`,
     }));
+  }
+
+  /**
+   * Seek thumbnails for the player, starting them in the background when they're missing.
+   */
+  async function trickplayInfo(file: MediaFile, token: string, generate: boolean): Promise<TrickplayInfo | null> {
+    const manifest = await Trickplay.manifest(file);
+    if (!manifest) {
+      if (generate && file.duration) Trickplay.queueNow(file);
+      return null;
+    }
+    const { interval, width, height, columns, rows, count } = manifest;
+    return { interval, width, height, columns, rows, count, sheetUrl: `/api/playback/stream/${token}/trickplay/{n}.jpg` };
   }
 
   function validCapabilities(value: unknown): value is DeviceCapabilities {
@@ -176,7 +184,7 @@ export namespace PlaybackController {
       subtitleIndex: typeof body.subtitleIndex === "number" ? body.subtitleIndex : null,
       quality,
       audio: audioOptions(file.audio),
-      subtitles: subtitleOptions(file.subtitles, token),
+      subtitles: subtitleOptions(file.allSubtitles(), token),
       reasons: decision.reasons,
       video: {
         codec: decision.video.codec,
@@ -189,6 +197,9 @@ export namespace PlaybackController {
       },
       audioStream: decision.audio ? { codec: decision.audio.codec, source: file.audio.find((a) => a.index === decision.audio!.index)?.codec ?? "unknown", action: decision.audio.action, channels: decision.audio.channels } : null,
       isRemote,
+      trickplay: await trickplayInfo(file, token, settings.seekThumbnails),
+      streamBase: `/api/playback/stream/${token}`,
+      canSearchSubtitles: await user.hasPermission("SUBTITLES_DOWNLOAD") && await SubtitleManager.isAvailable(),
     };
     return c.json(info);
   });
@@ -333,6 +344,34 @@ export namespace PlaybackController {
     }
   });
 
+  /**
+   * @swagger
+   * /api/playback/stream/{token}/trickplay:
+   *   get:
+   *     summary: Seek thumbnails of the stream's file, or `null` while they're being made.
+   */
+  router.get("/stream/:token/trickplay", async (c) => {
+    const g = useGrant(c.req.param("token"));
+    const file = g ? await MediaFile.findByPk(g.fileId) : null;
+    if (!file) return c.json({ message: "This stream has expired. Start playback again." }, 404);
+    return c.json(await trickplayInfo(file, c.req.param("token"), false));
+  });
+
+  /**
+   * @swagger
+   * /api/playback/stream/{token}/trickplay/{n}.jpg:
+   *   get:
+   *     summary: One sheet of seek thumbnails.
+   */
+  router.get("/stream/:token/trickplay/:sheet{[0-9]+\\.jpg}", async (c) => {
+    const g = useGrant(c.req.param("token"));
+    const file = g ? await MediaFile.findByPk(g.fileId) : null;
+    if (!file) return c.json({ message: "This stream has expired. Start playback again." }, 404);
+    const path = await Trickplay.sheetPath(file, parseInt(c.req.param("sheet")));
+    if (!path) return c.json({ message: "That thumbnail sheet doesn't exist." }, 404);
+    return c.body(await Deno.readFile(path), 200, { "Content-Type": "image/jpeg", "Cache-Control": "private, max-age=86400" });
+  });
+
   //#region Settings
   const manage = User.$middleware({ permissions: ["SERVER_MANAGE"] });
 
@@ -373,6 +412,7 @@ export namespace PlaybackController {
       toneMapping: next.toneMapping,
       remoteMaxBitrate: next.remoteMaxBitrate,
       allowRemoteConversion: next.allowRemoteConversion,
+      seekThumbnails: !!next.seekThumbnails,
     };
     await HardwareAcceleration.saveSettings(clean);
     return c.json(clean);
@@ -385,7 +425,7 @@ export namespace PlaybackController {
    *     summary: GPUs the server can see, and the size of the conversion cache.
    */
   router.get("/devices", manage, async (c) => {
-    return c.json({ devices: await HardwareAcceleration.detect(), cacheSize: await TranscodeSession.cacheSize(), cacheDir: TranscodeSession.rootDir });
+    return c.json({ devices: await HardwareAcceleration.detect(), cacheSize: await TranscodeSession.cacheSize(), cacheDir: TranscodeSession.rootDir, thumbnailsSize: await Trickplay.size() });
   });
 
   /**

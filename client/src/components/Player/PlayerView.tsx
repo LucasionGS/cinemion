@@ -1,5 +1,5 @@
 import { Fragment, type ReactNode, useEffect, useRef } from "react";
-import { Captions, ChevronLeft, Maximize, Minimize, Pause, PictureInPicture2, Play, SkipForward, Volume1, Volume2, VolumeX } from "lucide-react";
+import { Captions, ChevronLeft, Users, Maximize, Minimize, Pause, PictureInPicture2, Play, SkipForward, Volume1, Volume2, VolumeX } from "lucide-react";
 import useController from "../../lib/useController.ts";
 import { deviceMode } from "../../lib/DeviceMode.ts";
 import { episodeLabel, formatClock } from "../../lib/playback.ts";
@@ -11,6 +11,12 @@ import IconButton from "../IconButton/IconButton.tsx";
 import Spinner from "../Spinner/Spinner.tsx";
 import Scrubber from "./Scrubber.tsx";
 import TrackPanel, { modeLabel } from "./TrackPanel.tsx";
+import Thumbnail from "./Thumbnail.tsx";
+import SubtitleSearchDialog from "./SubtitleSearchDialog.tsx";
+import TogetherPanel from "./TogetherPanel.tsx";
+import Avatar from "../Avatar/Avatar.tsx";
+import { together } from "../../lib/Together.ts";
+import { toasts } from "../../lib/Toasts.ts";
 import type PlayerController from "./PlayerController.ts";
 import "./Player.scss";
 
@@ -38,6 +44,20 @@ export default function PlayerView(props: PlayerViewProps) {
     return () => controller.destroy();
   }, [controller]);
 
+  // Follow the watch together session while it's about this title
+  const t = useController(together);
+  const following = t.isConnected() && t.room?.itemId === c.item.id;
+  useEffect(() => {
+    if (following) controller.connectTogether(together);
+    else controller.disconnectTogether();
+  }, [following, controller]);
+
+  useEffect(() => {
+    if (t.status !== "ended" || !t.endedReason) return;
+    toasts.show({ title: "Watch together ended", description: t.endedReason });
+    together.dismissEnded();
+  }, [t.status, t.endedReason]);
+
   // Remote, keyboard and media keys. Runs before the app's spatial navigation, which skips handled keys.
   useEffect(() => {
     const isTv = mode === "tv";
@@ -57,6 +77,8 @@ export default function PlayerView(props: PlayerViewProps) {
 
     function onKey(e: KeyboardEvent) {
       if (e.defaultPrevented) return;
+      // Dialogs over the player handle their own keys
+      if (controller.subtitleSearchOpen || (document.activeElement as HTMLElement | null)?.closest(".cn-dialog")) return;
       const active = document.activeElement as HTMLElement | null;
       const inPanel = !!active?.closest(".cn-track-panel");
       const onScrubber = !!active?.hasAttribute("data-scrubber");
@@ -146,6 +168,11 @@ export default function PlayerView(props: PlayerViewProps) {
           if (controller.scrubTarget !== null) {
             handled();
             controller.cancelScrub();
+            return;
+          }
+          if (controller.togetherOpen) {
+            handled();
+            controller.setTogetherOpen(false);
             return;
           }
           if (controller.panelOpen) {
@@ -255,6 +282,7 @@ export default function PlayerView(props: PlayerViewProps) {
             <span className="cn-player__title">{title}</span>
             {subtitle && <span className="cn-player__subtitle">{subtitle}</span>}
           </div>
+          {mode === "mobile" && <TogetherButton controller={controller} />}
           {mode === "mobile" && <PanelToggle controller={controller} />}
         </header>
 
@@ -265,6 +293,8 @@ export default function PlayerView(props: PlayerViewProps) {
             <IconButton label="Forward 10 seconds" icon={<SkipIcon direction={1} />} variant="ghost" size="lg" onClick={() => controller.seekBy(10)} />
           </div>
         )}
+
+        {mode === "tv" && c.scrubTarget !== null && c.trickplay && <Filmstrip controller={controller} />}
 
         <div className="cn-player__bottom">
           {mode === "mobile" && (
@@ -279,6 +309,16 @@ export default function PlayerView(props: PlayerViewProps) {
       </div>
 
       {c.panelOpen && <TrackPanel controller={controller} />}
+      {c.togetherOpen && <TogetherPanel controller={controller} />}
+      {t.notice && (
+        <div key={t.notice.id} className="cn-together-notice" role="status">
+          {t.notice.profile && <Avatar profile={t.notice.profile} size={1.75} />}
+          {t.notice.text}
+        </div>
+      )}
+      {c.info?.canSearchSubtitles && (
+        <SubtitleSearchDialog controller={controller} open={c.subtitleSearchOpen} onOpenChange={(open) => controller.setSubtitleSearchOpen(open)} container={root.current} />
+      )}
       {c.nextCountdown !== null && c.next && !c.error && <NextUp controller={controller} />}
     </div>
   );
@@ -313,6 +353,7 @@ function DesktopRow(props: { controller: PlayerController; root: React.RefObject
       <div className="cn-player__end">
         <StreamBadge controller={controller} />
         <PanelToggle controller={controller} />
+        <TogetherButton controller={controller} />
         {document.pictureInPictureEnabled && <IconButton label="Picture in picture" icon={<PictureInPicture2 />} variant="ghost" onClick={() => controller.togglePictureInPicture()} />}
         <IconButton label={c.fullscreen ? "Exit full screen (F)" : "Full screen (F)"} icon={c.fullscreen ? <Minimize /> : <Maximize />} variant="ghost" onClick={() => controller.toggleFullscreen(root.current!)} />
       </div>
@@ -360,14 +401,60 @@ function TvRow(props: { controller: PlayerController }) {
         <StreamBadge controller={controller} />
         <Button variant="secondary" icon={c.playing ? <Pause fill="currentColor" /> : <Play fill="currentColor" />} onClick={() => controller.togglePlay()}>{c.playing ? "Pause" : "Play"}</Button>
         <Button variant="secondary" icon={<Captions />} onClick={() => controller.openPanel()} data-panel-toggle>Subtitles &amp; audio</Button>
+        <TogetherButton controller={controller} />
         {c.next && <Button variant="secondary" icon={<SkipForward />} onClick={() => controller.playNext()}>Next episode</Button>}
       </div>
     </div>
   );
 }
 
+/**
+ * TV scrubbing: the frame being jumped to, large, with the frames around it.
+ */
+function Filmstrip(props: { controller: PlayerController }) {
+  const { scrubTarget, trickplay, duration } = useController(props.controller);
+  if (scrubTarget === null || !trickplay) return null;
+  const step = Math.max(10, trickplay.interval);
+  const frames = [-3, -2, -1, 0, 1, 2, 3].map((k) => ({ k, time: scrubTarget + k * step })).filter((f) => f.time >= 0 && f.time <= duration);
+
+  return (
+    <div className="cn-filmstrip" aria-hidden="true">
+      {frames.map(({ k, time }) => (
+        <div key={k} className={cx("cn-filmstrip__frame", k === 0 && "cn-filmstrip__frame--current")} style={{ opacity: 1 - Math.abs(k) * 0.22 }}>
+          <Thumbnail trickplay={trickplay} time={time} className="cn-filmstrip__image" />
+          <span>{formatClock(time)}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function Hint(props: { keys: string; children: ReactNode }) {
   return <span className="cn-player__hint"><kbd>{props.keys}</kbd>{props.children}</span>;
+}
+
+/**
+ * Opens the watch together panel. While in a session it shows how many are watching.
+ */
+function TogetherButton(props: { controller: PlayerController }) {
+  const { controller } = props;
+  const { togetherOpen, item } = useController(controller);
+  const t = useController(together);
+  const { mode } = useController(deviceMode);
+  const count = t.isConnected() && t.room?.itemId === item.id ? t.room.members.length : 0;
+  const toggle = () => controller.setTogetherOpen(!togetherOpen);
+
+  if (mode === "tv") {
+    return <Button variant="secondary" icon={<Users />} onClick={toggle}>{count ? `${count} watching` : "Watch together"}</Button>;
+  }
+  if (count > 0) {
+    return (
+      <button type="button" className={cx("cn-player__watching", togetherOpen && "cn-player__watching--open")} aria-expanded={togetherOpen} onClick={toggle}>
+        <Users aria-hidden="true" /> {count} watching
+      </button>
+    );
+  }
+  return <IconButton label="Watch together" icon={<Users />} variant="ghost" className={cx(togetherOpen && "cn-player__panel-toggle--open")} aria-expanded={togetherOpen} onClick={toggle} />;
 }
 
 function PanelToggle(props: { controller: PlayerController }) {

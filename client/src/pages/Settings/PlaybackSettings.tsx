@@ -216,6 +216,7 @@ export default function PlaybackSettings() {
         </div>
         <div className="cn-settings__divider" />
         <Switch label="Tone-map HDR to SDR" description="Keeps colours right on screens without HDR." checked={value.toneMapping} onChange={(toneMapping) => update({ toneMapping })} />
+        <Switch label="Make seek thumbnails" description="Small pictures above the seek bar. Made in the background after a scan, and when a video is first played." checked={value.seekThumbnails} onChange={(seekThumbnails) => update({ seekThumbnails })} />
         <Switch label="Allow conversion for remote viewers" description="Off means viewers outside your network only get files their device plays as they are." checked={value.allowRemoteConversion} onChange={(allowRemoteConversion) => update({ allowRemoteConversion })} />
       </section>
 
@@ -223,7 +224,7 @@ export default function PlaybackSettings() {
         <div className="cn-settings__row">
           <div className="cn-settings__row-text">
             <strong>Conversion cache</strong>
-            <span>{devices ? `${devices.cacheDir} · ${formatBytes(devices.cacheSize)} · cleaned up when playback stops` : "Checking…"}</span>
+            <span>{devices ? `${devices.cacheDir} · ${formatBytes(devices.cacheSize)} · cleaned up when playback stops. Seek thumbnails use ${formatBytes(devices.thumbnailsSize)}.` : "Checking…"}</span>
           </div>
           <Button variant="secondary" onClick={clearCache} loading={clearing}>Clear now</Button>
         </div>

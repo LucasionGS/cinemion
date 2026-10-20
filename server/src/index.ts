@@ -6,6 +6,7 @@ import Ffmpeg from "./lib/Ffmpeg.ts";
 import LibraryWatcher from "./library/LibraryWatcher.ts";
 import ScanScheduler from "./library/ScanScheduler.ts";
 import TranscodeSession from "./media/TranscodeSession.ts";
+import WatchTogether from "./together/WatchTogether.ts";
 import log from "./lib/Logger.ts";
 
 addEventListener("unhandledrejection", (event) => {
@@ -56,6 +57,7 @@ for (const signal of ["SIGINT", "SIGTERM"] as const) {
     ScanScheduler.stop();
     LibraryWatcher.stop();
     await TranscodeSession.shutdown();
+    WatchTogether.shutdown();
     await server.shutdown();
     await sequelize.close();
     Deno.exit(0);

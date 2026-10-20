@@ -101,6 +101,11 @@ ffmpeg -loglevel error -y \
   -metadata:s:a:0 language=eng -metadata:s:a:1 language=eng -metadata:s:a:1 title="Commentary" -metadata:s:s:0 language=eng \
   "$MOVIES/Paper.Moons.2024.1080p.WEB-DL.x264-CINEMION.mp4"
 
+# Subtitle files next to the video: a forced English one, and a Dutch one in Windows-1252 like many downloads
+PM="$MOVIES/Paper.Moons.2024.1080p.WEB-DL.x264-CINEMION"
+printf '1\n00:00:02,000 --> 00:00:05,000\nForced English line from a file\n\n' > "$PM.en.forced.srt"
+printf '1\n00:00:02,000 --> 00:00:05,000\nCaf\xe9 en cr\xe8me, uit een los bestand\n\n' > "$PM.nl.srt"
+
 # ID tag in the folder name, 5.1 AC3 audio, a styled (ASS) subtitle and a forced SRT one
 GH="$MOVIES/Glass Harbor (2025) {imdb-tt0000001}"
 mkdir -p "$GH"

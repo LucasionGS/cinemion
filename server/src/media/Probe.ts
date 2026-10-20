@@ -53,6 +53,8 @@ export namespace Probe {
         isDefault: !!s.disposition?.default,
         isForced: !!s.disposition?.forced,
         isImage: IMAGE_SUBTITLES.has(s.codec_name ?? ""),
+        external: false,
+        isHearingImpaired: !!s.disposition?.hearing_impaired || /\b(sdh|cc|hearing)/i.test(s.tags?.title ?? ""),
       })),
     };
   }

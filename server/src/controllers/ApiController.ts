@@ -14,6 +14,8 @@ import SearchController from "./SearchController.ts";
 import CollectionsController from "./CollectionsController.ts";
 import PeopleController from "./PeopleController.ts";
 import PlaybackController from "./PlaybackController.ts";
+import SubtitlesController from "./SubtitlesController.ts";
+import TogetherController from "./TogetherController.ts";
 import type { AppEnv } from "../lib/types.ts";
 
 /**
@@ -37,6 +39,8 @@ export namespace ApiController {
   router.route("/collections", CollectionsController.router);
   router.route("/people", PeopleController.router);
   router.route("/playback", PlaybackController.router);
+  router.route("/subtitles", SubtitlesController.router);
+  router.route("/together", TogetherController.router);
 
   router.all("*", (c) => c.json({ message: `There's no API endpoint at ${c.req.method} ${c.req.path}.` }, 404));
 }

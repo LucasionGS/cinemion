@@ -37,6 +37,7 @@ export namespace Setting {
     METADATA: "metadata",
     SCAN_INTERVAL_HOURS: "scanIntervalHours",
     PLAYBACK: "playback",
+    SUBTITLES: "subtitles",
   } as const;
 }
 

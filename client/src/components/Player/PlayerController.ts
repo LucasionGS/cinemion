@@ -1,6 +1,10 @@
 import Hls from "hls.js";
-import type { ItemDetail, ItemSummary } from "@shared/media.ts";
-import type { PlaybackInfo, QualityPreset, StartPlaybackRequest } from "@shared/playback.ts";
+import type { ItemDetail, ItemSummary, SubtitleTrack } from "@shared/media.ts";
+import { languageName } from "@shared/languages.ts";
+import type { PlaybackInfo, QualityPreset, StartPlaybackRequest, TrickplayInfo } from "@shared/playback.ts";
+import type { TogetherAction } from "@shared/together.ts";
+import { together, type TogetherSession } from "../../lib/Together.ts";
+import { toasts } from "../../lib/Toasts.ts";
 import Controller from "../../lib/Controller.ts";
 import { detectCapabilities, hasMediaSource } from "../../lib/capabilities.ts";
 import { type Cue, parseVtt } from "../../lib/vtt.ts";
@@ -41,6 +45,8 @@ export class PlayerController extends Controller {
 
   public controlsVisible = true;
   public panelOpen = false;
+  public subtitleSearchOpen = false;
+  public togetherOpen = false;
   public panelTab: PanelTab = "subtitles";
   /**
    * Where TV-style scrubbing will jump to, or `null` when not scrubbing.
@@ -51,6 +57,10 @@ export class PlayerController extends Controller {
    */
   public nextCountdown: number | null = null;
 
+  /**
+   * Seek thumbnails, once the server has made them.
+   */
+  public trickplay: TrickplayInfo | null = null;
   public subtitleIndex: number | null = null;
   public cues: Cue[] = [];
 
@@ -59,6 +69,7 @@ export class PlayerController extends Controller {
   private _hideTimer: ReturnType<typeof setTimeout> | null = null;
   private _progressTimer: ReturnType<typeof setInterval> | null = null;
   private _pingTimer: ReturnType<typeof setInterval> | null = null;
+  private _trickplayTimer: ReturnType<typeof setTimeout> | null = null;
   private _lastSaved = 0;
   private _loadId = 0;
   private _recovering = false;
@@ -66,6 +77,9 @@ export class PlayerController extends Controller {
   private _nextDismissed = false;
   private _destroyed = false;
   private _wantPlay = true;
+  private _together: TogetherSession | null = null;
+  private _togetherCleanup: (() => void)[] = [];
+  private _applyingShared = false;
 
   /**
    * Seconds before the end at which the next episode countdown appears.
@@ -76,7 +90,11 @@ export class PlayerController extends Controller {
   private static readonly PING_EVERY_MS = 30_000;
   private static readonly VOLUME_KEY = "cn-volume";
 
-  constructor(item: ItemDetail, public readonly onExit: () => void, public readonly onPlayNext: (next: ItemSummary) => void) {
+  /**
+   * @param onExit Leave the player.
+   * @param onOpenItem Switch the player to another movie or episode, like the next episode.
+   */
+  constructor(item: ItemDetail, public readonly onExit: () => void, public readonly onOpenItem: (itemId: number) => void) {
     super();
     this.item = item;
     this.duration = item.files[0]?.duration ?? (item.runtime ?? 0) * 60;
@@ -151,10 +169,12 @@ export class PlayerController extends Controller {
     if (this._destroyed) return;
     this._destroyed = true;
     this.saveProgress(true);
+    this.disconnectTogether();
     if (this.info?.sessionId) PlaybackApi.stop(this.info.sessionId);
     if (this._progressTimer) clearInterval(this._progressTimer);
     if (this._pingTimer) clearInterval(this._pingTimer);
     if (this._hideTimer) clearTimeout(this._hideTimer);
+    if (this._trickplayTimer) clearTimeout(this._trickplayTimer);
     document.removeEventListener("fullscreenchange", this._onFullscreen);
     if (document.fullscreenElement) document.exitFullscreen().catch(() => { });
     this._hls?.destroy();
@@ -218,6 +238,8 @@ export class PlayerController extends Controller {
 
     this.info = info;
     this.duration = info.duration || this.duration;
+    this.trickplay = info.trickplay;
+    if (!this.trickplay) this._waitForTrickplay(info.streamBase, 0);
     this._recovering = false;
     this._attachStream(info, opts.startAt);
     this.setSubtitle(subtitleIndex, { reload: false });
@@ -267,6 +289,25 @@ export class PlayerController extends Controller {
     });
     hls.loadSource(info.url);
     hls.attachMedia(video);
+  }
+
+  /**
+   * Thumbnails for a file are made the first time it's played; check back until they're there.
+   */
+  private _waitForTrickplay(streamBase: string, attempt: number) {
+    if (this._trickplayTimer) clearTimeout(this._trickplayTimer);
+    if (attempt > 60) return;
+    this._trickplayTimer = setTimeout(async () => {
+      if (this._destroyed || this.info?.streamBase !== streamBase) return;
+      const info = await fetch(`${streamBase}/trickplay`).then((r) => r.ok ? r.json() as Promise<TrickplayInfo | null> : null).catch(() => null);
+      if (info) {
+        this.trickplay = info;
+        this.notify();
+      }
+      else {
+        this._waitForTrickplay(streamBase, attempt + 1);
+      }
+    }, 10_000);
   }
 
   private _resume() {
@@ -361,6 +402,8 @@ export class PlayerController extends Controller {
     this.playing = false;
     this.saveProgress(true);
     this.notify();
+    // Watching together, the host decides what's next; everyone else waits for them
+    if (this._together?.isConnected() && !this._together.isHost()) return;
     if (this.next && !this._nextDismissed) this.playNext();
     else this.onExit();
   };
@@ -399,6 +442,7 @@ export class PlayerController extends Controller {
 
   //#region Controls
   public play() {
+    if (!this._shareControl("play", this.ended ? 0 : this.position)) return;
     this._wantPlay = true;
     if (this.ended) {
       this.seek(0);
@@ -408,6 +452,7 @@ export class PlayerController extends Controller {
   }
 
   public pause() {
+    if (!this._shareControl("pause", this.position)) return;
     this._wantPlay = false;
     this._video?.pause();
   }
@@ -425,6 +470,7 @@ export class PlayerController extends Controller {
     const video = this._video;
     if (!video || !this.info) return;
     const target = Math.max(0, Math.min(time, Math.max(0, this.duration - 1)));
+    if (!this._shareControl("seek", target)) return;
     this.ended = false;
     this.position = target;
 
@@ -528,6 +574,143 @@ export class PlayerController extends Controller {
     }
   }
 
+  /**
+   * Add a subtitle track that was just downloaded, and turn it on.
+   */
+  public addSubtitle(track: SubtitleTrack) {
+    const info = this.info;
+    if (!info) return;
+    const file = this.item.files.find((f) => f.id === info.fileId);
+    if (file && !file.subtitles.some((s) => s.index === track.index)) file.subtitles = [...file.subtitles, track];
+    if (!info.subtitles.some((s) => s.index === track.index)) {
+      info.subtitles = [...info.subtitles, {
+        index: track.index,
+        label: track.title ?? languageName(track.language) ?? "Subtitles",
+        language: track.language,
+        detail: ["Downloaded", track.isHearingImpaired ? "SDH" : null, "Text"].filter(Boolean).join(" · "),
+        isForced: track.isForced,
+        isDefault: false,
+        url: `${info.streamBase}/subtitles/${track.index}.vtt`,
+      }];
+    }
+    this.setSubtitle(track.index);
+  }
+
+  //#region Watch together
+  /**
+   * Follow a watch together session: share this player's controls, and follow everyone else's.
+   */
+  public connectTogether(session: TogetherSession) {
+    this.disconnectTogether();
+    this._together = session;
+    // Start paused or playing like everyone else
+    if (session.room) this._wantPlay = session.room.state.playing;
+    this._togetherCleanup = [
+      session.onControl((_state, byMe) => {
+        if (!byMe) this._applyShared();
+      }),
+      session.onItem((itemId) => {
+        if (itemId !== this.item.id) this.onOpenItem(itemId);
+      }),
+      session.subscribe(() => this.notify()),
+    ];
+    const sync = setInterval(() => this._keepInSync(), 1000);
+    const status = setInterval(() => {
+      if (session.isConnected()) session.sendStatus(this.loading ? "loading" : this.buffering ? "buffering" : "ready", this.position);
+    }, 2000);
+    this._togetherCleanup.push(() => clearInterval(sync), () => clearInterval(status));
+  }
+
+  public disconnectTogether() {
+    this._togetherCleanup.forEach((cleanup) => cleanup());
+    this._togetherCleanup = [];
+    this._together = null;
+    if (this._video) this._video.playbackRate = 1;
+  }
+
+  public get together() {
+    return this._together;
+  }
+
+  /**
+   * Tell the room about a local play, pause or seek. Returns `false` when this device isn't allowed to.
+   */
+  private _shareControl(action: TogetherAction, position: number) {
+    const t = this._together;
+    if (!t?.isConnected() || this._applyingShared) return true;
+    if (!t.canControl()) {
+      toasts.show({ title: "Only the host can pause and seek", description: "Ask them to turn on \"Anyone can pause and seek\"." });
+      return false;
+    }
+    t.sendControl(action, position);
+    return true;
+  }
+
+  /**
+   * Match the room's shared state: jump when far off, then play or pause.
+   */
+  private _applyShared() {
+    const t = this._together;
+    const video = this._video;
+    if (!t?.room || !video || !this.info) return;
+    const state = t.room.state;
+    this._applyingShared = true;
+    try {
+      this._wantPlay = state.playing;
+      const expected = t.expectedPosition();
+      const beyondEnd = !!this.duration && expected >= this.duration - 1;
+      if (Math.abs(expected - this.position) > 1.5 && !beyondEnd) this.seek(expected);
+      if (state.playing && video.paused && !this.loading) video.play().catch(() => { });
+      if (!state.playing && !video.paused) video.pause();
+    } finally {
+      this._applyingShared = false;
+    }
+  }
+
+  /**
+   * Small drift is fixed by playing a little faster or slower; big drift by jumping.
+   */
+  private _keepInSync() {
+    const t = this._together;
+    const video = this._video;
+    if (!t?.isConnected() || !t.room || !video || this.loading || this.error) return;
+    const state = t.room.state;
+    const expected = t.expectedPosition();
+    // Past the end there's nothing to catch up with; let this player finish on its own
+    if (this.ended || video.ended || (this.duration && expected >= this.duration - 1)) {
+      video.playbackRate = 1;
+      return;
+    }
+    if (!state.playing) {
+      video.playbackRate = 1;
+      if (!video.paused) this._applyShared();
+      return;
+    }
+    if (video.paused) {
+      this._applyShared();
+      return;
+    }
+    const drift = expected - this.position;
+    if (Math.abs(drift) > 2.5) this._applyShared();
+    else if (Math.abs(drift) > 0.35) video.playbackRate = drift > 0 ? 1.06 : 0.94;
+    else video.playbackRate = 1;
+  }
+
+  public setTogetherOpen(open: boolean) {
+    this.togetherOpen = open;
+    if (open) this.panelOpen = false;
+    this.showControls();
+    this.notify();
+  }
+  //#endregion
+
+  public setSubtitleSearchOpen(open: boolean) {
+    this.subtitleSearchOpen = open;
+    if (open) this.panelOpen = false;
+    this.showControls();
+    this.notify();
+  }
+
   private _isImageSubtitle(index: number | null | undefined, fileId: number | undefined) {
     if (index === null || index === undefined) return false;
     const file = this.item.files.find((f) => f.id === fileId) ?? this.item.files[0];
@@ -536,6 +719,7 @@ export class PlayerController extends Controller {
 
   public openPanel(tab?: PanelTab) {
     this.panelOpen = true;
+    this.togetherOpen = false;
     if (tab) this.panelTab = tab;
     this.showControls();
     this.notify();
@@ -566,7 +750,7 @@ export class PlayerController extends Controller {
   public scheduleHide() {
     if (this._hideTimer) clearTimeout(this._hideTimer);
     this._hideTimer = setTimeout(() => {
-      if (!this.playing || this.panelOpen || this.scrubTarget !== null) return;
+      if (!this.playing || this.panelOpen || this.togetherOpen || this.subtitleSearchOpen || this.scrubTarget !== null) return;
       this.controlsVisible = false;
       this.notify();
     }, PlayerController.HIDE_AFTER_MS);
@@ -608,6 +792,9 @@ export class PlayerController extends Controller {
    */
   public saveProgress(force = false) {
     if (!this.info || this.loading && !force) return;
+    // Watching along doesn't change your own progress; only the host's counts. This checks the session itself,
+    // since the player stops following it a moment before moving on to the next title.
+    if (together.isConnected() && !together.isHost()) return;
     const position = Math.floor(this.position);
     if (!force && Math.abs(position - this._lastSaved) < 2) return;
     this._lastSaved = position;
@@ -616,6 +803,14 @@ export class PlayerController extends Controller {
 
   private _updateNextUp() {
     if (!this.next || this._nextDismissed || !this.duration) return;
+    // Watching along, the host's player moves everyone on
+    if (this._together?.isConnected() && !this._together.isHost()) {
+      if (this.nextCountdown !== null) {
+        this.nextCountdown = null;
+        this.notify();
+      }
+      return;
+    }
     const left = this.duration - this.position;
     const countdown = left <= PlayerController.NEXT_UP_SECONDS && this.scrubTarget === null ? Math.max(0, Math.ceil(left)) : null;
     if (countdown !== this.nextCountdown) {
@@ -632,9 +827,14 @@ export class PlayerController extends Controller {
 
   public playNext() {
     if (!this.next) return;
+    if (together.isConnected() && !together.isHost()) {
+      toasts.show({ title: "The host picks what's next", description: "Everyone moves on when their episode ends." });
+      return;
+    }
     // The rest is credits; count this one as watched
     PlaybackApi.saveProgress(this.item.id, this.duration, this.duration || null);
-    this.onPlayNext(this.next);
+    if (this._together?.isConnected()) this._together.sendItem(this.next.id);
+    this.onOpenItem(this.next.id);
   }
   //#endregion
 

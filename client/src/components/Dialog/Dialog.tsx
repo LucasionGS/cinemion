@@ -18,13 +18,17 @@ export interface DialogProps {
    */
   footer?: ReactNode;
   size?: "sm" | "md" | "lg";
+  /**
+   * Where the dialog is rendered. Default is the page body; the player passes itself so dialogs show in full screen.
+   */
+  container?: HTMLElement | null;
 }
 
 export default function Dialog(props: DialogProps) {
-  const { open, onOpenChange, title, description, children, footer, size = "md" } = props;
+  const { open, onOpenChange, title, description, children, footer, size = "md", container } = props;
   return (
     <BaseDialog.Root open={open} onOpenChange={(value) => onOpenChange(value)}>
-      <BaseDialog.Portal>
+      <BaseDialog.Portal container={container ?? undefined}>
         <BaseDialog.Backdrop className="cn-dialog__backdrop" />
         <BaseDialog.Popup className={cx("cn-dialog", `cn-dialog--${size}`)}>
           <div className="cn-dialog__header">

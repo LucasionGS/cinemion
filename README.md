@@ -2,7 +2,7 @@
 
 Your movies and shows, beautifully served from your own machine: a self-hosted media server that feels at home on the couch, at a desk and on a phone.
 
-> Cinemion is under active development. Setup, profiles, scanning, metadata, browsing and playback work; seek thumbnails, subtitle search and watching together are next.
+> Cinemion is under active development. Everything below works; admin tools (a dashboard, Sonarr/Radarr and webhooks) are next.
 
 ## Key Features
 
@@ -14,6 +14,9 @@ Your movies and shows, beautifully served from your own machine: a self-hosted m
 - **Posters, plots and cast**: from NFO files and artwork next to your videos, from TMDB, or both, in the order you choose. Wrong match? Fix it in two clicks.
 - **Plays (almost) anything, anywhere**: files your device can play go straight through untouched. Anything else is repackaged or converted on the fly, on the CPU or an Intel, AMD or NVIDIA GPU, with HDR turned into SDR for screens that need it. Pick audio tracks, subtitles and quality while you watch.
 - **A player for every screen**: keyboard shortcuts on the desktop, big touch controls on phones, and remote-friendly scrubbing on the TV. The next episode lines itself up while the credits roll.
+- **See where you're seeking**: thumbnails above the seek bar, and a filmstrip on the TV, so you land on the right scene.
+- **Subtitles, sorted**: subtitle files next to your videos just show up, and anything missing is a search away (OpenSubtitles) without leaving the player.
+- **Watch together**: start a session, share a code, and everyone's play, pause and seek stay in step, each on their own screen. Only the host's progress is saved, so nobody's "continue watching" gets spoiled.
 - **Picks up where you left off**: continue watching, next up, recently added and "because you watched", per profile. Collections, cast pages and search across titles, episodes and people.
 - **Safe for kids**: give a profile an age limit and anything rated above it (or not rated at all) simply isn't there.
 - **One container, nothing else**: the Docker image includes everything. No database server, no extra services. There's also a single-file binary if you'd rather skip Docker.

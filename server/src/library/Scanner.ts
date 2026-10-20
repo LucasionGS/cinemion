@@ -4,6 +4,8 @@ import { Op } from "sequelize";
 import { Collection, Library, MediaFile, MediaItem } from "../models/index.ts";
 import NameParser from "./NameParser.ts";
 import Probe from "../media/Probe.ts";
+import Sidecars from "./Sidecars.ts";
+import Trickplay from "../media/Trickplay.ts";
 import MetadataManager from "../metadata/MetadataManager.ts";
 import Tasks from "../lib/Tasks.ts";
 import { forEachLimit } from "../lib/async.ts";
@@ -134,6 +136,12 @@ export namespace Scanner {
       probed++;
     });
 
+    // Subtitle files come and go without the video changing, so look for them every scan
+    task.update("Looking for subtitles");
+    for (const file of await MediaFile.findAll({ where: { libraryId: library.id } })) {
+      await Sidecars.refresh(file).catch((error) => log.warn(`Could not look for subtitles of ${file.path}`, { error }));
+    }
+
     task.update("Sorting files");
     const roots = new Map(found.map((f) => [f.path, f.root]));
     if (library.type === "movies") await assignMovies(library, roots);
@@ -162,6 +170,8 @@ export namespace Scanner {
 
     library.lastScannedAt = new Date();
     await library.save();
+    await Trickplay.cleanup().catch((error) => log.warn("Could not clean up seek thumbnails", { error }));
+    Trickplay.queueLibrary(library.id);
     log.info(`Scanned "${library.name}"`, { files: found.length, removed: removed.length, probed: toProbe.length, refreshed: top.length, seconds: Math.round((Date.now() - started) / 100) / 10 });
   }
 
