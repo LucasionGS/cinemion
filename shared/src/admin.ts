@@ -215,6 +215,23 @@ export interface IntegrationSettings {
   lastEvent: ArrEvent | null;
 }
 
+/**
+ * A key another app uses to reach Cinemion as a media server, like Seerr for requests or Homepage for a dashboard tile.
+ */
+export interface AppKeyInfo {
+  id: string;
+  /**
+   * The name the app gave itself, like "Seerr".
+   */
+  app: string;
+  token: string;
+  /**
+   * Name of the profile that made the key. `null` when that profile has been removed (and the key stopped working).
+   */
+  createdBy: string | null;
+  createdAt: string;
+}
+
 //#endregion
 
 //#region Webhooks

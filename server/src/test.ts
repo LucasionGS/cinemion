@@ -6,6 +6,7 @@ import Network from "./lib/Network.ts";
 import UserAgent from "./lib/UserAgent.ts";
 import SystemStats from "./lib/SystemStats.ts";
 import ArrWebhook from "./integrations/ArrWebhook.ts";
+import CompatApi from "./integrations/CompatApi.ts";
 import Webhooks from "./integrations/Webhooks.ts";
 import VideoDetails from "./library/VideoDetails.ts";
 import Library from "./models/Library.ts";
@@ -327,6 +328,16 @@ const ranked = SubtitleAutomation.rank([
   result("subdl", {}),
 ], "en", ["opensubtitles", "subdl", "podnapisi"]);
 check("automatic pick order", ranked.map((r) => [r.provider, r.matchesFile, r.isHearingImpaired]), [["opensubtitles", true, false], ["subdl", false, false], ["podnapisi", false, false], ["subdl", false, true]]);
+//#endregion
+
+//#region Apps that speak another media server's API
+console.log("App API");
+check("item id", CompatApi.encodeId("item", 18), "c0000000000000000000000000000012");
+check("ids round trip", [CompatApi.decodeId("user", CompatApi.encodeId("user", 7)), CompatApi.decodeId("library", CompatApi.encodeId("library", 123456))], [7, 123456]);
+check("id of another kind", CompatApi.decodeId("library", CompatApi.encodeId("item", 3)), null);
+check("id with dashes and capitals", CompatApi.decodeId("item", "C0000000-0000-0000-0000-000000000012"), 18);
+check("not an id", [CompatApi.decodeId("item", "Me"), CompatApi.decodeId("item", "c0"), CompatApi.decodeId("item", null)], [null, null, null]);
+check("app item types", CompatApi.itemTypesFor(["Series", "Movie", "Others", "episode"]), ["show", "movie", "episode"]);
 //#endregion
 
 console.log(failed ? `\n${failed} failed` : "\nAll passed");

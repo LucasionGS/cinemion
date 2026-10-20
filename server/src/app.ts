@@ -3,6 +3,7 @@ import Path from "node:path";
 import { Hono, type Context } from "hono";
 import AppSystem from "./AppSystem.ts";
 import ApiController from "./controllers/ApiController.ts";
+import CompatController from "./controllers/CompatController.ts";
 import log from "./lib/Logger.ts";
 import type { AppEnv } from "./lib/types.ts";
 
@@ -66,6 +67,8 @@ export function createApp() {
   });
 
   app.route("/api", ApiController.router);
+  // Request apps and dashboards that only know other media servers (Settings › Integrations)
+  app.route("/", CompatController.router);
   if (AppSystem.isDev()) app.all("*", proxyToVite);
   else app.get("*", serveClient);
 

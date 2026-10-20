@@ -1,7 +1,7 @@
 # Cinemion handoff
 
 Everything an assistant needs to pick this project up with no earlier context. Read it fully before changing code.
-Last updated 2026-10-20, after milestone 8.
+Last updated 2026-10-20, after the app API (16b).
 
 ## 1. What Cinemion is
 
@@ -184,6 +184,8 @@ home, search), `playback.ts` (device capabilities, playback info, playback/subti
 - `integrations/`: Events (one call sends a webhook event and, optionally, an activity line with de-duplication),
   Webhooks (HMAC-SHA256 `X-Cinemion-Signature: sha256=…`, retries after 10 s / 1 min / 5 min for network errors, 429
   and 5xx, a test send), ArrWebhook (Sonarr/Radarr payload parsing, path mappings with Windows paths, token in the URL).
+  CompatApi (the media server API Seerr and Homepage speak: ids, app keys, sign-in from their headers, item JSON;
+  routes in `controllers/CompatController.ts`, mounted at the root in `app.ts`; see "App API" below).
 - `subtitles/`: SubtitleProvider base, providers/OpenSubtitlesProvider (REST API v1, key + optional login),
   SubtitleManager (settings, OpenSubtitles file hash, search, download and save).
 - `together/WatchTogether.ts`: in-memory rooms, WebSocket connection handling, sync state.
@@ -241,6 +243,7 @@ and on amd64 Intel's non-free VA driver + Quick Sync runtime), `docker/entrypoin
 | 14 | done | More metadata (TVDB, OMDb ratings) and Trakt scrobbling (below) |
 | 15 | done | More subtitle sources and automatic subtitle downloads (below) |
 | 16 | done | Offline downloads (below) |
+| 16b | done | App API: Seerr and Homepage can use Cinemion as their media server (below) |
 | 17 | on hold | Casting to Chromecast / Google TV, and a lighter layout for old smart-TV browsers |
 | 18 | on hold | Android TV app (WebView wrapper; the SDK is in `~/Android/Sdk` on this machine) |
 | 19 | on hold | Live TV: IPTV playlists, a guide and recordings |
@@ -505,6 +508,35 @@ Follows the Round 3 admin mockup (artboard `Admin.dc.html` in the Round 3 canvas
   downloaded, the app opens to an offline Downloads page instead of the "can't reach the server" screen.
 - **https only**: service workers and Cache Storage need a secure context (https, or localhost). On a plain http LAN
   address the button explains that instead of downloading.
+
+### App API (16b): what was built
+Asked for so the owner's Cinemionstack (`~/development/cinemionstack`, a Docker stack with Seerr, Sonarr, Radarr and
+friends) can run Seerr and Homepage against Cinemion. Those apps only know other media servers, so Cinemion answers
+the part of that API they call. Remember the naming rule: say "apps that speak another media server's API", never
+the server's name, in code, docs and commits.
+- **Routes** (`controllers/CompatController.ts`, mounted at `/` before the web client; paths are case-sensitive and
+  capitalised, so they never clash with the app's lowercase routes): `GET /System/Info/Public` and `/System/Info`,
+  `POST /Users/AuthenticateByName` (`{ Username, Pw }`, rate limited like `/api/auth/login`, returns a normal sign-in
+  token as `AccessToken`), `/Users`, `/Users/Me`, `/Users/:id`, `/Users/:id/Images/Primary` (redirect to the
+  profile picture), `/Users/:id/Views`, `/Library/MediaFolders`, `/Items` (`ids`, `ParentId` library or item,
+  `IncludeItemTypes`, `Recursive`, `StartIndex`, `Limit`, `fields=MediaSources`), `/Items/:id`, `/Items/Latest`
+  (new episodes count once for their show), `/Items/Counts`, `/Shows/:id/Seasons`, `/Shows/:id/Episodes`
+  (`seasonId`), `GET/POST/DELETE /Auth/Keys`, `/Sessions` (from `ActivePlayback`), and `/web/index.html`, a tiny page
+  that reads the id from the `#!/details?id=…` link the apps make and opens `/item/<id>`.
+- **Ids** are 32 hex characters (the apps check that): a kind letter (`a` user, `b` library, `c` item, `d` file)
+  and the number, so item 18 is `c0000000000000000000000000000012`. `CompatApi.encodeId()` / `decodeId()`.
+- **Auth** (`CompatApi.userOf()`): a token from any `…Authorization` header's `Token="…"` (URL-decoded, as Homepage
+  encodes it), `Bearer`, any `…-Token` header, or `api_key` in the query. App keys act as the admin who made them;
+  anything else is checked as a Cinemion sign-in token. Library access and age limits apply as everywhere else.
+- **App keys** live in the `compatApi` setting with the server id (made once). Seerr makes its own key with
+  `POST /Auth/Keys?App=Seerr` when its owner signs in; Settings › Integrations ("Seerr, Homepage and other apps")
+  lists them, makes new ones (admins only) and removes them (`/api/integrations/keys`).
+- **Matching in Seerr** needs provider ids: TMDB/TVDB matches, NFO files, or `{tmdb-603}` / `{tvdb-81189}` in folder
+  names (Cinemionstack sets Sonarr and Radarr to name folders that way). Seerr marks titles available from these
+  scans and links back to them.
+- **Tested** with a real Seerr container (setup, user import, library sync, full and recent scans, availability for
+  a movie and a partly downloaded show, play links) and the `/Sessions` + `/Items/Counts` shapes Homepage's widget
+  reads. `test.ts` checks the ids and item type names.
 
 ## 6. Design decisions
 

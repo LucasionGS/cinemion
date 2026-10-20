@@ -3,20 +3,23 @@ import type { PathMapping } from "@shared/admin.ts";
 import type { SaveTraktAppRequest } from "@shared/trakt.ts";
 import { User } from "../models/index.ts";
 import ArrWebhook from "../integrations/ArrWebhook.ts";
+import CompatApi from "../integrations/CompatApi.ts";
 import Trakt from "../integrations/Trakt.ts";
 import RateLimit from "../lib/RateLimit.ts";
 import Network from "../lib/Network.ts";
-import { readJson } from "../lib/http.ts";
+import { errorMessage, readJson } from "../lib/http.ts";
 import type { AppEnv } from "../lib/types.ts";
 
 /**
- * Sonarr and Radarr (the address they send to, and the path mappings between their folders and ours), and the
- * server's Trakt app.
+ * Sonarr and Radarr (the address they send to, and the path mappings between their folders and ours), keys for apps
+ * like Seerr and Homepage, and the server's Trakt app.
  */
 export namespace IntegrationsController {
   export const router = new Hono<AppEnv>();
 
   const manage = User.$middleware({ permissions: ["SERVER_MANAGE"] });
+  // App keys act as the admin who made them, so only admins see and make them
+  const admin = User.$middleware({ admin: true });
   // Wrong tokens from one address are slowed down, so the address can't be guessed
   const limiter = new RateLimit(10, 60);
 
@@ -67,6 +70,42 @@ export namespace IntegrationsController {
     const body = await readJson<SaveTraktAppRequest>(c);
     if (!body) return c.json({ message: "Nothing to change." }, 400);
     return c.json(await Trakt.saveApp(body));
+  });
+
+  /**
+   * @swagger
+   * /api/integrations/keys:
+   *   get:
+   *     summary: Keys that apps like Seerr and Homepage use to reach Cinemion. Admins only.
+   */
+  router.get("/keys", admin, async (c) => c.json(await CompatApi.keysForClient()));
+
+  /**
+   * @swagger
+   * /api/integrations/keys:
+   *   post:
+   *     summary: Make a key for an app. Body `{ "app": "Homepage" }`. The key acts as the signed-in admin.
+   */
+  router.post("/keys", admin, async (c) => {
+    const user = c.get("user")!;
+    const body = await readJson<{ app: string }>(c);
+    try {
+      const key = await CompatApi.createKey(typeof body?.app === "string" ? body.app : "", user);
+      return c.json((await CompatApi.keysForClient()).find((k) => k.id === key.id));
+    } catch (error) {
+      return c.json({ message: errorMessage(error) }, 400);
+    }
+  });
+
+  /**
+   * @swagger
+   * /api/integrations/keys/{id}:
+   *   delete:
+   *     summary: Remove an app key. The app using it can't reach Cinemion anymore.
+   */
+  router.delete("/keys/:id", admin, async (c) => {
+    if (!await CompatApi.removeKey(c.req.param("id"))) return c.json({ message: "That key doesn't exist." }, 404);
+    return c.json(await CompatApi.keysForClient());
   });
 
   /**

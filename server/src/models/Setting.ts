@@ -39,6 +39,7 @@ export namespace Setting {
     PLAYBACK: "playback",
     SUBTITLES: "subtitles",
     INTEGRATIONS: "integrations",
+    COMPAT_API: "compatApi",
     TRAKT: "trakt",
   } as const;
 }

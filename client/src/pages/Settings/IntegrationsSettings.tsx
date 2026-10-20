@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-import { CircleAlert, CircleCheck, Copy, Plus, Trash2 } from "lucide-react";
-import type { IntegrationSettings, PathMapping } from "@shared/admin.ts";
+import { CircleAlert, CircleCheck, Copy, KeyRound, Plus, Trash2 } from "lucide-react";
+import type { AppKeyInfo, IntegrationSettings, PathMapping } from "@shared/admin.ts";
 import type { TraktAppSettings } from "@shared/trakt.ts";
 import IntegrationsApi from "../../Api/IntegrationsApi.ts";
 import TraktApi from "../../Api/TraktApi.ts";
 import { toasts } from "../../lib/Toasts.ts";
 import { copyText } from "../../lib/clipboard.ts";
+import { session } from "../../Session.ts";
 import { timeAgo } from "../../lib/format.ts";
 import cx from "../../lib/cx.ts";
 import Button from "../../components/Button/Button.tsx";
@@ -16,8 +17,8 @@ import { ConfirmDialog } from "../../components/Dialog/Dialog.tsx";
 import "./Admin.scss";
 
 /**
- * Sonarr and Radarr (the address to paste into them, and path mappings for when they see the media elsewhere), and
- * the server's Trakt app.
+ * Sonarr and Radarr (the address to paste into them, and path mappings for when they see the media elsewhere), keys
+ * for apps like Seerr and Homepage, and the server's Trakt app.
  */
 export default function IntegrationsSettings() {
   const [settings, setSettings] = useState<IntegrationSettings | null>(null);
@@ -86,7 +87,7 @@ export default function IntegrationsSettings() {
       <header className="cn-settings__header">
         <div>
           <h1>Integrations</h1>
-          <p>Let Sonarr and Radarr tell Cinemion about new downloads, so they show up right away, and let profiles keep their Trakt history up to date.</p>
+          <p>Let Sonarr and Radarr tell Cinemion about new downloads, so they show up right away, connect apps like Seerr and Homepage, and let profiles keep their Trakt history up to date.</p>
         </div>
         <Button variant="primary" onClick={save} loading={saving} disabled={!changed}>Save changes</Button>
       </header>
@@ -146,6 +147,8 @@ export default function IntegrationsSettings() {
           <Button size="sm" icon={<Plus />} onClick={() => setMappings([...mappings, { from: "", to: "" }])}>Add mapping</Button>
         </div>
       </section>
+
+      {session.isAdmin() && <AppsCard />}
 
       <TraktAppCard />
 
@@ -218,6 +221,98 @@ function TraktAppCard() {
       <div>
         <Button variant="primary" size="sm" onClick={save} loading={saving} disabled={!changed}>Save Trakt app</Button>
       </div>
+    </section>
+  );
+}
+
+/**
+ * Apps that connect to Cinemion as their media server: Seerr for requests, Homepage for a dashboard tile. Seerr makes
+ * its own key when an admin signs in; other apps get one made here.
+ */
+function AppsCard() {
+  const [keys, setKeys] = useState<AppKeyInfo[] | null>(null);
+  const [app, setApp] = useState("");
+  const [creating, setCreating] = useState(false);
+  const [removing, setRemoving] = useState<AppKeyInfo | null>(null);
+
+  useEffect(() => {
+    IntegrationsApi.appKeys().then(setKeys).catch(() => setKeys([]));
+  }, []);
+
+  async function copy(text: string, what: string) {
+    if (await copyText(text)) toasts.success(`${what} copied`);
+    else toasts.error("Couldn't copy", "Select it and copy it by hand.");
+  }
+
+  async function create() {
+    setCreating(true);
+    try {
+      const key = await IntegrationsApi.createAppKey(app);
+      setKeys([...keys ?? [], key]);
+      setApp("");
+      await copy(key.token, "Key");
+    } catch (error) {
+      toasts.error("Couldn't make a key", (error as Error).message);
+    } finally {
+      setCreating(false);
+    }
+  }
+
+  async function remove() {
+    if (!removing) return;
+    try {
+      setKeys(await IntegrationsApi.removeAppKey(removing.id));
+      setRemoving(null);
+      toasts.success("Key removed", `${removing.app} can't reach Cinemion with it anymore.`);
+    } catch (error) {
+      toasts.error("Couldn't remove the key", (error as Error).message);
+    }
+  }
+
+  return (
+    <section className="cn-settings__card">
+      <h2>Seerr, Homepage and other apps</h2>
+      <p className="cn-settings__row-text">
+        <span>
+          Apps made for other media servers can use Cinemion instead. In Seerr, pick the media server that signs in with
+          a server address, username and password, give it the address below, and sign in with your Cinemion login: it
+          sees what's in your libraries and links back here. Homepage's media server widget can show what's playing and
+          how big your libraries are with a key made below.
+        </span>
+      </p>
+      <div className="cn-integrations__address">
+        <TextField label="Server address" value={location.origin} readOnly onFocus={(e) => e.target.select()} spellCheck={false} className="cn-integrations__address-field" />
+        <Button icon={<Copy />} onClick={() => copy(location.origin, "Address")}>Copy</Button>
+      </div>
+      {keys && keys.length > 0 && (
+        <div className="cn-settings__list">
+          {keys.map((k) => (
+            <div key={k.id} className="cn-settings__item">
+              <KeyRound />
+              <div className="cn-settings__item-text">
+                <strong>{k.app}</strong>
+                <span>{k.createdBy ? `Made by ${k.createdBy}, ${timeAgo(k.createdAt)}` : `Made ${timeAgo(k.createdAt)} by a profile that has been removed, so it doesn't work`}</span>
+              </div>
+              <IconButton label={`Copy the key for ${k.app}`} icon={<Copy />} onClick={() => copy(k.token, "Key")} />
+              <IconButton label={`Remove the key for ${k.app}`} icon={<Trash2 />} onClick={() => setRemoving(k)} />
+            </div>
+          ))}
+        </div>
+      )}
+      <div className="cn-integrations__address">
+        <TextField label="New key for" value={app} placeholder="Homepage" maxLength={60} onChange={(e) => setApp(e.target.value)} className="cn-integrations__key-field" />
+        <Button icon={<Plus />} onClick={create} loading={creating} disabled={!app.trim()}>Make key</Button>
+      </div>
+
+      <ConfirmDialog
+        open={removing !== null}
+        onOpenChange={(open) => !open && setRemoving(null)}
+        title={`Remove the key for ${removing?.app ?? ""}?`}
+        description="The app using it can't reach Cinemion anymore until it gets a new key."
+        confirmLabel="Remove key"
+        danger
+        onConfirm={remove}
+      />
     </section>
   );
 }
