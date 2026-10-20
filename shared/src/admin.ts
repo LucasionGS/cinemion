@@ -1,5 +1,5 @@
 import type { ProfileColor } from "./profiles.ts";
-import type { Palette, TaskInfo } from "./media.ts";
+import type { ItemType, Palette, TaskInfo } from "./media.ts";
 
 //#region Dashboard
 
@@ -281,7 +281,7 @@ export interface SaveWebhookRequest {
  */
 export interface WebhookItem {
   id: number;
-  type: "movie" | "show" | "season" | "episode";
+  type: ItemType;
   title: string;
   year: number | null;
   /**

@@ -13,8 +13,11 @@ export async function readJson<T>(c: Context): Promise<Partial<T> | null> {
 }
 
 /**
- * Message of a thrown validation error, for a 400 response.
+ * Message of a thrown error, for a response or the log. Database errors only say "Validation error" by
+ * themselves, so the details they carry ("path must be unique") are added.
  */
 export function errorMessage(error: unknown) {
-  return error instanceof Error ? error.message : String(error);
+  if (!(error instanceof Error)) return String(error);
+  const details = (error as { errors?: { message?: string }[] }).errors?.map((e) => e.message).filter(Boolean) ?? [];
+  return details.length ? `${error.message}: ${details.join(", ")}` : error.message;
 }

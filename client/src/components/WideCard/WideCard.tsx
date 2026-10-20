@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { Check } from "lucide-react";
+import { Check, Folder } from "lucide-react";
 import type { ItemSummary } from "@shared/media.ts";
 import ItemsApi from "../../Api/ItemsApi.ts";
 import { router } from "../../lib/Router.tsx";
 import { episodeLabel, formatDuration, timeLeft } from "../../lib/playback.ts";
+import { formatDate } from "../../lib/format.ts";
 import cx from "../../lib/cx.ts";
 import { fallbackColor } from "../PosterCard/PosterCard.tsx";
 import "./WideCard.scss";
@@ -11,9 +12,10 @@ import "./WideCard.scss";
 export interface WideCardProps {
   item: ItemSummary;
   /**
-   * `continue` puts the time left first; `episode` shows the episode number and length.
+   * `continue` puts the time left first; `episode` shows the episode number and length; `video` shows the date and
+   * length of a video, or the number of videos in a folder.
    */
-  variant?: "continue" | "episode";
+  variant?: "continue" | "episode" | "video";
   onClick?: () => void;
   onSelect?: () => void;
   selected?: boolean;
@@ -21,7 +23,7 @@ export interface WideCardProps {
 }
 
 /**
- * A 16:9 card with a still or backdrop, for "Continue watching", "Next up" and episode lists.
+ * A 16:9 card with a still or backdrop, for "Continue watching", "Next up", episode lists, and videos and folders.
  */
 export default function WideCard(props: WideCardProps) {
   const { item, variant = "continue", onClick, onSelect, selected = false, className } = props;
@@ -29,6 +31,7 @@ export default function WideCard(props: WideCardProps) {
   const image = (item.artwork.thumb ?? item.artwork.backdrop ?? null);
   const showImage = image && !broken;
   const isEpisode = item.type === "episode";
+  const isFolder = item.type === "folder";
   const left = timeLeft(item);
   const progress = item.userData?.progress && !item.userData.watched ? item.userData.progress : null;
 
@@ -37,14 +40,17 @@ export default function WideCard(props: WideCardProps) {
   const line1 = isEpisode
     ? variant === "continue" ? `${episodeLabel(item)} · ${item.title}` : `${item.episodeNumber}. ${item.title}`
     : item.title;
-  const line2 = variant === "continue"
-    ? left ?? (isEpisode ? "Up next" : item.year ? String(item.year) : "")
-    : [item.runtime ? formatDuration(item.runtime * 60) : null, left].filter(Boolean).join(" · ");
+  const date = item.releaseDate ? formatDate(item.releaseDate, true) : null;
+  let line2: string;
+  if (variant === "continue") line2 = left ?? (isEpisode ? "Up next" : item.type === "video" ? date ?? "" : item.year ? String(item.year) : "");
+  else if (isFolder) line2 = `${item.childCount} ${item.childCount === 1 ? "video" : "videos"}`;
+  else if (variant === "video") line2 = [date, left].filter(Boolean).join(" · ");
+  else line2 = [item.runtime ? formatDuration(item.runtime * 60) : null, left].filter(Boolean).join(" · ");
 
   return (
     <button
       type="button"
-      className={cx("cn-wide", selected && "cn-wide--selected", className)}
+      className={cx("cn-wide", selected && "cn-wide--selected", variant === "video" && "cn-wide--video", isFolder && "cn-wide--folder", className)}
       onClick={onClick ?? (() => router.navigate(`/item/${item.id}`))}
       onMouseEnter={onSelect}
       onFocus={onSelect}
@@ -54,6 +60,8 @@ export default function WideCard(props: WideCardProps) {
         <span className="cn-wide__shade" />
         {variant === "continue" && <span className="cn-wide__title">{artTitle}</span>}
         {variant === "episode" && <span className="cn-wide__number">E{item.episodeNumber}</span>}
+        {isFolder && <span className="cn-wide__number cn-wide__folder"><Folder aria-hidden="true" />{item.childCount}</span>}
+        {variant === "video" && item.type === "video" && item.runtime && <span className="cn-wide__length">{formatDuration(item.runtime * 60)}</span>}
         {item.userData?.watched && <span className="cn-wide__watched" aria-label="Watched"><Check /></span>}
         {progress !== null && <span className="cn-wide__progress"><span style={{ width: `${Math.round(progress * 100)}%` }} /></span>}
       </span>

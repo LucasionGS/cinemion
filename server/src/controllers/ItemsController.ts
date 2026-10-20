@@ -1,11 +1,14 @@
 import { Hono } from "hono";
 import { Op } from "sequelize";
-import type { ItemDetail } from "@shared/media.ts";
-import { Collection, Credit, MediaFile, MediaItem, Person, User, WatchState } from "../models/index.ts";
+import { type EditDetailsRequest, type ItemDetail, isPlayable } from "@shared/media.ts";
+import { Collection, Credit, Library, MediaFile, MediaItem, Person, User, WatchState } from "../models/index.ts";
 import MetadataManager from "../metadata/MetadataManager.ts";
 import Visibility from "../library/Visibility.ts";
 import Summaries from "../library/Summaries.ts";
 import ItemLabels from "../library/ItemLabels.ts";
+import VideoDetails from "../library/VideoDetails.ts";
+import FolderTree from "../library/FolderTree.ts";
+import ContentRatings from "../library/ContentRatings.ts";
 import Events from "../integrations/Events.ts";
 import { errorMessage, readJson } from "../lib/http.ts";
 import type { AppEnv } from "../lib/types.ts";
@@ -25,10 +28,12 @@ export namespace ItemsController {
   }
 
   /**
-   * Movies and episodes under an item: itself for those, every episode for shows and seasons.
+   * Movies, episodes and videos under an item: itself for those, every episode for shows and seasons, every video
+   * for folders.
    */
   export async function playableIds(item: MediaItem): Promise<number[]> {
-    if (item.type === "movie" || item.type === "episode") return [item.id];
+    if (isPlayable(item.type)) return [item.id];
+    if (item.type === "folder") return (await FolderTree.load([item.libraryId])).videosUnder(item.id).map((v) => v.id);
     const seasons = item.type === "show" ? (await MediaItem.findAll({ where: { parentId: item.id }, attributes: ["id"] })).map((s) => s.id) : [item.id];
     return (await MediaItem.findAll({ where: { parentId: seasons, type: "episode" }, attributes: ["id"] })).map((e) => e.id);
   }
@@ -37,6 +42,7 @@ export namespace ItemsController {
    * Titles in the same library that share the most genres with `item`.
    */
   export async function similar(item: MediaItem, user: User) {
+    if (item.type === "video") return await Summaries.build(await siblings(item, user, SIMILAR_COUNT + 1).then((s) => s.filter((v) => v.id !== item.id).slice(0, SIMILAR_COUNT)), user);
     if (item.type !== "movie" && item.type !== "show") return [];
     if (item.genres.length === 0) return [];
     const candidates = await MediaItem.findAll({
@@ -55,10 +61,21 @@ export namespace ItemsController {
   }
 
   /**
+   * Videos in the same folder as `video` (itself included), in folder order.
+   */
+  async function siblings(video: MediaItem, user: User, limit?: number) {
+    return await MediaItem.findAll({
+      where: { [Op.and]: [Visibility.where(user), { libraryId: video.libraryId, parentId: video.parentId, type: "video" }] },
+      order: [["sortTitle", "ASC"], ["id", "ASC"]],
+      limit,
+    });
+  }
+
+  /**
    * @swagger
    * /api/items/{id}:
    *   get:
-   *     summary: Everything about a movie, show, season or episode, with its children, cast, files and similar titles.
+   *     summary: Everything about a movie, show, season, episode, video or folder, with its children, cast, files and similar titles.
    */
   router.get("/:id", User.$middleware(), async (c) => {
     const user = c.get("user")!;
@@ -66,8 +83,9 @@ export namespace ItemsController {
     if (!item) return c.json({ message: "That title doesn't exist." }, 404);
 
     const children = await MediaItem.findAll({
-      where: { parentId: item.id },
-      order: item.type === "show" ? [["seasonNumber", "ASC"]] : [["episodeNumber", "ASC"]],
+      where: item.type === "folder" ? { [Op.and]: [Visibility.where(user), { parentId: item.id }] } : { parentId: item.id },
+      // Folders hold subfolders ("folder" sorts before "video") and then videos, by title
+      order: item.type === "show" ? [["seasonNumber", "ASC"]] : item.type === "folder" ? [["type", "ASC"], ["sortTitle", "ASC"]] : [["episodeNumber", "ASC"]],
     });
     // Specials (season 0) go after the regular seasons
     if (item.type === "show") children.sort((a, b) => (a.seasonNumber === 0 ? 1 : 0) - (b.seasonNumber === 0 ? 1 : 0));
@@ -95,6 +113,8 @@ export namespace ItemsController {
       children: await Summaries.build(children, user),
       collection: collection && collectionSize > 1 ? collection.toSummary(collectionSize) : null,
       similar: await similar(item, user),
+      folders: await VideoDetails.ancestors(item),
+      edited: { details: !!item.editedAt, thumbnail: item.customArtwork },
     };
     return c.json(detail);
   });
@@ -115,35 +135,55 @@ export namespace ItemsController {
   }
 
   /**
+   * What "Play" starts on a show, season or folder: something in progress first, then the next one after the
+   * furthest watched, then the first one.
+   */
+  async function startingPoint(list: MediaItem[], user: User) {
+    const states = await WatchState.findAll({ where: { userId: user.id, itemId: list.map((e) => e.id) } });
+    const inProgress = states.filter((s) => !s.watched && s.position > 0).sort((a, b) => (b.lastWatchedAt?.getTime() ?? 0) - (a.lastWatchedAt?.getTime() ?? 0))[0];
+    const watched = new Set(states.filter((s) => s.watched).map((s) => s.itemId));
+    let furthest = -1;
+    list.forEach((e, i) => {
+      if (watched.has(e.id)) furthest = i;
+    });
+    return inProgress
+      ? list.find((e) => e.id === inProgress.itemId)!
+      : list.slice(furthest + 1).find((e) => !watched.has(e.id)) ?? list[0];
+  }
+
+  /**
    * @swagger
    * /api/items/{id}/next:
    *   get:
-   *     summary: For an episode, the one after it. For a show or season, the episode "Play" starts: an episode in progress first, then the next one after
-   *       the furthest watched, then the first episode. `null` when there are no episodes.
+   *     summary: For an episode, the one after it; for a video, the next one in its folder. For a show, season or folder, what "Play" starts:
+   *       something in progress first, then the next one after the furthest watched, then the first one. `null` when there's nothing.
    */
   router.get("/:id/next", User.$middleware(), async (c) => {
     const user = c.get("user")!;
     const item = await findVisible(user, Number(c.req.param("id")));
     if (item?.type === "episode") return c.json(await episodeAfter(item, user));
-    if (!item || (item.type !== "show" && item.type !== "season")) return c.json({ message: "Only shows, seasons and episodes have a next episode." }, 404);
+    if (item?.type === "video") {
+      const list = await siblings(item, user);
+      const next = list[list.findIndex((v) => v.id === item.id) + 1];
+      return c.json(next ? await Summaries.one(next, user) : null);
+    }
+    if (!item || (item.type !== "show" && item.type !== "season" && item.type !== "folder")) return c.json({ message: "Only shows, seasons, episodes, videos and folders have a next one." }, 404);
 
-    const seasonIds = item.type === "show"
-      ? (await MediaItem.findAll({ where: { parentId: item.id, type: "season" }, attributes: ["id", "seasonNumber"] })).filter((s) => s.seasonNumber !== 0).map((s) => s.id)
-      : [item.id];
-    const episodes = await MediaItem.findAll({ where: { parentId: seasonIds, type: "episode" }, order: [["seasonNumber", "ASC"], ["episodeNumber", "ASC"]] });
-    if (episodes.length === 0) return c.json(null);
-
-    const states = await WatchState.findAll({ where: { userId: user.id, itemId: episodes.map((e) => e.id) } });
-    const inProgress = states.filter((s) => !s.watched && s.position > 0).sort((a, b) => (b.lastWatchedAt?.getTime() ?? 0) - (a.lastWatchedAt?.getTime() ?? 0))[0];
-    const watched = new Set(states.filter((s) => s.watched).map((s) => s.itemId));
-    let furthest = -1;
-    episodes.forEach((e, i) => {
-      if (watched.has(e.id)) furthest = i;
-    });
-    const next = inProgress
-      ? episodes.find((e) => e.id === inProgress.itemId)!
-      : episodes.slice(furthest + 1).find((e) => !watched.has(e.id)) ?? episodes[0];
-    return c.json(await Summaries.one(next, user));
+    let list: MediaItem[];
+    if (item.type === "folder") {
+      const ids = (await FolderTree.load([item.libraryId])).videosUnder(item.id).map((v) => v.id);
+      const videos = await MediaItem.findAll({ where: { [Op.and]: [Visibility.where(user), { id: ids }] } });
+      const byId = new Map(videos.map((v) => [v.id, v]));
+      list = ids.map((id) => byId.get(id)).filter((v): v is MediaItem => !!v);
+    }
+    else {
+      const seasonIds = item.type === "show"
+        ? (await MediaItem.findAll({ where: { parentId: item.id, type: "season" }, attributes: ["id", "seasonNumber"] })).filter((s) => s.seasonNumber !== 0).map((s) => s.id)
+        : [item.id];
+      list = await MediaItem.findAll({ where: { parentId: seasonIds, type: "episode" }, order: [["seasonNumber", "ASC"], ["episodeNumber", "ASC"]] });
+    }
+    if (list.length === 0) return c.json(null);
+    return c.json(await Summaries.one(await startingPoint(list, user), user));
   });
 
   /**
@@ -172,7 +212,7 @@ export namespace ItemsController {
   router.put("/:id/progress", User.$middleware(), async (c) => {
     const user = c.get("user")!;
     const item = await findVisible(user, Number(c.req.param("id")));
-    if (!item || (item.type !== "movie" && item.type !== "episode")) return c.json({ message: "Only movies and episodes have progress." }, 404);
+    if (!item || !isPlayable(item.type)) return c.json({ message: "Only movies, episodes and videos have progress." }, 404);
     const body = await readJson<{ position: number; duration: number | null }>(c);
     if (typeof body?.position !== "number" || body.position < 0) return c.json({ message: "A position in seconds is required." }, 400);
 
@@ -246,6 +286,152 @@ export namespace ItemsController {
       return c.json({ message: errorMessage(error) }, 400);
     }
   });
+
+  //#region Editing videos and folders
+  const manage = User.$middleware({ permissions: ["LIBRARY_MANAGE"] });
+  const MAX_UPLOAD_BYTES = 15 * 1024 * 1024;
+
+  /**
+   * A video or folder the profile may see. Other types get their details from files and providers.
+   */
+  async function findEditable(user: User, id: number) {
+    const item = await findVisible(user, id);
+    return item && (item.type === "video" || item.type === "folder") ? item : null;
+  }
+
+  /**
+   * Check what "Edit details" sent.
+   * @throws With a message that says which field is wrong.
+   */
+  function verifyDetails(body: Partial<EditDetailsRequest>): EditDetailsRequest {
+    const title = typeof body.title === "string" ? body.title.trim() : "";
+    if (!title || title.length > 200) throw new Error("The title must be between 1 and 200 characters long.");
+
+    let releaseDate: string | null = null;
+    if (body.releaseDate) {
+      const valid = /^\d{4}-\d{2}-\d{2}$/.test(body.releaseDate) && !isNaN(new Date(`${body.releaseDate}T00:00:00`).getTime());
+      if (!valid) throw new Error("The date must look like 2024-07-12.");
+      releaseDate = body.releaseDate;
+    }
+
+    const overview = typeof body.overview === "string" ? body.overview.trim().slice(0, 5000) || null : null;
+    const tags = [...new Set((Array.isArray(body.tags) ? body.tags : []).filter((t) => typeof t === "string").map((t) => t.trim()).filter(Boolean))];
+    if (tags.length > 20) throw new Error("Use at most 20 tags.");
+    if (tags.some((t) => t.length > 40)) throw new Error("Keep each tag under 40 characters.");
+
+    const contentRating = typeof body.contentRating === "string" && body.contentRating.trim() ? body.contentRating.trim() : null;
+    if (contentRating && ContentRatings.ageFor(contentRating) === null) throw new Error(`"${contentRating}" isn't a rating Cinemion knows. Use one like "G", "PG", "12" or "16".`);
+    return { title, releaseDate, overview, tags, contentRating };
+  }
+
+  /**
+   * @swagger
+   * /api/items/{id}/details:
+   *   put:
+   *     summary: Set a video's or folder's details by hand. Body is an `EditDetailsRequest`. Refreshing keeps them.
+   */
+  router.put("/:id/details", manage, async (c) => {
+    const user = c.get("user")!;
+    const item = await findEditable(user, Number(c.req.param("id")));
+    if (!item) return c.json({ message: "Only videos and folders can be edited." }, 404);
+    let details: EditDetailsRequest;
+    try {
+      details = verifyDetails(await readJson<EditDetailsRequest>(c) ?? {});
+    } catch (error) {
+      return c.json({ message: errorMessage(error) }, 400);
+    }
+
+    const library = await Library.findByPk(item.libraryId);
+    item.setTitle(details.title);
+    item.overview = details.overview;
+    if (item.type === "video") {
+      item.releaseDate = details.releaseDate;
+      item.year = details.releaseDate ? parseInt(details.releaseDate.slice(0, 4)) : null;
+      item.genres = details.tags;
+      item.contentRating = details.contentRating;
+      item.ageRating = ContentRatings.ageFor(details.contentRating) ?? library?.defaultAge() ?? null;
+    }
+    item.editedAt = new Date();
+    await item.save();
+    // A folder's date and rating come from its videos
+    if (item.type === "video" && library) await VideoDetails.refreshFolders(library);
+    return c.json(await Summaries.one(item, user));
+  });
+
+  /**
+   * @swagger
+   * /api/items/{id}/frame:
+   *   get:
+   *     summary: One frame of a video as a JPEG, for picking a thumbnail. Query `t` in seconds.
+   */
+  router.get("/:id/frame", manage, async (c) => {
+    const item = await findEditable(c.get("user")!, Number(c.req.param("id")));
+    const file = item?.type === "video" ? await MediaFile.findOne({ where: { itemId: item.id }, order: [["path", "ASC"]] }) : null;
+    if (!file) return c.json({ message: "That video doesn't exist." }, 404);
+    const frame = await VideoDetails.frame(file, Math.max(0, Number(c.req.query("t")) || 0));
+    if (!frame) return c.json({ message: "That moment of the video couldn't be read." }, 500);
+    return c.body(new Uint8Array(frame), 200, { "Content-Type": "image/jpeg", "Cache-Control": "private, max-age=3600" });
+  });
+
+  /**
+   * @swagger
+   * /api/items/{id}/thumbnail:
+   *   put:
+   *     summary: Set the thumbnail by hand. For videos, JSON `{ "time": 12.5 }` takes that frame; for videos and folders, a multipart
+   *       "file" field uploads a picture.
+   */
+  router.put("/:id/thumbnail", manage, async (c) => {
+    const user = c.get("user")!;
+    const item = await findEditable(user, Number(c.req.param("id")));
+    if (!item) return c.json({ message: "Only videos and folders can get a thumbnail by hand." }, 404);
+
+    let key: string | null;
+    try {
+      if ((c.req.header("Content-Type") ?? "").includes("multipart/form-data")) {
+        if (Number(c.req.header("Content-Length") ?? 0) > MAX_UPLOAD_BYTES + 64 * 1024) return c.json({ message: "The picture is too large. The limit is 15 MB." }, 413);
+        const upload = (await c.req.parseBody().catch(() => null))?.["file"];
+        if (!(upload instanceof File)) return c.json({ message: "Send the picture as a \"file\" field in a multipart form." }, 400);
+        key = await VideoDetails.storeUpload(new Uint8Array(await upload.arrayBuffer()));
+      }
+      else {
+        const body = await readJson<{ time: number }>(c);
+        const file = item.type === "video" ? await MediaFile.findOne({ where: { itemId: item.id }, order: [["path", "ASC"]] }) : null;
+        if (!file || typeof body?.time !== "number") return c.json({ message: "Send a picture, or for a video the moment to use: { \"time\": 12.5 }." }, 400);
+        key = await VideoDetails.makeThumbnail(file, Math.max(0, body.time));
+        if (!key) return c.json({ message: "That moment of the video couldn't be read." }, 500);
+      }
+    } catch (error) {
+      return c.json({ message: errorMessage(error) }, 400);
+    }
+
+    await VideoDetails.setThumbnail(item, key);
+    item.customArtwork = true;
+    await item.save();
+    const library = await Library.findByPk(item.libraryId);
+    // Folders without a picture of their own show their newest video's
+    if (item.type === "video" && library) await VideoDetails.refreshFolders(library);
+    return c.json(await Summaries.one(item, user));
+  });
+
+  /**
+   * @swagger
+   * /api/items/{id}/thumbnail:
+   *   delete:
+   *     summary: Go back to the automatic thumbnail.
+   */
+  router.delete("/:id/thumbnail", manage, async (c) => {
+    const user = c.get("user")!;
+    const item = await findEditable(user, Number(c.req.param("id")));
+    if (!item) return c.json({ message: "Only videos and folders have a thumbnail set by hand." }, 404);
+    const library = await Library.findByPk(item.libraryId);
+    item.customArtwork = false;
+    if (item.type === "video") await VideoDetails.refreshVideo(item, { regenerate: true, library });
+    else await item.save();
+    if (library) await VideoDetails.refreshFolders(library);
+    await item.reload();
+    return c.json(await Summaries.one(item, user));
+  });
+  //#endregion
 }
 
 export default ItemsController;

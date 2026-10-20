@@ -22,13 +22,13 @@ export namespace SearchController {
    * @swagger
    * /api/search:
    *   get:
-   *     summary: Find movies, shows, episodes, people and collections by name. Query `q`.
+   *     summary: Find movies, shows, episodes, videos, people and collections by name. Query `q`.
    */
   router.get("/", User.$middleware(), async (c) => {
     const user = c.get("user")!;
     const query = (c.req.query("q") ?? "").trim();
     if (query.length < 2) {
-      const empty: SearchResults = { titles: [], episodes: [], people: [], collections: [] };
+      const empty: SearchResults = { titles: [], episodes: [], videos: [], people: [], collections: [] };
       return c.json(empty);
     }
 
@@ -50,6 +50,8 @@ export namespace SearchController {
     titles.sort((a, b) => rank(a) - rank(b) || a.sortTitle.localeCompare(b.sortTitle));
 
     const episodes = await MediaItem.findAll({ where: { [Op.and]: [visible, { title: { [Op.like]: pattern } }, { type: "episode" }] }, limit: 12, order: [["sortTitle", "ASC"]] });
+    // Folders before videos, then by title
+    const videos = await MediaItem.findAll({ where: { [Op.and]: [visible, nameMatch, { type: ["folder", "video"] }] }, limit: 24, order: [["type", "ASC"], ["sortTitle", "ASC"]] });
 
     // People only count when they're in something this profile can see
     const people = await Person.findAll({ where: { name: { [Op.like]: pattern } }, limit: 40, order: [["name", "ASC"]] });
@@ -70,6 +72,7 @@ export namespace SearchController {
     const results: SearchResults = {
       titles: await Summaries.build(titles.slice(0, 24), user),
       episodes: await Summaries.build(episodes, user),
+      videos: await Summaries.build(videos, user),
       people: peopleWithTitles,
       collections: collections.slice(0, 12),
     };

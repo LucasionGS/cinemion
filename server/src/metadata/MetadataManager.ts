@@ -3,6 +3,7 @@ import type { MetadataSettings } from "@shared/api.ts";
 import type { Artwork, ExternalIds, ItemType, MatchCandidate } from "@shared/media.ts";
 import { Collection, Credit, Library, MediaFile, MediaItem, Person, Setting } from "../models/index.ts";
 import ContentRatings from "../library/ContentRatings.ts";
+import VideoDetails from "../library/VideoDetails.ts";
 import type MetadataProvider from "./MetadataProvider.ts";
 import LocalProvider from "./providers/LocalProvider.ts";
 import TmdbProvider from "./providers/TmdbProvider.ts";
@@ -231,10 +232,17 @@ export namespace MetadataManager {
   }
 
   /**
-   * Refresh whatever an item belongs to: a movie itself, or the whole show for shows, seasons and episodes.
+   * Refresh whatever an item belongs to: a movie or video itself, or the whole show for shows, seasons and episodes.
    */
   export async function refresh(item: MediaItem) {
     if (item.type === "movie") return await refreshMovie(item);
+    // Videos are never looked up; refreshing reads their files again and takes a new automatic thumbnail
+    if (item.type === "video" || item.type === "folder") {
+      const library = await Library.findByPk(item.libraryId);
+      if (item.type === "video") await VideoDetails.refreshVideo(item, { regenerate: true, library });
+      if (library) await VideoDetails.refreshFolders(library);
+      return;
+    }
     let show: MediaItem | null = item;
     while (show && show.type !== "show") show = show.parentId ? await MediaItem.findByPk(show.parentId) : null;
     if (show) await refreshShow(show);

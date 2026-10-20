@@ -7,6 +7,8 @@ import UserAgent from "./lib/UserAgent.ts";
 import SystemStats from "./lib/SystemStats.ts";
 import ArrWebhook from "./integrations/ArrWebhook.ts";
 import Webhooks from "./integrations/Webhooks.ts";
+import VideoDetails from "./library/VideoDetails.ts";
+import Library from "./models/Library.ts";
 
 /**
  * Scratch runner for the parts that are easy to get subtly wrong. Run with `deno run -A server/src/test.ts`.
@@ -128,6 +130,39 @@ check("radarr upgrade", [radarr?.app, radarr?.targets[0].path, radarr?.activity?
 check("rename scans the folder", ArrWebhook.parse({ eventType: "Rename", movie: { title: "x", folderPath: "/movies/x" } })?.targets, [{ path: "/movies/x", isFile: false }]);
 check("grab is ignored", ArrWebhook.parse({ eventType: "Grab", series: { title: "x", path: "/tv/x" } })?.targets, []);
 check("not a webhook", ArrWebhook.parse({ hello: "world" }), null);
+//#endregion
+
+//#region Videos
+console.log("Videos");
+check("underscores", VideoDetails.titleFromFile("/v/Beach_day.mp4"), "Beach day");
+check("camera name", VideoDetails.titleFromFile("/v/DJI_0042.MP4"), "DJI 0042");
+check("dots", VideoDetails.titleFromFile("/v/My.Holiday.2024.mov"), "My Holiday 2024");
+check("spaces kept as they are", VideoDetails.titleFromFile("/v/Our short film-trailer.mkv"), "Our short film-trailer");
+check("mixed keeps underscores", VideoDetails.titleFromFile("/v/Mira at 8_final cut.mp4"), "Mira at 8_final cut");
+check("thumbnail a tenth in", VideoDetails.automaticTime(90), 9);
+check("thumbnail at most a minute in", VideoDetails.automaticTime(7200), 60);
+check("thumbnail without length", VideoDetails.automaticTime(null), 0);
+//#endregion
+
+//#region Library folders
+console.log("Library folders");
+check("same folder overlaps", Library.overlaps("/m/movies", "/m/movies/"), true);
+check("folder inside overlaps", Library.overlaps("/m/movies/kids", "/m/movies"), true);
+check("folder around overlaps", Library.overlaps("/m", "/m/shows"), true);
+check("similar names don't overlap", Library.overlaps("/m/movies", "/m/movies2"), false);
+check("siblings don't overlap", Library.overlaps("/m/movies", "/m/shows"), false);
+const libs = [{ name: "Videos", paths: ["/m/movies", "/m/shows"] }];
+check("taken folder is explained", Library.overlapProblem("/m/movies", libs)?.includes(`"Videos"`), true);
+check("inside a taken folder", Library.overlapProblem("/m/movies/kids", libs)?.includes("is inside a folder"), true);
+check("free folder", Library.overlapProblem("/m/videos", libs), null);
+let nested = "";
+try {
+  Library.verifyPaths(["/m/movies", "/m/movies/kids"], "Movies");
+} catch (error) {
+  nested = (error as Error).message;
+}
+check("nested folders in one library are refused", nested.startsWith("The folders"), true);
+check("duplicate folders are merged", Library.verifyPaths(["/m/movies", "/m/movies/"], "Movies"), ["/m/movies"]);
 //#endregion
 
 //#region Webhooks

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { CreateLibraryRequest, LibraryInfo } from "@shared/api.ts";
+import type { CreateLibraryRequest, LibraryInfo, UpdateLibraryRequest } from "@shared/api.ts";
 import BaseApi from "./BaseApi.ts";
 
 export namespace LibrariesApi {
@@ -9,6 +9,13 @@ export namespace LibrariesApi {
 
   export function create(data: CreateLibraryRequest) {
     return BaseApi.POST<LibraryInfo>("/libraries", data);
+  }
+
+  /**
+   * Rename a library, or change a Videos library's rating for unrated videos.
+   */
+  export function update(id: number, data: UpdateLibraryRequest) {
+    return BaseApi.PUT<LibraryInfo>(`/libraries/${id}`, data);
   }
 
   export function remove(id: number) {

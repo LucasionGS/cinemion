@@ -2,7 +2,7 @@ import fsp from "node:fs/promises";
 import { Hono } from "hono";
 import { encodeHex } from "@std/encoding/hex";
 import type { AudioOption, DeviceCapabilities, HardwareAcceleration as Kind, PlaybackInfo, PlaybackSettings, StartPlaybackRequest, SubtitleOption, TrickplayInfo } from "@shared/playback.ts";
-import type { AudioTrack, SubtitleTrack } from "@shared/media.ts";
+import { type AudioTrack, isPlayable, type SubtitleTrack } from "@shared/media.ts";
 import { languageName } from "@shared/languages.ts";
 import { MediaFile, MediaItem, User } from "../models/index.ts";
 import Visibility from "../library/Visibility.ts";
@@ -115,7 +115,7 @@ export namespace PlaybackController {
     const user = c.get("user")!;
     const item = await MediaItem.findByPk(Number(c.req.param("itemId")));
     if (!item || !Visibility.canSee(user, item)) return c.json({ message: "That title doesn't exist." }, 404);
-    if (item.type !== "movie" && item.type !== "episode") return c.json({ message: "Only movies and episodes can be played." }, 400);
+    if (!isPlayable(item.type)) return c.json({ message: "Only movies, episodes and videos can be played." }, 400);
 
     const body = await readJson<StartPlaybackRequest>(c);
     if (!body || !validCapabilities(body.capabilities)) return c.json({ message: "The player has to say what this device can play." }, 400);
@@ -216,7 +216,8 @@ export namespace PlaybackController {
       isRemote,
       trickplay: await trickplayInfo(file, token, settings.seekThumbnails),
       streamBase: `/api/playback/stream/${token}`,
-      canSearchSubtitles: await user.hasPermission("SUBTITLES_DOWNLOAD") && await SubtitleManager.isAvailable(),
+      // Online subtitle databases only know released movies and shows
+      canSearchSubtitles: item.type !== "video" && await user.hasPermission("SUBTITLES_DOWNLOAD") && await SubtitleManager.isAvailable(),
     };
     return c.json(info);
   });

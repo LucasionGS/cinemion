@@ -37,6 +37,11 @@
     gap: 2rem 1.25rem;
   }
 
+  // 16:9 cards for Videos libraries
+  &__grid--wide {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+  }
+
   &__menu-button {
     display: flex;
     align-items: center;
@@ -98,9 +103,17 @@
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 1.25rem 0.75rem;
   }
+
+  &__grid--wide {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 :root[data-mode="tv"] .cn-library__grid {
   grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
   gap: 2.5rem 1.75rem;
+
+  &--wide {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
 }

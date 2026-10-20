@@ -2,14 +2,16 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { ItemDetail, ItemSummary } from "@shared/media.ts";
 import ItemsApi from "../../Api/ItemsApi.ts";
+import LibrariesApi from "../../Api/LibrariesApi.ts";
 import { Link, router } from "../../lib/Router.tsx";
 import { applyAmbient } from "../../lib/ambient.ts";
 import { chooseTracks, defaultSubtitle, episodeLabel, formatDuration } from "../../lib/playback.ts";
+import { formatDate } from "../../lib/format.ts";
 import useController from "../../lib/useController.ts";
 import cx from "../../lib/cx.ts";
 import AppShell from "../../components/AppShell/AppShell.tsx";
 import ItemHero from "../../components/ItemHero/ItemHero.tsx";
-import ItemMeta from "../../components/ItemHero/ItemMeta.tsx";
+import ItemMeta, { qualityBadges } from "../../components/ItemHero/ItemMeta.tsx";
 import ItemActions from "../../components/ItemActions/ItemActions.tsx";
 import Row from "../../components/Row/Row.tsx";
 import PosterCard from "../../components/PosterCard/PosterCard.tsx";
@@ -25,7 +27,7 @@ export interface ItemProps {
 }
 
 /**
- * The page for a movie, show or episode. Seasons open their show with that season selected.
+ * The page for a movie, show, episode, video or folder. Seasons open their show with that season selected.
  */
 export default function Item(props: ItemProps) {
   const { id } = props;
@@ -54,6 +56,8 @@ export default function Item(props: ItemProps) {
       {item?.type === "movie" && <MovieView item={item} reload={reload} />}
       {item?.type === "show" && <ShowView item={item} reload={reload} />}
       {item?.type === "episode" && <EpisodeView item={item} reload={reload} />}
+      {item?.type === "video" && <VideoView item={item} reload={reload} />}
+      {item?.type === "folder" && <FolderView item={item} reload={reload} />}
     </AppShell>
   );
 }
@@ -309,6 +313,113 @@ function EpisodeView(props: ViewProps) {
           {episodes.filter((e) => e.id !== item.id).map((e) => <WideCard key={e.id} item={e} variant="episode" />)}
         </Row>
       )}
+    </div>
+  );
+}
+
+//#endregion
+
+//#region Videos and folders
+
+/**
+ * "Home videos › Holiday 2024 › Day 2": the library and the folders above a video or folder.
+ */
+function FolderPath(props: { item: ItemDetail }) {
+  const { item } = props;
+  const library = LibrariesApi.useLibraries()?.find((l) => l.id === item.libraryId);
+  return (
+    <nav aria-label="Folders" className="cn-item__path">
+      {library && <Link href={`/library/${library.id}`}>{library.name}</Link>}
+      {item.folders.map((f) => <Link key={f.id} href={`/item/${f.id}`}>{f.title}</Link>)}
+    </nav>
+  );
+}
+
+function VideoView(props: ViewProps) {
+  const { item, reload } = props;
+  const parent = item.folders.at(-1);
+  const library = LibrariesApi.useLibraries()?.find((l) => l.id === item.libraryId);
+
+  return (
+    <div className="cn-item">
+      <ItemHero title={item.title} artwork={{ ...item.artwork, poster: null, logo: null }} palette={item.palette} hidePoster eyebrow={<FolderPath item={item} />}>
+        <div className="cn-meta">
+          {item.releaseDate && <span>{formatDate(item.releaseDate)}</span>}
+          {item.runtime && <span>{formatDuration(item.runtime * 60)}</span>}
+          {item.genres.length > 0 && <span>{item.genres.join(", ")}</span>}
+          {item.contentRating && <span className="cn-meta__badge cn-meta__badge--outline">{item.contentRating}</span>}
+          {qualityBadges(item.files).map((b) => <span key={b} className="cn-meta__badge">{b}</span>)}
+        </div>
+        <ItemActions item={item} onChanged={reload} />
+        {item.overview && <p className="cn-item__overview">{item.overview}</p>}
+      </ItemHero>
+      <Details item={item} />
+      {item.similar.length > 0 && (
+        <Row title={`More in ${parent?.title ?? library?.name ?? "this folder"}`} href={parent ? `/item/${parent.id}` : library ? `/library/${library.id}` : undefined} kind="wide">
+          {item.similar.map((v) => <WideCard key={v.id} item={v} variant="video" />)}
+        </Row>
+      )}
+    </div>
+  );
+}
+
+type FolderSort = "title" | "date" | "added";
+
+/**
+ * Subfolders first, then videos, each in the chosen order.
+ */
+function sortFolder(items: ItemSummary[], sort: FolderSort) {
+  const compare = (a: ItemSummary, b: ItemSummary) => {
+    if (sort === "date") return (b.releaseDate ?? "").localeCompare(a.releaseDate ?? "") || a.title.localeCompare(b.title);
+    if (sort === "added") return b.addedAt.localeCompare(a.addedAt);
+    return a.title.localeCompare(b.title, undefined, { numeric: true });
+  };
+  return [...items].sort((a, b) => (a.type === "folder" ? 0 : 1) - (b.type === "folder" ? 0 : 1) || compare(a, b));
+}
+
+function FolderView(props: ViewProps) {
+  const { item, reload } = props;
+  const [next, setNext] = useState<ItemSummary | null>(null);
+  const [sort, setSort] = useState<FolderSort>("title");
+  const children = useMemo(() => sortFolder(item.children, sort), [item.children, sort]);
+  const folders = item.children.filter((c) => c.type === "folder").length;
+
+  useEffect(() => {
+    ItemsApi.next(item.id).then(setNext).catch(() => setNext(null));
+  }, [item.id, item.userData?.unwatchedCount]);
+
+  const counts = [
+    folders ? `${folders} ${folders === 1 ? "folder" : "folders"}` : null,
+    `${item.childCount} ${item.childCount === 1 ? "video" : "videos"}`,
+  ].filter(Boolean).join(" · ");
+
+  return (
+    <div className="cn-item">
+      <ItemHero title={item.title} artwork={{ ...item.artwork, poster: null, logo: null }} palette={item.palette} hidePoster eyebrow={<FolderPath item={item} />}>
+        <div className="cn-meta">
+          <span>{counts}</span>
+          {item.releaseDate && <span>Newest from {formatDate(item.releaseDate)}</span>}
+        </div>
+        <ItemActions item={item} playTarget={next} onChanged={reload} />
+        {next && <p className="cn-item__next">{next.userData?.position ? "Continue with" : "Up next:"} {next.title}</p>}
+        {item.overview && <p className="cn-item__overview">{item.overview}</p>}
+      </ItemHero>
+
+      <section className="cn-item__folder" aria-label="In this folder">
+        <div className="cn-item__folder-head">
+          <h2>In this folder</h2>
+          <Select
+            label="Sort by"
+            value={sort}
+            onChange={(e) => setSort(e.target.value as FolderSort)}
+            options={[{ value: "title", label: "Title" }, { value: "date", label: "Date" }, { value: "added", label: "Recently added" }]}
+          />
+        </div>
+        {children.length === 0 && <p className="cn-item__next">Nothing in here that this profile can watch.</p>}
+        <div className="cn-item__videos">
+          {children.map((c) => <WideCard key={c.id} item={c} variant="video" />)}
+        </div>
+      </section>
     </div>
   );
 }

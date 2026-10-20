@@ -1,8 +1,9 @@
-import { Fragment, useEffect, useRef, useState } from "react";
-import { ChevronRight, Folder, FolderCheck, HardDrive } from "lucide-react";
+import { Fragment, type KeyboardEvent, useEffect, useId, useRef, useState } from "react";
+import { ChevronRight, CornerDownLeft, Folder, FolderCheck, HardDrive, Pencil, X } from "lucide-react";
 import type { FsListing } from "@shared/api.ts";
 import ServerApi from "../../Api/ServerApi.ts";
 import Button from "../Button/Button.tsx";
+import IconButton from "../IconButton/IconButton.tsx";
 import Spinner from "../Spinner/Spinner.tsx";
 import "./FolderBrowser.scss";
 
@@ -15,7 +16,8 @@ export interface FolderBrowserProps {
 }
 
 /**
- * Browse the folders the server allows (its media roots) and pick one.
+ * Browse the folders the server allows (its media roots) and pick one. The path can also be typed: click the empty
+ * part of the path bar or the pencil.
  */
 export default function FolderBrowser(props: FolderBrowserProps) {
   const { selected, onSelect } = props;
@@ -39,16 +41,41 @@ export default function FolderBrowser(props: FolderBrowserProps) {
 
   const crumbs = listing ? breadcrumbs(listing) : [];
   const crumbsRef = useRef<HTMLElement>(null);
+  const [typing, setTyping] = useState(false);
 
   // Keep the current folder in view when the path is long
   useEffect(() => {
     crumbsRef.current?.scrollTo({ left: crumbsRef.current.scrollWidth });
-  }, [listing]);
+  }, [listing, typing]);
+
+  if (typing) {
+    return (
+      <div className="cn-folders">
+        <PathInput
+          initial={listing?.path ?? listing?.entries[0]?.path ?? ""}
+          onOpen={(opened) => {
+            setPath(opened);
+            setTyping(false);
+          }}
+          onCancel={() => setTyping(false)}
+        />
+        <FolderList loading={loading} error={error} listing={listing} selected={selected} onOpen={setPath} />
+      </div>
+    );
+  }
 
   return (
     <div className="cn-folders">
       <div className="cn-folders__bar">
-        <nav ref={crumbsRef} className="cn-folders__crumbs" aria-label="Folder path">
+        {/* Clicking the empty part of the bar starts typing, like the address bar of a file manager */}
+        <nav
+          ref={crumbsRef}
+          className="cn-folders__crumbs"
+          aria-label="Folder path"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setTyping(true);
+          }}
+        >
           <button type="button" className="cn-folders__crumb" onClick={() => setPath(null)}><HardDrive /></button>
           {crumbs.map((crumb, i) => (
             <Fragment key={crumb.path}>
@@ -59,25 +86,158 @@ export default function FolderBrowser(props: FolderBrowserProps) {
             </Fragment>
           ))}
         </nav>
-        {path && (
+        <IconButton label="Type a path" icon={<Pencil />} size="sm" onClick={() => setTyping(true)} />
+        {path && !error && (
           <Button size="sm" variant="primary" icon={<FolderCheck />} onClick={() => onSelect(path)} disabled={selected.includes(path)}>
             {selected.includes(path) ? "Selected" : "Use this folder"}
           </Button>
         )}
       </div>
 
-      <div className="cn-folders__list">
-        {loading && <div className="cn-folders__empty"><Spinner /></div>}
-        {!loading && error && <div className="cn-folders__empty cn-folders__empty--error">{error}</div>}
-        {!loading && !error && listing?.entries.length === 0 && <div className="cn-folders__empty">No folders in here.</div>}
-        {!loading && !error && listing?.entries.map((entry) => (
-          <button key={entry.path} type="button" className="cn-folders__entry" onClick={() => setPath(entry.path)}>
-            {selected.includes(entry.path) ? <FolderCheck className="cn-folders__icon cn-folders__icon--selected" /> : <Folder className="cn-folders__icon" />}
-            <span>{entry.name}</span>
-            <ChevronRight className="cn-folders__chevron" aria-hidden="true" />
-          </button>
-        ))}
+      <FolderList loading={loading} error={error} listing={listing} selected={selected} onOpen={setPath} />
+    </div>
+  );
+}
+
+function FolderList(props: { loading: boolean; error: string | null; listing: FsListing | null; selected: string[]; onOpen: (path: string) => void }) {
+  const { loading, error, listing, selected, onOpen } = props;
+  return (
+    <div className="cn-folders__list">
+      {loading && <div className="cn-folders__empty"><Spinner /></div>}
+      {!loading && error && <div className="cn-folders__empty cn-folders__empty--error">{error}</div>}
+      {!loading && !error && listing?.entries.length === 0 && <div className="cn-folders__empty">No folders in here.</div>}
+      {!loading && !error && listing?.entries.map((entry) => (
+        <button key={entry.path} type="button" className="cn-folders__entry" onClick={() => onOpen(entry.path)}>
+          {selected.includes(entry.path) ? <FolderCheck className="cn-folders__icon cn-folders__icon--selected" /> : <Folder className="cn-folders__icon" />}
+          <span>{entry.name}</span>
+          <ChevronRight className="cn-folders__chevron" aria-hidden="true" />
+        </button>
+      ))}
+    </div>
+  );
+}
+
+/**
+ * Where a typed path splits into the folder to list and the start of the name being typed.
+ * Example: "/media/mo" → "/media/" and "mo".
+ */
+function splitTyped(typed: string) {
+  const sep = typed.includes("\\") && !typed.includes("/") ? "\\" : "/";
+  const cut = typed.lastIndexOf(sep);
+  return { sep, folder: cut >= 0 ? typed.slice(0, cut + 1) : "", partial: cut >= 0 ? typed.slice(cut + 1) : typed };
+}
+
+/**
+ * The longest start that all `values` share.
+ */
+function commonStart(values: string[]) {
+  if (values.length === 0) return "";
+  let prefix = values[0];
+  for (const value of values.slice(1)) {
+    while (!value.toLowerCase().startsWith(prefix.toLowerCase())) prefix = prefix.slice(0, -1);
+  }
+  return prefix;
+}
+
+/**
+ * A text field for the folder path. Subfolders are suggested while typing; Tab completes like a shell, Enter opens
+ * the folder, Escape goes back to the path bar.
+ */
+function PathInput(props: { initial: string; onOpen: (path: string) => void; onCancel: () => void }) {
+  const { initial, onOpen, onCancel } = props;
+  const [typed, setTyped] = useState(initial.endsWith("/") || initial.endsWith("\\") || !initial ? initial : `${initial}/`);
+  const [problem, setProblem] = useState<string | null>(null);
+  const [opening, setOpening] = useState(false);
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const cache = useRef(new Map<string, string[]>());
+  const listId = useId();
+
+  // Suggest the subfolders of what's typed so far, a moment after typing stops
+  useEffect(() => {
+    const { folder, partial } = splitTyped(typed);
+    if (!folder) {
+      setSuggestions([]);
+      return;
+    }
+    let cancelled = false;
+    const timer = setTimeout(async () => {
+      let names = cache.current.get(folder);
+      if (!names) {
+        names = await ServerApi.listFolders(folder).then((l) => l.entries.map((e) => e.name)).catch(() => []);
+        cache.current.set(folder, names);
+      }
+      if (cancelled) return;
+      // Exact case first, like a shell; "devel" shouldn't become "Developer" when "development" is there too
+      const exact = names.filter((n) => n.startsWith(partial) && n !== partial);
+      const matches = exact.length ? exact : names.filter((n) => n.toLowerCase().startsWith(partial.toLowerCase()) && n.toLowerCase() !== partial.toLowerCase());
+      // Built from what was typed, so "~/Vid" suggests "~/Videos" rather than the full home path
+      setSuggestions(matches.map((n) => folder + n));
+    }, 150);
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [typed]);
+
+  async function open() {
+    const value = typed.trim();
+    if (!value) return;
+    setOpening(true);
+    try {
+      const listing = await ServerApi.listFolders(value);
+      onOpen(listing.path ?? value);
+    } catch (error) {
+      setProblem((error as Error).message);
+    } finally {
+      setOpening(false);
+    }
+  }
+
+  function onKeyDown(e: KeyboardEvent<HTMLInputElement>) {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      open();
+    }
+    else if (e.key === "Escape") {
+      // Inside a dialog, Escape would otherwise close the whole dialog
+      e.preventDefault();
+      e.stopPropagation();
+      onCancel();
+    }
+    else if (e.key === "Tab" && suggestions.length > 0 && !e.shiftKey) {
+      e.preventDefault();
+      const { sep } = splitTyped(typed);
+      const completed = suggestions.length === 1 ? suggestions[0] + sep : commonStart(suggestions);
+      if (completed.length > typed.length) setTyped(completed);
+    }
+  }
+
+  return (
+    <div className="cn-folders__typing">
+      <div className="cn-folders__bar">
+        <HardDrive className="cn-folders__bar-icon" aria-hidden="true" />
+        <input
+          className="cn-folders__input"
+          aria-label="Folder path"
+          value={typed}
+          list={listId}
+          autoFocus
+          spellCheck={false}
+          autoComplete="off"
+          aria-invalid={!!problem || undefined}
+          onChange={(e) => {
+            setTyped(e.target.value);
+            setProblem(null);
+          }}
+          onKeyDown={onKeyDown}
+        />
+        <datalist id={listId}>
+          {suggestions.slice(0, 50).map((s) => <option key={s} value={s} />)}
+        </datalist>
+        <Button size="sm" variant="primary" icon={<CornerDownLeft />} onClick={open} loading={opening}>Open</Button>
+        <IconButton label="Stop typing" icon={<X />} size="sm" onClick={onCancel} />
       </div>
+      {problem && <p className="cn-folders__problem" role="alert">{problem}</p>}
     </div>
   );
 }

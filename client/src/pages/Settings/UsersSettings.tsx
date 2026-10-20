@@ -17,17 +17,9 @@ import Switch from "../../components/Switch/Switch.tsx";
 import ColorPicker from "../../components/ColorPicker/ColorPicker.tsx";
 import Dialog, { ConfirmDialog } from "../../components/Dialog/Dialog.tsx";
 import Spinner from "../../components/Spinner/Spinner.tsx";
+import { RATINGS } from "../../lib/ratings.ts";
 
-const RATINGS = [
-  { value: "", label: "No limit" },
-  { value: "G", label: "G / All ages" },
-  { value: "PG", label: "PG" },
-  { value: "12", label: "12" },
-  { value: "PG-13", label: "PG-13" },
-  { value: "16", label: "16" },
-  { value: "R", label: "R" },
-  { value: "18", label: "18" },
-];
+const LIMITS = [{ value: "", label: "No limit" }, ...RATINGS];
 
 /**
  * Everyone who uses this server: create, edit and remove profiles.
@@ -213,7 +205,7 @@ function UserDialog(props: { user: UserInfo | "new" | null; onClose: () => void;
           {session.isAdmin() && (
             <Select label="Role" value={role} onChange={(e) => setRole(e.target.value)} options={[{ value: "user", label: "Profile" }, { value: "admin", label: "Admin" }]} style={{ flex: "1 1 12rem" }} />
           )}
-          <Select label="Age rating limit" value={maxRating} onChange={(e) => setMaxRating(e.target.value)} options={RATINGS} style={{ flex: "1 1 12rem" }} />
+          <Select label="Age rating limit" value={maxRating} onChange={(e) => setMaxRating(e.target.value)} options={LIMITS} style={{ flex: "1 1 12rem" }} />
         </div>
         <Switch label="Show on the profile picker" description="Hidden profiles sign in with their username and password." checked={showOnPicker} onChange={setShowOnPicker} />
         <div className="cn-settings__row">

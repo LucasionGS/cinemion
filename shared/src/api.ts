@@ -100,7 +100,7 @@ export interface UpdateSelfRequest {
 
 //#region Libraries
 
-export type LibraryType = "movies" | "shows";
+export type LibraryType = "movies" | "shows" | "videos";
 
 export interface LibraryInfo {
   id: number;
@@ -108,20 +108,40 @@ export interface LibraryInfo {
   type: LibraryType;
   paths: string[];
   /**
-   * Movies, or shows, in the library.
+   * Movies, shows, or videos in the library.
    */
   itemCount: number;
   lastScannedAt: string | null;
   /**
+   * Videos libraries: the rating unrated videos get, so age-limited profiles can see them. `null` = they stay hidden
+   * from those profiles.
+   */
+  defaultRating: string | null;
+  /**
    * The running scan, or `null` when idle.
    */
   scan: TaskInfo | null;
+  /**
+   * Why the library's folders are a problem, when they're also in another library (possible before Cinemion checked
+   * this). `null` when they're fine.
+   */
+  conflict: string | null;
 }
 
 export interface CreateLibraryRequest {
   name: string;
   type: LibraryType;
   paths: string[];
+  /**
+   * Videos libraries only. See `LibraryInfo.defaultRating`.
+   */
+  defaultRating?: string | null;
+}
+
+export interface UpdateLibraryRequest {
+  name?: string;
+  paths?: string[];
+  defaultRating?: string | null;
 }
 
 //#endregion

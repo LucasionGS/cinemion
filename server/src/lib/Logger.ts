@@ -1,4 +1,5 @@
 import type { LogEntry, LogLevel } from "@shared/admin.ts";
+import { errorMessage } from "./http.ts";
 
 const COLORS: Record<LogLevel, string> = {
   debug: "\x1b[90m",
@@ -16,7 +17,7 @@ let _nextId = 1;
 
 function write(level: LogLevel, message: string, data?: Record<string, unknown>) {
   const now = new Date();
-  const json = data && Object.keys(data).length > 0 ? JSON.stringify(data, (_key, value) => value instanceof Error ? value.message : value) : null;
+  const json = data && Object.keys(data).length > 0 ? JSON.stringify(data, (_key, value) => value instanceof Error ? errorMessage(value) : value) : null;
   const line = `${COLORS[level]}${now.toISOString().slice(11, 19)} ${level.toUpperCase().padEnd(5)}\x1b[0m ${message}${json ? " " + json : ""}`;
   if (level === "error") console.error(line);
   else if (level === "warn") console.warn(line);

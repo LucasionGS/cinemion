@@ -9,6 +9,8 @@ import { applyAmbient } from "../../lib/ambient.ts";
 import { episodeLabel, formatDuration, play, timeLeft } from "../../lib/playback.ts";
 import { toasts } from "../../lib/Toasts.ts";
 import useController from "../../lib/useController.ts";
+import { formatDate } from "../../lib/format.ts";
+import cx from "../../lib/cx.ts";
 import AppShell from "../../components/AppShell/AppShell.tsx";
 import Button from "../../components/Button/Button.tsx";
 import Row from "../../components/Row/Row.tsx";
@@ -64,11 +66,17 @@ export default function Home() {
           </Row>
         )}
 
-        {home?.recentlyAdded.map((row) => (
-          <Row key={row.libraryId} title={`Recently added in ${row.libraryName}`} href={`/library/${row.libraryId}?sort=added`} kind="poster">
-            {row.items.map((item) => <PosterCard key={item.id} item={item} onSelect={() => setSelected(item)} />)}
-          </Row>
-        ))}
+        {home?.recentlyAdded.map((row) => row.libraryType === "videos"
+          ? (
+            <Row key={row.libraryId} title={`Recently added in ${row.libraryName}`} href={`/library/${row.libraryId}?sort=added`} kind="wide">
+              {row.items.map((item) => <WideCard key={item.id} item={item} variant="video" onSelect={() => setSelected(item)} />)}
+            </Row>
+          )
+          : (
+            <Row key={row.libraryId} title={`Recently added in ${row.libraryName}`} href={`/library/${row.libraryId}?sort=added`} kind="poster">
+              {row.items.map((item) => <PosterCard key={item.id} item={item} onSelect={() => setSelected(item)} />)}
+            </Row>
+          ))}
 
         {home?.becauseYouWatched && (
           <Row title={`Because you watched ${home.becauseYouWatched.title}`} kind="poster">
@@ -95,6 +103,11 @@ export default function Home() {
 }
 
 /**
+ * Titles longer than this many characters are set smaller, so most of them fit in the spotlight's two lines.
+ */
+const LONG_TITLE = 24;
+
+/**
  * The selected title, big, with its artwork fading in behind the top of the page.
  */
 function Spotlight(props: { item: ItemSummary; greeting: string }) {
@@ -106,6 +119,8 @@ function Spotlight(props: { item: ItemSummary; greeting: string }) {
 
   const facts = isEpisode
     ? [episodeLabel(item), item.title, left ?? "Up next"]
+    : item.type === "video"
+    ? [item.releaseDate ? formatDate(item.releaseDate) : null, item.runtime ? formatDuration(item.runtime * 60) : null, item.genres.slice(0, 2).join(", ") || null, left]
     : [item.year ? String(item.year) : null, item.type === "show" ? `${item.childCount} ${item.childCount === 1 ? "season" : "seasons"}` : item.runtime ? formatDuration(item.runtime * 60) : null, item.genres.slice(0, 2).join(", ") || null, left];
 
   return (
@@ -115,7 +130,10 @@ function Spotlight(props: { item: ItemSummary; greeting: string }) {
       </div>
       <div className="cn-spotlight__content">
         <p className="cn-spotlight__greeting">{greeting}</p>
-        <h1 className="cn-spotlight__title">{title}</h1>
+        {/* Always two lines tall, so moving between short and long titles doesn't shift the rows below */}
+        <div className="cn-spotlight__title-box">
+          <h1 className={cx("cn-spotlight__title", title.length > LONG_TITLE && "cn-spotlight__title--long")} title={title}>{title}</h1>
+        </div>
         <p className="cn-spotlight__facts">{facts.filter(Boolean).join(" · ")}</p>
         <div className="cn-spotlight__buttons">
           <Button variant="primary" size="lg" icon={<PlayRing />} className="cn-actions__play" onClick={() => playSpotlight(item)}>

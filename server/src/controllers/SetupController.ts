@@ -49,6 +49,12 @@ export namespace SetupController {
     try {
       // Validate everything first, so a bad library doesn't leave a half-finished setup behind
       const verified = libraries.map((library) => Library.verifyLibrary(library));
+      for (const [i, library] of verified.entries()) {
+        for (const path of library.paths) {
+          const problem = Library.overlapProblem(path, verified.slice(0, i));
+          if (problem) throw new Error(problem);
+        }
+      }
       User.verifyName(admin.name);
       User.verifyUsername(admin.username);
       User.verifyPassword(admin.password);

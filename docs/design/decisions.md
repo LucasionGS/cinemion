@@ -48,3 +48,11 @@ Mockups: https://claude.ai/artifact/LRkWtmzabA5uSKvRmninsN
 - **Admin:** the app top bar plus a left settings nav. The dashboard shows streams (direct play or converting, with the reason), resource usage, tasks and activity. The Playback page shows hardware-acceleration options with detection status, which formats the GPU decodes, and a "Run a test" button.
 
 Mockups: https://claude.ai/artifact/RxQLnPd51KADJ5pEWwnfKC
+
+## Round 4: videos (picked in chat, no mockup)
+
+- **Videos libraries:** for home videos and anything else that isn't a movie or show. Nothing is looked up online.
+- **Folders:** each folder becomes a group (like an album), shown as a 16:9 card with two cards stacked behind it and its video count. Groups nest like the folders on disk; videos in the library folder itself sit next to the groups. Folders always come first.
+- **Cards:** 16:9 thumbnails taken from the video (or a picture next to it), with the length in the corner and the date below.
+- **Age limits:** each Videos library has a "rating for unrated videos" (e.g. G for family videos); single videos can get their own rating. A folder shows for anyone who may see a video in it.
+- **Editing by hand:** title, date, description, tags, age rating and thumbnail (upload, pick a frame, or automatic), for videos and folders only. Movies and shows keep NFO, TMDB and Fix match.

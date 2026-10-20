@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Menu } from "@base-ui/react/menu";
-import { Check, EllipsisVertical, Plus, RefreshCw, RotateCcw, Wand2 } from "lucide-react";
-import type { ItemDetail, ItemSummary } from "@shared/media.ts";
+import { Check, EllipsisVertical, Pencil, Plus, RefreshCw, RotateCcw, Wand2 } from "lucide-react";
+import { type ItemDetail, type ItemSummary, isPlayable } from "@shared/media.ts";
 import ItemsApi from "../../Api/ItemsApi.ts";
 import { session } from "../../Session.ts";
 import { toasts } from "../../lib/Toasts.ts";
@@ -9,12 +9,13 @@ import { play, timeLeft } from "../../lib/playback.ts";
 import Button from "../Button/Button.tsx";
 import IconButton from "../IconButton/IconButton.tsx";
 import FixMatchDialog from "../FixMatchDialog/FixMatchDialog.tsx";
+import EditDetailsDialog from "../EditDetailsDialog/EditDetailsDialog.tsx";
 import "./ItemActions.scss";
 
 export interface ItemActionsProps {
   item: ItemDetail;
   /**
-   * What Play starts. Default is the item itself; for shows, the next episode.
+   * What Play starts. Default is the item itself; for shows, the next episode; for folders, the next video.
    */
   playTarget?: ItemSummary | null;
   /**
@@ -24,12 +25,14 @@ export interface ItemActionsProps {
 }
 
 /**
- * Play or Resume, Play from start, the watched toggle, and (for managers) Fix match and Refresh.
+ * Play or Resume, Play from start, the watched toggle, and (for managers) Fix match or Edit details, and Refresh.
  */
 export default function ItemActions(props: ItemActionsProps) {
   const { item, playTarget, onChanged } = props;
   const [fixing, setFixing] = useState(false);
-  const target = playTarget ?? (item.type === "movie" || item.type === "episode" ? item : null);
+  const [editing, setEditing] = useState(false);
+  const target = playTarget ?? (isPlayable(item.type) ? item : null);
+  const editable = item.type === "video" || item.type === "folder";
   const resumable = !!target?.userData?.position;
   const watched = item.userData?.watched ?? false;
   const left = target ? timeLeft(target) : null;
@@ -83,6 +86,7 @@ export default function ItemActions(props: ItemActionsProps) {
               <Menu.Positioner sideOffset={8} align="start" className="cn-menu__positioner">
                 <Menu.Popup className="cn-menu">
                   {(item.type === "movie" || item.type === "show") && <Menu.Item className="cn-menu__item" onClick={() => setFixing(true)}><Wand2 /> Fix match</Menu.Item>}
+                  {editable && <Menu.Item className="cn-menu__item" onClick={() => setEditing(true)}><Pencil /> Edit details</Menu.Item>}
                   <Menu.Item className="cn-menu__item" onClick={refresh}><RefreshCw /> Refresh details</Menu.Item>
                 </Menu.Popup>
               </Menu.Positioner>
@@ -97,6 +101,7 @@ export default function ItemActions(props: ItemActionsProps) {
         </div>
       )}
       <FixMatchDialog item={fixing ? item : null} onClose={() => setFixing(false)} onMatched={() => onChanged()} />
+      {editable && <EditDetailsDialog item={editing ? item : null} onClose={() => setEditing(false)} onSaved={onChanged} />}
     </div>
   );
 }

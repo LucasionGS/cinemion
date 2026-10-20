@@ -4,10 +4,11 @@
 ##########################################
 # Generates a small fake library with ffmpeg for trying out scanning, metadata and playback:
 # tidy and messy file names, several codecs, multiple audio and subtitle tracks, NFO files,
-# local artwork, multi-episode files, specials, extras and samples that should be skipped.
+# local artwork, multi-episode files, specials, extras and samples that should be skipped, and a folder of
+# home videos with recording dates, a folder picture and nested folders.
 #
 # Usage: scripts/make-sample-media.sh [FOLDER]
-#   FOLDER        Where to create "movies" and "shows". Default is data/media.
+#   FOLDER        Where to create "movies", "shows" and "videos". Default is data/media.
 #   CLIP_SECONDS  Length of each clip (environment variable). Default is 90.
 
 set -euo pipefail
@@ -16,6 +17,7 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 OUT="${1:-$ROOT/data/media}"
 MOVIES="$OUT/movies"
 SHOWS="$OUT/shows"
+VIDEOS="$OUT/videos"
 SECONDS_PER_CLIP="${CLIP_SECONDS:-90}"
 # Running time burned into every clip, to check seeking and resume
 TIMER="drawtext=text='%{pts\\:hms}':fontsize=36:fontcolor=white:box=1:boxcolor=black@0.5:x=24:y=24"
@@ -52,7 +54,7 @@ art() {
 }
 
 echo "Creating sample media in $OUT..."
-rm -rf "$MOVIES" "$SHOWS"
+rm -rf "$MOVIES" "$SHOWS" "$VIDEOS"
 
 #region Movies
 echo "Movies..."
@@ -180,6 +182,36 @@ IW="$SHOWS/Ironwood"
 clip "$IW/Season 1/Ironwood.S01E01.1080p.WEB-DL.x265.mkv" "Ironwood S01E01" -c:v libx265 -preset ultrafast -crf 32 -c:a aac
 clip "$IW/Season 1/Ironwood.S01E02.1080p.WEB-DL.x265.mkv" "Ironwood S01E02" -c:v libx265 -preset ultrafast -crf 32 -c:a aac
 clip "$IW/Specials/Ironwood S00E01 Making Of.mkv" "Ironwood special" -c:v libx264 -preset veryfast -crf 30 -c:a aac
+#endregion
+
+#region Videos
+echo "Videos..."
+
+# Phones write the recording time into the file; Cinemion uses it as the video's date
+HOL="$VIDEOS/Holiday 2024"
+clip "$HOL/Beach day.mp4" "Beach day" -c:v libx264 -preset veryfast -crf 30 -c:a aac -metadata creation_time=2024-07-12T14:03:22Z -movflags +faststart
+clip "$HOL/Day 2/Fireworks.mov" "Fireworks" -c:v libx264 -preset veryfast -crf 30 -c:a aac -metadata creation_time=2024-07-13T21:40:00Z
+clip "$HOL/Day 2/Boat trip.mp4" "Boat trip" -c:v libx264 -preset veryfast -crf 30 -c:a aac -metadata creation_time=2024-07-13T10:15:00Z -movflags +faststart
+art "$HOL/folder.jpg" 1280 720 0x2E8BC0 0xF2C14E "Holiday 2024"
+
+# Camera names, HEVC, and a picture next to one of them that's used as its thumbnail
+DR="$VIDEOS/Drone shots"
+clip "$DR/DJI_0042.MP4" "DJI 0042" -c:v libx265 -preset ultrafast -crf 32 -tag:v hvc1 -c:a aac
+clip "$DR/DJI_0043.MP4" "DJI 0043" -c:v libx265 -preset ultrafast -crf 32 -tag:v hvc1 -c:a aac
+art "$DR/DJI_0043.jpg" 1280 720 0x3A5F3A 0xA3C77A "Over the dunes"
+
+# Loose in the library folder, with an NFO; names that a movie library would skip are just videos here
+clip "$VIDEOS/Birthday_party_2025.webm" "Birthday party" -c:v libvpx-vp9 -deadline realtime -cpu-used 8 -b:v 1M -c:a libopus
+cat > "$VIDEOS/Birthday_party_2025.nfo" <<'EOF'
+<?xml version="1.0" encoding="UTF-8"?>
+<movie>
+  <title>Mira turns 8</title>
+  <plot>Cake, candles and far too many balloons.</plot>
+  <premiered>2025-03-02</premiered>
+  <genre>Family</genre>
+</movie>
+EOF
+clip "$VIDEOS/Our short film-trailer.mkv" "Our short film (trailer)" -c:v libx264 -preset veryfast -crf 30 -c:a aac
 #endregion
 
 rm -f "/tmp/cinemion-sample-subs.srt"

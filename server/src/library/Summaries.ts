@@ -1,6 +1,8 @@
 import { col, fn } from "sequelize";
-import type { ItemSummary, UserData } from "@shared/media.ts";
+import { isPlayable, type ItemSummary, type UserData } from "@shared/media.ts";
 import { MediaItem, type User, WatchState } from "../models/index.ts";
+import FolderTree from "./FolderTree.ts";
+import Visibility from "./Visibility.ts";
 
 /**
  * Builds `ItemSummary` lists with everything an item doesn't know by itself, loaded in a few batched queries:
@@ -19,6 +21,20 @@ export namespace Summaries {
       raw: true,
     }) as unknown as { parentId: number; count: number }[];
     return new Map(rows.map((r) => [r.parentId, Number(r.count)]));
+  }
+
+  /**
+   * The videos inside each folder in `items`, subfolders included, that `user` may see.
+   */
+  export async function folderVideos(items: MediaItem[], user: User | null) {
+    const result = new Map<number, number[]>();
+    const folders = items.filter((i) => i.type === "folder");
+    if (folders.length === 0) return result;
+    const tree = await FolderTree.load(folders.map((f) => f.libraryId));
+    for (const folder of folders) {
+      result.set(folder.id, tree.videosUnder(folder.id).filter((v) => !user || Visibility.canSee(user, v)).map((v) => v.id));
+    }
+    return result;
   }
 
   /**
@@ -47,11 +63,12 @@ export namespace Summaries {
   }
 
   /**
-   * The profile's progress per item. Shows and seasons count their episodes.
+   * The profile's progress per item. Shows and seasons count their episodes, folders every video inside them.
+   * @param folderVideos The videos in each folder of `items` this profile may see, from `folderVideos()`.
    */
-  export async function userData(items: MediaItem[], userId: number) {
+  export async function userData(items: MediaItem[], userId: number, folderVideos?: Map<number, number[]>) {
     const result = new Map<number, UserData>();
-    const leafIds = items.filter((i) => i.type === "movie" || i.type === "episode").map((i) => i.id);
+    const leafIds = items.filter((i) => isPlayable(i.type)).map((i) => i.id);
 
     // Episodes under each show and season in the list
     const episodesOf = new Map<number, number[]>();
@@ -69,13 +86,15 @@ export namespace Summaries {
       }
     }
     for (const [showId, seasons] of seasonIdsByShow) episodesOf.set(showId, seasons.flatMap((s) => episodesOf.get(s) ?? []));
+    // Folders work like shows, with their videos as the episodes
+    for (const [folderId, videos] of folderVideos ?? []) episodesOf.set(folderId, videos);
 
     const allIds = [...new Set([...leafIds, ...[...episodesOf.values()].flat()])];
     const states = allIds.length ? await WatchState.findAll({ where: { userId, itemId: allIds } }) : [];
     const stateById = new Map(states.map((s) => [s.itemId, s]));
 
     for (const item of items) {
-      if (item.type === "movie" || item.type === "episode") {
+      if (isPlayable(item.type)) {
         const state = stateById.get(item.id);
         const duration = state?.duration ?? (item.runtime ? item.runtime * 60 : null);
         result.set(item.id, {
@@ -108,8 +127,10 @@ export namespace Summaries {
   export async function build(items: MediaItem[], user: User | null): Promise<ItemSummary[]> {
     if (items.length === 0) return [];
     const counts = await childCounts(items.filter((i) => i.type === "show" || i.type === "season").map((i) => i.id));
+    const inFolders = await folderVideos(items, user);
+    for (const [folderId, videos] of inFolders) counts.set(folderId, videos.length);
     const showOf = await shows(items);
-    const data = user ? await userData(items, user.id) : new Map<number, UserData>();
+    const data = user ? await userData(items, user.id, inFolders) : new Map<number, UserData>();
     return items.map((item) => item.toSummary({
       childCount: counts.get(item.id) ?? 0,
       userData: data.get(item.id) ?? null,

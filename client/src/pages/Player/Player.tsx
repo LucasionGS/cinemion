@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import type { ItemDetail } from "@shared/media.ts";
+import { type ItemDetail, isPlayable } from "@shared/media.ts";
 import ItemsApi from "../../Api/ItemsApi.ts";
 import { router } from "../../lib/Router.tsx";
 import { applyAmbient } from "../../lib/ambient.ts";
@@ -30,7 +30,7 @@ export default function Player(props: PlayerProps) {
 
   useEffect(() => {
     ItemsApi.get(id).then((detail) => {
-      if (detail.type !== "movie" && detail.type !== "episode") throw new Error("Only movies and episodes can be played.");
+      if (!isPlayable(detail.type)) throw new Error("Only movies, episodes and videos can be played.");
       setItem(detail);
     }).catch((e: Error) => setError(e.message));
   }, [id]);

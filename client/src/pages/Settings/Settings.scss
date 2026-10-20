@@ -260,6 +260,12 @@
   }
 }
 
+// A library whose folders are also in another one
+.cn-settings__conflict {
+  white-space: normal !important;
+  color: var(--cn-warning) !important;
+}
+
 // Scan progress under a library
 .cn-settings__scan {
   display: flex !important;

@@ -33,7 +33,7 @@ export default function Search() {
       try {
         setResults(await ItemsApi.search(q));
       } catch {
-        setResults({ titles: [], episodes: [], people: [], collections: [] });
+        setResults({ titles: [], episodes: [], videos: [], people: [], collections: [] });
       } finally {
         setLoading(false);
       }
@@ -41,7 +41,7 @@ export default function Search() {
     return () => clearTimeout(timer);
   }, [query]);
 
-  const empty = results && !results.titles.length && !results.episodes.length && !results.people.length && !results.collections.length;
+  const empty = results && !results.titles.length && !results.episodes.length && !results.videos.length && !results.people.length && !results.collections.length;
 
   return (
     <AppShell>
@@ -49,7 +49,7 @@ export default function Search() {
         <label className="cn-search__box">
           <SearchIcon aria-hidden="true" />
           <span className="cn-visually-hidden">Search</span>
-          <input type="search" autoFocus data-autofocus placeholder="Movies, shows, episodes and people" value={query} onChange={(e) => setQuery(e.target.value)} />
+          <input type="search" autoFocus data-autofocus placeholder="Movies, shows, episodes, videos and people" value={query} onChange={(e) => setQuery(e.target.value)} />
           {loading && <Spinner size="1.25rem" />}
           {query && !loading && (
             <button type="button" className="cn-search__clear" aria-label="Clear" onClick={() => setQuery("")}><X /></button>
@@ -81,6 +81,15 @@ export default function Search() {
             <h2>Episodes</h2>
             <div className="cn-search__episodes">
               {results.episodes.map((item) => <WideCard key={item.id} item={item} />)}
+            </div>
+          </section>
+        )}
+
+        {results && results.videos.length > 0 && (
+          <section className="cn-search__section">
+            <h2>Videos</h2>
+            <div className="cn-search__episodes">
+              {results.videos.map((item) => <WideCard key={item.id} item={item} variant="video" />)}
             </div>
           </section>
         )}

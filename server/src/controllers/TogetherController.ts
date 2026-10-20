@@ -2,6 +2,7 @@ import { Hono } from "hono";
 import { upgradeWebSocket } from "hono/deno";
 import type { TogetherPreview } from "@shared/together.ts";
 import { parseRoomCode } from "@shared/together.ts";
+import { isPlayable } from "@shared/media.ts";
 import { MediaItem, User } from "../models/index.ts";
 import Visibility from "../library/Visibility.ts";
 import Summaries from "../library/Summaries.ts";
@@ -25,7 +26,7 @@ export namespace TogetherController {
     const body = await readJson<{ itemId: number; position: number }>(c);
     const item = body?.itemId ? await MediaItem.findByPk(Number(body.itemId)) : null;
     if (!item || !Visibility.canSee(user, item)) return c.json({ message: "That title doesn't exist." }, 404);
-    if (item.type !== "movie" && item.type !== "episode") return c.json({ message: "Only movies and episodes can be watched together." }, 400);
+    if (!isPlayable(item.type)) return c.json({ message: "Only movies, episodes and videos can be watched together." }, 400);
     const room = WatchTogether.create(user, item.id, Math.max(0, Number(body?.position) || 0));
     const label = await ItemLabels.describe(item);
     Events.emit("together.started", { host: { id: user.id, name: user.name }, item: await ItemLabels.forWebhook(item, label.show), code: room.code }, {

@@ -1,4 +1,4 @@
-import type { CollectionDetail, CollectionSummary, HomeData, ItemDetail, ItemPage, ItemSummary, MatchCandidate, PersonDetail, SearchResults, SortOrder } from "@shared/media.ts";
+import type { CollectionDetail, CollectionSummary, EditDetailsRequest, HomeData, ItemDetail, ItemPage, ItemSummary, MatchCandidate, PersonDetail, SearchResults, SortOrder } from "@shared/media.ts";
 import BaseApi from "./BaseApi.ts";
 
 export namespace ItemsApi {
@@ -82,6 +82,43 @@ export namespace ItemsApi {
   /**
    * URL of cached artwork, at (at most) `width` pixels wide.
    */
+  /**
+   * Set a video's or folder's details by hand.
+   */
+  export function editDetails(id: number, details: EditDetailsRequest) {
+    return BaseApi.PUT<ItemSummary>(`/items/${id}/details`, details);
+  }
+
+  /**
+   * One frame of a video, as an object URL for an `<img>`. Revoke it when done.
+   * @param time Unit is in seconds.
+   */
+  export async function frame(id: number, time: number) {
+    const res = await fetch(`/api/items/${id}/frame?t=${time.toFixed(2)}`, { headers: BaseApi.getHeaders(false) });
+    if (!res.ok) throw new Error((await res.json().catch(() => null))?.message || res.statusText);
+    return URL.createObjectURL(await res.blob());
+  }
+
+  /**
+   * Use the video's frame at `time` (in seconds) as its thumbnail.
+   */
+  export function setThumbnailFrame(id: number, time: number) {
+    return BaseApi.PUT<ItemSummary>(`/items/${id}/thumbnail`, { time });
+  }
+
+  export function uploadThumbnail(id: number, file: File) {
+    const form = new FormData();
+    form.append("file", file);
+    return BaseApi.PUTFormData<ItemSummary>(`/items/${id}/thumbnail`, form);
+  }
+
+  /**
+   * Go back to the automatic thumbnail.
+   */
+  export function resetThumbnail(id: number) {
+    return BaseApi.DELETE<ItemSummary>(`/items/${id}/thumbnail`);
+  }
+
   export function imageUrl(key: string, width: number) {
     return `/api/images/${key}?w=${Math.round(width)}`;
   }

@@ -17,6 +17,7 @@ import TogetherPanel from "./TogetherPanel.tsx";
 import Avatar from "../Avatar/Avatar.tsx";
 import { together } from "../../lib/Together.ts";
 import { toasts } from "../../lib/Toasts.ts";
+import { formatDate } from "../../lib/format.ts";
 import type PlayerController from "./PlayerController.ts";
 import "./Player.scss";
 
@@ -238,7 +239,7 @@ export default function PlayerView(props: PlayerViewProps) {
 
   const item = c.item;
   const title = item.type === "episode" ? item.showTitle ?? item.title : item.title;
-  const subtitle = item.type === "episode" ? `${episodeLabel(item)} · ${item.title}` : item.year ? String(item.year) : null;
+  const subtitle = item.type === "episode" ? `${episodeLabel(item)} · ${item.title}` : item.type === "video" ? (item.releaseDate ? formatDate(item.releaseDate) : null) : item.year ? String(item.year) : null;
   const cues = c.subtitleIndex !== null ? activeCues(c.cues, c.position) : [];
   const idle = !c.controlsVisible && !c.loading && !c.error;
 
@@ -499,7 +500,7 @@ function NextUp(props: { controller: PlayerController }) {
     <div className="cn-next-up" role="region" aria-label="Up next" data-focus-scope={deviceMode.isTv() ? true : undefined}>
       {image && <img src={ItemsApi.imageUrl(image, 342)} alt="" className="cn-next-up__image" />}
       <div className="cn-next-up__body">
-        <span className="cn-next-up__eyebrow">Up next · {episodeLabel(next)}</span>
+        <span className="cn-next-up__eyebrow">{next.type === "episode" ? `Up next · ${episodeLabel(next)}` : "Up next"}</span>
         <strong>{next.title}</strong>
         <span className="cn-next-up__countdown">Starts in {nextCountdown} s</span>
         <div className="cn-next-up__actions">

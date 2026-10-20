@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Check, Clapperboard, Trash2, Tv } from "lucide-react";
+import { Check, Trash2 } from "lucide-react";
 import type { CreateLibraryRequest, LibraryType, MetadataSettings } from "@shared/api.ts";
 import ServerApi from "../../Api/ServerApi.ts";
 import { session } from "../../Session.ts";
@@ -13,6 +13,7 @@ import TextField from "../../components/TextField/TextField.tsx";
 import SegmentedControl from "../../components/SegmentedControl/SegmentedControl.tsx";
 import FolderBrowser from "../../components/FolderBrowser/FolderBrowser.tsx";
 import MetadataForm, { COUNTRIES } from "../../components/MetadataForm/MetadataForm.tsx";
+import LibraryIcon from "../../components/LibraryIcon/LibraryIcon.tsx";
 import "./Setup.scss";
 
 const STEPS = [
@@ -182,7 +183,7 @@ export default function Setup() {
               {libraries.length === 0 && <p className="cn-setup__muted">No libraries yet. You can add them later in Settings › Libraries.</p>}
               {libraries.map((l) => (
                 <div key={l.name} className="cn-setup__card">
-                  {l.type === "shows" ? <Tv /> : <Clapperboard />}
+                  <LibraryIcon type={l.type} />
                   <div>
                     <strong>{l.name}</strong>
                     <span>{l.paths.join(", ")}</span>
@@ -209,40 +210,49 @@ function guessCountry() {
   return COUNTRIES.some((c) => c.value === region) ? region! : "US";
 }
 
+const TYPE_NAMES: Record<LibraryType, string> = { movies: "Movies", shows: "Shows", videos: "Videos" };
+
+/**
+ * The kind of library not added yet, in the usual order.
+ */
+function nextType(libraries: CreateLibraryRequest[]): LibraryType {
+  return (["movies", "shows", "videos"] as const).find((t) => !libraries.some((l) => l.type === t)) ?? "movies";
+}
+
 function LibrariesStep(props: { libraries: CreateLibraryRequest[]; onChange: (libraries: CreateLibraryRequest[]) => void }) {
   const { libraries, onChange } = props;
-  const [type, setType] = useState<LibraryType>(libraries.some((l) => l.type === "movies") ? "shows" : "movies");
-  const [name, setName] = useState(type === "movies" ? "Movies" : "Shows");
+  const [type, setType] = useState<LibraryType>(nextType(libraries));
+  const [name, setName] = useState(TYPE_NAMES[type]);
   const [nameEdited, setNameEdited] = useState(false);
   const [paths, setPaths] = useState<string[]>([]);
 
   function changeType(value: LibraryType) {
     setType(value);
-    if (!nameEdited) setName(value === "movies" ? "Movies" : "Shows");
+    if (!nameEdited) setName(TYPE_NAMES[value]);
   }
 
   function add() {
     if (!name.trim() || paths.length === 0) return;
-    onChange([...libraries, { name: name.trim(), type, paths }]);
+    const added = [...libraries, { name: name.trim(), type, paths }];
+    onChange(added);
     setPaths([]);
     setNameEdited(false);
-    const nextType = type === "movies" ? "shows" : "movies";
-    setType(nextType);
-    setName(nextType === "movies" ? "Movies" : "Shows");
+    setType(nextType(added));
+    setName(TYPE_NAMES[nextType(added)]);
   }
 
   return (
     <section className="cn-setup__section">
       <header className="cn-setup__header">
         <h1>Add your libraries</h1>
-        <p>Point Cinemion at the folders that hold your movies and shows. A library can use several folders.</p>
+        <p>Point Cinemion at the folders that hold your movies and shows, and any other videos, like home videos. A library can use several folders.</p>
       </header>
 
       {libraries.length > 0 && (
         <div className="cn-setup__added">
           {libraries.map((l, i) => (
             <div key={i} className="cn-setup__card">
-              {l.type === "shows" ? <Tv /> : <Clapperboard />}
+              <LibraryIcon type={l.type} />
               <div>
                 <strong>{l.name}</strong>
                 <span>{l.paths.join(", ")}</span>
@@ -255,7 +265,7 @@ function LibrariesStep(props: { libraries: CreateLibraryRequest[]; onChange: (li
 
       <div className="cn-setup__library">
         <div className="cn-setup__library-head">
-          <SegmentedControl<LibraryType> label="Library type" value={type} onChange={changeType} options={[{ value: "movies", label: "Movies" }, { value: "shows", label: "Shows" }]} />
+          <SegmentedControl<LibraryType> label="Library type" value={type} onChange={changeType} options={[{ value: "movies", label: "Movies" }, { value: "shows", label: "Shows" }, { value: "videos", label: "Videos" }]} />
           <TextField
             label="Name"
             value={name}

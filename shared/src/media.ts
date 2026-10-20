@@ -1,8 +1,20 @@
+import type { LibraryType } from "./api.ts";
+
 /**
- * Types for movies, shows, seasons and episodes, and the files behind them.
+ * Types for movies, shows, seasons, episodes, videos and their folders, and the files behind them.
  */
 
-export type ItemType = "movie" | "show" | "season" | "episode";
+/**
+ * `video` and `folder` live in Videos libraries: every file is a video, and the folders holding them are groups.
+ */
+export type ItemType = "movie" | "show" | "season" | "episode" | "video" | "folder";
+
+/**
+ * Whether items of this type play by themselves (rather than holding things that play).
+ */
+export function isPlayable(type: ItemType) {
+  return type === "movie" || type === "episode" || type === "video";
+}
 
 /**
  * How an item got its details.
@@ -82,7 +94,11 @@ export interface ItemSummary {
   matchStatus: MatchStatus;
   contentRating: string | null;
   /**
-   * Seasons of a show, or episodes of a season.
+   * `YYYY-MM-DD`. For videos, the day it was recorded.
+   */
+  releaseDate: string | null;
+  /**
+   * Seasons of a show, episodes of a season, or every video inside a folder (subfolders included).
    */
   childCount: number;
   seasonNumber: number | null;
@@ -172,7 +188,6 @@ export interface ItemDetail extends ItemSummary {
    * Length in minutes.
    */
   runtime: number | null;
-  releaseDate: string | null;
   rating: number | null;
   genres: string[];
   studios: string[];
@@ -181,6 +196,34 @@ export interface ItemDetail extends ItemSummary {
   credits: CreditInfo[];
   files: MediaFileInfo[];
   children: ItemSummary[];
+  /**
+   * The folders above a video or folder, outermost first. Empty for everything else.
+   */
+  folders: { id: number; title: string }[];
+  /**
+   * For videos and folders: whether details or the thumbnail were set by hand, so refreshing keeps them.
+   */
+  edited: { details: boolean; thumbnail: boolean };
+}
+
+/**
+ * Hand-made details for a video or folder. Folders only use `title` and `overview`.
+ */
+export interface EditDetailsRequest {
+  title: string;
+  /**
+   * `YYYY-MM-DD`, or `null` for none.
+   */
+  releaseDate: string | null;
+  overview: string | null;
+  /**
+   * Shown and filtered like genres.
+   */
+  tags: string[];
+  /**
+   * Like "PG" or "12". `null` = use the library's rating for unrated videos.
+   */
+  contentRating: string | null;
 }
 
 /**
@@ -250,6 +293,10 @@ export interface SearchResults {
    */
   titles: ItemSummary[];
   episodes: ItemSummary[];
+  /**
+   * Videos and folders from Videos libraries.
+   */
+  videos: ItemSummary[];
   people: PersonSummary[];
   collections: CollectionSummary[];
 }
@@ -263,7 +310,7 @@ export interface HomeData {
    * The next episode of shows you're in the middle of.
    */
   nextUp: ItemSummary[];
-  recentlyAdded: { libraryId: number; libraryName: string; items: ItemSummary[] }[];
+  recentlyAdded: { libraryId: number; libraryName: string; libraryType: LibraryType; items: ItemSummary[] }[];
   /**
    * Titles like the one you watched last. `null` until something has been watched.
    */

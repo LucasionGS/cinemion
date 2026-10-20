@@ -75,15 +75,16 @@ export namespace HomeController {
   }
 
   /**
-   * Newest movies, or shows ordered by their newest episode, per library.
+   * Newest movies or videos, or shows ordered by their newest episode, per library.
    */
   async function recentlyAdded(user: User) {
     const rows: HomeData["recentlyAdded"] = [];
     for (const library of await Library.findAll({ order: [["id", "ASC"]] })) {
       if (!Visibility.canSeeLibrary(user, library.id)) continue;
       let items: MediaItem[];
-      if (library.type === "movies") {
-        items = await MediaItem.findAll({ where: { [Op.and]: [Visibility.where(user), { libraryId: library.id, type: "movie" }] }, order: [["addedAt", "DESC"]], limit: ROW_SIZE });
+      if (library.type === "movies" || library.type === "videos") {
+        const type = library.type === "movies" ? "movie" : "video";
+        items = await MediaItem.findAll({ where: { [Op.and]: [Visibility.where(user), { libraryId: library.id, type }] }, order: [["addedAt", "DESC"]], limit: ROW_SIZE });
       }
       else {
         const episodes = await MediaItem.findAll({ where: { libraryId: library.id, type: "episode" }, order: [["addedAt", "DESC"]], limit: 300, attributes: ["parentId"] });
@@ -94,7 +95,7 @@ export namespace HomeController {
         const byId = new Map(shows.map((s) => [s.id, s]));
         items = order.map((id) => byId.get(id)).filter((s): s is MediaItem => !!s).slice(0, ROW_SIZE);
       }
-      if (items.length) rows.push({ libraryId: library.id, libraryName: library.name, items: await Summaries.build(items, user) });
+      if (items.length) rows.push({ libraryId: library.id, libraryName: library.name, libraryType: library.type, items: await Summaries.build(items, user) });
     }
     return rows;
   }

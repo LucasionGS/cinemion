@@ -67,14 +67,38 @@
     color: var(--cn-text-muted);
   }
 
-  &__title {
+  // Room for exactly two lines of the title at its normal size, with the title sitting at the bottom
+  &__title-box {
+    --cn-spotlight-line: 1.08;
+    display: flex;
+    align-items: flex-end;
+    font-family: var(--cn-font-display);
     font-size: 3.5rem;
-    line-height: 1;
+    height: calc(var(--cn-spotlight-line) * 2em);
+  }
+
+  &__title {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    font-size: 1em;
+    line-height: var(--cn-spotlight-line);
     letter-spacing: -0.035em;
+    // The last line's descenders (g, j, y) hang below the line box; keep them inside the clipping
+    padding-bottom: 0.08em;
+    margin-bottom: -0.08em;
+
+    &--long {
+      font-size: 0.8em;
+    }
   }
 
   &__facts {
     color: var(--cn-text-muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   &__buttons {
@@ -106,7 +130,7 @@
     mask-image: linear-gradient(180deg, #000 30%, transparent 100%);
   }
 
-  &__title {
+  &__title-box {
     font-size: 2.4rem;
   }
 
@@ -122,7 +146,7 @@
     height: 100vh;
   }
 
-  &__title {
+  &__title-box {
     font-size: 4rem;
   }
 }

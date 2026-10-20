@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import { literal, Op, type Order, type WhereOptions } from "sequelize";
-import type { CreateLibraryRequest, LibraryInfo } from "@shared/api.ts";
+import type { CreateLibraryRequest, LibraryInfo, UpdateLibraryRequest } from "@shared/api.ts";
 import type { ItemPage, SortOrder } from "@shared/media.ts";
 import { Library, MediaItem, User } from "../models/index.ts";
 import MediaRoots from "../lib/MediaRoots.ts";
@@ -9,6 +9,7 @@ import LibraryWatcher from "../library/LibraryWatcher.ts";
 import Tasks from "../lib/Tasks.ts";
 import Visibility from "../library/Visibility.ts";
 import Summaries from "../library/Summaries.ts";
+import VideoDetails from "../library/VideoDetails.ts";
 import CollectionsController from "./CollectionsController.ts";
 import { errorMessage, readJson } from "../lib/http.ts";
 import type { AppEnv } from "../lib/types.ts";
@@ -25,9 +26,21 @@ export namespace LibrariesController {
     return Visibility.canSeeLibrary(user, libraryId);
   }
 
-  async function info(library: Library, user: User): Promise<LibraryInfo> {
-    const itemCount = await MediaItem.count({ where: { [Op.and]: [Visibility.where(user), { libraryId: library.id, type: library.type === "movies" ? "movie" : "show" }] } });
-    return library.toInfo({ itemCount, scan: Tasks.get(Scanner.taskId(library.id)) });
+  /**
+   * The item type a library counts and lists: its movies, shows or videos.
+   */
+  function mainType(library: Library) {
+    return library.type === "movies" ? "movie" : library.type === "shows" ? "show" : "video";
+  }
+
+  /**
+   * @param all Every library, when the caller has them already; used to spot shared folders.
+   */
+  async function info(library: Library, user: User, all?: Library[]): Promise<LibraryInfo> {
+    const itemCount = await MediaItem.count({ where: { [Op.and]: [Visibility.where(user), { libraryId: library.id, type: mainType(library) }] } });
+    const others = (all ?? await Library.findAll()).filter((l) => l.id !== library.id);
+    const conflict = library.paths.map((p) => Library.overlapProblem(p, others)).find((p) => p !== null) ?? null;
+    return library.toInfo({ itemCount, scan: Tasks.get(Scanner.taskId(library.id)), conflict });
   }
 
   /**
@@ -38,8 +51,9 @@ export namespace LibrariesController {
    */
   router.get("/", User.$middleware(), async (c) => {
     const user = c.get("user")!;
-    const libraries = (await Library.findAll({ order: [["id", "ASC"]] })).filter((l) => canSee(user, l.id));
-    return c.json(await Promise.all(libraries.map((l) => info(l, user))));
+    const all = await Library.findAll({ order: [["id", "ASC"]] });
+    const libraries = all.filter((l) => canSee(user, l.id));
+    return c.json(await Promise.all(libraries.map((l) => info(l, user, all))));
   });
 
   /**
@@ -62,6 +76,62 @@ export namespace LibrariesController {
       await LibraryWatcher.refresh();
       Scanner.queue(library.id).catch(() => { });
       return c.json(await info(library, c.get("user")!), 201);
+    } catch (error) {
+      return c.json({ message: errorMessage(error) }, 400);
+    }
+  });
+
+  /**
+   * @swagger
+   * /api/libraries/{id}:
+   *   delete:
+   *     summary: Remove a library and everything Cinemion knows about it. The files on disk are not touched.
+   */
+  /**
+   * @swagger
+   * /api/libraries/{id}:
+   *   put:
+   *     summary: Rename a library, change its folders, or change a Videos library's rating for unrated videos. Body is an
+   *       `UpdateLibraryRequest`. New folders are checked like new libraries: allowed, and not in another library.
+   */
+  router.put("/:id", manage, async (c) => {
+    const library = await Library.findByPk(Number(c.req.param("id")));
+    if (!library) return c.json({ message: "That library doesn't exist." }, 404);
+    const body = await readJson<UpdateLibraryRequest>(c);
+    if (!body) return c.json({ message: "Nothing to change." }, 400);
+    try {
+      if (body.name !== undefined) {
+        const name = String(body.name).trim();
+        if (!name || name.length > 60) throw new Error("The library name must be between 1 and 60 characters long.");
+        library.name = name;
+      }
+      const ratingChanged = body.defaultRating !== undefined && library.type === "videos" && Library.verifyDefaultRating(body.defaultRating) !== library.defaultRating;
+      if (ratingChanged) library.defaultRating = Library.verifyDefaultRating(body.defaultRating);
+
+      let pathsChanged = false;
+      if (body.paths !== undefined) {
+        const paths = Library.verifyPaths(body.paths, library.name);
+        const others = (await Library.findAll()).filter((l) => l.id !== library.id);
+        for (const path of paths) {
+          if (!(await MediaRoots.resolveAllowed(path))) throw new Error(`The folder "${path}" isn't available. Only folders inside ${MediaRoots.roots().join(", ")} can be used.`);
+          const problem = Library.overlapProblem(path, others);
+          if (problem) throw new Error(problem);
+        }
+        pathsChanged = JSON.stringify(paths) !== JSON.stringify(library.paths);
+        library.paths = paths;
+      }
+
+      await library.save();
+      if (ratingChanged) await VideoDetails.applyDefaultRating(library);
+      if (pathsChanged) {
+        await LibraryWatcher.refresh();
+        // This library lets go of files in folders it no longer has; then the others can pick them up
+        Scanner.queue(library.id).catch(() => { });
+        for (const other of await Library.findAll()) {
+          if (other.id !== library.id) Scanner.queue(other.id).catch(() => { });
+        }
+      }
+      return c.json(await info(library, c.get("user")!));
     } catch (error) {
       return c.json({ message: errorMessage(error) }, 400);
     }
@@ -98,9 +168,9 @@ export namespace LibrariesController {
   /**
    * Conditions for "only titles with something left to watch" for `userId`.
    */
-  function unwatchedWhere(userId: number, type: "movie" | "show"): WhereOptions<MediaItem> {
+  function unwatchedWhere(userId: number, type: "movie" | "show" | "video"): WhereOptions<MediaItem> {
     const id = Number(userId);
-    if (type === "movie") {
+    if (type === "movie" || type === "video") {
       return { id: { [Op.notIn]: literal(`(SELECT itemId FROM watch_states WHERE userId = ${id} AND watched = 1)`) } };
     }
     // A show is done when every one of its episodes is watched
@@ -119,6 +189,7 @@ export namespace LibrariesController {
    * /api/libraries/{id}/items:
    *   get:
    *     summary: Movies or shows in a library, sorted, filtered and paged. Query `sort` (title, added, year, rating), `order` (asc, desc), `genre`, `unwatched` (1), `offset`, `limit`.
+   *       Videos libraries list the folders and videos at the top level (folders first), or every unwatched video with `unwatched`; `year` sorts by date.
    */
   router.get("/:id/items", User.$middleware(), async (c) => {
     const user = c.get("user")!;
@@ -126,19 +197,23 @@ export namespace LibrariesController {
     if (!library || !canSee(user, library.id)) return c.json({ message: "That library doesn't exist." }, 404);
 
     const sort = (c.req.query("sort") ?? "title") as SortOrder;
-    const columns: Record<SortOrder, string> = { title: "sortTitle", added: "addedAt", year: "year", rating: "rating" };
+    const isVideos = library.type === "videos";
+    const columns: Record<SortOrder, string> = { title: "sortTitle", added: "addedAt", year: isVideos ? "releaseDate" : "year", rating: "rating" };
     const column = columns[sort] ?? "sortTitle";
     const defaultDirection = sort === "title" ? "ASC" : "DESC";
     const direction = c.req.query("order") === "asc" ? "ASC" : c.req.query("order") === "desc" ? "DESC" : defaultDirection;
     const limit = Math.min(Math.max(parseInt(c.req.query("limit") ?? "60") || 60, 1), 500);
     const offset = Math.max(parseInt(c.req.query("offset") ?? "0") || 0, 0);
-    const order: Order = [[column, direction], ["sortTitle", "ASC"]];
-    const type = library.type === "movies" ? "movie" : "show";
-
-    const conditions: WhereOptions<MediaItem>[] = [Visibility.where(user), { libraryId: library.id, type }];
+    const unwatched = c.req.query("unwatched") === "1";
     const genre = c.req.query("genre");
+    const type = mainType(library);
+    // Folders stay together in front, like in a file manager; filtering looks at videos wherever they are
+    const flat = !isVideos || unwatched || !!genre;
+    const order: Order = isVideos && !flat ? [["type", "ASC"], [column, direction], ["sortTitle", "ASC"]] : [[column, direction], ["sortTitle", "ASC"]];
+
+    const conditions: WhereOptions<MediaItem>[] = [Visibility.where(user), flat ? { libraryId: library.id, type } : { libraryId: library.id, type: ["folder", "video"], parentId: null }];
     if (genre) conditions.push(MediaItem.genreCondition(genre));
-    if (c.req.query("unwatched") === "1") conditions.push(unwatchedWhere(user.id, type));
+    if (unwatched) conditions.push(unwatchedWhere(user.id, type));
 
     const { rows, count } = await MediaItem.findAndCountAll({ where: { [Op.and]: conditions }, order, limit, offset });
     const page: ItemPage = { items: await Summaries.build(rows, user), total: count };
@@ -155,7 +230,7 @@ export namespace LibrariesController {
     const user = c.get("user")!;
     const library = await Library.findByPk(Number(c.req.param("id")));
     if (!library || !canSee(user, library.id)) return c.json({ message: "That library doesn't exist." }, 404);
-    const items = await MediaItem.findAll({ where: { [Op.and]: [Visibility.where(user), { libraryId: library.id, type: library.type === "movies" ? "movie" : "show" }] }, attributes: ["id", "genres"] });
+    const items = await MediaItem.findAll({ where: { [Op.and]: [Visibility.where(user), { libraryId: library.id, type: mainType(library) }] }, attributes: ["id", "genres"] });
     const genres = [...new Set(items.flatMap((i) => i.genres))].sort((a, b) => a.localeCompare(b));
     return c.json(genres);
   });

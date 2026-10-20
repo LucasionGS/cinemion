@@ -1,5 +1,5 @@
 import { Menu } from "@base-ui/react/menu";
-import { Clapperboard, House, LayoutDashboard, LogOut, Popcorn, Search, Settings, Tv, Users } from "lucide-react";
+import { House, LayoutDashboard, LogOut, Popcorn, Search, Settings, Users } from "lucide-react";
 import type { LibraryInfo } from "@shared/api.ts";
 import { Link, router } from "../../lib/Router.tsx";
 import useController from "../../lib/useController.ts";
@@ -8,6 +8,7 @@ import cx from "../../lib/cx.ts";
 import { session } from "../../Session.ts";
 import Logo from "../Logo/Logo.tsx";
 import Avatar from "../Avatar/Avatar.tsx";
+import LibraryIcon from "../LibraryIcon/LibraryIcon.tsx";
 import "./TopBar.scss";
 
 export interface TopBarProps {
@@ -31,15 +32,15 @@ export default function TopBar(props: TopBarProps) {
 
   const items: NavItem[] = [
     { href: "/", label: "Home", icon: <House /> },
-    ...libraries.map((l) => ({ href: `/library/${l.id}`, label: l.name, icon: l.type === "shows" ? <Tv /> : <Clapperboard /> })),
+    ...libraries.map((l) => ({ href: `/library/${l.id}`, label: l.name, icon: <LibraryIcon type={l.type} /> })),
   ];
   const isActive = (href: string) => href === "/" ? path === "/" : path.startsWith(href);
 
   const searchItem: NavItem = { href: "/search", label: "Search", icon: <Search /> };
 
   if (mode === "mobile") {
-    // Room for four tabs: Home, up to two libraries, and Search
-    const tabs = [...items.slice(0, 3), searchItem];
+    // Room for five tabs: Home, up to three libraries, and Search
+    const tabs = [...items.slice(0, 4), searchItem];
     return (
       <>
         <header className="cn-topbar cn-topbar--mobile">
@@ -72,7 +73,7 @@ export default function TopBar(props: TopBarProps) {
         {mode === "desktop" && (
           <Link href="/search" className="cn-topbar__search">
             <Search aria-hidden="true" />
-            <span>Search movies and shows</span>
+            <span>{libraries.some((l) => l.type === "videos") ? "Search movies, shows and videos" : "Search movies and shows"}</span>
           </Link>
         )}
         {user && <ProfileMenu />}

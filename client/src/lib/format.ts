@@ -55,6 +55,15 @@ export function formatSpan(fromIso: string) {
 }
 
 /**
+ * "12 July 2024", from `YYYY-MM-DD`. With `short`, "12 Jul 2024".
+ */
+export function formatDate(date: string, short = false) {
+  const [y, m, d] = date.split("-").map(Number);
+  // Built from parts: new Date("2024-07-12") is midnight UTC, which is the day before in the Americas
+  return new Date(y, (m || 1) - 1, d || 1).toLocaleDateString(undefined, { day: "numeric", month: short ? "short" : "long", year: "numeric" });
+}
+
+/**
  * "34%", from 0 to 1.
  */
 export function formatPercent(value: number) {

@@ -11,6 +11,7 @@ import useController from "../../lib/useController.ts";
 import { toasts } from "../../lib/Toasts.ts";
 import AppShell from "../../components/AppShell/AppShell.tsx";
 import PosterCard from "../../components/PosterCard/PosterCard.tsx";
+import WideCard from "../../components/WideCard/WideCard.tsx";
 import FixMatchDialog from "../../components/FixMatchDialog/FixMatchDialog.tsx";
 import Select from "../../components/Select/Select.tsx";
 import SegmentedControl from "../../components/SegmentedControl/SegmentedControl.tsx";
@@ -26,12 +27,19 @@ const SORTS: { value: SortOrder; label: string }[] = [
   { value: "rating", label: "Rating" },
 ];
 
+// Videos have a recording date instead of a release year, and no ratings
+const VIDEO_SORTS: { value: SortOrder; label: string }[] = [
+  { value: "title", label: "Title" },
+  { value: "added", label: "Recently added" },
+  { value: "year", label: "Date" },
+];
+
 export interface LibraryProps {
   id: number;
 }
 
 /**
- * All movies or shows in one library, as a poster grid.
+ * All movies or shows in one library, as a poster grid. Videos libraries show their folders and videos as 16:9 cards.
  */
 export default function Library(props: LibraryProps) {
   const { id } = props;
@@ -48,6 +56,8 @@ export default function Library(props: LibraryProps) {
   const [fixing, setFixing] = useState<ItemSummary | null>(null);
   const sentinel = useRef<HTMLDivElement>(null);
   const canManage = session.can("LIBRARY_MANAGE");
+  const isVideos = library?.type === "videos";
+  const sorts = isVideos ? VIDEO_SORTS : SORTS;
 
   // Load the next page when the end of the grid comes into view
   useEffect(() => {
@@ -101,9 +111,15 @@ export default function Library(props: LibraryProps) {
                   ]}
                 />
                 {show !== "collections" && genres && genres.length > 0 && (
-                  <Select label="Genre" value={genre ?? ""} options={[{ value: "", label: "All genres" }, ...genres.map((g) => ({ value: g, label: g }))]} onChange={(e) => setGenre(e.target.value || null)} className="cn-library__select" />
+                  <Select
+                    label={isVideos ? "Tag" : "Genre"}
+                    value={genre ?? ""}
+                    options={[{ value: "", label: isVideos ? "All tags" : "All genres" }, ...genres.map((g) => ({ value: g, label: g }))]}
+                    onChange={(e) => setGenre(e.target.value || null)}
+                    className="cn-library__select"
+                  />
                 )}
-                {show !== "collections" && <Select label="Sort by" value={sort} options={SORTS} onChange={(e) => setSort(e.target.value as SortOrder)} className="cn-library__select" />}
+                {show !== "collections" && <Select label="Sort by" value={sorts.some((s) => s.value === sort) ? sort : "title"} options={sorts} onChange={(e) => setSort(e.target.value as SortOrder)} className="cn-library__select" />}
               </div>
             </header>
 
@@ -116,18 +132,24 @@ export default function Library(props: LibraryProps) {
             {show !== "collections" && items && items.length === 0 && !loading && (genre || show === "unwatched") && (
               <section className="cn-library__empty">
                 <h2>No matches</h2>
-                <p>{show === "unwatched" ? "You've seen everything here" : "Nothing in this genre"}{genre && show === "unwatched" ? " in this genre" : ""}.</p>
+                <p>{show === "unwatched" ? "You've seen everything here" : isVideos ? "Nothing with this tag" : "Nothing in this genre"}{genre && show === "unwatched" ? (isVideos ? " with this tag" : " in this genre") : ""}.</p>
               </section>
             )}
 
             {show !== "collections" && items && items.length === 0 && !loading && !genre && show !== "unwatched" && (
               <section className="cn-library__empty">
                 <h2>Nothing in here yet</h2>
-                <p>{library.scan ? "Cinemion is scanning this library right now. Titles appear as they're found." : `${library.type === "shows" ? "Shows" : "Movies"} from ${library.paths.join(", ")} appear here after a scan.`}</p>
+                <p>{library.scan ? "Cinemion is scanning this library right now. Titles appear as they're found." : `${{ movies: "Movies", shows: "Shows", videos: "Videos" }[library.type]} from ${library.paths.join(", ")} appear here after a scan.`}</p>
               </section>
             )}
 
-            {show !== "collections" && <div className="cn-library__grid">
+            {show !== "collections" && isVideos && (
+              <div className="cn-library__grid cn-library__grid--wide">
+                {items?.map((item) => <WideCard key={item.id} item={item} variant="video" />)}
+              </div>
+            )}
+
+            {show !== "collections" && !isVideos && <div className="cn-library__grid">
               {items?.map((item) => (
                 <PosterCard
                   key={item.id}
@@ -149,7 +171,9 @@ export default function Library(props: LibraryProps) {
 }
 
 function countLabel(library: LibraryInfo, total: number | null) {
-  const count = total ?? library.itemCount;
+  // A Videos library lists folders too; its count is always its videos
+  const count = library.type === "videos" ? library.itemCount : total ?? library.itemCount;
+  if (library.type === "videos") return `${count} ${count === 1 ? "video" : "videos"}`;
   if (library.type === "shows") return `${count} ${count === 1 ? "show" : "shows"}`;
   return `${count} ${count === 1 ? "movie" : "movies"}`;
 }

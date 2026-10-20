@@ -61,6 +61,14 @@ export class MediaItem extends Model<InferAttributes<MediaItem>, InferCreationAt
    * When metadata was last fetched. `null` = never, so the next scan fetches it.
    */
   declare metadataUpdatedAt: CreationOptional<Date | null>;
+  /**
+   * When a video's or folder's details were last edited by hand. `null` = never, so refreshing may set them.
+   */
+  declare editedAt: CreationOptional<Date | null>;
+  /**
+   * The thumbnail was uploaded or picked by hand, so refreshing keeps it.
+   */
+  declare customArtwork: CreationOptional<boolean>;
   declare addedAt: CreationOptional<Date>;
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
@@ -105,6 +113,7 @@ export class MediaItem extends Model<InferAttributes<MediaItem>, InferCreationAt
       palette: this.palette,
       matchStatus: this.matchStatus,
       contentRating: this.contentRating,
+      releaseDate: this.releaseDate,
       childCount: extra?.childCount ?? 0,
       seasonNumber: this.seasonNumber,
       episodeNumber: this.episodeNumber,
@@ -148,6 +157,8 @@ MediaItem.init({
   collectionId: { type: ID_TYPE, allowNull: true, defaultValue: null },
   ageRating: { type: DataTypes.INTEGER, allowNull: true, defaultValue: null },
   metadataUpdatedAt: { type: DataTypes.DATE, allowNull: true, defaultValue: null },
+  editedAt: { type: DataTypes.DATE, allowNull: true, defaultValue: null },
+  customArtwork: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
   addedAt: { type: DataTypes.DATE, allowNull: false, defaultValue: DataTypes.NOW },
   createdAt: DataTypes.DATE,
   updatedAt: DataTypes.DATE,

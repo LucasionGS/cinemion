@@ -154,7 +154,8 @@ export class PlayerController extends Controller {
     }, PlayerController.PING_EVERY_MS);
 
     this._setupMediaSession();
-    if (this.item.type === "episode") ItemsApi.next(this.item.id).then((n) => this.next = n).catch(() => { });
+    // Episodes lead to the next episode, videos to the next one in their folder
+    if (this.item.type === "episode" || this.item.type === "video") ItemsApi.next(this.item.id).then((n) => this.next = n).catch(() => { });
 
     // Start with what was picked on the title's page, or the file's defaults
     const choice = tracksFor(this.item.id);

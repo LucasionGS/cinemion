@@ -1,7 +1,7 @@
 # Cinemion handoff
 
 Everything an assistant needs to pick this project up with no earlier context. Read it fully before changing code.
-Last updated 2026-10-20, after milestone 6.
+Last updated 2026-10-20, after milestone 6 and Videos libraries.
 
 ## 1. What Cinemion is
 
@@ -85,8 +85,8 @@ deno task dev:client              # Vite on :5173
 deno task dev                     # API + app on http://localhost:8600
 ```
 
-Open `http://localhost:8600`, run the setup wizard (create an admin, add `data/media/movies` as a Movies library and
-`data/media/shows` as Shows, metadata source "Local"). There's no TMDB key on the old machine, so TMDB is untested;
+Open `http://localhost:8600`, run the setup wizard (create an admin, add `data/media/movies` as a Movies library,
+`data/media/shows` as Shows and `data/media/videos` as Videos, metadata source "Local"). There's no TMDB key on the old machine, so TMDB is untested;
 set one in Settings › Metadata or `TMDB_API_KEY`.
 
 ### Handy testing patterns used so far
@@ -119,10 +119,16 @@ set one in Settings › Metadata or `TMDB_API_KEY`.
   H.264 version and a 10-bit HEVC HDR10 version; Glass Harbor has AC3 5.1 audio, an ASS and a forced SRT subtitle;
   Paper Moons is an MP4 with two audio tracks, a mov_text subtitle and two subtitle files next to it (one Windows-1252);
   Home Movie Night is VP9/Opus WebM; the shows include HEVC episodes, a multi-episode file and a special.
+  `videos/` has nested folders (Holiday 2024 › Day 2) with recording times in the files, a `folder.jpg`, HEVC drone
+  clips with a picture next to one of them (used as its thumbnail), a WebM with an NFO ("Mira turns 8"), and a
+  "-trailer" file that a Videos library keeps. To add a Videos library through the API:
+  `POST /api/libraries {"name":"Home videos","type":"videos","paths":["<abs>/data/media/videos"],"defaultRating":"G"}`.
 
 ## 4. Architecture
 
-Deno workspace (`deno.json` at the root, members `shared`, `server`, `client`). Root tasks: `dev`, `dev:client`, `build`,
+Deno workspace (`deno.json` at the root, members `shared`, `server`, `client`).
+Library types: `movies`, `shows` and `videos`. Item types: movie, show → season → episode, and in Videos libraries
+folder (nested through `parentId`) and video; `isPlayable()` in `shared/src/media.ts` says which ones play. Root tasks: `dev`, `dev:client`, `build`,
 `start`, `migrate`, `cli`, `compile` (`scripts/compile.sh` → `dist/linux_x64/bin/cinemion`, ~123 MB with the client
 embedded), `check`, `lint`.
 
@@ -147,9 +153,12 @@ home, search), `playback.ts` (device capabilities, playback info, playback/subti
   Setting (JSON per key, `Setting.Keys`), Library, MediaItem (movie/show/season/episode), MediaFile (probe data,
   `sidecars`, `allSubtitles()`; subtitle files get track indexes from 10000), Person, Credit, WatchState, Collection,
   Activity (the dashboard feed, messages stored ready to show, kept 60 days), Webhook (URL, secret, events, last delivery).
+  Library has `defaultRating` (Videos libraries: the rating unrated videos count as); MediaItem has `editedAt` and
+  `customArtwork`, which keep hand-made details and thumbnails of videos and folders through refreshes.
   `models/index.ts` has associations. Primary keys are auto-increment integers.
 - `migrations/` (Umzug; listed by hand in `migrations/index.ts` so they compile into the binary): initial, media,
-  browsing, extras (`media_files.sidecars`), admin (`activities`, `webhooks`).
+  browsing, extras (`media_files.sidecars`), admin (`activities`, `webhooks`), videos (`libraries.defaultRating`,
+  `media_items.editedAt`, `media_items.customArtwork`).
 - `controllers/` (one namespace per resource exporting a Hono `router`, mounted in `ApiController.ts`): server, setup,
   auth, profiles, users, libraries, fs, items, images, settings, home, search, collections, people, playback, subtitles,
   together, admin (dashboard, activity, tasks, logs), integrations (Sonarr/Radarr receiver + path mappings), webhooks.
@@ -157,7 +166,12 @@ home, search), `playback.ts` (device capabilities, playback info, playback/subti
   report new titles; `queueFolders()` scans only some folders, debounced 5 s, for Sonarr/Radarr), LibraryWatcher
   (`Deno.watchFs`, 15 s debounce), ScanScheduler (interval setting, `upcoming()`), Sidecars (subtitle files), Visibility
   (library access + age limits), Summaries, ContentRatings, ItemLabels ("Saltwater Kings · S1 E3", show posters for
-  episodes, webhook item payloads).
+  episodes, webhook item payloads), VideoDetails (titles from file names, recording dates from `creation_time` or the
+  file date, `<name>.nfo` and pictures next to videos, `folder.jpg`/`cover.jpg`, automatic thumbnails with ffmpeg's
+  `thumbnail` filter a tenth of the way in, frames for the picker, uploads, folder summaries: newest date, lowest age
+  rating, thumbnail), FolderTree (folders and videos as a tree from parent ids, so no path `LIKE` queries).
+  In Videos libraries the scanner keeps extras, trailers and samples (only hidden files are skipped), makes one video
+  per file and a folder item per folder, and removes emptied folders bottom-up.
 - `metadata/`: MetadataProvider base, providers/LocalProvider (NFO + local artwork), providers/TmdbProvider,
   MetadataManager (priority merge, artwork, palettes, credits, collections, "Fix match"), Nfo.
 - `images/`: ImageCache (WebP variants via ffmpeg), Palette (ambient colours).
@@ -185,10 +199,12 @@ home, search), `playback.ts` (device capabilities, playback info, playback/subti
   (load every N ms while the tab is visible), clipboard (falls back to `execCommand` on plain-http LAN addresses).
 - `Api/`: BaseApi (token in `localStorage["cn-token"]`, sends `X-Cinemion-Device-Mode`), plus one namespace per
   resource (Server, Auth, Users, Libraries, Items, Settings, Playback, Subtitles, Admin, Integrations, Webhooks).
-- `components/`: buttons, fields, dialogs, avatar + editor, top bar, app shell, cards, rows, hero, item actions,
-  folder browser, fix-match dialog, and `Player/` (PlayerController, PlayerView, Scrubber, Thumbnail, TrackPanel,
+- `components/`: buttons, fields, dialogs, avatar + editor, top bar, app shell, cards (WideCard has a `video`
+  variant: length in the corner, folders as a stack with a count), rows, hero, item actions, folder browser, fix-match
+  dialog, EditDetailsDialog (videos and folders, with the thumbnail picker), LibraryIcon, and `Player/` (PlayerController, PlayerView, Scrubber, Thumbnail, TrackPanel,
   SubtitleSearchDialog, TogetherPanel, Player.scss).
-- `pages/`: Setup, Profiles, SignIn, Home, Library, Item, Search, Person, Collection, Player, Together, Settings
+- `pages/`: Setup, Profiles, SignIn, Home, Library (16:9 grid for Videos libraries), Item (also VideoView and
+  FolderView with the folder path), Search, Person, Collection, Player, Together, Settings
   (nav groups "You": Profile, Device; "Server": Dashboard, Libraries, Users, Playback, Metadata, Subtitles,
   Integrations, Webhooks, Tasks (badge with the running count), Logs; the server pages share `Admin.scss`).
   The top bar's profile menu has "Server dashboard" for people with `SERVER_MANAGE`.
@@ -210,6 +226,7 @@ and on amd64 Intel's non-free VA driver + Quick Sync runtime), `docker/entrypoin
 | 4 | done `8265cbe` | Playback: decision engine, direct play, remux, HLS conversion, GPU acceleration, HDR→SDR, remote limit, player for all layouts, track panel, resume, next-episode countdown, Settings › Playback |
 | 5 | done `e310344` | Seek thumbnails (scrubber + TV filmstrip), subtitle files next to videos, OpenSubtitles search/download, watch together, Settings › Subtitles |
 | 6 | done | Admin & integrations: dashboard, activity feed, tasks and logs pages, Sonarr/Radarr receiver with path mappings, outgoing webhooks (below) |
+| 6b | done | Videos libraries: folders as groups, no online lookups, Edit details, automatic thumbnails, per-library rating for unrated videos (Round 4 in `docs/design/decisions.md`) |
 | 7 | **next** | Distribution (below) |
 
 ### Milestone 6: what was built
@@ -281,6 +298,11 @@ optional uploaded pictures, watch together as a side panel.
 - **Deno's `fetch` errors say only "fetch failed"**; the reason ("Connection refused", a DNS error) is in
   `error.cause.message`. `Webhooks.ts` turns those into readable sentences.
 - A webhook test receiver must check the signature over the raw body, before any JSON parsing.
+- **A file can only be in one library** (`media_files.path` is unique). Overlapping libraries used to be allowed and
+  then failed every scan with a bare "Validation error". Now creating, editing and setup refuse folders that are the
+  same as, inside or around another library's (`Library.overlapProblem`). Scans skip files another library already
+  has, the library list shows a warning for overlaps made before the check, and Edit library can change folders.
+  `errorMessage()` adds the details Sequelize keeps in `error.errors` ("path must be unique").
 
 ## 8. Open items
 
@@ -298,4 +320,18 @@ optional uploaded pictures, watch together as a side panel.
   first poll shows "—". Storage uses `df -P`, so it shows "—" where `df` is missing (Windows).
 - Possible later additions: a full activity history page (the API already pages with `before`), stopping a stream from
   the dashboard, and pushing dashboard updates over a WebSocket instead of polling.
+- **Videos:** moving a video to another folder makes it a new video (like movies), so its hand-made details and
+  watch progress stay behind. Editing by hand isn't there for movies and shows (the owner chose videos only for now).
+  The phone tab bar has room for three libraries; a fourth is only reachable through the top bar on bigger screens.
+- **Photos are planned, but not yet** (the owner's words: later, not now). Keep types and shared code ready for them,
+  and don't build photo features until asked. Where they would plug in:
+  - Types: a `photos` `LibraryType` and a `photo` `ItemType`. Reuse the `folder` item type for albums.
+    `isPlayable()` must stay false for photos.
+  - `FolderTree` loads `folder` + `video` items; it would load `photo` too, and `videosUnder()` would become a general
+    "items under".
+  - Scanner: `walk()` only collects `NameParser.isVideo()` files, so photos need an image check. `assignVideos()` is
+    the model to copy, with EXIF dates instead of `creation_time`.
+  - Images go through `ImageCache`; originals stay on disk like videos do.
+  - `Visibility`, the per-library `defaultRating`, Edit details and the 16:9 grids already work per item, not per
+    media kind.
 - Ideas for later live in `docs/future-features.md`.
