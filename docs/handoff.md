@@ -249,6 +249,8 @@ Not planned in these rounds: **photos** (the owner wants them later; see section
 relay service on ionnet.io that doesn't exist yet). The owner asked for each milestone to be committed and pushed, and
 for the work to continue unattended; releases go out with `./set_version.sh` + a tag when a milestone is worth one.
 After milestone 13 the owner said to do up to and including 16 and leave 17–19 for now; don't start them until asked.
+**0.2.0 released** after milestone 16 (milestones 8–16): GitHub release with both binaries, `ghcr.io/lucasiongs/cinemion:0.2.0`
+(and `latest`), AUR `cinemion-bin` 0.2.0.
 
 ### Milestone 6: what was built
 Follows the Round 3 admin mockup (artboard `Admin.dc.html` in the Round 3 canvas): app top bar + left settings nav.
