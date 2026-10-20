@@ -61,7 +61,7 @@ cd "$WORK/cinemion-bin"
 cp "$ROOT/packaging/"{PKGBUILD,cinemion.service,cinemion.sysusers,cinemion.env} .
 
 echo "Filling in checksums for $VERSION..."
-updpkgsums > /dev/null
+updpkgsums > "$WORK/sums.log" 2>&1 || { printf_red "Couldn't download the release files:"; tail -5 "$WORK/sums.log" >&2; exit 1; }
 makepkg --printsrcinfo > .SRCINFO
 
 if [[ "$BUILD" == 1 ]]; then

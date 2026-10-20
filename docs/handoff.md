@@ -228,7 +228,23 @@ and on amd64 Intel's non-free VA driver + Quick Sync runtime), `docker/entrypoin
 | 5 | done `e310344` | Seek thumbnails (scrubber + TV filmstrip), subtitle files next to videos, OpenSubtitles search/download, watch together, Settings › Subtitles |
 | 6 | done | Admin & integrations: dashboard, activity feed, tasks and logs pages, Sonarr/Radarr receiver with path mappings, outgoing webhooks (below) |
 | 6b | done | Videos libraries: folders as groups, no online lookups, Edit details, automatic thumbnails, per-library rating for unrated videos (Round 4 in `docs/design/decisions.md`) |
-| 7 | done | Distribution: CLI in the binary, CI and Release workflows, GHCR image (amd64 + arm64), AUR `cinemion-bin` with a systemd unit, `set_version.sh`, README with screenshots, MediaHub preset |
+| 7 | done | Distribution: CLI in the binary, CI and Release workflows, GHCR image (amd64 + arm64), AUR `cinemion-bin` with a systemd unit, `set_version.sh`, README with screenshots, MediaHub preset. **0.1.0 released** (GitHub release, `ghcr.io/lucasiongs/cinemion:0.1.0`, AUR `cinemion-bin`) |
+| 8 | **next** | Playback extras: skip intro and credits (audio fingerprints across a season, plus chapter names), surround sound per device, subtitle styling |
+| 9 | planned | Automatic quality: adaptive HLS with several qualities at once |
+| 10 | planned | Watch together chat and reactions |
+| 11 | planned | Light theme |
+| 12 | planned | Music libraries: artists, albums, tracks, a mini-player that keeps playing, playlists, lyrics |
+| 13 | planned | Audiobooks and books: chapters, progress, sleep timer |
+| 14 | planned | More metadata (TVDB, OMDb ratings) and Trakt scrobbling |
+| 15 | planned | More subtitle sources and automatic subtitle downloads |
+| 16 | planned | Offline downloads |
+| 17 | planned | Casting to Chromecast / Google TV, and a lighter layout for old smart-TV browsers |
+| 18 | planned | Android TV app (WebView wrapper; the SDK is in `~/Android/Sdk` on this machine) |
+| 19 | planned | Live TV: IPTV playlists, a guide and recordings |
+
+Not planned in these rounds: **photos** (the owner wants them later; see section 8) and **built-in remote access** (needs a
+relay service on ionnet.io that doesn't exist yet). The owner asked for each milestone to be committed and pushed, and
+for the work to continue unattended; releases go out with `./set_version.sh` + a tag when a milestone is worth one.
 
 ### Milestone 6: what was built
 Follows the Round 3 admin mockup (artboard `Admin.dc.html` in the Round 3 canvas): app top bar + left settings nav.
