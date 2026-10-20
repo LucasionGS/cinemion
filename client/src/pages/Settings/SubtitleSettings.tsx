@@ -10,7 +10,7 @@ import Switch from "../../components/Switch/Switch.tsx";
 import Spinner from "../../components/Spinner/Spinner.tsx";
 
 /**
- * Where subtitle search looks, and where downloads go.
+ * Which subtitle sites are searched, which languages are wanted (and downloaded by themselves), and where downloads go.
  */
 export default function SubtitleSettings() {
   const [saved, setSaved] = useState<Settings | null>(null);
@@ -27,6 +27,7 @@ export default function SubtitleSettings() {
 
   if (!value) return <Spinner size="2rem" />;
   const changed = JSON.stringify(saved) !== JSON.stringify(value) || password !== "";
+  const anySite = !!value.openSubtitlesApiKey || !!value.subdlApiKey || value.podnapisiEnabled;
   const update = (patch: Partial<Settings>) => setValue({ ...value, ...patch });
 
   function toggleLanguage(code: string) {
@@ -54,13 +55,25 @@ export default function SubtitleSettings() {
       <header className="cn-settings__header">
         <div>
           <h1>Subtitles</h1>
-          <p>Search subtitles online from the player. Subtitle files next to your videos are picked up by themselves.</p>
+          <p>Search subtitles online from the player, or let Cinemion fetch them for new movies and episodes. Subtitle files next to your videos are picked up by themselves.</p>
         </div>
         <Button variant="primary" onClick={save} loading={saving} disabled={!changed || value.languages.length === 0}>Save changes</Button>
       </header>
 
       <section className="cn-settings__card">
-        <h2>OpenSubtitles</h2>
+        <h2>Automatic downloads</h2>
+        <Switch
+          label="Download subtitles by themselves"
+          description="Movies and episodes without subtitles in one of your languages get the best ones the sites have, preferring ones made for the exact file. What isn't found is looked for again after a day, three days, a week, and so on."
+          checked={value.autoDownload}
+          onChange={(autoDownload) => update({ autoDownload })}
+        />
+        {value.autoDownload && !anySite && <p className="cn-settings__row-text"><span>Turn on at least one subtitle site below for this to find anything.</span></p>}
+      </section>
+
+      <section className="cn-settings__card">
+        <h2>Subtitle sites</h2>
+        <h3 className="cn-settings__subheading">OpenSubtitles</h3>
         <p className="cn-settings__row-text">
           <span>
             Create a free account on <a href="https://www.opensubtitles.com" target="_blank" rel="noreferrer">opensubtitles.com</a>, then add an API consumer under your profile's API settings and paste its key here. Signing in is optional; it raises the number of downloads per day.
@@ -79,11 +92,24 @@ export default function SubtitleSettings() {
             autoComplete="new-password"
           />
         </div>
+        <div className="cn-settings__divider" />
+        <h3 className="cn-settings__subheading">SubDL</h3>
+        <p className="cn-settings__row-text">
+          <span>A free site with a big catalogue. Make an account on <a href="https://subdl.com" target="_blank" rel="noreferrer">subdl.com</a> and copy the API key from your account page.</span>
+        </p>
+        <TextField label="API key" value={value.subdlApiKey ?? ""} onChange={(e) => update({ subdlApiKey: e.target.value })} autoComplete="off" spellCheck={false} />
+        <div className="cn-settings__divider" />
+        <Switch
+          label="Podnapisi"
+          description="Search podnapisi.net too. It needs no account; its subtitles are found by title, so their timing may be a little off."
+          checked={value.podnapisiEnabled}
+          onChange={(podnapisiEnabled) => update({ podnapisiEnabled })}
+        />
       </section>
 
       <section className="cn-settings__card">
         <h2>Languages</h2>
-        <p className="cn-settings__row-text"><span>Offered first when searching.</span></p>
+        <p className="cn-settings__row-text"><span>Offered first when searching, and the ones downloaded by themselves.</span></p>
         <div className="cn-playback__chips">
           {LANGUAGES.map((l) => {
             const on = value.languages.includes(l.code);

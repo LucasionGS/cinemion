@@ -4,8 +4,7 @@ import { findLanguage, languageName } from "@shared/languages.ts";
 import { MediaFile, MediaItem, User } from "../models/index.ts";
 import Visibility from "../library/Visibility.ts";
 import SubtitleManager from "../subtitles/SubtitleManager.ts";
-import ItemLabels from "../library/ItemLabels.ts";
-import Events from "../integrations/Events.ts";
+import SubtitleAutomation from "../subtitles/SubtitleAutomation.ts";
 import { errorMessage, readJson } from "../lib/http.ts";
 import type { AppEnv } from "../lib/types.ts";
 
@@ -56,8 +55,13 @@ export namespace SubtitlesController {
       openSubtitlesPassword: body.openSubtitlesPassword === undefined || body.openSubtitlesPassword === null ? current.openSubtitlesPassword : (body.openSubtitlesPassword || null),
       languages: languages.map((l) => findLanguage(l)!.code),
       saveNextToVideo: body.saveNextToVideo ?? current.saveNextToVideo,
+      podnapisiEnabled: body.podnapisiEnabled ?? current.podnapisiEnabled,
+      subdlApiKey: clean(body.subdlApiKey, current.subdlApiKey),
+      autoDownload: body.autoDownload ?? current.autoDownload,
     };
     await SubtitleManager.saveSettings(next);
+    // Turned on: look for what's missing now rather than at the next daily run
+    if (next.autoDownload && !current.autoDownload) SubtitleAutomation.queue().catch(() => { });
     return c.json(await SubtitleManager.publicSettings());
   });
 
@@ -86,18 +90,6 @@ export namespace SubtitlesController {
     }
   });
 
-  async function reportDownload(user: User, file: MediaFile, language: string) {
-    const item = file.itemId ? await MediaItem.findByPk(file.itemId) : null;
-    if (!item) return;
-    const label = await ItemLabels.describe(item);
-    Events.emit("subtitles.downloaded", { user: { id: user.id, name: user.name }, item: await ItemLabels.forWebhook(item, label.show), language }, {
-      kind: "subtitles",
-      message: `Subtitles downloaded for ${label.inline} (${language})`,
-      userId: user.id,
-      itemId: item.id,
-    });
-  }
-
   /**
    * @swagger
    * /api/subtitles/download:
@@ -118,7 +110,8 @@ export namespace SubtitlesController {
         language: language?.code ?? "und",
         isHearingImpaired: !!body.isHearingImpaired,
       });
-      reportDownload(c.get("user")!, file, languageName(language?.code ?? null) ?? "unknown language");
+      const user = c.get("user")!;
+      SubtitleManager.report(file, languageName(language?.code ?? null) ?? "unknown language", { id: user.id, name: user.name }).catch(() => { });
       return c.json(track);
     } catch (error) {
       return c.json({ message: errorMessage(error) }, 502);

@@ -47,6 +47,13 @@ export namespace AdminApi {
   }
 
   /**
+   * Look for missing subtitles in every movie and episode now.
+   */
+  export function subtitles() {
+    return BaseApi.POST<TaskInfo[]>("/admin/tasks/subtitles");
+  }
+
+  /**
    * Server log lines, oldest first. With `after`, only lines newer than that id.
    */
   export function logs(after = 0) {

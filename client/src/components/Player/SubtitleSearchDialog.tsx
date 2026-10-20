@@ -36,6 +36,8 @@ function startLanguage() {
   return findLanguage(navigator.language)?.code ?? findLanguage(navigator.language.split("-")[0])?.code ?? "en";
 }
 
+const SITE_NAMES: Record<string, string> = { opensubtitles: "OpenSubtitles", subdl: "SubDL", podnapisi: "Podnapisi" };
+
 /**
  * Search subtitle sites for the playing file and use a result straight away.
  */
@@ -123,7 +125,7 @@ export default function SubtitleSearchDialog(props: SubtitleSearchDialogProps) {
                 <span className="cn-subtitle-search__meta">
                   {r.matchesFile && <span className="cn-subtitle-search__tag cn-subtitle-search__tag--match">Matches your file</span>}
                   {r.isHearingImpaired && <span className="cn-subtitle-search__tag">SDH</span>}
-                  <span>{[`${r.downloads.toLocaleString()} downloads`, r.rating ? `★ ${r.rating}` : null, ...r.notes].filter(Boolean).join(" · ")}</span>
+                  <span>{[SITE_NAMES[r.provider] ?? r.provider, r.downloads ? `${r.downloads.toLocaleString()} downloads` : null, r.rating ? `★ ${r.rating}` : null, ...r.notes].filter(Boolean).join(" · ")}</span>
                 </span>
               </div>
               {used.includes(r.id)
@@ -136,7 +138,7 @@ export default function SubtitleSearchDialog(props: SubtitleSearchDialogProps) {
             </div>
           ))}
         </div>
-        <p className={cx("cn-subtitle-search__footer")}>Results from OpenSubtitles. Downloads are saved next to the video, so they're there next time.</p>
+        <p className={cx("cn-subtitle-search__footer")}>Results from the subtitle sites set up in Settings › Subtitles. Downloads are kept with the video, so they're there next time.</p>
       </div>
     </Dialog>
   );

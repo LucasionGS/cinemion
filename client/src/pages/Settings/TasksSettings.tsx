@@ -83,6 +83,9 @@ export default function TasksSettings() {
         <ActionRow title="Find intros and credits again" text="Compare every season's episodes and read chapters again, for Skip intro and starting the next episode early. New episodes are looked at by themselves." label="Find again" loading={busy === "markers"}
           onClick={() => start("markers", () => AdminApi.markers(true), "Looking for intros and credits")} />
         <div className="cn-settings__divider" />
+        <ActionRow title="Download missing subtitles" text="Look for subtitles in your languages for every movie and episode that has none, even ones searched lately. With automatic downloads on, this also happens once a day." label="Look now" loading={busy === "subtitles"}
+          onClick={() => start("subtitles", () => AdminApi.subtitles(), "Looking for missing subtitles")} />
+        <div className="cn-settings__divider" />
         <ActionRow title="Remake all seek thumbnails" text="Delete every seek thumbnail and make them again, one video at a time." label="Remake" loading={busy === "remake"}
           onClick={() => setConfirmRemake(true)} />
       </section>

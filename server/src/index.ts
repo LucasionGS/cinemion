@@ -8,6 +8,7 @@ import ScanScheduler from "./library/ScanScheduler.ts";
 import TranscodeSession from "./media/TranscodeSession.ts";
 import WatchTogether from "./together/WatchTogether.ts";
 import ActivePlayback from "./media/ActivePlayback.ts";
+import SubtitleAutomation from "./subtitles/SubtitleAutomation.ts";
 import { Activity } from "./models/index.ts";
 import log from "./lib/Logger.ts";
 
@@ -56,10 +57,14 @@ const server = Deno.serve({
 await LibraryWatcher.refresh();
 ScanScheduler.start();
 
-// The activity feed keeps a couple of months
-const pruneActivity = () => Activity.prune().catch((error) => log.warn("Could not clean up old activity", { error }));
-pruneActivity();
-const pruneTimer = setInterval(pruneActivity, 24 * 60 * 60 * 1000);
+// Once a day: the activity feed keeps a couple of months, and missing subtitles are looked for again
+const daily = () => {
+  Activity.prune().catch((error) => log.warn("Could not clean up old activity", { error }));
+  SubtitleAutomation.queue().catch(() => { });
+};
+// The first run waits for startup scans to settle
+const firstDaily = setTimeout(daily, 10 * 60 * 1000);
+const dailyTimer = setInterval(daily, 24 * 60 * 60 * 1000);
 
 for (const signal of ["SIGINT", "SIGTERM"] as const) {
   Deno.addSignalListener(signal, async () => {
@@ -67,7 +72,8 @@ for (const signal of ["SIGINT", "SIGTERM"] as const) {
     ScanScheduler.stop();
     LibraryWatcher.stop();
     ActivePlayback.shutdown();
-    clearInterval(pruneTimer);
+    clearTimeout(firstDaily);
+    clearInterval(dailyTimer);
     await TranscodeSession.shutdown();
     WatchTogether.shutdown();
     await server.shutdown();

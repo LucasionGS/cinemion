@@ -13,6 +13,7 @@ import VideoDetails from "./VideoDetails.ts";
 import MusicLibrary from "../music/MusicLibrary.ts";
 import MusicTags from "../music/MusicTags.ts";
 import BookLibrary from "../books/BookLibrary.ts";
+import SubtitleAutomation from "../subtitles/SubtitleAutomation.ts";
 import Events from "../integrations/Events.ts";
 import Tasks from "../lib/Tasks.ts";
 import { forEachLimit } from "../lib/async.ts";
@@ -230,7 +231,8 @@ export namespace Scanner {
         await MediaFile.create({ libraryId: library.id, path: file.path, size: file.size, mtime: file.mtime });
       }
       else if (Number(existing.size) !== file.size || Number(existing.mtime) !== file.mtime) {
-        await existing.update({ size: file.size, mtime: file.mtime, probedAt: null, markersVersion: 0 });
+        // A changed file may have different subtitles, so automatic searches start over too
+        await existing.update({ size: file.size, mtime: file.mtime, probedAt: null, markersVersion: 0, subtitleSearches: null });
       }
     }
 
@@ -293,6 +295,7 @@ export namespace Scanner {
       Markers.queueLibrary(library.id);
     }
     await reportAdded(library, added, firstScan).catch((error) => log.warn("Could not report new titles", { error }));
+    if (added.length && (library.type === "movies" || library.type === "shows")) SubtitleAutomation.queue({ libraryId: library.id }).catch(() => { });
     const seconds = Math.round((Date.now() - started) / 100) / 10;
     if (scope) {
       log.info(`Scanned changed folders in "${library.name}"`, { folders: scope, files: found.length, removed: removed.length, added: added.length, seconds });

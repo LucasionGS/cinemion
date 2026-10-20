@@ -307,6 +307,18 @@ export interface SubtitleSettings {
    * Save downloads next to the video file. When the folder is read-only (or this is off), they go to the config folder.
    */
   saveNextToVideo: boolean;
+  /**
+   * Search podnapisi.net, which needs no key.
+   */
+  podnapisiEnabled: boolean;
+  /**
+   * SubDL API key (free, from subdl.com). `null` = not set up.
+   */
+  subdlApiKey: string | null;
+  /**
+   * Download subtitles by themselves, in `languages`, for movies and episodes that have none in that language.
+   */
+  autoDownload: boolean;
 }
 
 export interface SubtitleSearchResult {

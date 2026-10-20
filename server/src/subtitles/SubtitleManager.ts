@@ -3,8 +3,12 @@ import Path from "node:path";
 import type { SubtitleSearchResult, SubtitleSettings } from "@shared/playback.ts";
 import { Setting, type MediaFile, MediaItem } from "../models/index.ts";
 import Sidecars from "../library/Sidecars.ts";
+import ItemLabels from "../library/ItemLabels.ts";
+import Events from "../integrations/Events.ts";
 import type SubtitleProvider from "./SubtitleProvider.ts";
 import OpenSubtitlesProvider from "./providers/OpenSubtitlesProvider.ts";
+import PodnapisiProvider from "./providers/PodnapisiProvider.ts";
+import SubdlProvider from "./providers/SubdlProvider.ts";
 import log from "../lib/Logger.ts";
 
 /**
@@ -17,9 +21,13 @@ export namespace SubtitleManager {
     openSubtitlesPassword: null,
     languages: ["en"],
     saveNextToVideo: true,
+    podnapisiEnabled: true,
+    subdlApiKey: Deno.env.get("SUBDL_API_KEY") || null,
+    autoDownload: false,
   };
 
-  const _providers: SubtitleProvider[] = [new OpenSubtitlesProvider()];
+  // Searched in this order; OpenSubtitles first, since it knows which subtitles fit the exact file
+  const _providers: SubtitleProvider[] = [new OpenSubtitlesProvider(), new SubdlProvider(), new PodnapisiProvider()];
 
   export function provider(id: string) {
     return _providers.find((p) => p.id === id) ?? null;
@@ -30,7 +38,12 @@ export namespace SubtitleManager {
    */
   export async function settings(): Promise<SubtitleSettings> {
     const saved = await Setting.get<Partial<SubtitleSettings>>(Setting.Keys.SUBTITLES, {});
-    return { ...DEFAULT_SETTINGS, ...saved, openSubtitlesApiKey: saved.openSubtitlesApiKey ?? DEFAULT_SETTINGS.openSubtitlesApiKey };
+    return {
+      ...DEFAULT_SETTINGS,
+      ...saved,
+      openSubtitlesApiKey: saved.openSubtitlesApiKey ?? DEFAULT_SETTINGS.openSubtitlesApiKey,
+      subdlApiKey: saved.subdlApiKey ?? DEFAULT_SETTINGS.subdlApiKey,
+    };
   }
 
   /**
@@ -51,6 +64,13 @@ export namespace SubtitleManager {
   export async function isAvailable() {
     const s = await settings();
     return _providers.some((p) => p.isConfigured(s));
+  }
+
+  /**
+   * The providers set up for searching, in search order.
+   */
+  export function configured(s: SubtitleSettings) {
+    return _providers.filter((p) => p.isConfigured(s));
   }
 
   /**
@@ -89,9 +109,29 @@ export namespace SubtitleManager {
    */
   export async function search(file: MediaFile, opts: { language: string; query?: string; hearingImpaired: SubtitleProvider.Query["hearingImpaired"] }): Promise<SubtitleSearchResult[]> {
     const s = await settings();
-    const providers = _providers.filter((p) => p.isConfigured(s));
-    if (providers.length === 0) throw new Error("Subtitle search isn't set up yet. An admin can add an OpenSubtitles API key in Settings › Subtitles.");
+    const providers = configured(s);
+    if (providers.length === 0) throw new Error("Subtitle search isn't set up yet. An admin can turn on a subtitle site in Settings › Subtitles.");
+    const query = await queryFor(file, opts);
 
+    const results: SubtitleSearchResult[] = [];
+    const errors: Error[] = [];
+    for (const p of providers) {
+      try {
+        results.push(...await p.search(query, s));
+      } catch (error) {
+        log.warn(`Subtitle search on ${p.name} failed`, { error });
+        errors.push(error as Error);
+      }
+    }
+    if (results.length === 0 && errors.length > 0) throw errors[0];
+    return results;
+  }
+
+  /**
+   * What to search for: the movie or episode the file plays, with its ids and the file's hash.
+   * @throws When the file isn't sorted into a movie or episode.
+   */
+  export async function queryFor(file: MediaFile, opts: { language: string; query?: string; hearingImpaired: SubtitleProvider.Query["hearingImpaired"] }): Promise<SubtitleProvider.Query> {
     const item = file.itemId ? await MediaItem.findByPk(file.itemId) : null;
     if (!item) throw new Error("This file isn't matched to a movie or episode yet.");
     const show = item.type === "episode" && item.parentId ? await MediaItem.findByPk((await MediaItem.findByPk(item.parentId))?.parentId ?? -1) : null;
@@ -114,19 +154,22 @@ export namespace SubtitleManager {
       byteSize: hash?.size ?? null,
       hearingImpaired: opts.hearingImpaired,
     };
+    return query;
+  }
 
-    const results: SubtitleSearchResult[] = [];
-    const errors: Error[] = [];
-    for (const p of providers) {
-      try {
-        results.push(...await p.search(query, s));
-      } catch (error) {
-        log.warn(`Subtitle search on ${p.name} failed`, { error });
-        errors.push(error as Error);
-      }
-    }
-    if (results.length === 0 && errors.length > 0) throw errors[0];
-    return results;
+  /**
+   * Tell webhooks about a download, and add it to the activity feed unless `activity` is false (automatic runs add
+   * one line for all of theirs).
+   * @param user Who downloaded it, or `null` when it was automatic.
+   * @param language The language's name, like "English".
+   */
+  export async function report(file: MediaFile, language: string, user: { id: number; name: string } | null, activity = true) {
+    const item = file.itemId ? await MediaItem.findByPk(file.itemId) : null;
+    if (!item) return;
+    const label = await ItemLabels.describe(item);
+    Events.emit("subtitles.downloaded", { user, item: await ItemLabels.forWebhook(item, label.show), language, automatic: !user }, activity
+      ? { kind: "subtitles", message: `Subtitles downloaded for ${label.inline} (${language})`, userId: user?.id ?? null, itemId: item.id }
+      : undefined);
   }
 
   /**
@@ -155,7 +198,8 @@ export namespace SubtitleManager {
     const p = provider(result.provider);
     if (!p) throw new Error(`Unknown subtitle provider "${result.provider}".`);
     const s = await settings();
-    const { content, format } = await p.download(result.id, s);
+    const item = file.itemId ? await MediaItem.findByPk(file.itemId, { attributes: ["seasonNumber", "episodeNumber"] }) : null;
+    const { content, format } = await p.download(result.id, s, { season: item?.seasonNumber ?? null, number: item?.episodeNumber ?? null });
     if (content.length === 0) throw new Error("The downloaded subtitle file is empty.");
 
     const folder = await targetFolder(file, s.saveNextToVideo);

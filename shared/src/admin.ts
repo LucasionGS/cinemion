@@ -314,7 +314,10 @@ export interface WebhookPayloads {
   "library.scanned": { library: { id: number; name: string }; added: number; removed: number };
   "user.signedIn": { user: WebhookUser; device: string; isRemote: boolean };
   "together.started": { host: WebhookUser; item: WebhookItem; code: string };
-  "subtitles.downloaded": { user: WebhookUser; item: WebhookItem; language: string };
+  /**
+   * `user` is `null` for automatic downloads.
+   */
+  "subtitles.downloaded": { user: WebhookUser | null; item: WebhookItem; language: string; automatic: boolean };
 }
 
 export interface PlaybackEventData {

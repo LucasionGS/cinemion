@@ -488,3 +488,9 @@ button.cn-settings__badge {
     color: var(--cn-text-muted);
   }
 }
+
+// A smaller heading for parts of a card, like each subtitle site
+.cn-settings__subheading {
+  font-size: 1rem;
+  font-weight: 700;
+}

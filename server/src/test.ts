@@ -16,6 +16,10 @@ import Epub from "./books/Epub.ts";
 import Omdb from "./metadata/Omdb.ts";
 import TvdbProvider from "./metadata/providers/TvdbProvider.ts";
 import MetadataManager from "./metadata/MetadataManager.ts";
+import SubtitleProvider from "./subtitles/SubtitleProvider.ts";
+import SubtitleAutomation from "./subtitles/SubtitleAutomation.ts";
+import { zipSync } from "fflate";
+import type { SubtitleSearchResult } from "@shared/playback.ts";
 import type MediaFile from "./models/MediaFile.ts";
 import { parseLrc } from "@shared/music.ts";
 
@@ -294,6 +298,35 @@ check("omdb without ratings", Omdb.parse({ imdbRating: "N/A", imdbVotes: "N/A", 
 check("tvdb language codes", ["en", "nl", "de", "fr", "ja"].map(TvdbProvider.languageCode), ["eng", "nld", "deu", "fra", "jpn"]);
 check("older settings get new sources", MetadataManager.normalizeSettings({ tmdbApiKey: "k", providers: ["tmdb", "local"] }).providers, ["tmdb", "local", "tvdb"]);
 check("unknown sources are dropped", MetadataManager.normalizeSettings({ providers: ["gone", "local"] }).providers, ["local", "tmdb", "tvdb"]);
+//#endregion
+
+//#region Subtitle sources
+console.log("Subtitle sources");
+const encoded = (t: string) => new TextEncoder().encode(t);
+const seasonPack = zipSync({ "Show.S01E01.srt": encoded("one"), "Show.S01E02.srt": encoded("two"), "Show.S01E10.srt": encoded("ten"), "info.nfo": encoded("x") });
+const unzipText = (episode?: { season: number | null; number: number | null }) => new TextDecoder().decode(SubtitleProvider.fromZip(seasonPack, episode).content);
+check("season pack picks the episode", [unzipText({ season: 1, number: 2 }), unzipText({ season: 1, number: 10 })], ["two", "ten"]);
+let missingEpisode = "";
+try {
+  unzipText({ season: 1, number: 3 });
+} catch (error) {
+  missingEpisode = (error as Error).message;
+}
+check("season pack without the episode", missingEpisode, "The season pack has no subtitle file for this episode.");
+check("single file zip", new TextDecoder().decode(SubtitleProvider.fromZip(zipSync({ "Movie.en.srt": encoded("movie") }), { season: 1, number: 3 }).content), "movie");
+const searched = (attempts: number, daysAgo: number, found = false) => ({ subtitleSearches: { en: { at: Date.now() - daysAgo * 86_400_000, attempts, found } } }) as unknown as MediaFile;
+check("retry waits longer each time", [SubtitleAutomation.isDue(searched(1, 0.5), "en"), SubtitleAutomation.isDue(searched(1, 1.5), "en"), SubtitleAutomation.isDue(searched(3, 5), "en"), SubtitleAutomation.isDue(searched(3, 8), "en")], [false, true, false, true]);
+check("found or given up isn't searched", [SubtitleAutomation.isDue(searched(1, 99, true), "en"), SubtitleAutomation.isDue(searched(7, 999), "en"), SubtitleAutomation.isDue({ subtitleSearches: null } as unknown as MediaFile, "en")], [false, false, true]);
+const result = (provider: string, extra: Partial<SubtitleSearchResult>): SubtitleSearchResult => ({ provider, id: provider + JSON.stringify(extra), name: "", language: "en", isHearingImpaired: false, matchesFile: false, downloads: 0, rating: null, uploadedAt: null, notes: [], ...extra });
+const ranked = SubtitleAutomation.rank([
+  result("podnapisi", { downloads: 900 }),
+  result("subdl", { isHearingImpaired: true }),
+  result("opensubtitles", { notes: ["Translated by AI"], matchesFile: true }),
+  result("subdl", { language: "nl" }),
+  result("opensubtitles", { matchesFile: true }),
+  result("subdl", {}),
+], "en", ["opensubtitles", "subdl", "podnapisi"]);
+check("automatic pick order", ranked.map((r) => [r.provider, r.matchesFile, r.isHearingImpaired]), [["opensubtitles", true, false], ["subdl", false, false], ["podnapisi", false, false], ["subdl", false, true]]);
 //#endregion
 
 console.log(failed ? `\n${failed} failed` : "\nAll passed");

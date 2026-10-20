@@ -11,6 +11,8 @@ import ActivePlayback from "../media/ActivePlayback.ts";
 import Trickplay from "../media/Trickplay.ts";
 import Markers from "../media/Markers.ts";
 import SystemStats from "../lib/SystemStats.ts";
+import SubtitleManager from "../subtitles/SubtitleManager.ts";
+import SubtitleAutomation from "../subtitles/SubtitleAutomation.ts";
 import Tasks from "../lib/Tasks.ts";
 import { readJson } from "../lib/http.ts";
 import log from "../lib/Logger.ts";
@@ -152,6 +154,18 @@ export namespace AdminController {
   router.post("/tasks/markers", async (c) => {
     const body = await readJson<{ redo: boolean }>(c);
     for (const library of await Library.findAll()) Markers.queueLibrary(library.id, { redo: !!body?.redo });
+    return c.json(Tasks.list());
+  });
+
+  /**
+   * @swagger
+   * /api/admin/tasks/subtitles:
+   *   post:
+   *     summary: Look for missing subtitles now in every movie and episode, even ones searched lately.
+   */
+  router.post("/tasks/subtitles", async (c) => {
+    if (!await SubtitleManager.isAvailable()) return c.json({ message: "No subtitle site is set up. Turn one on in Settings › Subtitles." }, 400);
+    SubtitleAutomation.queue({ force: true }).catch(() => { });
     return c.json(Tasks.list());
   });
 

@@ -66,6 +66,11 @@ export class MediaFile extends Model<InferAttributes<MediaFile>, InferCreationAt
    */
   declare chapters: CreationOptional<MediaFile.Chapter[] | null>;
   /**
+   * Automatic subtitle searches per language (ISO 639-1): when the last one was, and how many there were. `null` =
+   * never searched.
+   */
+  declare subtitleSearches: CreationOptional<Record<string, MediaFile.SubtitleSearch> | null>;
+  /**
    * When ffprobe last read the file. `null` = not read yet.
    */
   declare probedAt: CreationOptional<Date | null>;
@@ -123,6 +128,15 @@ export class MediaFile extends Model<InferAttributes<MediaFile>, InferCreationAt
 }
 
 export namespace MediaFile {
+  export interface SubtitleSearch {
+    /**
+     * When it was last searched, in ms since the epoch.
+     */
+    at: number;
+    attempts: number;
+    found: boolean;
+  }
+
   export interface Chapter {
     title: string | null;
     start: number;
@@ -169,6 +183,7 @@ MediaFile.init({
   markersVersion: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 },
   tags: jsonColumn<Record<string, string> | null, MediaFile>("tags", null, true),
   chapters: jsonColumn<MediaFile.Chapter[] | null, MediaFile>("chapters", null, true),
+  subtitleSearches: jsonColumn<Record<string, MediaFile.SubtitleSearch> | null, MediaFile>("subtitleSearches", null, true),
   probedAt: { type: DataTypes.DATE, allowNull: true, defaultValue: null },
   createdAt: DataTypes.DATE,
   updatedAt: DataTypes.DATE,

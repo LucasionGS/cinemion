@@ -239,8 +239,8 @@ and on amd64 Intel's non-free VA driver + Quick Sync runtime), `docker/entrypoin
 | 12 | done | Music libraries: artists, albums, tracks, a mini-player that keeps playing, playlists, lyrics (below) |
 | 13 | done | Audiobooks and books: chapters, progress, sleep timer (below) |
 | 14 | done | More metadata (TVDB, OMDb ratings) and Trakt scrobbling (below) |
-| 15 | **next** | More subtitle sources and automatic subtitle downloads |
-| 16 | planned | Offline downloads |
+| 15 | done | More subtitle sources and automatic subtitle downloads (below) |
+| 16 | **next** | Offline downloads |
 | 17 | planned | Casting to Chromecast / Google TV, and a lighter layout for old smart-TV browsers |
 | 18 | planned | Android TV app (WebView wrapper; the SDK is in `~/Android/Sdk` on this machine) |
 | 19 | planned | Live TV: IPTV playlists, a guide and recordings |
@@ -456,6 +456,26 @@ Follows the Round 3 admin mockup (artboard `Admin.dc.html` in the Round 3 canvas
 - **Testing**: no real keys were available. `TVDB_API_URL`, `OMDB_API_URL` and `TRAKT_API_URL` point the server at
   a mock instead (the scratch `mocks.ts` served all three), the same way `OPENSUBTITLES_API_URL` did.
 
+### Milestone 15: what was built
+- **Sources** (`subtitles/providers/`): SubDL (API key, searches by IMDb/TMDB id or title, `languages=EN,BR_PT`,
+  season packs marked "Whole-season pack") and Podnapisi (no key, on by default; the XML `search/old` API that
+  subliminal and Bazarr use, `sL`/`sK`/`sY`/`sTS`/`sTE`; `n` in `flags` = hearing impaired). Both download zips;
+  `SubtitleProvider.fromZip()` takes the episode's file out of a season pack (S01E02 or 1x02 in the name) and
+  refuses a pack without one. `download()` now gets the episode. Search order: OpenSubtitles, SubDL, Podnapisi.
+  Settings `podnapisiEnabled`, `subdlApiKey` (env `SUBDL_API_KEY`); test URLs `PODNAPISI_URL`, `SUBDL_API_URL`,
+  `SUBDL_DOWNLOAD_URL`.
+- **Automatic downloads** (`subtitles/SubtitleAutomation.ts`, setting `autoDownload`, languages = the subtitle
+  languages): movies and episodes (not videos) without a non-forced track in a language get the best result
+  (`rank()`: made for the file, not SDH, provider order, downloads; AI translations and foreign-parts-only are never
+  picked, nor results in another language). Runs after a scan that added files (only never-searched files), once a
+  day (first ten minutes after startup), when the setting is turned on, and from Tasks › "Download missing
+  subtitles" (everything, ignoring waits). `media_files.subtitleSearches` (migration
+  `20261030090000-subtitle-searches`) keeps per-language `{ at, attempts, found }`; a miss waits 1, 3, 7, 14, 30,
+  30 days, then stops; a changed file starts over. A provider that reports a daily limit is skipped for the rest of
+  the run. Downloads go through `SubtitleManager.download()` like manual ones; `SubtitleManager.report()` sends the
+  webhook (`subtitles.downloaded` now has `user: null` and `automatic: true` for these) and one activity line for
+  runs with more than five.
+
 ## 6. Design decisions
 
 All picks are in `docs/design/decisions.md`, with links to the three mockup artifacts on claude.ai (owner's account).
@@ -503,6 +523,8 @@ optional uploaded pictures, watch together as a side panel.
 
 ## 8. Open items
 
+- **SubDL and Podnapisi are only tested against a mock** written from what their APIs return (Podnapisi's XML fields,
+  SubDL's `subtitles[]`); worth a real run.
 - **OpenSubtitles needs a real API key** (free at opensubtitles.com, "API consumers"); set it in Settings › Subtitles
   or `OPENSUBTITLES_API_KEY`. Only tested against a local mock so far.
 - **TMDB is untested** (no key). **TheTVDB, OMDb and Trakt** are only tested against a mock written from their API
