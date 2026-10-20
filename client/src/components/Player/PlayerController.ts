@@ -71,6 +71,10 @@ export class PlayerController extends Controller {
    * Subtitles are drawn with their own styling (ASS), so the plain subtitle text is hidden.
    */
   public styled = false;
+  /**
+   * With automatic quality, the height of the quality playing now. `null` otherwise.
+   */
+  public currentHeight: number | null = null;
 
   private _video: HTMLVideoElement | null = null;
   private _hls: Hls | null = null;
@@ -266,6 +270,7 @@ export class PlayerController extends Controller {
     if (previous?.sessionId) PlaybackApi.stop(previous.sessionId);
 
     this.info = info;
+    this.currentHeight = null;
     this.duration = info.duration || this.duration;
     this.trickplay = info.trickplay;
     if (!this.trickplay) this._waitForTrickplay(info.streamBase, 0);
@@ -307,6 +312,11 @@ export class PlayerController extends Controller {
     });
     this._hls = hls;
     hls.on(Hls.Events.MANIFEST_PARSED, () => this._resume());
+    // Automatic quality: remember which of the qualities the player picked for the connection
+    hls.on(Hls.Events.LEVEL_SWITCHED, (_event, data) => {
+      this.currentHeight = info.video.ladder ? hls.levels[data.level]?.height ?? null : null;
+      this.notify();
+    });
     hls.on(Hls.Events.ERROR, (_event, data) => {
       if (!data.fatal) return;
       if (data.type === Hls.ErrorTypes.MEDIA_ERROR && !this._recovering) {

@@ -230,8 +230,8 @@ and on amd64 Intel's non-free VA driver + Quick Sync runtime), `docker/entrypoin
 | 6b | done | Videos libraries: folders as groups, no online lookups, Edit details, automatic thumbnails, per-library rating for unrated videos (Round 4 in `docs/design/decisions.md`) |
 | 7 | done | Distribution: CLI in the binary, CI and Release workflows, GHCR image (amd64 + arm64), AUR `cinemion-bin` with a systemd unit, `set_version.sh`, README with screenshots, MediaHub preset. **0.1.0 released** (GitHub release, `ghcr.io/lucasiongs/cinemion:0.1.0`, AUR `cinemion-bin`) |
 | 8 | done | Playback extras: skip intro and credits (audio fingerprints across a season, plus chapter names), surround sound per device, subtitle styling per profile, ASS subtitles drawn with their own styling (below) |
-| 9 | **next** | Automatic quality: adaptive HLS with several qualities at once |
-| 10 | planned | Watch together chat and reactions |
+| 9 | done | Automatic quality: adaptive HLS with several qualities at once (below) |
+| 10 | **next** | Watch together chat and reactions |
 | 11 | planned | Light theme |
 | 12 | planned | Music libraries: artists, albums, tracks, a mini-player that keeps playing, playlists, lyrics |
 | 13 | planned | Audiobooks and books: chapters, progress, sleep timer |
@@ -322,6 +322,22 @@ Follows the Round 3 admin mockup (artboard `Admin.dc.html` in the Round 3 canvas
   them once into `CACHE_DIR/fonts`), `timeOffset` = the stream's start, so conversions starting mid-file stay in sync.
   The profile switch "Keep the look of styled subtitles" turns it off. The server serves `.wasm` as `application/wasm`.
 
+### Milestone 9: what was built
+- **Automatic quality** (`QualityPreset` "auto"): `PlaybackDecider.ladderFor()` picks up to three rungs from `LADDER`
+  (1080p 8 Mb/s, 720p 4, 480p 1.5, 360p 0.8) no taller than the source, dropping rungs over the remote bitrate cap.
+  `Decision.video.ladder` and `PlaybackInfo.video.ladder` list them.
+- **One ffmpeg, several outputs**: shared filters (tone mapping, burned-in picture subtitles) run once, then `split`
+  feeds one scale chain per rung (`-filter_complex`), each with its own `-b:v:N`/`-maxrate:v:N`; the audio is mapped
+  once per rung. `-var_stream_map` + `-master_pl_name index.m3u8` write `v0/`, `v1/`… (`stream.m3u8`, `init_N.mp4`,
+  `segNNNNN.m4s`); keyframes are forced every 4 s on every rung so hls.js can switch at any segment. Routes:
+  `/session/:id/:variant{v[0-9]}/:file`.
+- **Conversion limit**: an automatic session counts once per rung (`TranscodeSession.weight()`). With less room the
+  server keeps the best rung and the smallest. A start that replaces a stream (same `playbackId`, like picking another
+  quality) doesn't count the old conversion and stops it once the new one runs, or a 3-rung ladder would be refused
+  next to the conversion it replaces.
+- **Player**: hls.js ABR picks the rung; `PlayerController.currentHeight` follows `LEVEL_SWITCHED`, shown on the stream
+  badge ("720p · Auto") and in the Quality tab ("Now 720p"). The dashboard shows "H.264 720p / 480p / 360p".
+
 ## 6. Design decisions
 
 All picks are in `docs/design/decisions.md`, with links to the three mockup artifacts on claude.ai (owner's account).
@@ -331,6 +347,9 @@ movie page, episode cards, full-width player control bar, TV filmstrip scrubbing
 optional uploaded pictures, watch together as a side panel.
 
 ## 7. Things learned the hard way
+
+- **CDP network throttling ends when its connection closes.** Throttle and watch from the same connection.
+  The sample videos are 90 s long, so the player finishing and going back can look like a bug in long tests.
 
 - **Copying video into HLS starts at a keyframe.** `TranscodeSession.copyStart` finds the keyframe before the requested
   time and aims `-ss` a little past it (MKV seeks by decode time, so the exact keyframe time can land one keyframe early).

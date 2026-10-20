@@ -11,7 +11,6 @@ Planned, but not part of the first version. Roughly in the order they're likely 
 
 ## Playback
 
-- **Automatic quality**: convert to several qualities at once and let the player switch between them as the connection changes, instead of picking one by hand.
 - **Watch together chat and reactions**: a small chat and emoji reactions in the watch together panel.
 - **More subtitle sources**: providers besides OpenSubtitles, and automatic downloads for new videos in chosen languages.
 - **Offline downloads**: download (converted) copies to phones and laptops for watching without a connection, with progress synced back.

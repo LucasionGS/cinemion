@@ -26,7 +26,18 @@ export interface DeviceCapabilities {
 /**
  * Quality the viewer picked. `original` plays the file as-is when the device can.
  */
-export type QualityPreset = "original" | "1080p" | "720p" | "480p";
+export type QualityPreset = "original" | "auto" | "1080p" | "720p" | "480p";
+
+/**
+ * One of the qualities an automatic conversion makes at the same time.
+ */
+export interface QualityRung {
+  height: number;
+  /**
+   * Unit is in bits per second.
+   */
+  bitrate: number;
+}
 
 export interface StartPlaybackRequest {
   /**
@@ -163,6 +174,11 @@ export interface PlaybackInfo {
      * Unit is in bits per second.
      */
     bitrate: number | null;
+    /**
+     * With automatic quality, every quality being made, best first. The player switches between them by itself.
+     * `null` for a single quality.
+     */
+    ladder: QualityRung[] | null;
   };
   audioStream: { codec: string; source: string; action: "copy" | "convert"; channels: number } | null;
   /**

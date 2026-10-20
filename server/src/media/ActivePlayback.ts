@@ -85,7 +85,9 @@ export namespace ActivePlayback {
       parts.push([name(video.source), resolution(file.height), hdrName(file.hdr)].filter(Boolean).join(" "));
     }
     else {
-      const target = [`${name(video.source)} → ${name(video.codec)}`, resolution(video.height ?? file.height)].filter(Boolean).join(" ");
+      // With automatic quality, every quality being made: "H.264 720p / 480p / 360p"
+      const size = video.ladder ? video.ladder.map((r) => resolution(r.height)).join(" / ") : resolution(video.height ?? file.height);
+      const target = [`${name(video.source)} → ${name(video.codec)}`, size].filter(Boolean).join(" ");
       parts.push(`${target}${hardware !== "none" ? ` with ${HARDWARE_NAMES[hardware]}` : ""}${video.toneMap ? ", HDR to SDR" : ""}`);
     }
 
@@ -102,6 +104,7 @@ export namespace ActivePlayback {
     else if (mode === "remux") label = "Repackaged";
     else if (video.action === "copy") label = "Converting audio";
     else label = hardware !== "none" ? "Converting on the GPU" : "Converting";
+    if (video.ladder && video.ladder.length > 1) label += ", automatic quality";
 
     const audioBitrate = audio?.action === "convert" ? (audio.channels > 2 ? 384_000 : 192_000) : 0;
     const bitrate = video.action === "convert" && video.bitrate ? video.bitrate + audioBitrate : file.bitrate;
@@ -202,6 +205,10 @@ export namespace ActivePlayback {
       emit(update.paused ? "playback.paused" : "playback.resumed", entry);
     }
     return true;
+  }
+
+  export function get(id: string) {
+    return _entries.get(id) ?? null;
   }
 
   export function end(id: string) {

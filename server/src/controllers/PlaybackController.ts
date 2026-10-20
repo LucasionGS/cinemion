@@ -1,5 +1,5 @@
 import fsp from "node:fs/promises";
-import { Hono } from "hono";
+import { type Context, Hono } from "hono";
 import { encodeHex } from "@std/encoding/hex";
 import type { AudioOption, DeviceCapabilities, HardwareAcceleration as Kind, PlaybackInfo, PlaybackSettings, StartPlaybackRequest, SubtitleOption, TrickplayInfo } from "@shared/playback.ts";
 import { type AudioTrack, isPlayable, type SubtitleTrack } from "@shared/media.ts";
@@ -124,7 +124,7 @@ export namespace PlaybackController {
 
     const files = await MediaFile.findAll({ where: { itemId: item.id } });
     if (files.length === 0) return c.json({ message: "This title has no video file. It may have been moved or deleted." }, 404);
-    const quality = body.quality && ["original", ...Object.keys(PlaybackDecider.QUALITY)].includes(body.quality) ? body.quality : "original";
+    const quality = body.quality && ["original", "auto", ...Object.keys(PlaybackDecider.QUALITY)].includes(body.quality) ? body.quality : "original";
     const settings = await HardwareAcceleration.settings();
     const isRemote = Network.isRemote(c);
     const request: PlaybackDecider.Request = {
@@ -144,6 +144,9 @@ export namespace PlaybackController {
       return c.json({ message: "The video file can't be found on disk. Check that the media folder is mounted, then scan the library again." }, 404);
     }
     const decision = PlaybackDecider.decide(file.toInfo(), request, settings);
+    // Picking another quality or track replaces this viewer's stream, so its conversion doesn't count against the new one
+    const previous = typeof body.playbackId === "string" ? ActivePlayback.get(body.playbackId) : null;
+    const replacing = previous?.userId === user.id ? previous.sessionId : null;
 
     if (decision.mode === "transcode") {
       if (!await user.hasPermission("TRANSCODE_ALLOW")) {
@@ -152,8 +155,14 @@ export namespace PlaybackController {
       if (isRemote && !settings.allowRemoteConversion && decision.video.action === "convert") {
         return c.json({ message: "This file has to be converted for this device, and the server doesn't convert videos for viewers outside the home network." }, 403);
       }
-      if (decision.video.action === "convert" && TranscodeSession.conversions() >= settings.maxConversions) {
+      const free = settings.maxConversions - TranscodeSession.conversions(replacing);
+      if (decision.video.action === "convert" && free < 1) {
         return c.json({ message: `The server is already converting ${settings.maxConversions} videos. Try again when one of them stops, or pick Original quality on a device that can play the file.` }, 503);
+      }
+      // Every automatic quality counts as a conversion; when there's less room, keep the best and the smallest
+      const ladder = decision.video.ladder;
+      if (ladder && ladder.length > free) {
+        decision.video.ladder = free === 1 ? [ladder[0]] : [...ladder.slice(0, free - 1), ladder[ladder.length - 1]];
       }
     }
 
@@ -169,6 +178,7 @@ export namespace PlaybackController {
         const session = await TranscodeSession.create({ userId: user.id, itemId: item.id, fileId: file.id, input: file.path, decision, startAt, settings });
         url = `/api/playback/session/${session.id}/index.m3u8`;
         sessionId = session.id;
+        if (replacing) await TranscodeSession.stop(replacing);
         startOffset = session.startOffset;
         hardware = session.hardware;
       } catch (error) {
@@ -214,6 +224,7 @@ export namespace PlaybackController {
         height: decision.video.height ?? file.height,
         hdr: decision.video.toneMap ? null : file.hdr,
         bitrate: decision.video.action === "convert" ? decision.video.bitrate : file.bitrate,
+        ladder: decision.video.ladder,
       },
       audioStream: decision.audio ? { codec: decision.audio.codec, source: file.audio.find((a) => a.index === decision.audio!.index)?.codec ?? "unknown", action: decision.audio.action, channels: decision.audio.channels } : null,
       isRemote,
@@ -283,7 +294,14 @@ export namespace PlaybackController {
     const session = TranscodeSession.get(c.req.param("id"));
     if (!session) return c.json({ message: "That playback session has ended." }, 404);
     session.touch();
-    const path = session.filePath(c.req.param("file"));
+    return await sendStreamFile(c, session, c.req.param("file"));
+  });
+
+  /**
+   * Answer with a playlist or segment of a session, waiting a moment for a segment that's still being made.
+   */
+  async function sendStreamFile(c: Context<AppEnv>, session: TranscodeSession, name: string) {
+    const path = session.filePath(name);
     if (!path) return c.json({ message: "That isn't part of the stream." }, 404);
 
     // A segment that's still being made is usually only a moment away
@@ -297,9 +315,22 @@ export namespace PlaybackController {
 
     const type = path.endsWith(".m3u8") ? "application/vnd.apple.mpegurl" : "video/mp4";
     return c.body(data, 200, { "Content-Type": type, "Cache-Control": path.endsWith(".m3u8") ? "no-cache" : "private, max-age=3600" });
-  });
+  }
 
   const VIDEO_TYPES: Record<string, string> = { mp4: "video/mp4", m4v: "video/mp4", mov: "video/mp4", webm: "video/webm" };
+
+  /**
+   * @swagger
+   * /api/playback/session/{id}/{quality}/{file}:
+   *   get:
+   *     summary: One quality's playlist and segments, with automatic quality (`v0` is the best).
+   */
+  router.get("/session/:id/:variant{v[0-9]}/:file", async (c) => {
+    const session = TranscodeSession.get(c.req.param("id"));
+    if (!session) return c.json({ message: "That playback session has ended." }, 404);
+    session.touch();
+    return await sendStreamFile(c, session, `${c.req.param("variant")}/${c.req.param("file")}`);
+  });
 
   /**
    * @swagger

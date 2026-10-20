@@ -1,5 +1,5 @@
 import type { MediaFileInfo } from "@shared/media.ts";
-import type { DeviceCapabilities, PlaybackMode, PlaybackSettings, QualityPreset } from "@shared/playback.ts";
+import type { DeviceCapabilities, PlaybackMode, PlaybackSettings, QualityPreset, QualityRung } from "@shared/playback.ts";
 
 /**
  * Picks the cheapest way to play a file on a device: the file as-is, repackaged, or converted.
@@ -44,16 +44,40 @@ export namespace PlaybackDecider {
        * Image subtitle stream to draw into the video.
        */
       burnSubtitle: number | null;
+      /**
+       * Automatic quality: every quality to make at once, best first. `null` for a single quality.
+       */
+      ladder: QualityRung[] | null;
     };
     audio: { index: number; codec: string; action: "copy" | "convert"; channels: number } | null;
     reasons: string[];
   }
 
-  export const QUALITY: Record<Exclude<QualityPreset, "original">, { height: number; bitrate: number }> = {
+  export const QUALITY: Record<Exclude<QualityPreset, "original" | "auto">, { height: number; bitrate: number }> = {
     "1080p": { height: 1080, bitrate: 8_000_000 },
     "720p": { height: 720, bitrate: 4_000_000 },
     "480p": { height: 480, bitrate: 1_500_000 },
   };
+
+  // Rungs automatic quality picks from, best first. Three at most, since every rung is a conversion of its own.
+  const LADDER: QualityRung[] = [
+    { height: 1080, bitrate: 8_000_000 },
+    { height: 720, bitrate: 4_000_000 },
+    { height: 480, bitrate: 1_500_000 },
+    { height: 360, bitrate: 800_000 },
+  ];
+  const LADDER_RUNGS = 3;
+
+  /**
+   * The qualities automatic quality makes for a video `sourceHeight` lines high: the source size (up to 1080p) and
+   * the steps below it, leaving out rungs over `maxBitrate` but always keeping the smallest.
+   */
+  export function ladderFor(sourceHeight: number, maxBitrate: number | null): QualityRung[] {
+    const fits = LADDER.filter((r) => r.height <= sourceHeight * 1.05);
+    const rungs = (fits.length ? fits : [LADDER[LADDER.length - 1]]).slice(0, LADDER_RUNGS);
+    const allowed = maxBitrate === null ? rungs : rungs.filter((r) => r.bitrate <= maxBitrate);
+    return allowed.length ? allowed : [rungs[rungs.length - 1]];
+  }
 
   // What fMP4 HLS segments can carry without converting
   const HLS_VIDEO = new Set(["h264", "hevc", "av1", "vp9"]);
@@ -129,7 +153,7 @@ export namespace PlaybackDecider {
 
     let maxHeight: number | null = null;
     let maxBitrate: number | null = null;
-    if (request.quality !== "original") {
+    if (request.quality !== "original" && request.quality !== "auto") {
       maxHeight = QUALITY[request.quality].height;
       maxBitrate = QUALITY[request.quality].bitrate;
     }
@@ -139,12 +163,15 @@ export namespace PlaybackDecider {
       maxHeight = Math.min(maxHeight ?? Infinity, heightForBitrate(remoteCap));
     }
 
+    const auto = request.quality === "auto";
     const convertReasons: string[] = [];
+    if (auto) convertReasons.push("Automatic quality: converted to several qualities at once, so the player can switch as the connection changes.");
     if (!caps.videoCodecs.includes(sourceCodec) || !HLS_VIDEO.has(sourceCodec)) convertReasons.push(`This device can't play ${codecName(sourceCodec)} video, so it's converted to H.264.`);
     if (burnSubtitle !== null) convertReasons.push(`${subtitle!.codec === "hdmv_pgs_subtitle" ? "PGS" : "Picture"} subtitles are drawn into the video.`);
     if (toneMap) convertReasons.push("HDR is converted to SDR for this screen.");
-    if (maxHeight !== null && sourceHeight > maxHeight * 1.05) convertReasons.push(`Scaled down to ${maxHeight}p.`);
-    else if (maxBitrate !== null && sourceBitrate !== null && sourceBitrate > maxBitrate * 1.1) {
+    // With automatic quality, the ladder takes care of size and bitrate
+    if (!auto && maxHeight !== null && sourceHeight > maxHeight * 1.05) convertReasons.push(`Scaled down to ${maxHeight}p.`);
+    else if (!auto && maxBitrate !== null && sourceBitrate !== null && sourceBitrate > maxBitrate * 1.1) {
       convertReasons.push(remoteCap !== null && remoteCap === maxBitrate
         ? `Limited to ${mbps(maxBitrate)} for viewers outside the home network.`
         : `Limited to ${mbps(maxBitrate)}.`);
@@ -153,7 +180,13 @@ export namespace PlaybackDecider {
     const convert = convertReasons.length > 0;
     let height: number | null = null;
     let bitrate: number | null = null;
-    if (convert) {
+    const ladder = auto ? ladderFor(sourceHeight, remoteCap) : null;
+    if (ladder) {
+      height = ladder[0].height;
+      bitrate = ladder[0].bitrate;
+      reasons.unshift(...convertReasons);
+    }
+    else if (convert) {
       height = maxHeight !== null && sourceHeight > maxHeight ? maxHeight : null;
       const outHeight = height ?? sourceHeight;
       // Newer codecs pack the same picture into fewer bits than H.264
@@ -165,7 +198,7 @@ export namespace PlaybackDecider {
     }
     //#endregion
 
-    const video: Decision["video"] = { source: sourceCodec, codec: convert ? "h264" : sourceCodec, action: convert ? "convert" : "copy", height, bitrate, toneMap: convert && toneMap, burnSubtitle };
+    const video: Decision["video"] = { source: sourceCodec, codec: convert ? "h264" : sourceCodec, action: convert ? "convert" : "copy", height, bitrate, toneMap: convert && toneMap, burnSubtitle, ladder };
 
     // Browsers only play the first audio track of a file, so another track needs HLS
     const firstAudio = file.audio.find((a) => a.isDefault) ?? file.audio[0] ?? null;

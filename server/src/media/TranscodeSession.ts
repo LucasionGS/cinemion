@@ -49,6 +49,20 @@ export class TranscodeSession {
     return this.decision.video.action === "convert";
   }
 
+  /**
+   * How many video conversions this session runs at once: one per quality with automatic quality.
+   */
+  public weight() {
+    return this.isConverting() ? this.decision.video.ladder?.length ?? 1 : 0;
+  }
+
+  /**
+   * The playlist whose first segment means the stream can start: the best quality's, with automatic quality.
+   */
+  public get firstPlaylist() {
+    return Path.join(this.dir, this.decision.video.ladder ? "v0/stream.m3u8" : "index.m3u8");
+  }
+
   public touch() {
     this.lastAccess = Date.now();
   }
@@ -105,7 +119,7 @@ export class TranscodeSession {
       // Read through a method; the process can change the status while this waits
       const status = this._currentStatus();
       if (status === "stopped") throw new Error("Playback was stopped.");
-      const playlist = await fsp.readFile(Path.join(this.dir, "index.m3u8"), "utf8").catch(() => "");
+      const playlist = await fsp.readFile(this.firstPlaylist, "utf8").catch(() => "");
       if (playlist.includes("#EXTINF")) return;
       if (status === "failed" || (status === "finished" && !playlist)) {
         throw new Error(`ffmpeg couldn't convert the video: ${this._stderr.at(-1) ?? "no details"}`);
@@ -156,10 +170,11 @@ export class TranscodeSession {
   }
 
   /**
-   * Path of a stream file, or `null` for names that aren't part of an HLS stream.
+   * Path of a stream file, or `null` for names that aren't part of an HLS stream. With automatic quality, each
+   * quality's files are in a folder of its own: `v0/stream.m3u8`, `v0/init_0.mp4`, `v0/seg00000.m4s`.
    */
   public filePath(name: string) {
-    if (!/^(index\.m3u8|init\.mp4|seg\d{5}\.m4s)$/.test(name)) return null;
+    if (!/^(index\.m3u8|init\.mp4|seg\d{5}\.m4s|v\d\/(stream\.m3u8|init_\d\.mp4|seg\d{5}\.m4s))$/.test(name)) return null;
     return Path.join(this.dir, name);
   }
 }
@@ -187,10 +202,11 @@ export namespace TranscodeSession {
   }
 
   /**
-   * Number of running sessions that convert video.
+   * Number of video conversions running. An automatic quality session counts once per quality.
+   * @param except A session left out, like one that's about to be replaced.
    */
-  export function conversions() {
-    return list().filter((s) => s.isConverting()).length;
+  export function conversions(except?: string | null) {
+    return list().reduce((sum, s) => s.id === except ? sum : sum + s.weight(), 0);
   }
 
   /**
@@ -316,6 +332,9 @@ export namespace TranscodeSession {
     const { video, audio } = session.decision;
     const args = ["-hide_banner", "-loglevel", "error", "-nostats"];
     const output: string[] = [];
+    // One output per quality with automatic quality; one otherwise
+    const rungs = video.ladder ?? [{ height: video.height ?? 0, bitrate: video.bitrate ?? 8_000_000 }];
+    const ladder = !!video.ladder;
 
     if (video.action === "copy") {
       args.push("-ss", String(session.seekTo), "-i", session.input);
@@ -323,7 +342,7 @@ export namespace TranscodeSession {
       if (video.codec === "hevc") output.push("-tag:v", "hvc1");
     }
     else {
-      const gpu = gpuDecode && canDecodeOnGpu(session.decision, kind, settings) ? gpuFilters(kind, video.height) : null;
+      const gpu = gpuDecode && canDecodeOnGpu(session.decision, kind, settings);
 
       args.push(...HardwareAcceleration.deviceArgs(kind, settings.device));
       if (gpu) {
@@ -332,38 +351,45 @@ export namespace TranscodeSession {
       }
       args.push("-ss", String(session.startOffset), "-i", session.input);
 
-      let filters: string[];
-      if (gpu) {
-        filters = gpu;
+      // Filters for the whole picture first (subtitles drawn in, HDR to SDR), then per quality: the size and the
+      // upload to the GPU encoder
+      const shared: string[] = [];
+      if (!gpu && video.toneMap) {
+        shared.push("zscale=t=linear:npl=100", "format=gbrpf32le", "zscale=p=bt709", "tonemap=tonemap=hable:desat=0", "zscale=t=bt709:m=bt709:r=tv");
+      }
+      const sizeFilters = (height: number | null) => gpu
+        ? gpuFilters(kind, height)
+        : [...(height ? [`scale=-2:${height}`] : []), ...HardwareAcceleration.uploadFilters(kind)];
+      // An empty chain isn't allowed between labels; "null" passes frames through untouched
+      const chain = (filters: string[]) => filters.join(",") || "null";
+
+      if (!ladder && video.burnSubtitle === null) {
+        output.push("-map", "0:V:0", "-vf", chain([...shared, ...sizeFilters(video.height)]));
       }
       else {
-        filters = [];
-        if (video.height) filters.push(`scale=-2:${video.height}`);
-        if (video.toneMap) {
-          filters.push("zscale=t=linear:npl=100", "format=gbrpf32le", "zscale=p=bt709", "tonemap=tonemap=hable:desat=0", "zscale=t=bt709:m=bt709:r=tv");
-        }
-        filters.push(...HardwareAcceleration.uploadFilters(kind));
-      }
-
-      if (video.burnSubtitle !== null) {
         // Picture subtitles are drawn over the full-size frame, before any resizing
-        output.push("-filter_complex", `[0:V:0][0:${video.burnSubtitle}]overlay=eof_action=pass[sub];[sub]${filters.join(",")}[v]`, "-map", "[v]");
-      }
-      else {
-        output.push("-map", "0:V:0", "-vf", filters.join(","));
+        const whole = [video.burnSubtitle !== null ? `[0:V:0][0:${video.burnSubtitle}]overlay=eof_action=pass` : "[0:V:0]null", ...shared].join(",");
+        const graph = ladder
+          ? `${whole},split=${rungs.length}${rungs.map((_, i) => `[s${i}]`).join("")};${rungs.map((r, i) => `[s${i}]${chain(sizeFilters(r.height))}[v${i}]`).join(";")}`
+          : `${whole},${chain(sizeFilters(video.height))}[v0]`;
+        output.push("-filter_complex", graph);
+        rungs.forEach((_, i) => output.push("-map", `[v${i}]`));
       }
 
-      const bitrate = video.bitrate ?? 8_000_000;
       output.push(
         "-c:v", HardwareAcceleration.encoder(kind), ...presetArgs(kind, settings.preset),
-        "-b:v", String(bitrate), "-maxrate", String(bitrate), "-bufsize", String(bitrate * 2),
-        // A keyframe at every segment boundary keeps segments the same length
+        // A keyframe at every segment boundary keeps segments the same length, and lines the qualities up for switching
         "-force_key_frames", `expr:gte(t,n_forced*${SEGMENT_SECONDS})`,
       );
+      rungs.forEach((r, i) => {
+        const suffix = ladder ? `:v:${i}` : "";
+        output.push(`-b${suffix || ":v"}`, String(r.bitrate), `-maxrate${suffix}`, String(r.bitrate), `-bufsize${suffix}`, String(r.bitrate * 2));
+      });
     }
 
     if (audio) {
-      output.push("-map", `0:${audio.index}`);
+      // Every quality carries its own copy of the sound
+      for (let i = 0; i < (ladder ? rungs.length : 1); i++) output.push("-map", `0:${audio.index}`);
       if (audio.action === "copy") output.push("-c:a", "copy");
       else output.push("-c:a", "aac", "-ac", String(audio.channels), "-b:a", audio.channels > 2 ? "384k" : "192k");
     }
@@ -372,10 +398,19 @@ export namespace TranscodeSession {
       "-map_metadata", "-1", "-map_chapters", "-1", "-max_muxing_queue_size", "4096",
       "-f", "hls", "-hls_time", String(SEGMENT_SECONDS), "-hls_playlist_type", "event", "-hls_list_size", "0",
       "-hls_segment_type", "fmp4", "-hls_fmp4_init_filename", "init.mp4",
-      "-hls_segment_filename", Path.join(session.dir, "seg%05d.m4s"),
       "-hls_flags", "temp_file+independent_segments",
-      Path.join(session.dir, "index.m3u8"),
     );
+    if (ladder) {
+      const map = rungs.map((_, i) => audio ? `v:${i},a:${i}` : `v:${i}`).join(" ");
+      output.push(
+        "-var_stream_map", map, "-master_pl_name", "index.m3u8",
+        "-hls_segment_filename", Path.join(session.dir, "v%v", "seg%05d.m4s"),
+        Path.join(session.dir, "v%v", "stream.m3u8"),
+      );
+    }
+    else {
+      output.push("-hls_segment_filename", Path.join(session.dir, "seg%05d.m4s"), Path.join(session.dir, "index.m3u8"));
+    }
     return [...args, ...output];
   }
 

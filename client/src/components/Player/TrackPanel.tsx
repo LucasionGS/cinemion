@@ -60,7 +60,7 @@ export function modeLabel(info: PlaybackInfo) {
  */
 export default function TrackPanel(props: TrackPanelProps) {
   const { controller } = props;
-  const { info, item, panelTab, subtitleIndex } = useController(controller);
+  const { info, item, panelTab, subtitleIndex, currentHeight } = useController(controller);
   const list = useRef<HTMLDivElement>(null);
 
   // Put focus on the chosen option when the panel or tab opens, so a remote starts in the right place
@@ -88,6 +88,13 @@ export default function TrackPanel(props: TrackPanelProps) {
     const original = [height ? `${height}p` : null, file?.hdr ? "HDR" : null, file?.videoCodec ? codec(file.videoCodec) : null].filter(Boolean).join(" · ");
     options = [
       { key: "original", label: "Original", detail: original || "As the file is", active: info.quality === "original", onPick: () => controller.setQuality("original") },
+      {
+        key: "auto",
+        label: "Automatic",
+        detail: info.quality === "auto" && currentHeight ? `Now ${currentHeight}p · switches with your connection` : "Switches with your connection · converted",
+        active: info.quality === "auto",
+        onPick: () => controller.setQuality("auto"),
+      },
       ...PRESETS.filter((p) => !height || p.height < height * 0.95).map((p) => ({
         key: p.id,
         label: p.id,
@@ -108,7 +115,7 @@ export default function TrackPanel(props: TrackPanelProps) {
   }
 
   const stream = [
-    info.video.height ? `${info.video.height}p` : null,
+    (info.video.ladder ? currentHeight : info.video.height) ? `${info.video.ladder ? currentHeight : info.video.height}p` : null,
     info.video.action === "convert" && info.video.source !== info.video.codec ? `${codec(info.video.source)} → ${codec(info.video.codec)}` : codec(info.video.codec),
     info.video.hdr ? "HDR" : null,
     info.audioStream ? (info.audioStream.action === "convert" ? `${codec(info.audioStream.source)} → ${codec(info.audioStream.codec)} ${channels(info.audioStream.channels)}` : `${codec(info.audioStream.codec)} ${channels(info.audioStream.channels)}`) : null,

@@ -104,6 +104,16 @@ check("720p preset scales down", PlaybackDecider.decide(file({}), { capabilities
 check("remote under the limit plays", decide(file({}), { isRemote: true }), ["direct", "copy", "copy"]);
 check("remote over the limit is converted", decide(file({ bitrate: 30_000_000 }), { isRemote: true }), ["transcode", "convert", "copy"]);
 check("remote bitrate is capped", PlaybackDecider.decide(file({ bitrate: 30_000_000 }), { capabilities: chrome, quality: "original", audioIndex: null, subtitleIndex: null, isRemote: true }, settings).video.bitrate, 8_000_000);
+
+// Automatic quality
+const ladder = (height: number, cap: number | null) => PlaybackDecider.ladderFor(height, cap).map((r) => r.height);
+check("4k source gets the top three rungs", ladder(2160, null), [1080, 720, 480]);
+check("720p source never scales up", ladder(720, null), [720, 480, 360]);
+check("tiny source keeps the smallest rung", ladder(240, null), [360]);
+check("remote cap drops big rungs", ladder(1080, 2_000_000), [480]);
+check("cap below every rung keeps the smallest", ladder(1080, 100_000), [480]);
+const auto = PlaybackDecider.decide(file({}), { capabilities: chrome, quality: "auto", audioIndex: null, subtitleIndex: null, isRemote: false }, settings);
+check("auto converts with a ladder", [auto.mode, auto.video.action, auto.video.ladder?.length], ["transcode", "convert", 3]);
 //#endregion
 
 //#region Network

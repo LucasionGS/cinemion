@@ -227,7 +227,7 @@ function SubtitleStyleCard() {
       <h2>Subtitles</h2>
       <div className="cn-subtitle-preview" aria-hidden="true">
         <div className={cx("cn-player__subtitles", `cn-player__subtitles--${style.size}`, `cn-player__subtitles--${style.color}`, `cn-player__subtitles--${style.background}`)}>
-          <span>Did you hear that?{"\n"}Something is out there.</span>
+          <span>Did you hear that?<br />Something is out there.</span>
         </div>
       </div>
       <div className="cn-settings__row">

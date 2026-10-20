@@ -479,11 +479,13 @@ function PanelToggle(props: { controller: PlayerController }) {
 }
 
 function StreamBadge(props: { controller: PlayerController }) {
-  const { info } = useController(props.controller);
+  const { info, currentHeight } = useController(props.controller);
   if (!info) return null;
-  const size = info.video.height ? (info.video.height >= 2000 ? "4K" : `${info.video.height}p`) : null;
+  // With automatic quality, the size playing now
+  const height = info.video.ladder ? currentHeight : info.video.height;
+  const size = height ? (height >= 2000 ? "4K" : `${height}p`) : null;
   // Repackaging doesn't touch the picture or sound, so it reads as direct too
-  const label = info.mode !== "transcode" ? "Direct" : info.video.action === "copy" ? "Audio converted" : "Converted";
+  const label = info.mode !== "transcode" ? "Direct" : info.video.action === "copy" ? "Audio converted" : info.video.ladder ? "Auto" : "Converted";
   const text = [size, info.video.hdr ? "HDR" : null, label].filter(Boolean).join(" · ");
   // On TV it's only a label; the remote shouldn't stop on it
   if (deviceMode.isTv()) return <span className="cn-player__badge">{text}</span>;
