@@ -11,7 +11,7 @@ Picks from the design rounds. These become the client's design tokens (`client/s
 - **Ambient strength:** Full by default (the artwork fades into the top of the page + colour glow).
 - **Navigation:** top bar with pill tabs, transparent over the ambient backdrop. Mobile uses a floating bottom tab bar. On TV, the top bar hides when focus moves down into the rows.
 - **Fallback accent:** Sky `#5B9DFF` (text on it `#06121F`). Used where there's no artwork palette (settings, admin), or when a user turns adaptive off. Other user-selectable accents: Amber `#F5B544`, Coral `#FF6B5A`, Violet `#9B7CFF`, Mint `#3DDC97`.
-- **Theme:** dark only.
+- **Theme:** dark by default. A light theme was added later (milestone 11), picked per device; the player always stays dark.
 
 ### Base palette (from the mockups)
 

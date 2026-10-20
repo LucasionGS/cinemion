@@ -37,7 +37,7 @@
       box-shadow: none;
 
       &::placeholder {
-        color: #7E8592;
+        color: var(--cn-text-placeholder);
       }
 
       &::-webkit-search-cancel-button {

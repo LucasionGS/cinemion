@@ -71,7 +71,7 @@ export default function PosterCard(props: PosterCardProps) {
   return (
     <div className={cx("cn-poster", className)}>
       <button type="button" className="cn-poster__button" onClick={open} onMouseEnter={onSelect} onFocus={onSelect} aria-label={`${title}${!isCollection && item.year ? ` (${item.year})` : ""}`}>
-        <span className="cn-poster__art" style={poster ? undefined : { background: `linear-gradient(160deg, ${tint} 0%, ${item.palette?.base ?? "#0B0D12"} 110%)` }}>
+        <span className="cn-poster__art cn-dark-theme" style={poster ? undefined : { background: `linear-gradient(160deg, ${tint} 0%, ${item.palette?.base ?? "#0B0D12"} 110%)` }}>
           {poster
             ? <img src={ItemsApi.imageUrl(poster, 342)} srcSet={`${ItemsApi.imageUrl(poster, 342)} 342w, ${ItemsApi.imageUrl(poster, 500)} 500w, ${ItemsApi.imageUrl(poster, 780)} 780w`} sizes="(min-width: 1600px) 15vw, 11rem" alt="" loading="lazy" onError={() => setBroken(true)} />
             : <span className="cn-poster__fallback">{title}</span>}

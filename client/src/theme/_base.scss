@@ -6,7 +6,6 @@
 
 html {
   -webkit-text-size-adjust: 100%;
-  color-scheme: dark;
 }
 
 body {
@@ -77,7 +76,7 @@ img {
 // Thin, quiet scrollbars
 * {
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.16) transparent;
+  scrollbar-color: rgba(var(--cn-fg-rgb), 0.16) transparent;
 }
 
 // TV and mobile don't need visible scrollbars

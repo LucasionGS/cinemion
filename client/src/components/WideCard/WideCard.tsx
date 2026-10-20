@@ -55,7 +55,7 @@ export default function WideCard(props: WideCardProps) {
       onMouseEnter={onSelect}
       onFocus={onSelect}
     >
-      <span className="cn-wide__art" style={showImage ? undefined : { background: `linear-gradient(160deg, ${item.palette?.accent ?? fallbackColor(artTitle)} 0%, ${item.palette?.base ?? "#0B0D12"} 110%)` }}>
+      <span className="cn-wide__art cn-dark-theme" style={showImage ? undefined : { background: `linear-gradient(160deg, ${item.palette?.accent ?? fallbackColor(artTitle)} 0%, ${item.palette?.base ?? "#0B0D12"} 110%)` }}>
         {showImage && <img src={ItemsApi.imageUrl(image!, 500)} srcSet={`${ItemsApi.imageUrl(image!, 500)} 500w, ${ItemsApi.imageUrl(image!, 780)} 780w`} sizes="26rem" alt="" loading="lazy" onError={() => setBroken(true)} />}
         <span className="cn-wide__shade" />
         {variant === "continue" && <span className="cn-wide__title">{artTitle}</span>}

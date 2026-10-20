@@ -124,7 +124,7 @@
     width: 100%;
     height: 0.3rem;
     border-radius: var(--cn-radius-pill);
-    background: rgba(255, 255, 255, 0.14);
+    background: rgba(var(--cn-fg-rgb), 0.14);
   }
 
   &__indicator {

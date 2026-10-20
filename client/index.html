@@ -8,6 +8,14 @@
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="manifest" href="/manifest.webmanifest">
   <title>Cinemion</title>
+  <script>
+    // The light theme is set before anything is drawn, so the page never flashes dark first (lib/Theme.ts)
+    try {
+      var theme = localStorage.getItem("cn-theme");
+      if (theme === "system") theme = matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+      if (theme === "light") document.documentElement.dataset.theme = "light";
+    } catch (e) { }
+  </script>
 </head>
 <body>
   <div id="root"></div>

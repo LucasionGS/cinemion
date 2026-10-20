@@ -35,7 +35,7 @@
     flex: 1;
     height: 0.25rem;
     border-radius: var(--cn-radius-pill);
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(var(--cn-fg-rgb), 0.2);
     overflow: hidden;
 
     span {

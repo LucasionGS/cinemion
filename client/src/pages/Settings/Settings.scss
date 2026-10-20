@@ -44,7 +44,7 @@
     }
 
     &:hover {
-      background: rgba(255, 255, 255, 0.05);
+      background: rgba(var(--cn-fg-rgb), 0.05);
       color: var(--cn-text);
       text-decoration: none;
     }
@@ -109,7 +109,7 @@
     padding: 1.5rem;
     border-radius: var(--cn-radius-xl);
     background: var(--cn-surface);
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(var(--cn-fg-rgb), 0.06);
 
     h2 {
       font-size: 1.2rem;
@@ -146,7 +146,7 @@
 
   &__divider {
     height: 1px;
-    background: rgba(255, 255, 255, 0.06);
+    background: rgba(var(--cn-fg-rgb), 0.06);
   }
 
   &__list {
@@ -162,7 +162,7 @@
     padding: 0.875rem 1rem;
     border-radius: var(--cn-radius-lg);
     background: var(--cn-surface);
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(var(--cn-fg-rgb), 0.06);
 
     > svg {
       flex-shrink: 0;
@@ -279,7 +279,7 @@
   flex: 0 0 6rem;
   height: 0.3rem;
   border-radius: var(--cn-radius-pill);
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(var(--cn-fg-rgb), 0.1);
   overflow: hidden;
 
   span {
@@ -316,7 +316,7 @@ button.cn-settings__badge {
     flex-direction: column;
     gap: 0.5rem;
     padding: 1rem;
-    border: 2px solid rgba(255, 255, 255, 0.08);
+    border: 2px solid rgba(var(--cn-fg-rgb), 0.08);
     border-radius: var(--cn-radius-lg);
     background: var(--cn-surface-2);
     text-align: left;
@@ -357,7 +357,7 @@ button.cn-settings__badge {
     flex-shrink: 0;
     width: 1.125rem;
     height: 1.125rem;
-    border: 2px solid rgba(255, 255, 255, 0.3);
+    border: 2px solid rgba(var(--cn-fg-rgb), 0.3);
     border-radius: 50%;
 
     .cn-playback__method--checked & {

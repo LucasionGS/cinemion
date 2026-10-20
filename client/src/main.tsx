@@ -8,6 +8,8 @@ import { session } from "./Session.ts";
 import { type Route, router, RouterView } from "./lib/Router.tsx";
 import useController from "./lib/useController.ts";
 import { deviceMode } from "./lib/DeviceMode.ts";
+// Applies the theme picked for this device and follows the system setting when asked to
+import "./lib/Theme.ts";
 import { initSpatialNavigation } from "./lib/spatialNavigation.ts";
 import { initGamepad } from "./lib/gamepad.ts";
 import { applyAmbient } from "./lib/ambient.ts";

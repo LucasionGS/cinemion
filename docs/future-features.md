@@ -31,4 +31,3 @@ Planned, but not part of the first version. Roughly in the order they're likely 
 
 ## Look & feel
 
-- **Light theme**: Cinemion is dark only for now; a light theme could be built from the same design tokens.

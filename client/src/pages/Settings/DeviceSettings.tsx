@@ -1,5 +1,6 @@
 import { deviceMode, type ModeSetting } from "../../lib/DeviceMode.ts";
 import { devicePrefs, type SkipIntros, type Speakers } from "../../lib/DevicePrefs.ts";
+import { themes, type ThemeSetting } from "../../lib/Theme.ts";
 import useController from "../../lib/useController.ts";
 import SegmentedControl from "../../components/SegmentedControl/SegmentedControl.tsx";
 import Select from "../../components/Select/Select.tsx";
@@ -20,6 +21,7 @@ const MODE_NAMES = { desktop: "Desktop", mobile: "Mobile", tv: "TV" };
 export default function DeviceSettings() {
   const { mode, setting, host } = useController(deviceMode);
   const prefs = useController(devicePrefs);
+  const theme = useController(themes);
 
   return (
     <>
@@ -52,6 +54,21 @@ export default function DeviceSettings() {
           ]}
         />
         <p className="cn-settings__row-text"><span>The TV layout is made for the couch: everything is bigger, and you move around with the arrow keys, a remote or a game controller. Open Cinemion with <code>?mode=tv</code> at the end of the address to switch a TV straight to it.</span></p>
+        <div className="cn-settings__divider" />
+        <div className="cn-settings__row">
+          <p className="cn-settings__row-text">
+            <strong>Theme</strong>
+            <span>
+              {theme.setting === "system" ? `Follows this device's setting, which is ${theme.theme} right now.` : "Videos always play on a dark screen."}
+            </span>
+          </p>
+          <SegmentedControl<ThemeSetting>
+            label="Theme"
+            value={theme.setting}
+            onChange={(value) => themes.setSetting(value)}
+            options={[{ value: "dark", label: "Dark" }, { value: "light", label: "Light" }, { value: "system", label: "Match device" }]}
+          />
+        </div>
       </section>
 
       <section className="cn-settings__card">

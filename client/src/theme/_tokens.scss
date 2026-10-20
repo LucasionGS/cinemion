@@ -1,34 +1,36 @@
 // Design tokens. Everything visual reads these variables, so the ambient theme can retint the app at runtime.
 // Picks and reasoning: docs/design/decisions.md
 
-:root {
+// Colours of the dark theme. Also used by things that stay dark in the light theme, like the player.
+@mixin dark-colors {
+  color-scheme: dark;
+
   // Grounds and surfaces
   --cn-bg: #08090B;
   --cn-surface: #111318;
   --cn-surface-2: #171A20;
   --cn-surface-3: #1E2129;
+  --cn-fg-rgb: 255, 255, 255; // Thin tints of the text colour: tracks, hairlines, hover grounds
   --cn-glass: rgba(255, 255, 255, 0.07);
   --cn-glass-strong: rgba(255, 255, 255, 0.12);
   --cn-glass-hover: rgba(255, 255, 255, 0.16);
   --cn-border: rgba(255, 255, 255, 0.1);
   --cn-border-strong: rgba(255, 255, 255, 0.16);
   --cn-overlay: rgba(4, 5, 7, 0.72);
+  --cn-elevated: rgba(23, 26, 32, 0.94); // Menus and toasts floating over the page
+  --cn-topbar-glass: rgba(20, 22, 28, 0.78);
+  --cn-shadow: rgba(0, 0, 0, 0.5);
 
   // Text
   --cn-text: #F3F4F6;
   --cn-text-muted: #B4B9C3;
   --cn-text-subtle: #8E95A1;
+  --cn-text-placeholder: #7E8592;
+  --cn-text-faint: #5C6370;
 
-  // Accent: the selected title's colour in ambient mode, or the user's pick. Sky is the fallback.
-  --cn-accent: #5B9DFF;
-  --cn-accent-rgb: 91, 157, 255;
-  --cn-on-accent: #06121F;
-  --cn-accent-soft: rgba(var(--cn-accent-rgb), 0.14);
-  --cn-accent-text: #A9CBFF;
-
-  // Ambient ground, tinted by the selected title
-  --cn-ambient-base: var(--cn-bg);
-  --cn-ambient-glow: rgba(var(--cn-accent-rgb), 0.12);
+  // Accent text and the ambient ground come in a dark and a light version, both set by the ambient theme
+  --cn-accent-text: var(--cn-accent-text-dark);
+  --cn-ambient-base: var(--cn-ambient-base-dark);
 
   // Status
   --cn-success: #3DDC97;
@@ -36,16 +38,81 @@
   --cn-warning: #F5C46B;
   --cn-danger: #FF6B5A;
   --cn-danger-text: #FF8A7D;
-  // Subtitle text colours a profile can pick
-  --cn-subtitle-white: #FFFFFF;
-  --cn-subtitle-yellow: #FFE45C;
-  --cn-subtitle-cyan: #7FE7F0;
-  --cn-subtitle-green: #8CF08C;
 
   // Tinted grounds for status badges
   --cn-success-soft: rgba(61, 220, 151, 0.14);
   --cn-warning-soft: rgba(245, 196, 107, 0.14);
   --cn-danger-soft: rgba(255, 107, 90, 0.14);
+
+  // Focus ring, used for keyboard focus everywhere and for remote focus on TV. Declared with the colours, so it
+  // uses the colours of where it's drawn.
+  --cn-focus-ring: 0 0 0 3px var(--cn-bg), 0 0 0 5px var(--cn-text);
+}
+
+@mixin light-colors {
+  color-scheme: light;
+
+  // Grounds and surfaces
+  --cn-bg: #F3F4F6;
+  --cn-surface: #FFFFFF;
+  --cn-surface-2: #F7F8FA;
+  --cn-surface-3: #ECEEF2;
+  --cn-fg-rgb: 17, 21, 30;
+  --cn-glass: rgba(17, 21, 30, 0.05);
+  --cn-glass-strong: rgba(17, 21, 30, 0.08);
+  --cn-glass-hover: rgba(17, 21, 30, 0.12);
+  --cn-border: rgba(17, 21, 30, 0.11);
+  --cn-border-strong: rgba(17, 21, 30, 0.2);
+  --cn-overlay: rgba(28, 32, 42, 0.45);
+  --cn-elevated: rgba(255, 255, 255, 0.96);
+  --cn-topbar-glass: rgba(255, 255, 255, 0.8);
+  --cn-shadow: rgba(24, 30, 44, 0.16);
+
+  // Text
+  --cn-text: #12151B;
+  --cn-text-muted: #49505C;
+  --cn-text-subtle: #676E7A;
+  --cn-text-placeholder: #8A909B;
+  --cn-text-faint: #A3A9B3;
+
+  --cn-accent-text: var(--cn-accent-text-light);
+  --cn-ambient-base: var(--cn-ambient-base-light);
+
+  // Status: darker, so they read on white
+  --cn-success: #18A86C;
+  --cn-success-text: #0B7A4D;
+  --cn-warning: #B7791F;
+  --cn-danger: #DC3B28;
+  --cn-danger-text: #BF2F1E;
+
+  --cn-success-soft: rgba(24, 168, 108, 0.12);
+  --cn-warning-soft: rgba(214, 150, 40, 0.14);
+  --cn-danger-soft: rgba(220, 59, 40, 0.1);
+
+  --cn-focus-ring: 0 0 0 3px var(--cn-bg), 0 0 0 5px var(--cn-text);
+}
+
+:root {
+  @include dark-colors;
+
+  // Accent: the selected title's colour in ambient mode, or the user's pick. Sky is the fallback.
+  --cn-accent: #5B9DFF;
+  --cn-accent-rgb: 91, 157, 255;
+  --cn-on-accent: #06121F;
+  --cn-accent-soft: rgba(var(--cn-accent-rgb), 0.14);
+  --cn-accent-text-dark: #A9CBFF;
+  --cn-accent-text-light: #1D5FC4;
+
+  // Ambient ground, tinted by the selected title
+  --cn-ambient-base-dark: #08090B;
+  --cn-ambient-base-light: #F3F4F6;
+  --cn-ambient-glow: rgba(var(--cn-accent-rgb), 0.12);
+
+  // Subtitle text colours a profile can pick
+  --cn-subtitle-white: #FFFFFF;
+  --cn-subtitle-yellow: #FFE45C;
+  --cn-subtitle-cyan: #7FE7F0;
+  --cn-subtitle-green: #8CF08C;
 
   // Type
   --cn-font-display: "Sora Variable", "Sora", system-ui, sans-serif;
@@ -72,9 +139,15 @@
   --cn-fast: 150ms;
   --cn-medium: 240ms;
   --cn-slow: 600ms;
+}
 
-  // Focus ring, used for keyboard focus everywhere and for remote focus on TV
-  --cn-focus-ring: 0 0 0 3px var(--cn-bg), 0 0 0 5px var(--cn-text);
+:root[data-theme="light"] {
+  @include light-colors;
+}
+
+// Video stays on dark grounds whatever the theme
+:root[data-theme="light"] .cn-dark-theme {
+  @include dark-colors;
 }
 
 // Mobile: tighter margins
@@ -89,5 +162,9 @@
 :root[data-mode="tv"] {
   font-size: calc(100vw / 80);
   --cn-gutter: 4rem; // Overscan-safe side margin
-  --cn-focus-ring: 0 0 0 0.2rem var(--cn-text), 0 1rem 2.5rem rgba(0, 0, 0, 0.55);
+}
+
+:root[data-mode="tv"],
+:root[data-mode="tv"] .cn-dark-theme {
+  --cn-focus-ring: 0 0 0 0.2rem var(--cn-text), 0 1rem 2.5rem var(--cn-shadow);
 }

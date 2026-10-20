@@ -86,7 +86,7 @@
     width: 10.5rem;
     height: 10.5rem;
     border-radius: var(--cn-avatar-radius);
-    border: 2px dashed rgba(255, 255, 255, 0.2);
+    border: 2px dashed rgba(var(--cn-fg-rgb), 0.2);
     transition: box-shadow var(--cn-fast);
 
     svg {
@@ -166,7 +166,7 @@
 
   .cn-profiles__avatar,
   .cn-profiles__add {
-    box-shadow: 0 0 0 0.25rem var(--cn-text), 0 1.25rem 3rem rgba(0, 0, 0, 0.55);
+    box-shadow: 0 0 0 0.25rem var(--cn-text), 0 1.25rem 3rem var(--cn-shadow);
   }
 }
 

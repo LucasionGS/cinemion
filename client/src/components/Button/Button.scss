@@ -63,7 +63,7 @@
     color: var(--cn-danger-text);
 
     &:hover:not(:disabled) {
-      background: rgba(255, 107, 90, 0.12);
+      background: var(--cn-danger-soft);
     }
   }
 

@@ -12,7 +12,7 @@
     gap: 1rem;
     min-height: 3.5rem;
     padding: 0.5rem 0.75rem 0.5rem 1rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    border-bottom: 1px solid rgba(var(--cn-fg-rgb), 0.06);
   }
 
   &__crumbs {
@@ -58,7 +58,7 @@
     flex-shrink: 0;
     width: 0.9rem;
     height: 0.9rem;
-    color: #5C6370;
+    color: var(--cn-text-faint);
   }
 
   &__list {
@@ -111,7 +111,7 @@
   &__chevron {
     width: 1rem;
     height: 1rem;
-    color: #5C6370;
+    color: var(--cn-text-faint);
   }
 
   &__empty {
@@ -130,7 +130,7 @@
 
 // Typing a path instead of clicking through folders
 .cn-folders__typing {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid rgba(var(--cn-fg-rgb), 0.06);
 
   .cn-folders__bar {
     border-bottom: 0;

@@ -21,10 +21,10 @@
   gap: 0.75rem;
   padding: 0.9rem 1rem;
   border-radius: var(--cn-radius-lg);
-  background: rgba(23, 26, 32, 0.92);
+  background: var(--cn-elevated);
   border: 1px solid var(--cn-border);
   backdrop-filter: blur(20px);
-  box-shadow: 0 1rem 2.5rem rgba(0, 0, 0, 0.45);
+  box-shadow: 0 1rem 2.5rem var(--cn-shadow);
   pointer-events: auto;
   animation: cn-toast-in var(--cn-medium) var(--cn-ease);
 

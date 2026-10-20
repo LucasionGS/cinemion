@@ -19,7 +19,7 @@
     padding: 0.875rem 1rem;
     border-radius: var(--cn-radius-md);
     background: var(--cn-surface);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(var(--cn-fg-rgb), 0.08);
   }
 
   &__provider-row {

@@ -29,7 +29,7 @@
     padding: 0;
     border: 0;
     border-radius: var(--cn-radius-pill);
-    background: rgba(255, 255, 255, 0.14);
+    background: rgba(var(--cn-fg-rgb), 0.14);
     cursor: pointer;
     transition: background-color var(--cn-fast);
 

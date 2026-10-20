@@ -21,7 +21,7 @@
     transition: border-color var(--cn-fast), box-shadow var(--cn-fast);
 
     &::placeholder {
-      color: #7E8592;
+      color: var(--cn-text-placeholder);
     }
 
     &:focus {

@@ -232,8 +232,8 @@ and on amd64 Intel's non-free VA driver + Quick Sync runtime), `docker/entrypoin
 | 8 | done | Playback extras: skip intro and credits (audio fingerprints across a season, plus chapter names), surround sound per device, subtitle styling per profile, ASS subtitles drawn with their own styling (below) |
 | 9 | done | Automatic quality: adaptive HLS with several qualities at once (below) |
 | 10 | done | Watch together chat and reactions (below) |
-| 11 | **next** | Light theme |
-| 12 | planned | Music libraries: artists, albums, tracks, a mini-player that keeps playing, playlists, lyrics |
+| 11 | done | Light theme (below) |
+| 12 | **next** | Music libraries: artists, albums, tracks, a mini-player that keeps playing, playlists, lyrics |
 | 13 | planned | Audiobooks and books: chapters, progress, sleep timer |
 | 14 | planned | More metadata (TVDB, OMDb ratings) and Trakt scrobbling |
 | 15 | planned | More subtitle sources and automatic subtitle downloads |
@@ -352,11 +352,26 @@ Follows the Round 3 admin mockup (artboard `Admin.dc.html` in the Round 3 canvas
   client closes its socket on such a `pagehide` and rejoins on `pageshow`, and the server drops members silent for
   150 s (close code 3008, so a player that wakes up reconnects).
 
+### Milestone 11: what was built
+- **Tokens** (`theme/_tokens.scss`): every colour lives in the `dark-colors` and `light-colors` mixins. `:root` gets
+  the dark set, `:root[data-theme="light"]` the light one, and `.cn-dark-theme` puts the dark set back on things
+  that stay dark: the player, its loading and error pages, and card artwork (badges and progress over pictures).
+  `--cn-fg-rgb` is the text colour as RGB for thin tints (`rgba(var(--cn-fg-rgb), 0.08)` instead of white at 8%).
+  New tokens: `--cn-elevated`, `--cn-topbar-glass`, `--cn-shadow`, `--cn-text-placeholder`, `--cn-text-faint`. The
+  focus ring is declared with the colours so it uses the colours where it's drawn. Colours on top of artwork stay
+  hardcoded on purpose.
+- **Ambient colours** (`lib/ambient.ts`) come in both versions: `--cn-accent-text-dark/-light` (light: the accent
+  darkened to about 4.5:1 on white) and `--cn-ambient-base-dark/-light` (light: off-white with 7% of the accent).
+  The theme picks one, so switching needs no re-tint. Hero backdrops fade to 28% on light pages.
+- **Setting**: This device › Theme (Dark, Light, Match device), `lib/Theme.ts`, localStorage `cn-theme`. An inline
+  script in `index.html` sets `data-theme` before the first paint; the controller updates the `theme-color` and
+  `color-scheme` meta tags.
+
 ## 6. Design decisions
 
 All picks are in `docs/design/decisions.md`, with links to the three mockup artifacts on claude.ai (owner's account).
 Short version: logo "Aperture" (an open C lens ring), Sora + Manrope, ambient/adaptive theme taking colours from the
-selected title (fallback accent Sky `#5B9DFF`), dark only, top bar navigation (floating tab bar on phones), poster-split
+selected title (fallback accent Sky `#5B9DFF`), dark by default with a light theme per device, top bar navigation (floating tab bar on phones), poster-split
 movie page, episode cards, full-width player control bar, TV filmstrip scrubbing, rounded-square initials avatars with
 optional uploaded pictures, watch together as a side panel.
 

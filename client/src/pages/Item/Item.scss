@@ -30,7 +30,7 @@
   &__overview {
     font-size: 1.05rem;
     line-height: 1.6;
-    color: #E8E5E2;
+    color: var(--cn-text);
     max-width: 46rem;
   }
 
@@ -113,7 +113,7 @@
     display: flex;
     gap: 0.5rem;
     overflow-x: auto;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(var(--cn-fg-rgb), 0.1);
     scrollbar-width: none;
   }
 

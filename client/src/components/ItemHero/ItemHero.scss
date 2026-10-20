@@ -38,7 +38,7 @@
     aspect-ratio: 2 / 3;
     border-radius: var(--cn-radius-lg);
     overflow: hidden;
-    box-shadow: 0 2rem 5rem rgba(0, 0, 0, 0.55);
+    box-shadow: 0 2rem 5rem var(--cn-shadow);
 
     img {
       width: 100%;
@@ -95,6 +95,15 @@
       object-position: left bottom;
     }
   }
+}
+
+// On a light page the artwork is a pale wash, so dark text stays readable over it
+:root[data-theme="light"] .cn-hero__backdrop {
+  opacity: 0.28;
+}
+
+:root[data-theme="light"][data-mode="mobile"] .cn-hero__backdrop {
+  opacity: 0.7;
 }
 
 :root[data-mode="mobile"] .cn-hero {

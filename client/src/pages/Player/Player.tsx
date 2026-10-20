@@ -69,7 +69,7 @@ export default function Player(props: PlayerProps) {
 
   if (error) {
     return (
-      <div className="cn-player-page cn-player-page--message">
+      <div className="cn-player-page cn-player-page--message cn-dark-theme">
         <h1>This title can't play</h1>
         <p>{error}</p>
         <Button variant="primary" onClick={() => router.back("/")} data-autofocus>Back</Button>
@@ -77,7 +77,7 @@ export default function Player(props: PlayerProps) {
     );
   }
   if (!item || !controller || !joined) {
-    return <div className="cn-player-page"><Spinner size="3rem" label={joined ? "Loading" : "Joining the session"} /></div>;
+    return <div className="cn-player-page cn-dark-theme"><Spinner size="3rem" label={joined ? "Loading" : "Joining the session"} /></div>;
   }
 
   const inSession = together.isConnected() && together.room?.itemId === item.id;

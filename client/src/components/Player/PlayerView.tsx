@@ -252,7 +252,7 @@ export default function PlayerView(props: PlayerViewProps) {
   return (
     <div
       ref={root}
-      className={cx("cn-player", `cn-player--${mode}`, idle && "cn-player--idle", c.panelOpen && "cn-player--panel")}
+      className={cx("cn-player", "cn-dark-theme", `cn-player--${mode}`, idle && "cn-player--idle", c.panelOpen && "cn-player--panel")}
       onPointerMove={(e) => e.pointerType === "mouse" && controller.showControls()}
     >
       <video ref={video} className="cn-player__video" playsInline autoPlay preload="auto" />
