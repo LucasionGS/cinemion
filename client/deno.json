@@ -29,6 +29,7 @@
     "@base-ui/react": "npm:@base-ui/react@^1.8.0",
     "@base-ui/react/": "npm:/@base-ui/react@^1.8.0/",
     "lucide-react": "npm:lucide-react@^1.50.0",
+    "hls.js": "npm:hls.js@^1.7.3",
     "vite": "npm:vite@^8.3.0",
     "@vitejs/plugin-react-swc": "npm:@vitejs/plugin-react-swc@^4.3.3",
     "sass": "npm:sass@^1.100.0",

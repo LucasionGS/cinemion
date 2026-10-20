@@ -5,6 +5,7 @@ import createApp from "./app.ts";
 import Ffmpeg from "./lib/Ffmpeg.ts";
 import LibraryWatcher from "./library/LibraryWatcher.ts";
 import ScanScheduler from "./library/ScanScheduler.ts";
+import TranscodeSession from "./media/TranscodeSession.ts";
 import log from "./lib/Logger.ts";
 
 addEventListener("unhandledrejection", (event) => {
@@ -30,6 +31,8 @@ if (AppSystem.config.AUTO_MIGRATE) {
 const ffmpegVersion = await Ffmpeg.version();
 if (!ffmpegVersion) log.warn(`ffmpeg was not found, so profile pictures and video conversion won't work. ${Ffmpeg.installHint()}`);
 
+await TranscodeSession.init();
+
 const app = createApp();
 const server = Deno.serve({
   port: AppSystem.config.PORT,
@@ -52,6 +55,7 @@ for (const signal of ["SIGINT", "SIGTERM"] as const) {
     log.info("Shutting down");
     ScanScheduler.stop();
     LibraryWatcher.stop();
+    await TranscodeSession.shutdown();
     await server.shutdown();
     await sequelize.close();
     Deno.exit(0);

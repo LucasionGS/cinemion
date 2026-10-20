@@ -4,7 +4,7 @@ import type { ItemDetail, ItemSummary } from "@shared/media.ts";
 import ItemsApi from "../../Api/ItemsApi.ts";
 import { Link, router } from "../../lib/Router.tsx";
 import { applyAmbient } from "../../lib/ambient.ts";
-import { episodeLabel, formatDuration } from "../../lib/playback.ts";
+import { chooseTracks, defaultSubtitle, episodeLabel, formatDuration } from "../../lib/playback.ts";
 import useController from "../../lib/useController.ts";
 import cx from "../../lib/cx.ts";
 import AppShell from "../../components/AppShell/AppShell.tsx";
@@ -118,13 +118,34 @@ function Details(props: { item: ItemDetail }) {
         </div>
       ))}
       {item.files.length > 1 && (
-        <Select label="Version" value={String(fileIndex)} onChange={(e) => setFileIndex(Number(e.target.value))} options={item.files.map((f, i) => ({ value: String(i), label: versionLabel(f) }))} />
+        <Select
+          label="Version"
+          value={String(fileIndex)}
+          onChange={(e) => {
+            const index = Number(e.target.value);
+            setFileIndex(index);
+            chooseTracks(item.id, { fileId: item.files[index].id, audioIndex: undefined, subtitleIndex: undefined });
+          }}
+          options={item.files.map((f, i) => ({ value: String(i), label: versionLabel(f) }))}
+        />
       )}
       {file && file.audio.length > 0 && (
-        <Select label="Audio" options={file.audio.map((a) => ({ value: String(a.index), label: trackLabel(a.language, a.title, channelLabel(a.channels), a.codec) }))} defaultValue={String(file.audio.find((a) => a.isDefault)?.index ?? file.audio[0].index)} />
+        <Select
+          key={`audio-${file.id}`}
+          label="Audio"
+          options={file.audio.map((a) => ({ value: String(a.index), label: trackLabel(a.language, a.title, channelLabel(a.channels), a.codec) }))}
+          defaultValue={String(file.audio.find((a) => a.isDefault)?.index ?? file.audio[0].index)}
+          onChange={(e) => chooseTracks(item.id, { fileId: file.id, audioIndex: Number(e.target.value) })}
+        />
       )}
       {file && file.subtitles.length > 0 && (
-        <Select label="Subtitles" options={[{ value: "off", label: "Off" }, ...file.subtitles.map((s) => ({ value: String(s.index), label: trackLabel(s.language, s.title, s.isForced ? "Forced" : null, null) }))]} defaultValue={String(file.subtitles.find((s) => s.isForced || s.isDefault)?.index ?? "off")} />
+        <Select
+          key={`subtitles-${file.id}`}
+          label="Subtitles"
+          options={[{ value: "off", label: "Off" }, ...file.subtitles.map((s) => ({ value: String(s.index), label: trackLabel(s.language, s.title, s.isForced ? "Forced" : s.isImage ? "Picture" : null, null) }))]}
+          defaultValue={String(defaultSubtitle(file)?.index ?? "off")}
+          onChange={(e) => chooseTracks(item.id, { fileId: file.id, subtitleIndex: e.target.value === "off" ? null : Number(e.target.value) })}
+        />
       )}
     </section>
   );

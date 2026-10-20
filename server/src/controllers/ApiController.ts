@@ -13,6 +13,7 @@ import HomeController from "./HomeController.ts";
 import SearchController from "./SearchController.ts";
 import CollectionsController from "./CollectionsController.ts";
 import PeopleController from "./PeopleController.ts";
+import PlaybackController from "./PlaybackController.ts";
 import type { AppEnv } from "../lib/types.ts";
 
 /**
@@ -35,6 +36,7 @@ export namespace ApiController {
   router.route("/search", SearchController.router);
   router.route("/collections", CollectionsController.router);
   router.route("/people", PeopleController.router);
+  router.route("/playback", PlaybackController.router);
 
   router.all("*", (c) => c.json({ message: `There's no API endpoint at ${c.req.method} ${c.req.path}.` }, 404));
 }

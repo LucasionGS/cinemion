@@ -264,3 +264,150 @@ button.cn-settings__badge {
   border: 0;
   cursor: pointer;
 }
+
+//#region Playback
+.cn-playback {
+  &__methods {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+    gap: 0.75rem;
+  }
+
+  &__method {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1rem;
+    border: 2px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--cn-radius-lg);
+    background: var(--cn-surface-2);
+    text-align: left;
+    cursor: pointer;
+    transition: border-color var(--cn-fast) var(--cn-ease), background-color var(--cn-fast) var(--cn-ease);
+
+    &:hover {
+      border-color: var(--cn-border-strong);
+    }
+
+    &--checked {
+      border-color: var(--cn-accent);
+      background: var(--cn-accent-soft);
+
+      &:hover {
+        border-color: var(--cn-accent);
+      }
+    }
+
+    // Still pickable, since detection can miss a GPU that works; it just reads as unlikely
+    &--missing:not(&--checked) {
+      opacity: 0.6;
+    }
+  }
+
+  &__method-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+
+    strong {
+      font-size: 0.95rem;
+    }
+  }
+
+  &__radio {
+    flex-shrink: 0;
+    width: 1.125rem;
+    height: 1.125rem;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+
+    .cn-playback__method--checked & {
+      border-color: var(--cn-accent);
+      background: radial-gradient(var(--cn-accent) 45%, transparent 50%);
+    }
+  }
+
+  &__method-text {
+    font-size: 0.8rem;
+    line-height: 1.45;
+    color: var(--cn-text-muted);
+  }
+
+  &__method-state {
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: var(--cn-success-text);
+
+    .cn-playback__method--missing & {
+      color: var(--cn-text-subtle);
+    }
+  }
+
+  &__gpu {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    padding: 1rem;
+    border-radius: var(--cn-radius-lg);
+    background: var(--cn-surface-2);
+  }
+
+  &__codecs {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  &__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  &__chip {
+    height: 2.125rem;
+    padding: 0 0.75rem;
+    border: 0;
+    border-radius: var(--cn-radius-pill);
+    background: var(--cn-glass);
+    color: var(--cn-text-subtle);
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+
+    &--on {
+      background: var(--cn-accent-soft);
+      color: var(--cn-accent-text);
+    }
+  }
+
+  &__test {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--cn-text-muted);
+
+    svg {
+      flex-shrink: 0;
+      width: 1.1rem;
+      height: 1.1rem;
+    }
+
+    &--ok {
+      color: var(--cn-success-text);
+    }
+
+    &--failed {
+      color: var(--cn-danger-text);
+    }
+  }
+
+  &__fields {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+    gap: 1.25rem;
+  }
+}
+//#endregion

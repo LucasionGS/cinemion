@@ -1,13 +1,56 @@
-import type { ItemSummary } from "@shared/media.ts";
-import { toasts } from "./Toasts.ts";
+import type { ItemSummary, MediaFileInfo } from "@shared/media.ts";
+import { router } from "./Router.tsx";
 
 /**
- * Start playing a movie or episode. The player itself arrives with playback support;
- * until then this explains why nothing happens.
+ * Tracks picked on a title's page before pressing Play. `undefined` fields use the file's defaults.
  */
-export function play(item: Pick<ItemSummary, "id" | "title">, opts?: { fromStart?: boolean }) {
-  void opts;
-  toasts.show({ title: `Playing ${item.title} isn't possible yet`, description: "The player is being built next." });
+export interface TrackChoice {
+  fileId?: number;
+  audioIndex?: number;
+  /**
+   * `null` = subtitles off.
+   */
+  subtitleIndex?: number | null;
+}
+
+const _choices = new Map<number, TrackChoice>();
+
+/**
+ * Remember tracks picked on a title's page, for the player to start with.
+ */
+export function chooseTracks(itemId: number, choice: TrackChoice) {
+  _choices.set(itemId, { ..._choices.get(itemId), ...choice });
+}
+
+export function tracksFor(itemId: number): TrackChoice {
+  return _choices.get(itemId) ?? {};
+}
+
+/**
+ * The subtitle track that's on unless picked otherwise: a forced or default text track.
+ * Picture subtitles are never on by default, since drawing them in means converting the video.
+ */
+export function defaultSubtitle(file: Pick<MediaFileInfo, "subtitles"> | undefined) {
+  const text = file?.subtitles.filter((s) => !s.isImage) ?? [];
+  return text.find((s) => s.isForced) ?? text.find((s) => s.isDefault) ?? null;
+}
+
+/**
+ * Open the player for a movie or episode. It resumes where the profile left off unless `fromStart` is set.
+ */
+export function play(item: Pick<ItemSummary, "id">, opts?: { fromStart?: boolean }) {
+  router.navigate(`/watch/${item.id}${opts?.fromStart ? "?from=start" : ""}`);
+}
+
+/**
+ * "1:03:12" or "4:05", from seconds.
+ */
+export function formatClock(seconds: number) {
+  const total = Math.max(0, Math.floor(seconds));
+  const h = Math.floor(total / 3600);
+  const m = Math.floor((total % 3600) / 60);
+  const s = String(total % 60).padStart(2, "0");
+  return h > 0 ? `${h}:${String(m).padStart(2, "0")}:${s}` : `${m}:${s}`;
 }
 
 /**

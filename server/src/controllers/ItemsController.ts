@@ -98,16 +98,32 @@ export namespace ItemsController {
   });
 
   /**
+   * The episode that follows `episode`, crossing into the next season. Specials only lead to other specials.
+   */
+  async function episodeAfter(episode: MediaItem, user: User) {
+    const season = episode.parentId ? await MediaItem.findByPk(episode.parentId) : null;
+    if (!season?.parentId) return null;
+    const seasons = await MediaItem.findAll({ where: { parentId: season.parentId, type: "season" }, attributes: ["id", "seasonNumber"] });
+    const isSpecial = season.seasonNumber === 0;
+    const seasonIds = seasons.filter((s) => (s.seasonNumber === 0) === isSpecial).map((s) => s.id);
+    const episodes = await MediaItem.findAll({ where: { [Op.and]: [Visibility.where(user), { parentId: seasonIds, type: "episode" }] }, order: [["seasonNumber", "ASC"], ["episodeNumber", "ASC"]] });
+    const index = episodes.findIndex((e) => e.id === episode.id);
+    const next = index >= 0 ? episodes[index + 1] : null;
+    return next ? await Summaries.one(next, user) : null;
+  }
+
+  /**
    * @swagger
    * /api/items/{id}/next:
    *   get:
-   *     summary: The episode "Play" starts for a show or season. An episode in progress first, then the next one after
+   *     summary: For an episode, the one after it. For a show or season, the episode "Play" starts: an episode in progress first, then the next one after
    *       the furthest watched, then the first episode. `null` when there are no episodes.
    */
   router.get("/:id/next", User.$middleware(), async (c) => {
     const user = c.get("user")!;
     const item = await findVisible(user, Number(c.req.param("id")));
-    if (!item || (item.type !== "show" && item.type !== "season")) return c.json({ message: "Only shows and seasons have a next episode." }, 404);
+    if (item?.type === "episode") return c.json(await episodeAfter(item, user));
+    if (!item || (item.type !== "show" && item.type !== "season")) return c.json({ message: "Only shows, seasons and episodes have a next episode." }, 404);
 
     const seasonIds = item.type === "show"
       ? (await MediaItem.findAll({ where: { parentId: item.id, type: "season" }, attributes: ["id", "seasonNumber"] })).filter((s) => s.seasonNumber !== 0).map((s) => s.id)

@@ -20,10 +20,14 @@ RUN case "$TARGETARCH" in \
 
 # Runtime
 FROM debian:trixie-slim
-# ffmpeg for probing, profile pictures and conversion. VA-API drivers let Intel and AMD GPUs convert video
-# when /dev/dri is passed in.
-RUN apt-get update \
+ARG TARGETARCH
+# ffmpeg for probing, profile pictures and conversion. The GPU drivers let Intel (VA-API and Quick Sync) and
+# AMD (VA-API) graphics convert video when /dev/dri is passed in. Intel's full driver is in Debian's non-free
+# section, and only exists for x86.
+RUN sed -i 's/^Components: main$/Components: main non-free/' /etc/apt/sources.list.d/debian.sources \
+  && apt-get update \
   && apt-get install -y --no-install-recommends ffmpeg mesa-va-drivers ca-certificates tzdata \
+  && if [ "$TARGETARCH" = "amd64" ]; then apt-get install -y --no-install-recommends intel-media-va-driver-non-free libmfx-gen1.2; fi \
   && rm -rf /var/lib/apt/lists/*
 COPY --from=build /out/cinemion /usr/local/bin/cinemion
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh

@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { FolderOpen, Library as LibraryIcon, MonitorSmartphone, UserRound, Users } from "lucide-react";
+import { Clapperboard, FolderOpen, Library as LibraryIcon, MonitorSmartphone, UserRound, Users } from "lucide-react";
 import { session } from "../../Session.ts";
 import { Link } from "../../lib/Router.tsx";
 import useController from "../../lib/useController.ts";
@@ -10,6 +10,7 @@ import DeviceSettings from "./DeviceSettings.tsx";
 import UsersSettings from "./UsersSettings.tsx";
 import LibrariesSettings from "./LibrariesSettings.tsx";
 import MetadataSettings from "./MetadataSettings.tsx";
+import PlaybackSettings from "./PlaybackSettings.tsx";
 import "./Settings.scss";
 
 interface Tab {
@@ -34,6 +35,7 @@ export default function Settings(props: SettingsProps) {
     { id: "users", label: "Users", icon: <Users />, visible: session.can("USERS_MANAGE"), render: () => <UsersSettings /> },
     { id: "libraries", label: "Libraries", icon: <FolderOpen />, visible: session.can("LIBRARY_MANAGE"), render: () => <LibrariesSettings /> },
     { id: "metadata", label: "Metadata", icon: <LibraryIcon />, visible: session.can("SERVER_MANAGE"), render: () => <MetadataSettings /> },
+    { id: "playback", label: "Playback", icon: <Clapperboard />, visible: session.can("SERVER_MANAGE"), render: () => <PlaybackSettings /> },
   ];
   const visible = tabs.filter((t) => t.visible);
   const current = visible.find((t) => t.id === tab) ?? visible[0];

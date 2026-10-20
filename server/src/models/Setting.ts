@@ -36,6 +36,7 @@ export namespace Setting {
     SERVER_NAME: "serverName",
     METADATA: "metadata",
     SCAN_INTERVAL_HOURS: "scanIntervalHours",
+    PLAYBACK: "playback",
   } as const;
 }
 

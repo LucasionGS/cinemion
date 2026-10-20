@@ -12,6 +12,7 @@
     "npm:@types/react@^19.2.0": "19.3.0",
     "npm:@vitejs/plugin-react-swc@^4.3.3": "4.3.3_vite@8.3.4_@types+node@24.19.2",
     "npm:bcryptjs@^3.0.2": "3.0.3",
+    "npm:hls.js@^1.7.3": "1.7.3",
     "npm:hono@^4.13.0": "4.13.13",
     "npm:lucide-react@^1.50.0": "1.59.0_@types+react@19.3.0_react@19.3.1",
     "npm:mariadb@~2.5.6": "2.5.6",
@@ -521,6 +522,9 @@
         "function-bind"
       ]
     },
+    "hls.js@1.7.3": {
+      "integrity": "sha512-MsPlx6yVW4Qv4C7mEVou4/gk/5cN2dVxOTnrNjPSmyH2f0Ln+/UkG10Ax1PE6OvrmTVPKgQYozTtBaPOuCzq7A=="
+    },
     "hono@4.13.13": {
       "integrity": "sha512-CQ46U0ZkAGmbT/4UxdzzGJpacP2IeKgY4a5/tOI9AABbpOMfK739wfDXmv1usCk+3RkKj1hQy4/fjhiwa2xlrA=="
     },
@@ -947,6 +951,7 @@
           "npm:@types/react-dom@^19.2.0",
           "npm:@types/react@^19.2.0",
           "npm:@vitejs/plugin-react-swc@^4.3.3",
+          "npm:hls.js@^1.7.3",
           "npm:lucide-react@^1.50.0",
           "npm:react-dom@^19.2.0",
           "npm:react@^19.2.0",

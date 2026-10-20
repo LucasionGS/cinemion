@@ -7,7 +7,8 @@
 # local artwork, multi-episode files, specials, extras and samples that should be skipped.
 #
 # Usage: scripts/make-sample-media.sh [FOLDER]
-#   FOLDER  Where to create "movies" and "shows". Default is data/media.
+#   FOLDER        Where to create "movies" and "shows". Default is data/media.
+#   CLIP_SECONDS  Length of each clip (environment variable). Default is 90.
 
 set -euo pipefail
 
@@ -15,7 +16,9 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 OUT="${1:-$ROOT/data/media}"
 MOVIES="$OUT/movies"
 SHOWS="$OUT/shows"
-SECONDS_PER_CLIP=6
+SECONDS_PER_CLIP="${CLIP_SECONDS:-90}"
+# Running time burned into every clip, to check seeking and resume
+TIMER="drawtext=text='%{pts\\:hms}':fontsize=36:fontcolor=white:box=1:boxcolor=black@0.5:x=24:y=24"
 
 if ! command -v ffmpeg > /dev/null; then
   if [[ -f /etc/arch-release ]]; then echo "ffmpeg is needed. Install it with: sudo pacman -S ffmpeg" >&2
@@ -33,7 +36,7 @@ clip() {
   shift 2
   mkdir -p "$(dirname "$OUTPUT")"
   ffmpeg -loglevel error -y \
-    -f lavfi -i "testsrc2=size=1280x720:rate=24:duration=$SECONDS_PER_CLIP,drawtext=text='$LABEL':fontsize=48:fontcolor=white:box=1:boxcolor=black@0.5:x=(w-text_w)/2:y=h-120" \
+    -f lavfi -i "testsrc2=size=1280x720:rate=24:duration=$SECONDS_PER_CLIP,$TIMER,drawtext=text='$LABEL':fontsize=48:fontcolor=white:box=1:boxcolor=black@0.5:x=(w-text_w)/2:y=h-120" \
     -f lavfi -i "sine=frequency=440:duration=$SECONDS_PER_CLIP" \
     "$@" "$OUTPUT"
 }
@@ -56,8 +59,11 @@ echo "Movies..."
 
 # Tidy folder with NFO and artwork, plus a second version in another codec
 NB="$MOVIES/Northbound (2024)"
-clip "$NB/Northbound (2024).mkv" "Northbound" -c:v libx264 -preset veryfast -c:a aac -metadata:s:a:0 language=por
-clip "$NB/Northbound (2024) - 4K.mkv" "Northbound 4K version" -c:v libx265 -preset ultrafast -tag:v hvc1 -c:a ac3 -metadata:s:a:0 language=por
+clip "$NB/Northbound (2024).mkv" "Northbound" -c:v libx264 -preset veryfast -crf 30 -c:a aac -metadata:s:a:0 language=por
+# The second version is 10-bit HEVC tagged as HDR10, for checking tone mapping
+clip "$NB/Northbound (2024) - 4K.mkv" "Northbound HDR version" -c:v libx265 -preset ultrafast -tag:v hvc1 -pix_fmt yuv420p10le \
+  -x265-params "log-level=error:hdr10=1:colorprim=bt2020:transfer=smpte2084:colormatrix=bt2020nc" \
+  -vf "setparams=color_primaries=bt2020:color_trc=smpte2084:colorspace=bt2020nc" -c:a ac3 -metadata:s:a:0 language=por
 art "$NB/poster.jpg" 600 900 0xC8642E 0x2A1208 "Northbound"
 art "$NB/fanart.jpg" 1920 1080 0xE08A4A 0x1E0E06 "Northbound"
 cat > "$NB/movie.nfo" <<'EOF'
@@ -80,17 +86,18 @@ cat > "$NB/movie.nfo" <<'EOF'
 EOF
 
 # Release-style name straight in the library folder, MP4 with two audio tracks and a text subtitle
-cat > "/tmp/cinemion-sample-subs.srt" <<'EOF'
-1
-00:00:01,000 --> 00:00:04,000
-A sample subtitle line.
-EOF
+# One cue every 5 seconds that names its own start time, so a wrong subtitle offset is easy to spot
+: > "/tmp/cinemion-sample-subs.srt"
+for (( i = 0; i * 5 + 1 < SECONDS_PER_CLIP; i++ )); do
+  START=$(( i * 5 + 1 ))
+  printf "%d\n00:%02d:%02d,000 --> 00:%02d:%02d,000\nSubtitle at %d:%02d\n\n" "$(( i + 1 ))" "$(( START / 60 ))" "$(( START % 60 ))" "$(( (START + 3) / 60 ))" "$(( (START + 3) % 60 ))" "$(( START / 60 ))" "$(( START % 60 ))" >> "/tmp/cinemion-sample-subs.srt"
+done
 ffmpeg -loglevel error -y \
-  -f lavfi -i "testsrc2=size=1280x720:rate=24:duration=$SECONDS_PER_CLIP" \
+  -f lavfi -i "testsrc2=size=1280x720:rate=24:duration=$SECONDS_PER_CLIP,$TIMER" \
   -f lavfi -i "sine=frequency=330:duration=$SECONDS_PER_CLIP" \
   -f lavfi -i "sine=frequency=550:duration=$SECONDS_PER_CLIP" \
   -i "/tmp/cinemion-sample-subs.srt" \
-  -map 0 -map 1 -map 2 -map 3 -c:v libx264 -preset veryfast -c:a aac -c:s mov_text \
+  -map 0 -map 1 -map 2 -map 3 -c:v libx264 -preset veryfast -crf 30 -c:a aac -c:s mov_text \
   -metadata:s:a:0 language=eng -metadata:s:a:1 language=eng -metadata:s:a:1 title="Commentary" -metadata:s:s:0 language=eng \
   "$MOVIES/Paper.Moons.2024.1080p.WEB-DL.x264-CINEMION.mp4"
 
@@ -98,16 +105,16 @@ ffmpeg -loglevel error -y \
 GH="$MOVIES/Glass Harbor (2025) {imdb-tt0000001}"
 mkdir -p "$GH"
 ffmpeg -loglevel error -y \
-  -f lavfi -i "testsrc2=size=1280x720:rate=24:duration=$SECONDS_PER_CLIP" \
+  -f lavfi -i "testsrc2=size=1280x720:rate=24:duration=$SECONDS_PER_CLIP,$TIMER" \
   -f lavfi -i "sine=frequency=220:duration=$SECONDS_PER_CLIP" \
   -i "/tmp/cinemion-sample-subs.srt" -i "/tmp/cinemion-sample-subs.srt" \
-  -map 0 -map 1 -map 2 -map 3 -c:v libx264 -preset veryfast -c:a ac3 -ac 6 -c:s:0 ass -c:s:1 srt \
+  -map 0 -map 1 -map 2 -map 3 -c:v libx264 -preset veryfast -crf 30 -c:a ac3 -ac 6 -c:s:0 ass -c:s:1 srt \
   -metadata:s:s:0 language=jpn -metadata:s:s:1 language=eng -disposition:s:1 forced \
   "$GH/Glass Harbor.mkv"
 
 # Extras and samples that must be skipped
 TLM="$MOVIES/The Long Meridian (2023)"
-clip "$TLM/The Long Meridian (2023).mkv" "The Long Meridian" -c:v libx264 -preset veryfast -c:a aac
+clip "$TLM/The Long Meridian (2023).mkv" "The Long Meridian" -c:v libx264 -preset veryfast -crf 30 -c:a aac
 cat > "$TLM/movie.nfo" <<'EOF'
 <?xml version="1.0" encoding="UTF-8"?>
 <movie>
@@ -121,9 +128,9 @@ cat > "$TLM/movie.nfo" <<'EOF'
   <actor><name>Tomás Reis</name><role>Elias</role></actor>
 </movie>
 EOF
-clip "$TLM/Extras/Behind the Scenes.mkv" "Extra - should be skipped" -c:v libx264 -preset veryfast -c:a aac
-clip "$TLM/sample.mkv" "Sample - should be skipped" -c:v libx264 -preset veryfast -c:a aac
-clip "$TLM/The Long Meridian-trailer.mkv" "Trailer - should be skipped" -c:v libx264 -preset veryfast -c:a aac
+clip "$TLM/Extras/Behind the Scenes.mkv" "Extra - should be skipped" -c:v libx264 -preset veryfast -crf 30 -c:a aac
+clip "$TLM/sample.mkv" "Sample - should be skipped" -c:v libx264 -preset veryfast -crf 30 -c:a aac
+clip "$TLM/The Long Meridian-trailer.mkv" "Trailer - should be skipped" -c:v libx264 -preset veryfast -crf 30 -c:a aac
 
 # A VP9/Opus WebM with no year at all
 clip "$MOVIES/Home Movie Night.webm" "Home Movie Night" -c:v libvpx-vp9 -deadline realtime -cpu-used 8 -b:v 1M -c:a libopus
@@ -148,9 +155,9 @@ cat > "$SK/tvshow.nfo" <<'EOF'
   <actor><name>Marta Couto</name><role>Mara</role></actor>
 </tvshow>
 EOF
-clip "$SK/Season 01/Saltwater Kings - S01E01 - Spat.mkv" "S01E01" -c:v libx264 -preset veryfast -c:a aac
-clip "$SK/Season 01/Saltwater Kings - S01E02 - Brackish.mkv" "S01E02" -c:v libx264 -preset veryfast -c:a aac
-clip "$SK/Season 01/Saltwater Kings - S01E03 - Low Water.mkv" "S01E03" -c:v libx264 -preset veryfast -c:a aac
+clip "$SK/Season 01/Saltwater Kings - S01E01 - Spat.mkv" "S01E01" -c:v libx264 -preset veryfast -crf 30 -c:a aac
+clip "$SK/Season 01/Saltwater Kings - S01E02 - Brackish.mkv" "S01E02" -c:v libx264 -preset veryfast -crf 30 -c:a aac
+clip "$SK/Season 01/Saltwater Kings - S01E03 - Low Water.mkv" "S01E03" -c:v libx264 -preset veryfast -crf 30 -c:a aac
 art "$SK/Season 01/Saltwater Kings - S01E03 - Low Water-thumb.jpg" 1280 720 0x2A6A78 0x061A22 "Low Water"
 cat > "$SK/Season 01/Saltwater Kings - S01E03 - Low Water.nfo" <<'EOF'
 <?xml version="1.0" encoding="UTF-8"?>
@@ -162,12 +169,12 @@ cat > "$SK/Season 01/Saltwater Kings - S01E03 - Low Water.nfo" <<'EOF'
   <aired>2023-03-14</aired>
 </episodedetails>
 EOF
-clip "$SK/Season 02/Saltwater Kings - S02E01-E02 - Silt.mkv" "S02E01-E02" -c:v libx264 -preset veryfast -c:a aac
+clip "$SK/Season 02/Saltwater Kings - S02E01-E02 - Silt.mkv" "S02E01-E02" -c:v libx264 -preset veryfast -crf 30 -c:a aac
 
 IW="$SHOWS/Ironwood"
-clip "$IW/Season 1/Ironwood.S01E01.1080p.WEB-DL.x265.mkv" "Ironwood S01E01" -c:v libx265 -preset ultrafast -c:a aac
-clip "$IW/Season 1/Ironwood.S01E02.1080p.WEB-DL.x265.mkv" "Ironwood S01E02" -c:v libx265 -preset ultrafast -c:a aac
-clip "$IW/Specials/Ironwood S00E01 Making Of.mkv" "Ironwood special" -c:v libx264 -preset veryfast -c:a aac
+clip "$IW/Season 1/Ironwood.S01E01.1080p.WEB-DL.x265.mkv" "Ironwood S01E01" -c:v libx265 -preset ultrafast -crf 32 -c:a aac
+clip "$IW/Season 1/Ironwood.S01E02.1080p.WEB-DL.x265.mkv" "Ironwood S01E02" -c:v libx265 -preset ultrafast -crf 32 -c:a aac
+clip "$IW/Specials/Ironwood S00E01 Making Of.mkv" "Ironwood special" -c:v libx264 -preset veryfast -crf 30 -c:a aac
 #endregion
 
 rm -f "/tmp/cinemion-sample-subs.srt"

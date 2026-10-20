@@ -84,6 +84,13 @@ const routes: Route[] = [
     },
   }),
   requirement({ signedIn: true }, {
+    path: /^\/watch\/(\d+)\/?$/,
+    component: async ([id]) => {
+      const Player = (await import("./pages/Player/Player.tsx")).default;
+      return <Player key={id} id={Number(id)} />;
+    },
+  }),
+  requirement({ signedIn: true }, {
     path: /^\/collection\/(\d+)\/?$/,
     component: async ([id]) => {
       const Collection = (await import("./pages/Collection/Collection.tsx")).default;
