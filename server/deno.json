@@ -1,6 +1,6 @@
 {
   "name": "@cinemion/server",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "exports": "./src/index.ts",
   "tasks": {
     "dev": "deno run -A --watch=src/ --env-file=../.env src/index.ts",
