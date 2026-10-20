@@ -21,7 +21,7 @@ Your movies and shows, beautifully served from your own machine: a self-hosted m
 - **Sound for your speakers**: tell each device whether it plays stereo, surround or goes through a receiver, and Cinemion converts (or doesn't) to match.
 - **See where you're seeking**: thumbnails above the seek bar, and a filmstrip on the TV, so you land on the right scene.
 - **Subtitles, sorted**: subtitle files next to your videos just show up, and anything missing is a search away (OpenSubtitles) without leaving the player.
-- **Watch together**: start a session, share a code, and everyone's play, pause and seek stay in step, each on their own screen. Only the host's progress is saved, so nobody's "continue watching" gets spoiled.
+- **Watch together**: start a session, share a code, and everyone's play, pause and seek stay in step, each on their own screen. Chat along and send reactions that float across everyone's video. Only the host's progress is saved, so nobody's "continue watching" gets spoiled.
 - **Picks up where you left off**: continue watching, next up, recently added and "because you watched", per profile. Collections, cast pages and search across titles, episodes and people.
 - **Safe for kids**: give a profile an age limit and anything rated above it (or not rated at all) simply isn't there. Family videos can get a library-wide rating so the kids see them too.
 - **A dashboard for the server**: who's watching what and on which device, whether it plays directly or is being converted (and why), CPU, GPU and disk use, running tasks, and a feed of what happened lately. "Mira finished Paper Moons" included.

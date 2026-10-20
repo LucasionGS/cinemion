@@ -1,4 +1,5 @@
-import type { TogetherAction, TogetherClientMessage, TogetherMember, TogetherRoom, TogetherServerMessage, TogetherState } from "@shared/together.ts";
+import { TOGETHER_CHAT_LIMIT, TOGETHER_REACTIONS } from "@shared/together.ts";
+import type { TogetherAction, TogetherChatMessage, TogetherClientMessage, TogetherMember, TogetherReaction, TogetherRoom, TogetherServerMessage, TogetherState } from "@shared/together.ts";
 import { MediaItem, User } from "../models/index.ts";
 import Visibility from "../library/Visibility.ts";
 import log from "../lib/Logger.ts";
@@ -27,6 +28,16 @@ export namespace WatchTogether {
     position: number;
     reportedAt: number;
     joinedAt: number;
+    /**
+     * When anything last came from this connection (server ms). Players ping every 15 s, or about once a minute
+     * from a background tab.
+     */
+    lastSeen: number;
+    /**
+     * When this member's recent chat messages and reactions were sent, for the rate limits.
+     */
+    chatTimes: number[];
+    reactionTimes: number[];
   }
 
   export interface Room {
@@ -36,6 +47,10 @@ export namespace WatchTogether {
     anyoneControls: boolean;
     state: TogetherState;
     members: Map<string, Member>;
+    /**
+     * The latest chat messages, oldest first, so people joining or reloading see the conversation.
+     */
+    chat: TogetherChatMessage[];
     /**
      * When the last member left, so empty rooms can be closed. `null` while someone is in it.
      */
@@ -53,6 +68,14 @@ export namespace WatchTogether {
    * How far from the shared position a member can drift and still count as in sync, in seconds.
    */
   const SYNC_TOLERANCE = 2.5;
+  /**
+   * Members silent this long are taken out, like a page kept in the browser's back/forward cache with its socket open.
+   */
+  const SILENT_TIMEOUT = 150 * 1000;
+  const CHAT_HISTORY = 100;
+  // Rate limits: this many in this many ms
+  const CHAT_RATE = { count: 5, per: 5000 };
+  const REACTION_RATE = { count: 8, per: 4000 };
 
   const _rooms = new Map<string, Room>();
   let _sweeper: ReturnType<typeof setInterval> | null = null;
@@ -87,6 +110,7 @@ export namespace WatchTogether {
       anyoneControls: true,
       state: { playing: false, position, at: Date.now() },
       members: new Map(),
+      chat: [],
       emptySince: Date.now(),
     };
     _rooms.set(room.code, room);
@@ -133,6 +157,26 @@ export namespace WatchTogether {
   }
 
   /**
+   * Note one more message in `times`, unless the limit was already reached.
+   */
+  function withinRate(times: number[], rate: { count: number; per: number }) {
+    const now = Date.now();
+    while (times.length && now - times[0] > rate.per) times.shift();
+    if (times.length >= rate.count) return false;
+    times.push(now);
+    return true;
+  }
+
+  /**
+   * Chat text as it's stored: one line, no control characters, at most `TOGETHER_CHAT_LIMIT` characters.
+   */
+  export function cleanChatText(text: unknown) {
+    // deno-lint-ignore no-control-regex
+    const clean = String(text ?? "").replace(/[\u0000-\u001f\u007f]+/g, " ").replace(/\s+/g, " ").trim();
+    return [...clean].slice(0, TOGETHER_CHAT_LIMIT).join("");
+  }
+
+  /**
    * Whether `member` may play, pause and seek. The host always can; others when allowed, or when the host isn't there.
    */
   function canControl(room: Room, member: Member) {
@@ -147,6 +191,26 @@ export namespace WatchTogether {
     private _member: Member | null = null;
     private _room: Room | null = null;
     private _lastRoomBroadcast = 0;
+    private static readonly _all = new Set<Connection>();
+
+    /**
+     * Close connections that stopped talking. A closed socket takes itself out of its room.
+     */
+    public static closeSilent() {
+      const now = Date.now();
+      for (const connection of Connection._all) {
+        const member = connection._member;
+        if (!member || now - member.lastSeen < SILENT_TIMEOUT) continue;
+        log.debug("Dropped a silent watch together member", { code: connection._room?.code, name: member.user.name });
+        connection.close();
+        try {
+          // Not 1000 or 4xxx, so a player that wakes up again reconnects instead of giving up
+          connection.socket.close(3008, "Timed out");
+        } catch {
+          // Already closed
+        }
+      }
+    }
 
     constructor(private readonly socket: Socket) { }
 
@@ -158,6 +222,7 @@ export namespace WatchTogether {
         return;
       }
       if (message.type === "hello") return await this._hello(message);
+      if (this._member) this._member.lastSeen = Date.now();
       if (message.type === "ping") return send(this.socket, { type: "pong", t: message.t, serverTime: Date.now() });
 
       const room = this._room;
@@ -189,6 +254,30 @@ export namespace WatchTogether {
           room.anyoneControls = !!message.anyoneControls;
           broadcast(room, { type: "room", room: info(room) });
           break;
+        case "chat": {
+          const text = cleanChatText(message.text);
+          if (!text) return;
+          if (!withinRate(member.chatTimes, CHAT_RATE)) return send(this.socket, { type: "error", message: "Slow down a little: wait a moment before sending more." });
+          const chat: TogetherChatMessage = {
+            id: crypto.randomUUID(),
+            memberId: member.id,
+            profile: member.user.toProfileJSON(),
+            text,
+            at: Date.now(),
+            position: Math.round(positionNow(room.state) * 10) / 10,
+          };
+          room.chat.push(chat);
+          if (room.chat.length > CHAT_HISTORY) room.chat.splice(0, room.chat.length - CHAT_HISTORY);
+          broadcast(room, { type: "chat", message: chat });
+          break;
+        }
+        case "react": {
+          const reaction = message.reaction as TogetherReaction;
+          // Too many reactions are dropped quietly; they're only decoration
+          if (!TOGETHER_REACTIONS.includes(reaction) || !withinRate(member.reactionTimes, REACTION_RATE)) return;
+          broadcast(room, { type: "reaction", reaction, memberId: member.id, profile: member.user.toProfileJSON() });
+          break;
+        }
         case "leave":
           this.close();
           this.socket.close(1000, "Left");
@@ -226,12 +315,16 @@ export namespace WatchTogether {
         position: positionNow(room.state),
         reportedAt: Date.now(),
         joinedAt: Date.now(),
+        lastSeen: Date.now(),
+        chatTimes: [],
+        reactionTimes: [],
       };
       this._member = member;
       this._room = room;
+      Connection._all.add(this);
       room.members.set(member.id, member);
       room.emptySince = null;
-      send(this.socket, { type: "welcome", memberId: member.id, room: info(room), serverTime: Date.now() });
+      send(this.socket, { type: "welcome", memberId: member.id, room: info(room), serverTime: Date.now(), chat: room.chat });
       broadcast(room, { type: "room", room: info(room) });
     }
 
@@ -253,6 +346,7 @@ export namespace WatchTogether {
       const member = this._member;
       this._room = null;
       this._member = null;
+      Connection._all.delete(this);
       if (!room || !member) return;
       room.members.delete(member.id);
       if (room.members.size === 0) room.emptySince = Date.now();
@@ -279,6 +373,7 @@ export namespace WatchTogether {
 
   function startSweeper() {
     _sweeper ??= setInterval(() => {
+      Connection.closeSilent();
       for (const room of _rooms.values()) {
         if (room.emptySince !== null && Date.now() - room.emptySince > EMPTY_TIMEOUT) end(room, "Everyone left.");
       }

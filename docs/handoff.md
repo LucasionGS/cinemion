@@ -231,8 +231,8 @@ and on amd64 Intel's non-free VA driver + Quick Sync runtime), `docker/entrypoin
 | 7 | done | Distribution: CLI in the binary, CI and Release workflows, GHCR image (amd64 + arm64), AUR `cinemion-bin` with a systemd unit, `set_version.sh`, README with screenshots, MediaHub preset. **0.1.0 released** (GitHub release, `ghcr.io/lucasiongs/cinemion:0.1.0`, AUR `cinemion-bin`) |
 | 8 | done | Playback extras: skip intro and credits (audio fingerprints across a season, plus chapter names), surround sound per device, subtitle styling per profile, ASS subtitles drawn with their own styling (below) |
 | 9 | done | Automatic quality: adaptive HLS with several qualities at once (below) |
-| 10 | **next** | Watch together chat and reactions |
-| 11 | planned | Light theme |
+| 10 | done | Watch together chat and reactions (below) |
+| 11 | **next** | Light theme |
 | 12 | planned | Music libraries: artists, albums, tracks, a mini-player that keeps playing, playlists, lyrics |
 | 13 | planned | Audiobooks and books: chapters, progress, sleep timer |
 | 14 | planned | More metadata (TVDB, OMDb ratings) and Trakt scrobbling |
@@ -337,6 +337,20 @@ Follows the Round 3 admin mockup (artboard `Admin.dc.html` in the Round 3 canvas
   next to the conversion it replaces.
 - **Player**: hls.js ABR picks the rung; `PlayerController.currentHeight` follows `LEVEL_SWITCHED`, shown on the stream
   badge ("720p · Auto") and in the Quality tab ("Now 720p"). The dashboard shows "H.264 720p / 480p / 360p".
+
+### Milestone 10: what was built
+- **Chat** over the watch together socket (`chat` messages, `TogetherChatMessage` with the shared position it was sent
+  at). Rooms keep the last 100 lines in memory and send them in `welcome`, so reloads and late joiners see the
+  conversation. One line, control characters removed, at most `TOGETHER_CHAT_LIMIT` (500) characters, 5 messages per
+  5 s per connection ("Slow down a little…" past that).
+- **Reactions**: the fixed set `TOGETHER_REACTIONS` (8 per 4 s, extras dropped quietly) float up from the bottom
+  right of everyone's player with the sender's name, in five lanes; reduced motion only fades them.
+- **Panel**: in a session the watch together panel has Chat and People tabs (People first while alone). With the chat
+  out of sight, new messages show as the top notice and as a count on the Watch together button. Player shortcuts
+  ignore keys typed into text fields, except Escape.
+- **Stale members**: pages kept in the back/forward cache used to stay in the room with their socket open. The
+  client closes its socket on such a `pagehide` and rejoins on `pageshow`, and the server drops members silent for
+  150 s (close code 3008, so a player that wakes up reconnects).
 
 ## 6. Design decisions
 

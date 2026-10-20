@@ -1,4 +1,4 @@
-import { Fragment, type ReactNode, useEffect, useRef } from "react";
+import { type CSSProperties, Fragment, type ReactNode, useEffect, useRef } from "react";
 import { Captions, ChevronLeft, ChevronsRight, Users, Maximize, Minimize, Pause, PictureInPicture2, Play, SkipForward, Volume1, Volume2, VolumeX } from "lucide-react";
 import useController from "../../lib/useController.ts";
 import { deviceMode } from "../../lib/DeviceMode.ts";
@@ -83,6 +83,9 @@ export default function PlayerView(props: PlayerViewProps) {
       // Dialogs over the player handle their own keys
       if (controller.subtitleSearchOpen || (document.activeElement as HTMLElement | null)?.closest(".cn-dialog")) return;
       const active = document.activeElement as HTMLElement | null;
+      // Writing in the chat: keys are letters, except Escape
+      const typing = (active instanceof HTMLInputElement && active.type !== "range") || active instanceof HTMLTextAreaElement;
+      if (typing && e.key !== "Escape") return;
       const inPanel = !!active?.closest(".cn-track-panel");
       const onScrubber = !!active?.hasAttribute("data-scrubber");
       const onControl = !!active && active !== document.body && !!root.current?.contains(active) && !onScrubber;
@@ -317,7 +320,17 @@ export default function PlayerView(props: PlayerViewProps) {
       {t.notice && (
         <div key={t.notice.id} className="cn-together-notice" role="status">
           {t.notice.profile && <Avatar profile={t.notice.profile} size={1.75} />}
-          {t.notice.text}
+          <span>{t.notice.text}</span>
+        </div>
+      )}
+      {t.reactions.length > 0 && (
+        <div className="cn-reactions" aria-hidden="true">
+          {t.reactions.map((r) => (
+            <span key={r.id} className="cn-reactions__item" style={{ "--lane": r.lane } as CSSProperties}>
+              <span className="cn-reactions__emoji">{r.reaction}</span>
+              <span className="cn-reactions__name">{r.profile.name}</span>
+            </span>
+          ))}
         </div>
       )}
       {c.info?.canSearchSubtitles && (
@@ -448,14 +461,15 @@ function TogetherButton(props: { controller: PlayerController }) {
   const { mode } = useController(deviceMode);
   const count = t.isConnected() && t.room?.itemId === item.id ? t.room.members.length : 0;
   const toggle = () => controller.setTogetherOpen(!togetherOpen);
+  const unread = count && !togetherOpen && t.unread > 0 ? <span className="cn-player__unread" aria-label={`${t.unread} new messages`}>{t.unread}</span> : null;
 
   if (mode === "tv") {
-    return <Button variant="secondary" icon={<Users />} onClick={toggle}>{count ? `${count} watching` : "Watch together"}</Button>;
+    return <Button variant="secondary" icon={<Users />} onClick={toggle}>{count ? `${count} watching` : "Watch together"}{unread}</Button>;
   }
   if (count > 0) {
     return (
       <button type="button" className={cx("cn-player__watching", togetherOpen && "cn-player__watching--open")} aria-expanded={togetherOpen} onClick={toggle}>
-        <Users aria-hidden="true" /> {count} watching
+        <Users aria-hidden="true" /> {count} watching{unread}
       </button>
     );
   }

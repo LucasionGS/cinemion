@@ -1,5 +1,5 @@
 import type { ProfileSummary } from "@shared/api.ts";
-import type { TogetherAction, TogetherClientMessage, TogetherMember, TogetherRoom, TogetherServerMessage, TogetherState } from "@shared/together.ts";
+import type { TogetherAction, TogetherChatMessage, TogetherClientMessage, TogetherMember, TogetherReaction, TogetherRoom, TogetherServerMessage, TogetherState } from "@shared/together.ts";
 import Controller from "./Controller.ts";
 import BaseApi from "../Api/BaseApi.ts";
 import { deviceMode } from "./DeviceMode.ts";
@@ -16,6 +16,16 @@ export interface TogetherNotice {
 }
 
 /**
+ * A reaction floating over the video. `lane` spreads them out side by side.
+ */
+export interface FloatingReaction {
+  id: number;
+  reaction: TogetherReaction;
+  profile: ProfileSummary;
+  lane: number;
+}
+
+/**
  * This device's place in a watch together room: the WebSocket, the shared state and server clock.
  * One at a time; the player subscribes to it while it's open.
  */
@@ -29,6 +39,16 @@ export class TogetherSession extends Controller {
    */
   public endedReason: string | null = null;
   public notice: TogetherNotice | null = null;
+  public messages: TogetherChatMessage[] = [];
+  /**
+   * Chat messages from others since the chat was last on screen.
+   */
+  public unread = 0;
+  public reactions: FloatingReaction[] = [];
+  /**
+   * Whether the chat is on screen, so new messages count as read instead of showing as notices.
+   */
+  private _chatVisible = false;
 
   private _socket: WebSocket | null = null;
   /**
@@ -39,12 +59,26 @@ export class TogetherSession extends Controller {
   private _pingTimer: ReturnType<typeof setInterval> | null = null;
   private _retries = 0;
   private _noticeId = 0;
+  private _reactionId = 0;
   private _noticeTimer: ReturnType<typeof setTimeout> | null = null;
   private _controlListeners = new Set<(state: TogetherState, byMe: boolean) => void>();
   private _itemListeners = new Set<(itemId: number) => void>();
   private _welcomeWaiters: ((ok: boolean) => void)[] = [];
 
   private static readonly STORAGE_KEY = "cn-together";
+
+  constructor() {
+    super();
+    // A page kept in the back/forward cache would stay in the room with its socket open; it rejoins when it comes back
+    addEventListener("pagehide", (e) => {
+      if (!e.persisted || !this._socket) return;
+      this._disconnect();
+      this.status = "connecting";
+    });
+    addEventListener("pageshow", (e) => {
+      if (e.persisted && this.code && !this._socket) this._connect();
+    });
+  }
 
   public isConnected() {
     return this.status === "connected" && !!this.room;
@@ -173,6 +207,7 @@ export class TogetherSession extends Controller {
         this.status = "connected";
         this._retries = 0;
         this._clockOffset = message.serverTime - Date.now();
+        this.messages = message.chat ?? [];
         this._startPings();
         this._welcomeWaiters.splice(0).forEach((done) => done(true));
         break;
@@ -204,6 +239,24 @@ export class TogetherSession extends Controller {
         if (this.room) this.room = { ...this.room, itemId: message.itemId, state: { playing: true, position: 0, at: this.serverNow() } };
         this._itemListeners.forEach((l) => l(message.itemId));
         break;
+      case "chat": {
+        this.messages = [...this.messages.slice(-199), message.message];
+        const fromOther = message.message.memberId !== this.memberId;
+        if (fromOther && !this._chatVisible) {
+          this.unread++;
+          this._showNotice(`${message.message.profile.name}: ${message.message.text}`, message.message.profile);
+        }
+        break;
+      }
+      case "reaction": {
+        const id = ++this._reactionId;
+        this.reactions = [...this.reactions.slice(-11), { id, reaction: message.reaction, profile: message.profile, lane: id % 5 }];
+        setTimeout(() => {
+          this.reactions = this.reactions.filter((r) => r.id !== id);
+          this.notify();
+        }, 3200);
+        break;
+      }
       case "pong": {
         const rtt = Date.now() - message.t;
         // The quickest round trip gives the most accurate offset
@@ -262,6 +315,25 @@ export class TogetherSession extends Controller {
     this._send({ type: "item", itemId });
   }
 
+  public sendChat(text: string) {
+    this._send({ type: "chat", text });
+  }
+
+  public sendReaction(reaction: TogetherReaction) {
+    this._send({ type: "react", reaction });
+  }
+
+  /**
+   * Tell the session whether the chat is on screen. While it is, new messages are read right away.
+   */
+  public setChatVisible(visible: boolean) {
+    this._chatVisible = visible;
+    if (visible && this.unread) {
+      this.unread = 0;
+      this.notify();
+    }
+  }
+
   public setAnyoneControls(anyoneControls: boolean) {
     this._send({ type: "settings", anyoneControls });
   }
@@ -305,6 +377,9 @@ export class TogetherSession extends Controller {
     this.room = null;
     this.memberId = null;
     this.code = null;
+    this.messages = [];
+    this.unread = 0;
+    this.reactions = [];
     this._welcomeWaiters.splice(0).forEach((done) => done(false));
     try {
       sessionStorage.removeItem(TogetherSession.STORAGE_KEY);

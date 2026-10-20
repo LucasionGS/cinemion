@@ -236,6 +236,22 @@
     }
   }
 
+  // New chat messages while the watch together panel is closed
+  &__unread {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.25rem;
+    height: 1.25rem;
+    margin-left: 0.125rem;
+    padding: 0 0.375rem;
+    border-radius: var(--cn-radius-pill);
+    background: var(--cn-accent);
+    color: #fff;
+    font-size: 0.6875rem;
+    font-weight: 800;
+  }
+
   &__panel-toggle--open {
     background: var(--cn-text) !important;
     color: var(--cn-bg) !important;
@@ -1157,6 +1173,214 @@
       flex: 1;
     }
   }
+
+  &__tabs {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.25rem;
+    padding: 0.5rem;
+    border-bottom: 1px solid var(--cn-border);
+
+    .cn-track-panel__tab {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.375rem;
+    }
+  }
+
+  &__unread {
+    min-width: 1.125rem;
+    height: 1.125rem;
+    padding: 0 0.3125rem;
+    border-radius: var(--cn-radius-pill);
+    background: var(--cn-accent);
+    color: #fff;
+    font-size: 0.6875rem;
+    line-height: 1.125rem;
+  }
+}
+
+.cn-together-chat {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+
+  &__messages {
+    flex: 1;
+    overflow-y: auto;
+    margin: 0;
+    padding: 0.75rem 1rem;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+  }
+
+  &__empty {
+    margin: auto 0;
+    padding: 1rem 0.5rem;
+    text-align: center;
+    font-size: 0.875rem;
+    color: var(--cn-text-muted);
+  }
+
+  &__line {
+    display: flex;
+    gap: 0.625rem;
+    padding-top: 0.625rem;
+
+    .cn-avatar {
+      flex-shrink: 0;
+    }
+
+    // Lines that continue someone's messages line up under the text, past the avatar
+    &--continued {
+      padding-top: 0;
+      padding-left: 2.625rem;
+    }
+  }
+
+  &__body {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+
+    p {
+      font-size: 0.9375rem;
+      line-height: 1.4;
+      overflow-wrap: anywhere;
+    }
+  }
+
+  &__meta {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+
+    strong {
+      font-size: 0.8125rem;
+    }
+
+    span {
+      font-size: 0.75rem;
+      color: var(--cn-text-muted);
+    }
+  }
+
+  &__reactions {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.25rem;
+    padding: 0.5rem 0.75rem 0;
+    border-top: 1px solid var(--cn-border);
+  }
+
+  &__reaction {
+    flex: 1;
+    height: 2.5rem;
+    border: 0;
+    border-radius: var(--cn-radius-md);
+    background: transparent;
+    font-size: 1.375rem;
+    cursor: pointer;
+    transition: background var(--cn-fast), transform var(--cn-fast);
+
+    &:hover,
+    &:focus-visible {
+      background: var(--cn-glass-hover);
+    }
+
+    &:active {
+      transform: scale(0.9);
+    }
+  }
+
+  &__compose {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.625rem 0.75rem 0.75rem;
+
+    .cn-field__input {
+      flex: 1;
+      background: var(--cn-glass-strong);
+    }
+  }
+}
+
+// Reactions rise from the bottom corner and fade, each in its own lane
+.cn-reactions {
+  position: absolute;
+  z-index: 3;
+  right: calc(var(--player-gutter) + 1rem);
+  bottom: 9rem;
+  width: 15rem;
+  height: 0;
+  pointer-events: none;
+
+  &__item {
+    position: absolute;
+    bottom: 0;
+    right: calc(var(--lane) * 3rem);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.125rem;
+    animation: cn-reaction-rise 3.2s var(--cn-ease) forwards;
+  }
+
+  &__emoji {
+    font-size: 2.5rem;
+    line-height: 1;
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.5));
+  }
+
+  &__name {
+    padding: 0.125rem 0.5rem;
+    border-radius: var(--cn-radius-pill);
+    background: rgba(14, 15, 18, 0.7);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+}
+
+@keyframes cn-reaction-rise {
+  0% {
+    opacity: 0;
+    transform: translateY(0) scale(0.6);
+  }
+  12% {
+    opacity: 1;
+    transform: translateY(-1.5rem) scale(1.1);
+  }
+  20% {
+    transform: translateY(-2.5rem) scale(1);
+  }
+  75% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-14rem) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cn-reactions__item {
+    animation-name: cn-reaction-fade;
+  }
+}
+
+@keyframes cn-reaction-fade {
+  0%, 100% {
+    opacity: 0;
+  }
+  15%, 75% {
+    opacity: 1;
+  }
 }
 
 // Something another member did, for a moment at the top
@@ -1175,11 +1399,18 @@
   border-radius: var(--cn-radius-pill);
   background: rgba(14, 15, 18, 0.82);
   backdrop-filter: blur(24px);
+  max-width: calc(100% - 3rem);
   font-size: 0.875rem;
   font-weight: 700;
   white-space: nowrap;
   pointer-events: none;
   animation: cn-next-up-in var(--cn-medium) var(--cn-ease);
+
+  // Chat messages can be long
+  > span:not(.cn-avatar) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 
   &:not(:has(.cn-avatar)) {
     padding-left: 1rem;

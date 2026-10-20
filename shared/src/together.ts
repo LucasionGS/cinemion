@@ -62,6 +62,35 @@ export interface TogetherPreview {
 
 export type TogetherAction = "play" | "pause" | "seek";
 
+/**
+ * A line in the room's chat.
+ */
+export interface TogetherChatMessage {
+  id: string;
+  memberId: string;
+  profile: ProfileSummary;
+  text: string;
+  /**
+   * Server time it was sent, in ms.
+   */
+  at: number;
+  /**
+   * Where the shared playback was when it was sent, in seconds.
+   */
+  position: number;
+}
+
+/**
+ * The reactions anyone can send. They float over the video for everyone for a moment.
+ */
+export const TOGETHER_REACTIONS = ["❤️", "😂", "😮", "😢", "👏", "🔥"] as const;
+export type TogetherReaction = typeof TOGETHER_REACTIONS[number];
+
+/**
+ * Longest chat message, in characters.
+ */
+export const TOGETHER_CHAT_LIMIT = 500;
+
 export type TogetherClientMessage =
   | { type: "hello"; token: string; code: string; device: string }
   | { type: "control"; action: TogetherAction; position: number }
@@ -69,11 +98,15 @@ export type TogetherClientMessage =
   | { type: "ping"; t: number }
   | { type: "item"; itemId: number }
   | { type: "settings"; anyoneControls: boolean }
+  | { type: "chat"; text: string }
+  | { type: "react"; reaction: TogetherReaction }
   | { type: "leave" }
   | { type: "end" };
 
 export type TogetherServerMessage =
-  | { type: "welcome"; memberId: string; room: TogetherRoom; serverTime: number }
+  | { type: "welcome"; memberId: string; room: TogetherRoom; serverTime: number; chat: TogetherChatMessage[] }
+  | { type: "chat"; message: TogetherChatMessage }
+  | { type: "reaction"; reaction: TogetherReaction; memberId: string; profile: ProfileSummary }
   | { type: "room"; room: TogetherRoom }
   | { type: "control"; action: TogetherAction; state: TogetherState; by: { memberId: string; name: string } }
   | { type: "item"; itemId: number; by: { memberId: string; name: string } }
