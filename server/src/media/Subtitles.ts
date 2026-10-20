@@ -5,7 +5,8 @@ import type MediaFile from "../models/MediaFile.ts";
 import Ffmpeg from "../lib/Ffmpeg.ts";
 
 /**
- * Text subtitles pulled out of video files as WebVTT, which the player draws itself.
+ * Text subtitles pulled out of video files: as WebVTT, which the player draws itself, or as the original ASS, which
+ * the player draws with its own styling.
  */
 export namespace Subtitles {
   export const cacheDir = Path.join(AppSystem.config.CACHE_DIR, "subtitles");
@@ -13,10 +14,31 @@ export namespace Subtitles {
   const _pending = new Map<string, Promise<string>>();
 
   /**
+   * Whether a subtitle codec carries its own styling (fonts, colours, positions) worth keeping.
+   */
+  export function isStyled(codec: string) {
+    return codec === "ass" || codec === "ssa";
+  }
+
+  /**
    * Path of a WebVTT copy of the subtitle stream `index`, extracting it the first time.
    * @throws When the stream isn't a text subtitle or ffmpeg can't read it.
    */
   export function toWebVtt(file: MediaFile, index: number): Promise<string> {
+    return extract(file, index, "webvtt");
+  }
+
+  /**
+   * Path of the ASS subtitle stream `index` as it is, extracting it the first time.
+   * @throws When the stream isn't an ASS or SSA subtitle, or ffmpeg can't read it.
+   */
+  export function toAss(file: MediaFile, index: number): Promise<string> {
+    const track = file.allSubtitles().find((s) => s.index === index);
+    if (track && !isStyled(track.codec)) return Promise.reject(new Error("Only ASS and SSA subtitles keep their own styling."));
+    return extract(file, index, "ass");
+  }
+
+  function extract(file: MediaFile, index: number, format: "webvtt" | "ass"): Promise<string> {
     const track = file.allSubtitles().find((s) => s.index === index);
     if (!track) return Promise.reject(new Error("That subtitle track doesn't exist."));
     if (track.isImage) return Promise.reject(new Error("Picture subtitles can't be turned into text. They are drawn into the video instead."));
@@ -26,7 +48,7 @@ export namespace Subtitles {
     const sidecar = file.sidecarFor(index);
     const source = sidecar?.path ?? file.path;
     const key = sidecar ? `${file.id}-file-${hash(sidecar.path)}` : `${file.id}-${index}`;
-    const target = Path.join(cacheDir, `${key}-${file.mtime}.vtt`);
+    const target = Path.join(cacheDir, `${key}-${file.mtime}.${format === "ass" ? "ass" : "vtt"}`);
     const pending = _pending.get(target);
     if (pending) return pending;
 
@@ -38,7 +60,8 @@ export namespace Subtitles {
       await fsp.mkdir(cacheDir, { recursive: true });
       const temp = `${target}.${crypto.randomUUID()}.tmp`;
       const encoding = sidecar ? await textEncoding(sidecar.path) : null;
-      const result = await Ffmpeg.run(["-y", ...(encoding ? ["-sub_charenc", encoding] : []), "-i", source, "-map", sidecar ? "0:s:0" : `0:${index}`, "-c:s", "webvtt", "-f", "webvtt", temp]);
+      const codec = format === "ass" ? ["-c:s", "copy", "-f", "ass"] : ["-c:s", "webvtt", "-f", "webvtt"];
+      const result = await Ffmpeg.run(["-y", ...(encoding ? ["-sub_charenc", encoding] : []), "-i", source, "-map", sidecar ? "0:s:0" : `0:${index}`, ...codec, temp]);
       if (result.code !== 0) {
         await fsp.rm(temp, { force: true });
         throw new Error(`Could not read the subtitles: ${result.stderr.trim().split("\n").pop()}`);

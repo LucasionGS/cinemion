@@ -1,7 +1,7 @@
 # Cinemion handoff
 
 Everything an assistant needs to pick this project up with no earlier context. Read it fully before changing code.
-Last updated 2026-10-20, after milestone 7.
+Last updated 2026-10-20, after milestone 8.
 
 ## 1. What Cinemion is
 
@@ -229,8 +229,8 @@ and on amd64 Intel's non-free VA driver + Quick Sync runtime), `docker/entrypoin
 | 6 | done | Admin & integrations: dashboard, activity feed, tasks and logs pages, Sonarr/Radarr receiver with path mappings, outgoing webhooks (below) |
 | 6b | done | Videos libraries: folders as groups, no online lookups, Edit details, automatic thumbnails, per-library rating for unrated videos (Round 4 in `docs/design/decisions.md`) |
 | 7 | done | Distribution: CLI in the binary, CI and Release workflows, GHCR image (amd64 + arm64), AUR `cinemion-bin` with a systemd unit, `set_version.sh`, README with screenshots, MediaHub preset. **0.1.0 released** (GitHub release, `ghcr.io/lucasiongs/cinemion:0.1.0`, AUR `cinemion-bin`) |
-| 8 | **next** | Playback extras: skip intro and credits (audio fingerprints across a season, plus chapter names), surround sound per device, subtitle styling |
-| 9 | planned | Automatic quality: adaptive HLS with several qualities at once |
+| 8 | done | Playback extras: skip intro and credits (audio fingerprints across a season, plus chapter names), surround sound per device, subtitle styling per profile, ASS subtitles drawn with their own styling (below) |
+| 9 | **next** | Automatic quality: adaptive HLS with several qualities at once |
 | 10 | planned | Watch together chat and reactions |
 | 11 | planned | Light theme |
 | 12 | planned | Music libraries: artists, albums, tracks, a mini-player that keeps playing, playlists, lyrics |
@@ -294,6 +294,33 @@ Follows the Round 3 admin mockup (artboard `Admin.dc.html` in the Round 3 canvas
   Chrome), install per method (Docker, Compose, AUR, binary), maintenance commands, and how to release.
 - MediaHub (`~/development/mediahub`, `src/shared/presets.ts`): a Cinemion preset at `http://localhost:8600/?mode=tv`
   with `gamepadKeys`, second in the list (the first is added to new hubs by default). Pushed there as `7fbc2c1`.
+
+### Milestone 8: what was built
+- **Intro and credits detection** (`media/Fingerprint.ts`, `media/Markers.ts`): mono 11 kHz audio, 2048-sample
+  frames every 1024 samples, 33 log-spaced bands from 300 to 3000 Hz, one 32-bit code per frame from how the band
+  differences change over time. Two prints are compared at every time shift (a rough pass on every 4th frame, then the
+  best six shifts in full); frames match within 10 differing bits, runs come from a 1.5 s sliding window at 40% and are
+  merged across gaps under 2 s, then trimmed to their first and last real match. Quiet frames and frames with fewer
+  than 4 or more than 28 set bits (steady tones, hum) never match. Each episode is compared with the next one, then the
+  one before: the first 10 minutes for intros (12–180 s long, starting in the first third), the last 8 minutes for
+  credits (running to the end when they end within 20 s of it). Chapters named Intro/Opening/OP or
+  Credits/Ending/ED/Outro win over audio. Results go in `media_files.markers` with `markersVersion` (bump
+  `Markers.VERSION` to look at everything again; a changed file resets to 0). Runs in the `markers` queue after each
+  scan; Tasks › "Find intros and credits again". Sample media: Saltwater Kings episodes share a 20 s opening tune and
+  15 s credits tune after cold opens of different lengths; Ironwood has chapters.
+- **Player**: `PlaybackInfo.markers`; "Skip intro" (bottom right, raised above the controls when they show, focused
+  on TV), or skipping by itself (once per intro). With credits known, the up-next card shows when they start and the
+  next episode starts 10 s in (`CREDITS_COUNTDOWN`); without, the old 30 s before the end.
+- **This device › Playback** (`lib/DevicePrefs.ts`, localStorage `cn-device-prefs`): Speakers (automatic, stereo,
+  5.1, 7.1, receiver: passes AC3/E-AC3 through even when the browser doesn't claim it) feeds `detectCapabilities()`;
+  Intros (show Skip / skip by itself / off).
+- **Subtitle style per profile** (`users.preferences` JSON, `normalizePreferences()` in `shared/src/profiles.ts`, saved
+  with `PATCH /api/users/me`): size, colour (`--cn-subtitle-*` tokens), background (box, outline, none), with a live
+  preview in Settings › Your profile that uses the player's own classes.
+- **Styled ASS subtitles** with JASSUB 2.5.18 (libass in WebAssembly, loaded lazily; ~2 MB wasm): `SubtitleOption.styledUrl`
+  (`/stream/:token/subtitles/:index.ass`), fonts attached to MKVs from `/stream/:token/fonts` (`media/Fonts.ts` dumps
+  them once into `CACHE_DIR/fonts`), `timeOffset` = the stream's start, so conversions starting mid-file stay in sync.
+  The profile switch "Keep the look of styled subtitles" turns it off. The server serves `.wasm` as `application/wasm`.
 
 ## 6. Design decisions
 

@@ -40,6 +40,13 @@ export namespace AdminApi {
   }
 
   /**
+   * Find intros and credits in files not looked at yet, or in all of them again with `redo`.
+   */
+  export function markers(redo = false) {
+    return BaseApi.POST<TaskInfo[]>("/admin/tasks/markers", { redo });
+  }
+
+  /**
    * Server log lines, oldest first. With `after`, only lines newer than that id.
    */
   export function logs(after = 0) {

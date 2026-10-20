@@ -18,6 +18,8 @@ const CONTENT_TYPES: Record<string, string> = {
   ".webp": "image/webp",
   ".ico": "image/x-icon",
   ".woff2": "font/woff2",
+  ".woff": "font/woff",
+  ".wasm": "application/wasm",
   ".txt": "text/plain; charset=utf-8",
 };
 

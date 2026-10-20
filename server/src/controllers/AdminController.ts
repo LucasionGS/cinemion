@@ -9,6 +9,7 @@ import HardwareAcceleration from "../media/HardwareAcceleration.ts";
 import TranscodeSession from "../media/TranscodeSession.ts";
 import ActivePlayback from "../media/ActivePlayback.ts";
 import Trickplay from "../media/Trickplay.ts";
+import Markers from "../media/Markers.ts";
 import SystemStats from "../lib/SystemStats.ts";
 import Tasks from "../lib/Tasks.ts";
 import { readJson } from "../lib/http.ts";
@@ -139,6 +140,18 @@ export namespace AdminController {
     }
     if (body?.remake) await Trickplay.clear();
     for (const library of await Library.findAll()) Trickplay.queueLibrary(library.id);
+    return c.json(Tasks.list());
+  });
+
+  /**
+   * @swagger
+   * /api/admin/tasks/markers:
+   *   post:
+   *     summary: Find intros and credits in files not looked at yet. With `{ "redo": true }`, in every file again.
+   */
+  router.post("/tasks/markers", async (c) => {
+    const body = await readJson<{ redo: boolean }>(c);
+    for (const library of await Library.findAll()) Markers.queueLibrary(library.id, { redo: !!body?.redo });
     return c.json(Tasks.list());
   });
 

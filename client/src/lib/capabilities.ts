@@ -1,5 +1,6 @@
 import type { DeviceCapabilities } from "@shared/playback.ts";
 import { deviceMode } from "./DeviceMode.ts";
+import { devicePrefs } from "./DevicePrefs.ts";
 
 // Sample codec strings for each codec, in the spelling ffprobe uses on the server
 const VIDEO: Record<string, string[]> = {
@@ -32,6 +33,10 @@ export function hasMediaSource() {
 }
 
 let _cached: DeviceCapabilities | null = null;
+// The speaker setting changes what's reported, so look again after it changes
+devicePrefs.subscribe(() => {
+  _cached = null;
+});
 
 /**
  * What this browser can decode, sent to the server when playback starts.
@@ -42,13 +47,19 @@ export function detectCapabilities(): DeviceCapabilities {
   const video = document.createElement("video");
   const supported = (types: string[]) => types.some((t) => ms ? ms.isTypeSupported(t) : video.canPlayType(t) !== "");
 
+  const speakers = devicePrefs.speakers;
+  const audioCodecs = Object.keys(AUDIO).filter((codec) => supported(AUDIO[codec]));
+  // Passing Dolby Digital through lets the device (or the receiver behind it) decode it, even when the browser
+  // doesn't say it can
+  if (speakers === "passthrough") audioCodecs.push(...["ac3", "eac3"].filter((c) => !audioCodecs.includes(c)));
+
   _cached = {
     videoCodecs: Object.keys(VIDEO).filter((codec) => supported(VIDEO[codec])),
-    audioCodecs: Object.keys(AUDIO).filter((codec) => supported(AUDIO[codec])),
+    audioCodecs,
     containers: ["mp4", "webm"].filter((c) => video.canPlayType(`video/${c}`) !== ""),
     hdr: matchMedia("(dynamic-range: high)").matches,
-    // Speakers can't be detected; a TV is usually connected to something with surround sound
-    maxAudioChannels: deviceMode.isTv() ? 6 : 2,
+    // Speakers can't be detected; without a setting, a TV is usually connected to something with surround sound
+    maxAudioChannels: { auto: deviceMode.isTv() ? 6 : 2, stereo: 2, surround51: 6, surround71: 8, passthrough: 8 }[speakers],
   };
   return _cached;
 }

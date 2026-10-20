@@ -1,5 +1,5 @@
 import { Fragment, type ReactNode, useEffect, useRef } from "react";
-import { Captions, ChevronLeft, Users, Maximize, Minimize, Pause, PictureInPicture2, Play, SkipForward, Volume1, Volume2, VolumeX } from "lucide-react";
+import { Captions, ChevronLeft, ChevronsRight, Users, Maximize, Minimize, Pause, PictureInPicture2, Play, SkipForward, Volume1, Volume2, VolumeX } from "lucide-react";
 import useController from "../../lib/useController.ts";
 import { deviceMode } from "../../lib/DeviceMode.ts";
 import { episodeLabel, formatClock } from "../../lib/playback.ts";
@@ -18,6 +18,8 @@ import Avatar from "../Avatar/Avatar.tsx";
 import { together } from "../../lib/Together.ts";
 import { toasts } from "../../lib/Toasts.ts";
 import { formatDate } from "../../lib/format.ts";
+import { session } from "../../Session.ts";
+import { DEFAULT_PREFERENCES } from "@shared/profiles.ts";
 import type PlayerController from "./PlayerController.ts";
 import "./Player.scss";
 
@@ -241,6 +243,7 @@ export default function PlayerView(props: PlayerViewProps) {
   const title = item.type === "episode" ? item.showTitle ?? item.title : item.title;
   const subtitle = item.type === "episode" ? `${episodeLabel(item)} · ${item.title}` : item.type === "video" ? (item.releaseDate ? formatDate(item.releaseDate) : null) : item.year ? String(item.year) : null;
   const cues = c.subtitleIndex !== null ? activeCues(c.cues, c.position) : [];
+  const style = useController(session).user?.preferences.subtitles ?? DEFAULT_PREFERENCES.subtitles;
   const idle = !c.controlsVisible && !c.loading && !c.error;
 
   return (
@@ -252,8 +255,8 @@ export default function PlayerView(props: PlayerViewProps) {
       <video ref={video} className="cn-player__video" playsInline autoPlay preload="auto" />
       <div className="cn-player__surface" onClick={onSurfaceClick} onDoubleClick={() => mode === "desktop" && controller.toggleFullscreen(root.current!)} />
 
-      {cues.length > 0 && (
-        <div className="cn-player__subtitles" aria-live="off">
+      {cues.length > 0 && !c.styled && (
+        <div className={cx("cn-player__subtitles", `cn-player__subtitles--${style.size}`, `cn-player__subtitles--${style.color}`, `cn-player__subtitles--${style.background}`)} aria-live="off">
           {cues.map((cue) => <span key={cue.start + cue.text}>{renderCueText(cue.text)}</span>)}
         </div>
       )}
@@ -320,6 +323,7 @@ export default function PlayerView(props: PlayerViewProps) {
       {c.info?.canSearchSubtitles && (
         <SubtitleSearchDialog controller={controller} open={c.subtitleSearchOpen} onOpenChange={(open) => controller.setSubtitleSearchOpen(open)} container={root.current} />
       )}
+      {c.intro && !c.error && c.nextCountdown === null && <SkipIntro controller={controller} />}
       {c.nextCountdown !== null && c.next && !c.error && <NextUp controller={controller} />}
     </div>
   );
@@ -487,6 +491,19 @@ function StreamBadge(props: { controller: PlayerController }) {
     <button type="button" className="cn-player__badge" title={modeLabel(info)} tabIndex={-1} onClick={() => props.controller.openPanel("quality")}>
       {text}
     </button>
+  );
+}
+
+/**
+ * "Skip intro", while an intro plays. It stays up when the controls hide, since that's when it's needed.
+ */
+function SkipIntro(props: { controller: PlayerController }) {
+  const { controller } = props;
+  const c = useController(controller);
+  return (
+    <div className={cx("cn-skip", c.controlsVisible && "cn-skip--raised")} data-focus-scope={deviceMode.isTv() ? true : undefined}>
+      <Button variant="secondary" icon={<ChevronsRight />} onClick={() => controller.skipIntro()} data-autofocus={deviceMode.isTv() || undefined}>Skip intro</Button>
+    </div>
   );
 }
 

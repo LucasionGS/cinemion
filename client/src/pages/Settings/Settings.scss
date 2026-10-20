@@ -449,3 +449,16 @@ button.cn-settings__badge {
   }
 }
 //#endregion
+
+// A frame of "video" behind sample subtitles, on Settings › Your profile
+.cn-subtitle-preview {
+  position: relative;
+  aspect-ratio: 16 / 6;
+  border-radius: var(--cn-radius-lg);
+  overflow: hidden;
+  background: linear-gradient(160deg, var(--cn-surface-3), var(--cn-bg) 60%), var(--cn-surface);
+
+  .cn-player__subtitles {
+    bottom: 12%;
+  }
+}

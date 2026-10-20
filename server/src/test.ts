@@ -9,6 +9,7 @@ import ArrWebhook from "./integrations/ArrWebhook.ts";
 import Webhooks from "./integrations/Webhooks.ts";
 import VideoDetails from "./library/VideoDetails.ts";
 import Library from "./models/Library.ts";
+import Fingerprint from "./media/Fingerprint.ts";
 
 /**
  * Scratch runner for the parts that are easy to get subtly wrong. Run with `deno run -A server/src/test.ts`.
@@ -163,6 +164,49 @@ try {
 }
 check("nested folders in one library are refused", nested.startsWith("The folders"), true);
 check("duplicate folders are merged", Library.verifyPaths(["/m/movies", "/m/movies/"], "Movies"), ["/m/movies"]);
+//#endregion
+
+//#region Intro detection
+console.log("Intro detection");
+{
+  const rate = Fingerprint.SAMPLE_RATE;
+  // Repeatable noise, standing in for the dialogue that differs between episodes
+  const noise = (seconds: number, seed: number) => {
+    const out = new Float64Array(Math.round(seconds * rate));
+    // xorshift32 keeps to 32-bit integers, so the numbers stay exact
+    let x = seed * 2654435761 >>> 0 || 1;
+    for (let i = 0; i < out.length; i++) {
+      x ^= x << 13;
+      x ^= x >>> 17;
+      x ^= x << 5;
+      x >>>= 0;
+      out[i] = (x / 4294967296 - 0.5) * 0.5;
+    }
+    return out;
+  };
+  // A tune of stepping notes, standing in for the opening theme every episode shares
+  const tune = (seconds: number) => {
+    const out = new Float64Array(Math.round(seconds * rate));
+    for (let i = 0; i < out.length; i++) {
+      const t = i / rate;
+      out[i] = 0.4 * Math.sin(2 * Math.PI * (330 + 110 * Math.floor((t * 3) % 6)) * t) + 0.2 * Math.sin(2 * Math.PI * (660 + 55 * Math.floor((t * 1.5) % 4)) * t);
+    }
+    return out;
+  };
+  const join = (...parts: Float64Array[]) => {
+    const pcm = new Int16Array(parts.reduce((n, p) => n + p.length, 0));
+    let at = 0;
+    for (const part of parts) for (const v of part) pcm[at++] = Math.max(-32767, Math.min(32767, Math.round(v * 32767)));
+    return pcm;
+  };
+  const a = Fingerprint.compute(join(noise(8, 1), tune(20), noise(30, 2)), 0);
+  const b = Fingerprint.compute(join(noise(12, 3), tune(20), noise(30, 4)), 0);
+  const c = Fingerprint.compute(join(noise(58, 5)), 0);
+  const match = Fingerprint.longestMatch(a, b, 10);
+  const near = (x: number | undefined, y: number) => x !== undefined && Math.abs(x - y) <= 1;
+  check("shared tune is found in both", [near(match?.aStart, 8), near(match?.aEnd, 28), near(match?.bStart, 12), near(match?.bEnd, 32)], [true, true, true, true]);
+  check("different sound doesn't match", Fingerprint.longestMatch(a, c, 10), null);
+}
 //#endregion
 
 //#region Webhooks

@@ -1,4 +1,4 @@
-import type { Permission, ProfileColor } from "./profiles.ts";
+import type { Permission, ProfileColor, ProfilePreferences } from "./profiles.ts";
 import type { TaskInfo } from "./media.ts";
 
 /**
@@ -58,6 +58,7 @@ export interface UserInfo extends ProfileSummary {
    * Library ids this user can see. `null` = all libraries.
    */
   libraryAccess: number[] | null;
+  preferences: ProfilePreferences;
 }
 
 export interface LoginResponse {
@@ -94,6 +95,7 @@ export interface UpdateSelfRequest {
    * Required when changing the password.
    */
   currentPassword?: string;
+  preferences?: ProfilePreferences;
 }
 
 //#endregion

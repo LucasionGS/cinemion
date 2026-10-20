@@ -9,6 +9,10 @@ import Controller from "../../lib/Controller.ts";
 import { detectCapabilities, hasMediaSource } from "../../lib/capabilities.ts";
 import { type Cue, parseVtt } from "../../lib/vtt.ts";
 import PlaybackApi from "../../Api/PlaybackApi.ts";
+import { devicePrefs } from "../../lib/DevicePrefs.ts";
+import { canRenderStyled, renderStyled } from "../../lib/styledSubtitles.ts";
+import type JASSUB from "jassub";
+import { session } from "../../Session.ts";
 import ItemsApi from "../../Api/ItemsApi.ts";
 import { defaultSubtitle, tracksFor } from "../../lib/playback.ts";
 
@@ -63,6 +67,10 @@ export class PlayerController extends Controller {
   public trickplay: TrickplayInfo | null = null;
   public subtitleIndex: number | null = null;
   public cues: Cue[] = [];
+  /**
+   * Subtitles are drawn with their own styling (ASS), so the plain subtitle text is hidden.
+   */
+  public styled = false;
 
   private _video: HTMLVideoElement | null = null;
   private _hls: Hls | null = null;
@@ -80,11 +88,19 @@ export class PlayerController extends Controller {
   private _together: TogetherSession | null = null;
   private _togetherCleanup: (() => void)[] = [];
   private _applyingShared = false;
+  private _styledRenderer: JASSUB | null = null;
+  // Intros already skipped by themselves, by start time, so seeking back into one doesn't skip it again
+  private _autoSkipped = new Set<number>();
+  private _creditsAdvanced = false;
 
   /**
    * Seconds before the end at which the next episode countdown appears.
    */
   public static readonly NEXT_UP_SECONDS = 30;
+  /**
+   * When the credits are known, the next episode starts this many seconds into them.
+   */
+  public static readonly CREDITS_COUNTDOWN = 10;
   private static readonly HIDE_AFTER_MS = 3500;
   private static readonly PROGRESS_EVERY_MS = 10_000;
   private static readonly PING_EVERY_MS = 30_000;
@@ -188,6 +204,7 @@ export class PlayerController extends Controller {
     if (document.fullscreenElement) document.exitFullscreen().catch(() => { });
     this._hls?.destroy();
     this._hls = null;
+    this._stopStyled();
     const video = this._video;
     if (video) {
       video.removeEventListener("timeupdate", this._onTimeUpdate);
@@ -365,6 +382,7 @@ export class PlayerController extends Controller {
     // While a new stream loads, the old one's times are meaningless
     if (this.loading) return;
     this.position = this.offset + video.currentTime;
+    this._autoSkipIntro();
     this._updateNextUp();
     this.notify();
   };
@@ -577,6 +595,7 @@ export class PlayerController extends Controller {
     const wasBurned = info?.subtitleIndex !== null && info?.subtitleIndex !== undefined;
     this.subtitleIndex = index;
     this.cues = [];
+    this._stopStyled();
     this.notify();
 
     if (reload && (this._isImageSubtitle(index, info?.fileId) || wasBurned)) {
@@ -585,6 +604,24 @@ export class PlayerController extends Controller {
     }
 
     const option = info?.subtitles.find((s) => s.index === index);
+    // ASS subtitles keep their look when the profile wants that and the browser can draw them
+    const keepStyling = session.user?.preferences.subtitles.keepStyling ?? true;
+    if (option?.styledUrl && keepStyling && canRenderStyled() && this._video && info) {
+      try {
+        const renderer = await renderStyled(this._video, option.styledUrl, `${info.streamBase}/fonts`, info.mode === "direct" ? 0 : info.startOffset);
+        if (this.subtitleIndex !== index || this._destroyed || this.info !== info) {
+          renderer.destroy();
+          return;
+        }
+        this._styledRenderer = renderer;
+        this.styled = true;
+        this.notify();
+        return;
+      } catch (error) {
+        // Plain text is better than nothing
+        console.warn("Could not draw styled subtitles", error);
+      }
+    }
     if (!option?.url) return;
     try {
       const res = await fetch(option.url);
@@ -604,6 +641,12 @@ export class PlayerController extends Controller {
     }
   }
 
+  private _stopStyled() {
+    this._styledRenderer?.destroy();
+    this._styledRenderer = null;
+    this.styled = false;
+  }
+
   /**
    * Add a subtitle track that was just downloaded, and turn it on.
    */
@@ -621,6 +664,7 @@ export class PlayerController extends Controller {
         isForced: track.isForced,
         isDefault: false,
         url: `${info.streamBase}/subtitles/${track.index}.vtt`,
+        styledUrl: track.codec === "ass" || track.codec === "ssa" ? `${info.streamBase}/subtitles/${track.index}.ass` : null,
       }];
     }
     this.setSubtitle(track.index);
@@ -839,6 +883,34 @@ export class PlayerController extends Controller {
     PlaybackApi.report(this.info.playbackId, this.position, !this.playing);
   }
 
+  //#region Intros and credits
+  /**
+   * The intro playing right now, while there's still something of it to skip.
+   */
+  public get intro() {
+    if (devicePrefs.skipIntros === "off" || this.scrubTarget !== null) return null;
+    return this.info?.markers.find((m) => m.kind === "intro" && this.position >= m.start && this.position < m.end - 1) ?? null;
+  }
+
+  public skipIntro() {
+    const intro = this.intro;
+    if (!intro) return;
+    this._autoSkipped.add(intro.start);
+    this.seek(intro.end);
+  }
+
+  private _autoSkipIntro() {
+    if (devicePrefs.skipIntros !== "auto" || this.loading) return;
+    // Watching along, only the host skips; everyone else follows
+    if (this._together?.isConnected() && !this._together.isHost()) return;
+    const intro = this.intro;
+    if (!intro || this._autoSkipped.has(intro.start)) return;
+    this._autoSkipped.add(intro.start);
+    this.seek(intro.end);
+    toasts.show({ title: "Skipped the intro" });
+  }
+  //#endregion
+
   private _updateNextUp() {
     if (!this.next || this._nextDismissed || !this.duration) return;
     // Watching along, the host's player moves everyone on
@@ -849,11 +921,18 @@ export class PlayerController extends Controller {
       }
       return;
     }
-    const left = this.duration - this.position;
-    const countdown = left <= PlayerController.NEXT_UP_SECONDS && this.scrubTarget === null ? Math.max(0, Math.ceil(left)) : null;
+    // With known credits the countdown starts with them and moves on a little later; otherwise at the very end
+    const credits = this.info?.markers.find((m) => m.kind === "credits" && m.start < this.duration - 5);
+    const showFrom = credits ? credits.start : this.duration - PlayerController.NEXT_UP_SECONDS;
+    const deadline = credits ? Math.min(credits.start + PlayerController.CREDITS_COUNTDOWN, this.duration) : this.duration;
+    const countdown = this.position >= showFrom && this.scrubTarget === null ? Math.max(0, Math.ceil(deadline - this.position)) : null;
     if (countdown !== this.nextCountdown) {
       this.nextCountdown = countdown;
       this.notify();
+    }
+    if (credits && countdown === 0 && !this._creditsAdvanced) {
+      this._creditsAdvanced = true;
+      this.playNext();
     }
   }
 

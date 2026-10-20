@@ -80,6 +80,9 @@ export default function TasksSettings() {
         <ActionRow title="Make missing seek thumbnails" text="The pictures that show while you drag through a video. New videos get them by themselves." label="Make thumbnails" loading={busy === "thumbs"}
           onClick={() => start("thumbs", () => AdminApi.thumbnails(), "Making missing seek thumbnails")} />
         <div className="cn-settings__divider" />
+        <ActionRow title="Find intros and credits again" text="Compare every season's episodes and read chapters again, for Skip intro and starting the next episode early. New episodes are looked at by themselves." label="Find again" loading={busy === "markers"}
+          onClick={() => start("markers", () => AdminApi.markers(true), "Looking for intros and credits")} />
+        <div className="cn-settings__divider" />
         <ActionRow title="Remake all seek thumbnails" text="Delete every seek thumbnail and make them again, one video at a time." label="Remake" loading={busy === "remake"}
           onClick={() => setConfirmRemake(true)} />
       </section>

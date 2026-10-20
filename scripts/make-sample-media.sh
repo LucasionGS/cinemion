@@ -30,16 +30,46 @@ if ! command -v ffmpeg > /dev/null; then
   exit 1
 fi
 
-# Make a short clip: test pattern plus tone, with the given codec arguments
+# Make a short clip: test pattern plus tone, with the given codec arguments. With CHAPTERS set to an ffmetadata
+# file, its chapters are added (pass -map_chapters 2 along with the other arguments).
 # Usage: clip <output> <label> [extra ffmpeg output args...]
 clip() {
   local OUTPUT="$1"
   local LABEL="$2"
   shift 2
+  local CHAPTER_INPUT=()
+  [[ -n "${CHAPTERS:-}" ]] && CHAPTER_INPUT=(-f ffmetadata -i "$CHAPTERS")
   mkdir -p "$(dirname "$OUTPUT")"
   ffmpeg -loglevel error -y \
     -f lavfi -i "testsrc2=size=1280x720:rate=24:duration=$SECONDS_PER_CLIP,$TIMER,drawtext=text='$LABEL':fontsize=48:fontcolor=white:box=1:boxcolor=black@0.5:x=(w-text_w)/2:y=h-120" \
     -f lavfi -i "sine=frequency=440:duration=$SECONDS_PER_CLIP" \
+    "${CHAPTER_INPUT[@]}" \
+    "$@" "$OUTPUT"
+}
+
+# The tunes every episode of a show shares, so intro and credits detection has something to find
+OPENING_TUNE="aevalsrc='0.4*sin(2*PI*(330+110*floor(mod(t*3,6)))*t)+0.2*sin(2*PI*(660+55*floor(mod(t*1.5,4)))*t)':s=44100:d=20"
+CREDITS_TUNE="aevalsrc='0.35*sin(2*PI*(262+131*floor(mod(t*2,5)))*t)+0.25*sin(2*PI*(523-65*floor(mod(t*4,3)))*t)':s=44100:d=15"
+
+# Make an episode: a cold open, the 20 s opening tune, the story and 15 s of credits. The cold open and story are
+# noise from their own seeds, so only the tunes are the same between episodes.
+# Usage: episode <output> <label> <COLD_OPEN_SECONDS> <SEED> [extra ffmpeg output args...]
+episode() {
+  local OUTPUT="$1"
+  local LABEL="$2"
+  local COLD="$3"
+  local SEED="$4"
+  shift 4
+  local BODY=$(( SECONDS_PER_CLIP - COLD - 35 ))
+  (( BODY < 5 )) && BODY=5
+  mkdir -p "$(dirname "$OUTPUT")"
+  ffmpeg -loglevel error -y \
+    -f lavfi -i "testsrc2=size=1280x720:rate=24:duration=$(( COLD + 35 + BODY )),$TIMER,drawtext=text='$LABEL':fontsize=48:fontcolor=white:box=1:boxcolor=black@0.5:x=(w-text_w)/2:y=h-120" \
+    -f lavfi -i "anoisesrc=d=$COLD:c=pink:seed=$SEED:a=0.25" \
+    -f lavfi -i "$OPENING_TUNE" \
+    -f lavfi -i "anoisesrc=d=$BODY:c=brown:seed=$(( SEED + 1 )):a=0.25" \
+    -f lavfi -i "$CREDITS_TUNE" \
+    -filter_complex "[1:a][2:a][3:a][4:a]concat=n=4:v=0:a=1[a]" -map 0:v -map "[a]" \
     "$@" "$OUTPUT"
 }
 
@@ -108,16 +138,44 @@ PM="$MOVIES/Paper.Moons.2024.1080p.WEB-DL.x264-CINEMION"
 printf '1\n00:00:02,000 --> 00:00:05,000\nForced English line from a file\n\n' > "$PM.en.forced.srt"
 printf '1\n00:00:02,000 --> 00:00:05,000\nCaf\xe9 en cr\xe8me, uit een los bestand\n\n' > "$PM.nl.srt"
 
-# ID tag in the folder name, 5.1 AC3 audio, a styled (ASS) subtitle and a forced SRT one
+# ID tag in the folder name, 5.1 AC3 audio, a styled (ASS) subtitle with its font attached, and a forced SRT one
 GH="$MOVIES/Glass Harbor (2025) {imdb-tt0000001}"
 mkdir -p "$GH"
+ASS_FILE="$(mktemp --suffix=.ass)"
+cat > "$ASS_FILE" <<'EOF'
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1280
+PlayResY: 720
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Default,DejaVu Serif,44,&H0000E5FF,&H000000FF,&H00301000,&H80000000,-1,0,0,0,100,100,0,0,1,3,1,2,40,40,40,1
+Style: Sign,DejaVu Serif,34,&H00FFFFFF,&H000000FF,&H00A05000,&H80000000,-1,-1,0,0,100,100,2,0,1,2,0,8,40,40,40,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:01.00,0:00:30.00,Sign,,0,0,0,,{\pos(1040,110)\frz-8}GLASS HARBOR
+EOF
+for (( i = 0; i * 10 < SECONDS_PER_CLIP; i++ )); do
+  START=$(( i * 10 + 2 ))
+  # The text goes in as an argument: printf would read the \c and \r of the ASS tags as its own escapes
+  LINE="Styled line at $(( START / 60 )):$(printf '%02d' $(( START % 60 ))), in {\\c&H66CCFF&}its own colours{\\r} and font"
+  printf 'Dialogue: 0,0:%02d:%02d.00,0:%02d:%02d.00,Default,,0,0,0,,%s\n' \
+    "$(( START / 60 ))" "$(( START % 60 ))" "$(( (START + 4) / 60 ))" "$(( (START + 4) % 60 ))" "$LINE" >> "$ASS_FILE"
+done
+# Attach the font the subtitles use, when this system has it
+FONT="$(fc-match -f '%{file}' 'DejaVu Serif:bold' 2>/dev/null || true)"
+ATTACH=()
+[[ -f "$FONT" && "$FONT" == *DejaVuSerif* ]] && ATTACH=(-attach "$FONT" -metadata:s:t:0 mimetype=application/x-truetype-font)
 ffmpeg -loglevel error -y \
   -f lavfi -i "testsrc2=size=1280x720:rate=24:duration=$SECONDS_PER_CLIP,$TIMER" \
   -f lavfi -i "sine=frequency=220:duration=$SECONDS_PER_CLIP" \
-  -i "/tmp/cinemion-sample-subs.srt" -i "/tmp/cinemion-sample-subs.srt" \
-  -map 0 -map 1 -map 2 -map 3 -c:v libx264 -preset veryfast -crf 30 -c:a ac3 -ac 6 -c:s:0 ass -c:s:1 srt \
-  -metadata:s:s:0 language=jpn -metadata:s:s:1 language=eng -disposition:s:1 forced \
+  -i "$ASS_FILE" -i "/tmp/cinemion-sample-subs.srt" \
+  -map 0 -map 1 -map 2 -map 3 -c:v libx264 -preset veryfast -crf 30 -c:a ac3 -ac 6 -c:s:0 copy -c:s:1 srt \
+  -metadata:s:s:0 language=jpn -metadata:s:s:1 language=eng -disposition:s:1 forced "${ATTACH[@]}" \
   "$GH/Glass Harbor.mkv"
+rm -f "$ASS_FILE"
 
 # Extras and samples that must be skipped
 TLM="$MOVIES/The Long Meridian (2023)"
@@ -162,9 +220,10 @@ cat > "$SK/tvshow.nfo" <<'EOF'
   <actor><name>Marta Couto</name><role>Mara</role></actor>
 </tvshow>
 EOF
-clip "$SK/Season 01/Saltwater Kings - S01E01 - Spat.mkv" "S01E01" -c:v libx264 -preset veryfast -crf 30 -c:a aac
-clip "$SK/Season 01/Saltwater Kings - S01E02 - Brackish.mkv" "S01E02" -c:v libx264 -preset veryfast -crf 30 -c:a aac
-clip "$SK/Season 01/Saltwater Kings - S01E03 - Low Water.mkv" "S01E03" -c:v libx264 -preset veryfast -crf 30 -c:a aac
+# Each episode has its own cold open length, then the shared opening and credits tunes
+episode "$SK/Season 01/Saltwater Kings - S01E01 - Spat.mkv" "S01E01" 6 101 -c:v libx264 -preset veryfast -crf 30 -c:a aac
+episode "$SK/Season 01/Saltwater Kings - S01E02 - Brackish.mkv" "S01E02" 9 201 -c:v libx264 -preset veryfast -crf 30 -c:a aac
+episode "$SK/Season 01/Saltwater Kings - S01E03 - Low Water.mkv" "S01E03" 4 301 -c:v libx264 -preset veryfast -crf 30 -c:a aac
 art "$SK/Season 01/Saltwater Kings - S01E03 - Low Water-thumb.jpg" 1280 720 0x2A6A78 0x061A22 "Low Water"
 cat > "$SK/Season 01/Saltwater Kings - S01E03 - Low Water.nfo" <<'EOF'
 <?xml version="1.0" encoding="UTF-8"?>
@@ -176,11 +235,37 @@ cat > "$SK/Season 01/Saltwater Kings - S01E03 - Low Water.nfo" <<'EOF'
   <aired>2023-03-14</aired>
 </episodedetails>
 EOF
-clip "$SK/Season 02/Saltwater Kings - S02E01-E02 - Silt.mkv" "S02E01-E02" -c:v libx264 -preset veryfast -crf 30 -c:a aac
+episode "$SK/Season 02/Saltwater Kings - S02E01-E02 - Silt.mkv" "S02E01-E02" 7 401 -c:v libx264 -preset veryfast -crf 30 -c:a aac
 
 IW="$SHOWS/Ironwood"
-clip "$IW/Season 1/Ironwood.S01E01.1080p.WEB-DL.x265.mkv" "Ironwood S01E01" -c:v libx265 -preset ultrafast -crf 32 -c:a aac
-clip "$IW/Season 1/Ironwood.S01E02.1080p.WEB-DL.x265.mkv" "Ironwood S01E02" -c:v libx265 -preset ultrafast -crf 32 -c:a aac
+# Ironwood marks its opening and ending with chapters instead
+CHAPTER_FILE="$(mktemp)"
+cat > "$CHAPTER_FILE" <<EOF
+;FFMETADATA1
+[CHAPTER]
+TIMEBASE=1/1000
+START=0
+END=8000
+title=Recap
+[CHAPTER]
+TIMEBASE=1/1000
+START=8000
+END=30000
+title=Opening
+[CHAPTER]
+TIMEBASE=1/1000
+START=30000
+END=$(( (SECONDS_PER_CLIP - 15) * 1000 ))
+title=Episode
+[CHAPTER]
+TIMEBASE=1/1000
+START=$(( (SECONDS_PER_CLIP - 15) * 1000 ))
+END=$(( SECONDS_PER_CLIP * 1000 ))
+title=Ending
+EOF
+CHAPTERS="$CHAPTER_FILE" clip "$IW/Season 1/Ironwood.S01E01.1080p.WEB-DL.x265.mkv" "Ironwood S01E01" -map 0:v -map 1:a -map_chapters 2 -c:v libx265 -preset ultrafast -crf 32 -c:a aac
+CHAPTERS="$CHAPTER_FILE" clip "$IW/Season 1/Ironwood.S01E02.1080p.WEB-DL.x265.mkv" "Ironwood S01E02" -map 0:v -map 1:a -map_chapters 2 -c:v libx265 -preset ultrafast -crf 32 -c:a aac
+rm -f "$CHAPTER_FILE"
 clip "$IW/Specials/Ironwood S00E01 Making Of.mkv" "Ironwood special" -c:v libx264 -preset veryfast -crf 30 -c:a aac
 #endregion
 

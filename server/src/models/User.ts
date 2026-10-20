@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import { sign, verify } from "hono/jwt";
 import type { MiddlewareHandler } from "hono";
 import type { CreateUserRequest, ProfileSummary, UserInfo } from "@shared/api.ts";
-import { isProfileColor, type Permission, PROFILE_COLORS, type ProfileColor } from "@shared/profiles.ts";
+import { isProfileColor, normalizePreferences, type Permission, PROFILE_COLORS, type ProfileColor, type ProfilePreferences } from "@shared/profiles.ts";
 import sequelize, { ID_TYPE, jsonColumn } from "./sequelize.ts";
 import Role from "./Role.ts";
 import AppSystem from "../AppSystem.ts";
@@ -37,6 +37,10 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
    * Library ids this user can see. `null` = all libraries.
    */
   declare libraryAccess: CreationOptional<number[] | null>;
+  /**
+   * The profile's own preferences, like how subtitles look. Read through `normalizePreferences`.
+   */
+  declare preferences: CreationOptional<ProfilePreferences>;
   declare roleId: ForeignKey<Role["id"]>;
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
@@ -210,6 +214,7 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
       permissions: this.role ? [...await this.role.getAllPermissions()] : [],
       showOnPicker: this.showOnPicker,
       libraryAccess: this.libraryAccess,
+      preferences: normalizePreferences(this.preferences),
     };
   }
 
@@ -288,6 +293,7 @@ User.init({
   showOnPicker: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: true },
   maxRating: { type: DataTypes.STRING(16), allowNull: true, defaultValue: null },
   libraryAccess: jsonColumn<number[] | null, User>("libraryAccess", null, true),
+  preferences: jsonColumn<ProfilePreferences, User>("preferences", normalizePreferences({})),
   createdAt: DataTypes.DATE,
   updatedAt: DataTypes.DATE,
 }, { sequelize, tableName: "users" });

@@ -57,6 +57,25 @@ export interface StartPlaybackRequest {
 
 export type PlaybackMode = "direct" | "remux" | "transcode";
 
+/**
+ * A stretch of a video worth skipping: the intro, or the credits at the end.
+ */
+export interface Marker {
+  kind: "intro" | "credits";
+  /**
+   * Unit is in seconds.
+   */
+  start: number;
+  /**
+   * Unit is in seconds.
+   */
+  end: number;
+  /**
+   * `chapters` when the file's chapters said so, `audio` when found by matching the music of other episodes.
+   */
+  source: "chapters" | "audio";
+}
+
 export interface SubtitleOption {
   index: number;
   label: string;
@@ -71,6 +90,10 @@ export interface SubtitleOption {
    * WebVTT for text subtitles. `null` for image subtitles, which are burned into the video instead.
    */
   url: string | null;
+  /**
+   * The original ASS file, for drawing with its own fonts, colours and positions. `null` for other subtitles.
+   */
+  styledUrl: string | null;
 }
 
 export interface AudioOption {
@@ -101,6 +124,10 @@ export interface PlaybackInfo {
    * This viewing, for the dashboard. The player reports position and pauses with it, and ends it when it closes.
    */
   playbackId: string;
+  /**
+   * Intros and credits of the file, for "Skip intro" and starting the next episode early.
+   */
+  markers: Marker[];
   /**
    * Where the stream really starts, in seconds. The player adds this to the video's own time.
    */

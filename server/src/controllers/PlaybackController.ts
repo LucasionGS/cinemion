@@ -11,6 +11,7 @@ import PlaybackDecider from "../media/PlaybackDecider.ts";
 import TranscodeSession from "../media/TranscodeSession.ts";
 import Subtitles from "../media/Subtitles.ts";
 import Trickplay from "../media/Trickplay.ts";
+import Fonts from "../media/Fonts.ts";
 import ActivePlayback from "../media/ActivePlayback.ts";
 import SubtitleManager from "../subtitles/SubtitleManager.ts";
 import Network from "../lib/Network.ts";
@@ -83,6 +84,7 @@ export namespace PlaybackController {
       isForced: t.isForced,
       isDefault: t.isDefault,
       url: t.isImage ? null : `/api/playback/stream/${token}/subtitles/${t.index}.vtt`,
+      styledUrl: Subtitles.isStyled(t.codec) ? `/api/playback/stream/${token}/subtitles/${t.index}.ass` : null,
     }));
   }
 
@@ -194,6 +196,7 @@ export namespace PlaybackController {
       url,
       sessionId,
       playbackId: entry.id,
+      markers: file.markers,
       startOffset,
       duration: file.duration ?? 0,
       fileId: file.id,
@@ -384,6 +387,53 @@ export namespace PlaybackController {
     } catch (error) {
       return c.json({ message: errorMessage(error) }, 400);
     }
+  });
+
+  /**
+   * @swagger
+   * /api/playback/stream/{token}/subtitles/{index}.ass:
+   *   get:
+   *     summary: An ASS subtitle track as it is, for drawing with its own styling.
+   */
+  router.get("/stream/:token/subtitles/:index{[0-9]+\\.ass}", async (c) => {
+    const g = useGrant(c.req.param("token"));
+    const file = g ? await MediaFile.findByPk(g.fileId) : null;
+    if (!file) return c.json({ message: "This stream has expired. Start playback again." }, 404);
+    try {
+      const path = await Subtitles.toAss(file, parseInt(c.req.param("index")));
+      return c.body(new Uint8Array(await fsp.readFile(path)), 200, { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "private, max-age=3600" });
+    } catch (error) {
+      return c.json({ message: errorMessage(error) }, 400);
+    }
+  });
+
+  /**
+   * @swagger
+   * /api/playback/stream/{token}/fonts:
+   *   get:
+   *     summary: Addresses of the fonts attached to the stream's file, for styled subtitles.
+   */
+  router.get("/stream/:token/fonts", async (c) => {
+    const g = useGrant(c.req.param("token"));
+    const file = g ? await MediaFile.findByPk(g.fileId) : null;
+    if (!file) return c.json({ message: "This stream has expired. Start playback again." }, 404);
+    const names = await Fonts.list(file);
+    return c.json(names.map((n) => `/api/playback/stream/${c.req.param("token")}/fonts/${encodeURIComponent(n)}`));
+  });
+
+  /**
+   * @swagger
+   * /api/playback/stream/{token}/fonts/{name}:
+   *   get:
+   *     summary: One font attached to the stream's file.
+   */
+  router.get("/stream/:token/fonts/:name", async (c) => {
+    const g = useGrant(c.req.param("token"));
+    const file = g ? await MediaFile.findByPk(g.fileId) : null;
+    if (!file) return c.json({ message: "This stream has expired. Start playback again." }, 404);
+    const path = await Fonts.path(file, c.req.param("name"));
+    if (!path) return c.json({ message: "That font isn't attached to this video." }, 404);
+    return c.body(new Uint8Array(await fsp.readFile(path)), 200, { "Content-Type": "application/octet-stream", "Cache-Control": "private, max-age=86400" });
   });
 
   /**

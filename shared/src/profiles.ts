@@ -37,3 +37,47 @@ export type Permission = typeof PERMISSIONS[number];
 export function isProfileColor(value: unknown): value is ProfileColor {
   return typeof value === "string" && value in PROFILE_COLORS;
 }
+
+/**
+ * How subtitles look for a profile.
+ */
+export interface SubtitleStyle {
+  size: "small" | "medium" | "large" | "huge";
+  color: "white" | "yellow" | "cyan" | "green";
+  /**
+   * `shadow` is a soft outline, `box` a dark box behind the text.
+   */
+  background: "none" | "shadow" | "box";
+  /**
+   * Draw ASS subtitles with their own fonts, colours and positions instead of this style.
+   */
+  keepStyling: boolean;
+}
+
+/**
+ * A profile's own preferences.
+ */
+export interface ProfilePreferences {
+  subtitles: SubtitleStyle;
+}
+
+export const DEFAULT_PREFERENCES: ProfilePreferences = {
+  subtitles: { size: "medium", color: "white", background: "box", keepStyling: true },
+};
+
+/**
+ * Preferences with unknown or missing values replaced by the defaults, so stored and sent values are always complete.
+ */
+export function normalizePreferences(value: unknown): ProfilePreferences {
+  const subtitles = ((value as Partial<ProfilePreferences> | null)?.subtitles ?? {}) as Partial<SubtitleStyle>;
+  const pick = <T extends string>(given: unknown, allowed: readonly T[], fallback: T): T => allowed.includes(given as T) ? given as T : fallback;
+  const d = DEFAULT_PREFERENCES.subtitles;
+  return {
+    subtitles: {
+      size: pick(subtitles.size, ["small", "medium", "large", "huge"], d.size),
+      color: pick(subtitles.color, ["white", "yellow", "cyan", "green"], d.color),
+      background: pick(subtitles.background, ["none", "shadow", "box"], d.background),
+      keepStyling: typeof subtitles.keepStyling === "boolean" ? subtitles.keepStyling : d.keepStyling,
+    },
+  };
+}

@@ -1,7 +1,7 @@
 import fsp from "node:fs/promises";
 import { Hono } from "hono";
 import type { CreateUserRequest, UpdateSelfRequest, UpdateUserRequest } from "@shared/api.ts";
-import { AVATAR_SIZES, type AvatarSize, isProfileColor } from "@shared/profiles.ts";
+import { AVATAR_SIZES, type AvatarSize, isProfileColor, normalizePreferences } from "@shared/profiles.ts";
 import { Role, User } from "../models/index.ts";
 import Avatars from "../lib/Avatars.ts";
 import { errorMessage, readJson } from "../lib/http.ts";
@@ -74,6 +74,7 @@ export namespace UsersController {
         user.color = body.color;
       }
       if (body.pin !== undefined) await user.setPin(body.pin);
+      if (body.preferences !== undefined) user.preferences = normalizePreferences(body.preferences);
       if (body.newPassword !== undefined) {
         // Profiles without a password (picker-only) can set one without knowing an old one
         if (user.password !== null && !(await user.checkPassword(body.currentPassword ?? ""))) {

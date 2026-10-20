@@ -6,6 +6,7 @@ import NameParser from "./NameParser.ts";
 import Probe from "../media/Probe.ts";
 import Sidecars from "./Sidecars.ts";
 import Trickplay from "../media/Trickplay.ts";
+import Markers from "../media/Markers.ts";
 import MetadataManager from "../metadata/MetadataManager.ts";
 import ItemLabels from "./ItemLabels.ts";
 import VideoDetails from "./VideoDetails.ts";
@@ -214,7 +215,7 @@ export namespace Scanner {
         await MediaFile.create({ libraryId: library.id, path: file.path, size: file.size, mtime: file.mtime });
       }
       else if (Number(existing.size) !== file.size || Number(existing.mtime) !== file.mtime) {
-        await existing.update({ size: file.size, mtime: file.mtime, probedAt: null });
+        await existing.update({ size: file.size, mtime: file.mtime, probedAt: null, markersVersion: 0 });
       }
     }
 
@@ -254,6 +255,7 @@ export namespace Scanner {
     }
     await Trickplay.cleanup().catch((error) => log.warn("Could not clean up seek thumbnails", { error }));
     Trickplay.queueLibrary(library.id);
+    Markers.queueLibrary(library.id);
     await reportAdded(library, added, firstScan).catch((error) => log.warn("Could not report new titles", { error }));
     const seconds = Math.round((Date.now() - started) / 100) / 10;
     if (scope) {

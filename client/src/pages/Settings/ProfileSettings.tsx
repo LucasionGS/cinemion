@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Camera } from "lucide-react";
-import type { ProfileColor } from "@shared/profiles.ts";
+import type { ProfileColor, SubtitleStyle } from "@shared/profiles.ts";
 import UsersApi from "../../Api/UsersApi.ts";
 import { session } from "../../Session.ts";
 import { toasts } from "../../lib/Toasts.ts";
@@ -11,9 +11,13 @@ import Button from "../../components/Button/Button.tsx";
 import TextField from "../../components/TextField/TextField.tsx";
 import ColorPicker from "../../components/ColorPicker/ColorPicker.tsx";
 import Dialog from "../../components/Dialog/Dialog.tsx";
+import SegmentedControl from "../../components/SegmentedControl/SegmentedControl.tsx";
+import Switch from "../../components/Switch/Switch.tsx";
+import cx from "../../lib/cx.ts";
+import "../../components/Player/Player.scss";
 
 /**
- * The signed-in user's own name, colour, picture, PIN and password.
+ * The signed-in user's own name, colour, picture, PIN, password and how subtitles look.
  */
 export default function ProfileSettings() {
   const { user } = useController(session);
@@ -101,6 +105,8 @@ export default function ProfileSettings() {
           <Button onClick={() => setPasswordOpen(true)}>{user.hasPassword ? "Change password" : "Set a password"}</Button>
         </div>
       </section>
+
+      <SubtitleStyleCard />
 
       <AvatarEditor open={editorOpen} onOpenChange={setEditorOpen} user={user} onSaved={(u) => session.setUser(u)} />
       <PinDialog open={pinOpen} onOpenChange={setPinOpen} />
@@ -192,5 +198,72 @@ function PasswordDialog(props: { open: boolean; onOpenChange: (open: boolean) =>
       <TextField label="New password" type="password" autoComplete="new-password" value={next} onChange={(e) => setNext(e.target.value)} description="At least 6 characters." />
       <TextField label="Confirm new password" type="password" autoComplete="new-password" value={confirm} onChange={(e) => setConfirm(e.target.value)} error={mismatch ? "The passwords don't match." : null} />
     </Dialog>
+  );
+}
+
+/**
+ * Size, colour and background of subtitles for this profile, with a preview. Saved as soon as something changes.
+ */
+function SubtitleStyleCard() {
+  const { user } = useController(session);
+  if (!user) return null;
+  const style = user.preferences.subtitles;
+
+  async function update(patch: Partial<SubtitleStyle>) {
+    const previous = user!;
+    const next = { ...previous, preferences: { ...previous.preferences, subtitles: { ...style, ...patch } } };
+    // Show the change right away; the server's answer replaces it
+    session.setUser(next);
+    try {
+      session.setUser(await UsersApi.updateSelf({ preferences: next.preferences }));
+    } catch (error) {
+      session.setUser(previous);
+      toasts.error("Couldn't save", (error as Error).message);
+    }
+  }
+
+  return (
+    <section className="cn-settings__card">
+      <h2>Subtitles</h2>
+      <div className="cn-subtitle-preview" aria-hidden="true">
+        <div className={cx("cn-player__subtitles", `cn-player__subtitles--${style.size}`, `cn-player__subtitles--${style.color}`, `cn-player__subtitles--${style.background}`)}>
+          <span>Did you hear that?{"\n"}Something is out there.</span>
+        </div>
+      </div>
+      <div className="cn-settings__row">
+        <p className="cn-settings__row-text"><strong>Size</strong></p>
+        <SegmentedControl<SubtitleStyle["size"]>
+          label="Size"
+          value={style.size}
+          onChange={(size) => update({ size })}
+          options={[{ value: "small", label: "Small" }, { value: "medium", label: "Medium" }, { value: "large", label: "Large" }, { value: "huge", label: "Huge" }]}
+        />
+      </div>
+      <div className="cn-settings__row">
+        <p className="cn-settings__row-text"><strong>Colour</strong></p>
+        <SegmentedControl<SubtitleStyle["color"]>
+          label="Colour"
+          value={style.color}
+          onChange={(color) => update({ color })}
+          options={[{ value: "white", label: "White" }, { value: "yellow", label: "Yellow" }, { value: "cyan", label: "Cyan" }, { value: "green", label: "Green" }]}
+        />
+      </div>
+      <div className="cn-settings__row">
+        <p className="cn-settings__row-text"><strong>Background</strong></p>
+        <SegmentedControl<SubtitleStyle["background"]>
+          label="Background"
+          value={style.background}
+          onChange={(background) => update({ background })}
+          options={[{ value: "box", label: "Dark box" }, { value: "shadow", label: "Outline" }, { value: "none", label: "None" }]}
+        />
+      </div>
+      <div className="cn-settings__divider" />
+      <Switch
+        label="Keep the look of styled subtitles"
+        description="ASS subtitles, common for anime, come with their own fonts, colours and positions. Off, they use the style above like all other subtitles."
+        checked={style.keepStyling}
+        onChange={(keepStyling) => update({ keepStyling })}
+      />
+    </section>
   );
 }

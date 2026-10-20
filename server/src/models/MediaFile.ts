@@ -1,6 +1,7 @@
 import type { CreationOptional, ForeignKey, InferAttributes, InferCreationAttributes } from "sequelize";
 import { DataTypes, Model } from "sequelize";
 import type { AudioTrack, MediaFileInfo, SubtitleTrack } from "@shared/media.ts";
+import type { Marker } from "@shared/playback.ts";
 import sequelize, { ID_TYPE, jsonColumn } from "./sequelize.ts";
 import type Library from "./Library.ts";
 import type MediaItem from "./MediaItem.ts";
@@ -46,6 +47,14 @@ export class MediaFile extends Model<InferAttributes<MediaFile>, InferCreationAt
    * Subtitle files next to the video, or downloaded for it.
    */
   declare sidecars: CreationOptional<MediaFile.Sidecar[]>;
+  /**
+   * Intros and credits, from chapters or found by matching episodes' audio.
+   */
+  declare markers: CreationOptional<Marker[]>;
+  /**
+   * Which version of the intro and credits detection last looked at this file. 0 = never, so it's looked at.
+   */
+  declare markersVersion: CreationOptional<number>;
   /**
    * When ffprobe last read the file. `null` = not read yet.
    */
@@ -140,6 +149,8 @@ MediaFile.init({
   audio: jsonColumn<AudioTrack[], MediaFile>("audio", []),
   subtitles: jsonColumn<SubtitleTrack[], MediaFile>("subtitles", []),
   sidecars: jsonColumn<MediaFile.Sidecar[], MediaFile>("sidecars", []),
+  markers: jsonColumn<Marker[], MediaFile>("markers", []),
+  markersVersion: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 },
   probedAt: { type: DataTypes.DATE, allowNull: true, defaultValue: null },
   createdAt: DataTypes.DATE,
   updatedAt: DataTypes.DATE,
