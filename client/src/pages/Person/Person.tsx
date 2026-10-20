@@ -15,6 +15,8 @@ const KIND_LABELS: Record<string, string> = {
   writer: "Writer",
   producer: "Producer",
   composer: "Music",
+  author: "Author",
+  narrator: "Narrator",
 };
 
 /**

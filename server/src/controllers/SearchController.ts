@@ -6,6 +6,7 @@ import CollectionsController from "./CollectionsController.ts";
 import Visibility from "../library/Visibility.ts";
 import Summaries from "../library/Summaries.ts";
 import MusicSummaries from "../music/MusicSummaries.ts";
+import BookSummaries from "../books/BookSummaries.ts";
 import type { AppEnv } from "../lib/types.ts";
 
 export namespace SearchController {
@@ -29,7 +30,7 @@ export namespace SearchController {
     const user = c.get("user")!;
     const query = (c.req.query("q") ?? "").trim();
     if (query.length < 2) {
-      const empty: SearchResults = { titles: [], episodes: [], videos: [], people: [], collections: [], artists: [], albums: [], tracks: [] };
+      const empty: SearchResults = { titles: [], episodes: [], videos: [], people: [], collections: [], artists: [], albums: [], tracks: [], books: [] };
       return c.json(empty);
     }
 
@@ -58,6 +59,8 @@ export namespace SearchController {
     const artists = await MediaItem.findAll({ where: { [Op.and]: [visible, nameMatch, { type: "artist" }] }, limit: 12, order: [["sortTitle", "ASC"]] });
     const albums = await MediaItem.findAll({ where: { [Op.and]: [visible, nameMatch, { type: "album" }] }, limit: 24, order: [["sortTitle", "ASC"]] });
     const tracks = await MediaItem.findAll({ where: { [Op.and]: [visible, { [Op.or]: [nameMatch, { artist: { [Op.like]: pattern } }] }, { type: "track" }] }, limit: 20, order: [["sortTitle", "ASC"]] });
+    const books = await MediaItem.findAll({ where: { [Op.and]: [visible, nameMatch, { type: ["audiobook", "book"] }] }, limit: 24, order: [["sortTitle", "ASC"]] });
+    books.sort((a, b) => rank(a) - rank(b));
     artists.sort((a, b) => rank(a) - rank(b));
     albums.sort((a, b) => rank(a) - rank(b));
     tracks.sort((a, b) => rank(a) - rank(b));
@@ -87,6 +90,7 @@ export namespace SearchController {
       artists: await MusicSummaries.artists(artists),
       albums: await MusicSummaries.albums(albums),
       tracks: await MusicSummaries.tracks(tracks, user),
+      books: await BookSummaries.build(books, user),
     };
     return c.json(results);
   });

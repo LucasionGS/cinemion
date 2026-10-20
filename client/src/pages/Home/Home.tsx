@@ -15,6 +15,7 @@ import AppShell from "../../components/AppShell/AppShell.tsx";
 import Button from "../../components/Button/Button.tsx";
 import Row from "../../components/Row/Row.tsx";
 import { AlbumCard } from "../../components/MusicCard/MusicCard.tsx";
+import BookCard from "../../components/BookCard/BookCard.tsx";
 import PosterCard from "../../components/PosterCard/PosterCard.tsx";
 import WideCard from "../../components/WideCard/WideCard.tsx";
 import Spinner from "../../components/Spinner/Spinner.tsx";
@@ -46,7 +47,7 @@ export default function Home() {
   }, [spotlight?.palette?.accent]);
   useEffect(() => () => applyAmbient(null), []);
 
-  const isEmpty = home && !home.continueWatching.length && !home.nextUp.length && !home.recentlyAdded.length && !home.recentlyAddedMusic.length;
+  const isEmpty = home && !home.continueWatching.length && !home.nextUp.length && !home.recentlyAdded.length && !home.recentlyAddedMusic.length && !home.continueBooks.length;
 
   return (
     <AppShell>
@@ -78,6 +79,12 @@ export default function Home() {
               {row.items.map((item) => <PosterCard key={item.id} item={item} onSelect={() => setSelected(item)} />)}
             </Row>
           ))}
+
+        {home && home.continueBooks.length > 0 && (
+          <Row title="Pick up your book" kind="square">
+            {home.continueBooks.map((book) => <BookCard key={book.id} book={book} />)}
+          </Row>
+        )}
 
         {home?.recentlyAddedMusic.map((row) => (
           <Row key={row.libraryId} title={`New in ${row.libraryName}`} href={`/library/${row.libraryId}`} kind="square">
@@ -167,7 +174,7 @@ function useHome() {
   useEffect(() => {
     ItemsApi.home().then(setHome).catch((e: Error) => {
       toasts.error("Couldn't load the home screen", e.message);
-      setHome({ continueWatching: [], nextUp: [], recentlyAdded: [], recentlyAddedMusic: [], becauseYouWatched: null });
+      setHome({ continueWatching: [], nextUp: [], recentlyAdded: [], recentlyAddedMusic: [], continueBooks: [], becauseYouWatched: null });
     });
   }, []);
   return home;

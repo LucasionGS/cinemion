@@ -11,6 +11,7 @@ import PersonCard from "../../components/PersonCard/PersonCard.tsx";
 import Spinner from "../../components/Spinner/Spinner.tsx";
 import TrackList from "../../components/TrackList/TrackList.tsx";
 import { AlbumCard, ArtistCard } from "../../components/MusicCard/MusicCard.tsx";
+import BookCard from "../../components/BookCard/BookCard.tsx";
 import "./Search.scss";
 
 /**
@@ -35,7 +36,7 @@ export default function Search() {
       try {
         setResults(await ItemsApi.search(q));
       } catch {
-        setResults({ titles: [], episodes: [], videos: [], people: [], collections: [], artists: [], albums: [], tracks: [] });
+        setResults({ titles: [], episodes: [], videos: [], people: [], collections: [], artists: [], albums: [], tracks: [], books: [] });
       } finally {
         setLoading(false);
       }
@@ -43,7 +44,7 @@ export default function Search() {
     return () => clearTimeout(timer);
   }, [query]);
 
-  const empty = results && [results.titles, results.episodes, results.videos, results.people, results.collections, results.artists, results.albums, results.tracks].every((list) => list.length === 0);
+  const empty = results && [results.titles, results.episodes, results.videos, results.people, results.collections, results.artists, results.albums, results.tracks, results.books].every((list) => list.length === 0);
 
   return (
     <AppShell>
@@ -118,6 +119,15 @@ export default function Search() {
           <section className="cn-search__section">
             <h2>Songs</h2>
             <TrackList tracks={results.tracks} label="Songs" />
+          </section>
+        )}
+
+        {results && results.books.length > 0 && (
+          <section className="cn-search__section">
+            <h2>Books</h2>
+            <div className="cn-search__grid">
+              {results.books.map((b) => <BookCard key={b.id} book={b} />)}
+            </div>
           </section>
         )}
 

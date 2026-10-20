@@ -54,7 +54,7 @@ export default function LibrariesSettings() {
       <header className="cn-settings__header">
         <div>
           <h1>Libraries</h1>
-          <p>The folders Cinemion looks in for movies, shows, other videos and music. New files are picked up by themselves.</p>
+          <p>The folders Cinemion looks in for movies, shows, other videos, music and books. New files are picked up by themselves.</p>
         </div>
         <Button variant="primary" icon={<Plus />} onClick={() => setAdding(true)}>Add library</Button>
       </header>
@@ -77,7 +77,7 @@ export default function LibrariesSettings() {
                       {l.scan.status}{l.scan.progress !== null && ` · ${Math.round(l.scan.progress * 100)}%`}
                     </span>
                   )
-                  : <span>{l.itemCount} {NOUNS[l.type][l.itemCount === 1 ? 0 : 1]} · {l.lastScannedAt ? `scanned ${timeAgo(l.lastScannedAt)}` : "not scanned yet"}{(l.type === "videos" || l.type === "music") && ` · unrated ${l.type === "music" ? "music" : "videos"} count${l.type === "music" ? "s" : ""} as ${l.defaultRating ?? "unrated"}`}</span>}
+                  : <span>{l.itemCount} {NOUNS[l.type][l.itemCount === 1 ? 0 : 1]} · {l.lastScannedAt ? `scanned ${timeAgo(l.lastScannedAt)}` : "not scanned yet"}{l.type !== "movies" && l.type !== "shows" && ` · rated ${l.defaultRating ?? "unrated"}`}</span>}
               </div>
               <Button size="sm" icon={<RefreshCw />} onClick={() => scan(l, false)} disabled={!!l.scan}>Scan now</Button>
               <Menu.Root>
@@ -86,7 +86,7 @@ export default function LibrariesSettings() {
                   <Menu.Positioner sideOffset={6} align="end" className="cn-menu__positioner">
                     <Menu.Popup className="cn-menu">
                       <Menu.Item className="cn-menu__item" onClick={() => setEditing(l)}><Pencil /> Edit library</Menu.Item>
-                      <Menu.Item className="cn-menu__item" onClick={() => scan(l, true)}><ScanSearch /> {l.type === "videos" ? "Refresh details and thumbnails" : l.type === "music" ? "Find covers again" : "Refresh all details"}</Menu.Item>
+                      <Menu.Item className="cn-menu__item" onClick={() => scan(l, true)}><ScanSearch /> {l.type === "videos" ? "Refresh details and thumbnails" : l.type === "music" ? "Find covers again" : l.type === "audiobooks" || l.type === "books" ? "Read book details again" : "Refresh all details"}</Menu.Item>
                       <Menu.Separator className="cn-menu__separator" />
                       <Menu.Item className="cn-menu__item" onClick={() => setRemoving(l)}><Trash2 /> Remove library</Menu.Item>
                     </Menu.Popup>
@@ -114,25 +114,26 @@ export default function LibrariesSettings() {
   );
 }
 
-const NOUNS: Record<LibraryType, [string, string]> = { movies: ["movie", "movies"], shows: ["show", "shows"], videos: ["video", "videos"], music: ["album", "albums"] };
-const TYPE_NAMES: Record<LibraryType, string> = { movies: "Movies", shows: "Shows", videos: "Videos", music: "Music" };
+const NOUNS: Record<LibraryType, [string, string]> = { movies: ["movie", "movies"], shows: ["show", "shows"], videos: ["video", "videos"], music: ["album", "albums"], audiobooks: ["audiobook", "audiobooks"], books: ["book", "books"] };
+const TYPE_NAMES: Record<LibraryType, string> = { movies: "Movies", shows: "Shows", videos: "Videos", music: "Music", audiobooks: "Audiobooks", books: "Books" };
 
 /**
  * The type a new library most likely has: whatever kind isn't there yet.
  */
 function nextType(libraries: LibraryInfo[]): LibraryType {
-  return (["movies", "shows", "videos", "music"] as const).find((t) => !libraries.some((l) => l.type === t)) ?? "movies";
+  return (["movies", "shows", "videos", "music", "audiobooks", "books"] as const).find((t) => !libraries.some((l) => l.type === t)) ?? "movies";
 }
 
 /**
  * The rating unrated videos or music get, for Videos and Music libraries.
  */
-function DefaultRatingSelect(props: { value: string; onChange: (value: string) => void; music?: boolean }) {
+function DefaultRatingSelect(props: { value: string; onChange: (value: string) => void; type?: LibraryType }) {
+  const what = props.type === "music" ? "music" : props.type === "audiobooks" || props.type === "books" ? "books" : null;
   return (
     <Select
-      label={props.music ? "Rating for this music" : "Rating for unrated videos"}
-      description={props.music
-        ? "Profiles with an age limit only see music rated within it. Pick “G / All ages” so everyone can listen."
+      label={what ? `Rating for these ${what === "music" ? "albums" : "books"}` : "Rating for unrated videos"}
+      description={what
+        ? `Profiles with an age limit only see ${what} rated within it. Pick “G / All ages” so everyone can ${what === "music" ? "listen" : "read and listen"}.`
         : "Profiles with an age limit only see videos rated within it. Pick “G / All ages” for family videos everyone may see."}
       value={props.value}
       onChange={(e) => props.onChange(e.target.value)}
@@ -159,7 +160,7 @@ function EditLibraryDialog(props: { library: LibraryInfo | null; onClose: () => 
     if (!library) return;
     setSaving(true);
     try {
-      await LibrariesApi.update(library.id, { name, paths, ...(library.type === "videos" || library.type === "music" ? { defaultRating: rating || null } : {}) });
+      await LibrariesApi.update(library.id, { name, paths, ...(library.type !== "movies" && library.type !== "shows" ? { defaultRating: rating || null } : {}) });
       toasts.success("Library saved");
       onSaved();
       onClose();
@@ -182,7 +183,7 @@ function EditLibraryDialog(props: { library: LibraryInfo | null; onClose: () => 
       </>}
     >
       <TextField label="Name" value={name} onChange={(e) => setName(e.target.value)} maxLength={60} />
-      {(library?.type === "videos" || library?.type === "music") && <DefaultRatingSelect value={rating} onChange={setRating} music={library.type === "music"} />}
+      {library && library.type !== "movies" && library.type !== "shows" && <DefaultRatingSelect value={rating} onChange={setRating} type={library.type} />}
       <FolderBrowser selected={paths} onSelect={(path) => setPaths([...paths, path])} />
       <div className="cn-settings__badges">
         {paths.length === 0 && <span className="cn-settings__row-text"><span>Open a folder and choose "Use this folder".</span></span>}
@@ -242,7 +243,7 @@ function AddLibraryDialog(props: { open: boolean; onOpenChange: (open: boolean) 
   async function add() {
     setSaving(true);
     try {
-      await LibrariesApi.create({ name, type, paths, defaultRating: type === "videos" || type === "music" ? rating || null : undefined });
+      await LibrariesApi.create({ name, type, paths, defaultRating: type !== "movies" && type !== "shows" ? rating || null : undefined });
       toasts.success(`${name.trim()} was added`, "Cinemion is scanning it now.");
       onAdded();
       onOpenChange(false);
@@ -272,7 +273,7 @@ function AddLibraryDialog(props: { open: boolean; onOpenChange: (open: boolean) 
             setType(value);
             if (!nameEdited) setName(TYPE_NAMES[value]);
           }}
-          options={[{ value: "movies", label: "Movies" }, { value: "shows", label: "Shows" }, { value: "videos", label: "Videos" }, { value: "music", label: "Music" }]}
+          options={[{ value: "movies", label: "Movies" }, { value: "shows", label: "Shows" }, { value: "videos", label: "Videos" }, { value: "music", label: "Music" }, { value: "audiobooks", label: "Audiobooks" }, { value: "books", label: "Books" }]}
         />
         <TextField label="Name" value={name} style={{ flex: "1 1 14rem" }} onChange={(e) => {
           setName(e.target.value);
@@ -288,7 +289,19 @@ function AddLibraryDialog(props: { open: boolean; onOpenChange: (open: boolean) 
       {type === "music" && (
         <>
           <p className="cn-settings__row-text"><span>Albums, artists and tracks, sorted by the tags in the files (or folders like Artist/Album/01 Title.mp3). Covers come from the files or a cover.jpg next to them, and lyrics from tags or .lrc files. Nothing is looked up online.</span></p>
-          <DefaultRatingSelect value={rating} onChange={setRating} music />
+          <DefaultRatingSelect value={rating} onChange={setRating} type="music" />
+        </>
+      )}
+      {type === "audiobooks" && (
+        <>
+          <p className="cn-settings__row-text"><span>A folder of audio files is one book (parts in CD1, CD2… folders too), and so is a single .m4b. Chapters come from the files, details from their tags, and everyone keeps their own place.</span></p>
+          <DefaultRatingSelect value={rating} onChange={setRating} type="audiobooks" />
+        </>
+      )}
+      {type === "books" && (
+        <>
+          <p className="cn-settings__row-text"><span>EPUB books are read right in Cinemion, with everyone's place saved; PDFs open in the browser's own viewer. Details and covers come from the files.</span></p>
+          <DefaultRatingSelect value={rating} onChange={setRating} type="books" />
         </>
       )}
       <FolderBrowser selected={paths} onSelect={(path) => setPaths([...paths, path])} />

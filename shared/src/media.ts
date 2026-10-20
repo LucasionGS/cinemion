@@ -1,5 +1,6 @@
 import type { LibraryType } from "./api.ts";
 import type { AlbumSummary, ArtistSummary, TrackInfo } from "./music.ts";
+import type { BookSummary } from "./books.ts";
 
 /**
  * Types for movies, shows, seasons, episodes, videos and their folders, and the files behind them.
@@ -7,9 +8,10 @@ import type { AlbumSummary, ArtistSummary, TrackInfo } from "./music.ts";
 
 /**
  * `video` and `folder` live in Videos libraries: every file is a video, and the folders holding them are groups.
- * `artist`, `album` and `track` live in Music libraries (see `music.ts`).
+ * `artist`, `album` and `track` live in Music libraries (see `music.ts`), `audiobook` and `book` in Audiobooks and
+ * Books libraries (see `books.ts`).
  */
-export type ItemType = "movie" | "show" | "season" | "episode" | "video" | "folder" | "artist" | "album" | "track";
+export type ItemType = "movie" | "show" | "season" | "episode" | "video" | "folder" | "artist" | "album" | "track" | "audiobook" | "book";
 
 /**
  * Whether items of this type play in the video player by themselves (rather than holding things that play).
@@ -305,6 +307,7 @@ export interface SearchResults {
   artists: ArtistSummary[];
   albums: AlbumSummary[];
   tracks: TrackInfo[];
+  books: BookSummary[];
 }
 
 export interface HomeData {
@@ -321,6 +324,10 @@ export interface HomeData {
    * New albums in Music libraries.
    */
   recentlyAddedMusic: { libraryId: number; libraryName: string; albums: AlbumSummary[] }[];
+  /**
+   * Audiobooks being listened to and books being read.
+   */
+  continueBooks: BookSummary[];
   /**
    * Titles like the one you watched last. `null` until something has been watched.
    */

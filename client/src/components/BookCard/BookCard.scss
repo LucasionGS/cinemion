@@ -1,0 +1,71 @@
+.cn-book-card {
+  &__art {
+    position: relative;
+    display: block;
+  }
+
+  &__badge {
+    position: absolute;
+    left: 0.5rem;
+    top: 0.5rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.2rem 0.45rem;
+    border-radius: var(--cn-radius-pill);
+    background: rgba(0, 0, 0, 0.65);
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 800;
+
+    svg {
+      width: 0.9rem;
+      height: 0.9rem;
+    }
+  }
+
+  &__done {
+    position: absolute;
+    right: 0.5rem;
+    bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 50%;
+    background: var(--cn-accent);
+    color: var(--cn-on-accent);
+
+    svg {
+      width: 1rem;
+      height: 1rem;
+    }
+  }
+
+  &__progress {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 0.25rem;
+    overflow: hidden;
+    border-radius: 0 0 var(--cn-radius-md) var(--cn-radius-md);
+    background: rgba(255, 255, 255, 0.25);
+
+    span {
+      display: block;
+      height: 100%;
+      background: var(--cn-accent);
+    }
+  }
+}
+
+.cn-cover--portrait {
+  aspect-ratio: 2 / 3;
+}
+
+// The card's play button sits on a square cover; portrait covers are taller
+.cn-book-card--portrait .cn-music-card__play {
+  display: none;
+}

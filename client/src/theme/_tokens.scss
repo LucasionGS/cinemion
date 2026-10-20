@@ -150,6 +150,11 @@
   @include dark-colors;
 }
 
+// And some things stay light, like the reader's light and sepia pages
+.cn-light-theme {
+  @include light-colors;
+}
+
 // Mobile: tighter margins
 :root[data-mode="mobile"] {
   --cn-gutter: 1.25rem;

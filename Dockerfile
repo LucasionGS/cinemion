@@ -27,12 +27,12 @@ LABEL org.opencontainers.image.title="Cinemion" \
   org.opencontainers.image.description="Self-hosted media server and player for movies, shows and home videos" \
   org.opencontainers.image.source="https://github.com/LucasionGS/cinemion" \
   org.opencontainers.image.licenses="GPL-3.0-or-later"
-# ffmpeg for probing, profile pictures and conversion. The GPU drivers let Intel (VA-API and Quick Sync) and
-# AMD (VA-API) graphics convert video when /dev/dri is passed in. Intel's full driver is in Debian's non-free
-# section, and only exists for x86.
+# ffmpeg for probing, profile pictures and conversion, and poppler for the covers of PDF books. The GPU drivers let
+# Intel (VA-API and Quick Sync) and AMD (VA-API) graphics convert video when /dev/dri is passed in. Intel's full
+# driver is in Debian's non-free section, and only exists for x86.
 RUN sed -i 's/^Components: main$/Components: main non-free/' /etc/apt/sources.list.d/debian.sources \
   && apt-get update \
-  && apt-get install -y --no-install-recommends ffmpeg mesa-va-drivers ca-certificates tzdata \
+  && apt-get install -y --no-install-recommends ffmpeg poppler-utils mesa-va-drivers ca-certificates tzdata \
   && if [ "$TARGETARCH" = "amd64" ]; then apt-get install -y --no-install-recommends intel-media-va-driver-non-free libmfx-gen1.2; fi \
   && rm -rf /var/lib/apt/lists/*
 COPY --from=build /out/cinemion /usr/local/bin/cinemion

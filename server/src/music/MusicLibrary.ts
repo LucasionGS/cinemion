@@ -17,7 +17,7 @@ import MusicTags from "./MusicTags.ts";
  */
 export namespace MusicLibrary {
   // Pictures in an album folder, best first
-  const COVER_NAMES = ["cover", "folder", "front", "album", "albumart", "albumartsmall"];
+  export const COVER_NAMES = ["cover", "folder", "front", "album", "albumart", "albumartsmall"];
   // Pictures in an artist folder
   const ARTIST_NAMES = ["artist", "folder", "photo"];
   const IMAGE_EXTENSIONS = [".jpg", ".jpeg", ".png", ".webp"];
@@ -123,7 +123,7 @@ export namespace MusicLibrary {
   /**
    * A picture in `dir` whose name (without extension) is one of `names`, best name first.
    */
-  async function folderImage(dir: string | null, names: string[]) {
+  export async function folderImage(dir: string | null, names: string[]) {
     if (!dir) return null;
     const entries = await fsp.readdir(dir).catch(() => [] as string[]);
     for (const name of names) {
@@ -139,7 +139,7 @@ export namespace MusicLibrary {
   /**
    * The cover inside a music file (ID3 picture, FLAC picture block, MP4 cover), stored in the image cache.
    */
-  async function embeddedCover(path: string) {
+  export async function embeddedCover(path: string) {
     const temp = Path.join(AppSystem.tempDir, `cover-${crypto.randomUUID()}.jpg`);
     try {
       const result = await Ffmpeg.run(["-y", "-i", path, "-map", "0:v:0", "-frames:v", "1", "-q:v", "2", temp]);

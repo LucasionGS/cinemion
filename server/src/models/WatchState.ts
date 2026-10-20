@@ -5,7 +5,8 @@ import type MediaItem from "./MediaItem.ts";
 import type User from "./User.ts";
 
 /**
- * One profile's progress on a movie or episode, or how often it played a track.
+ * One profile's progress on a movie, episode or audiobook, where it is in a book, or how often it played a track.
+ * Books keep their progress as a fraction: `position` from 0 to 1 with a `duration` of 1.
  */
 export class WatchState extends Model<InferAttributes<WatchState>, InferCreationAttributes<WatchState>> {
   declare id: CreationOptional<number>;
@@ -22,6 +23,10 @@ export class WatchState extends Model<InferAttributes<WatchState>, InferCreation
   declare watched: CreationOptional<boolean>;
   declare playCount: CreationOptional<number>;
   declare lastWatchedAt: CreationOptional<Date | null>;
+  /**
+   * Books: where reading stopped, like "4:0.35". `null` for everything else.
+   */
+  declare bookmark: CreationOptional<string | null>;
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
 
@@ -79,6 +84,34 @@ export class WatchState extends Model<InferAttributes<WatchState>, InferCreation
   }
 
   /**
+   * Save where a profile is in an audiobook or book, or mark it finished (or not).
+   * @param position Audiobooks: seconds in. Books: 0 to 1.
+   * @param duration Audiobooks: the length in seconds. Books: 1.
+   */
+  public static async saveBookProgress(userId: number, itemId: number, opts: { position?: number; duration: number; bookmark?: string | null; finished?: boolean }) {
+    const state = await WatchState.findOrBuildState(userId, itemId);
+    state.duration = opts.duration;
+    state.lastWatchedAt = new Date();
+    if (opts.bookmark !== undefined) state.bookmark = opts.bookmark;
+    if (opts.position !== undefined) state.position = Math.max(0, Math.min(opts.position, opts.duration));
+    if (opts.finished !== undefined) {
+      if (opts.finished && !state.watched) state.playCount = (state.playCount ?? 0) + 1;
+      state.watched = opts.finished;
+      // Finishing starts it over next time; unfinishing keeps the place
+      if (opts.finished) {
+        state.position = 0;
+        state.bookmark = null;
+      }
+    }
+    else if (opts.position !== undefined && state.watched && opts.position > 0) {
+      // Listening or reading again after finishing
+      state.watched = false;
+    }
+    await state.save();
+    return state;
+  }
+
+  /**
    * Count a play of a track. Tracks have no resume position; `lastWatchedAt` is when it was last played.
    */
   public static async recordPlay(userId: number, itemId: number) {
@@ -97,6 +130,7 @@ WatchState.init({
   watched: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
   playCount: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 },
   lastWatchedAt: { type: DataTypes.DATE, allowNull: true, defaultValue: null },
+  bookmark: { type: DataTypes.STRING(512), allowNull: true, defaultValue: null },
   createdAt: DataTypes.DATE,
   updatedAt: DataTypes.DATE,
 }, { sequelize, tableName: "watch_states" });

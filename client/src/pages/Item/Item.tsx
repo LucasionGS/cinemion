@@ -44,6 +44,7 @@ export default function Item(props: ItemProps) {
     // Music has its own pages; links from webhooks and the activity feed point here
     if (item?.type === "album" || item?.type === "artist") router.navigate(`/${item.type}/${item.id}`, { replace: true });
     if (item?.type === "track" && item.parentId) router.navigate(`/album/${item.parentId}`, { replace: true });
+    if (item?.type === "audiobook" || item?.type === "book") router.navigate(`/book/${item.id}`, { replace: true });
   }, [item]);
 
   return (

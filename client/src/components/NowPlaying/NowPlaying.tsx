@@ -1,6 +1,8 @@
 import { type CSSProperties, useEffect, useRef, useState } from "react";
-import { ChevronDown, ListPlus, Repeat, Repeat1, Shuffle, SkipBack, SkipForward, Trash2, X } from "lucide-react";
+import { Menu } from "@base-ui/react/menu";
+import { Check, ChevronDown, ListPlus, Moon, Repeat, Repeat1, RotateCcw, RotateCw, Shuffle, SkipBack, SkipForward, Trash2, X } from "lucide-react";
 import type { Lyrics as LyricsInfo } from "@shared/music.ts";
+import { PLAYBACK_SPEEDS, type SleepTimer } from "@shared/books.ts";
 import MusicApi from "../../Api/MusicApi.ts";
 import { musicPlayer } from "../../lib/MusicPlayer.ts";
 import useController from "../../lib/useController.ts";
@@ -52,6 +54,8 @@ export default function NowPlaying() {
 
   if (!open || !track) return null;
   const artist = track.trackArtist ?? track.artistName;
+  const book = player.book;
+  const { position, duration } = player.timeline();
 
   return (
     <div
@@ -74,22 +78,39 @@ export default function NowPlaying() {
         <section className="cn-now-playing__main">
           <Cover image={track.cover} title={track.albumTitle} width={780} className="cn-now-playing__cover" />
           <div className="cn-now-playing__info">
-            <h2>{track.title}</h2>
-            <p>
-              {track.artistId ? <Link href={`/artist/${track.artistId}`}>{artist}</Link> : artist}
-              {" · "}
-              {track.albumId ? <Link href={`/album/${track.albumId}`}>{track.albumTitle}</Link> : track.albumTitle}
-            </p>
+            <h2>{book ? player.currentChapter()?.title ?? book.title : track.title}</h2>
+            {book
+              ? <p><Link href={`/book/${book.id}`}>{book.title}</Link>{book.authors.length > 0 && ` · ${book.authors.join(", ")}`}</p>
+              : (
+                <p>
+                  {track.artistId ? <Link href={`/artist/${track.artistId}`}>{artist}</Link> : artist}
+                  {" · "}
+                  {track.albumId ? <Link href={`/album/${track.albumId}`}>{track.albumTitle}</Link> : track.albumTitle}
+                </p>
+              )}
             {player.error && <p className="cn-now-playing__error" role="alert">{player.error}</p>}
           </div>
           <div className="cn-now-playing__seek">
             <SeekBar />
             <div className="cn-now-playing__times">
-              <span>{formatClock(player.position)}</span>
-              <span>-{formatClock(Math.max(0, player.duration - player.position))}</span>
+              <span>{formatClock(position)}</span>
+              <span>-{formatClock(Math.max(0, duration - position) / (book ? player.speed : 1))}</span>
             </div>
           </div>
-          <div className="cn-now-playing__controls">
+          {book && (
+            <div className="cn-now-playing__controls">
+              <button type="button" className="cn-now-playing__speed" onClick={() => musicPlayer.setSpeed(nextSpeed(player.speed))} aria-label={`Speed ${player.speed}×. Change speed`}>
+                {player.speed}×
+              </button>
+              <IconButton label="Previous chapter" icon={<SkipBack />} variant="ghost" onClick={() => musicPlayer.previousChapter()} />
+              <IconButton label="Back 30 seconds" icon={<RotateCcw />} variant="ghost" size="lg" onClick={() => musicPlayer.skip(-30)} />
+              <PlayButton size="lg" />
+              <IconButton label="Forward 30 seconds" icon={<RotateCw />} variant="ghost" size="lg" onClick={() => musicPlayer.skip(30)} />
+              <IconButton label="Next chapter" icon={<SkipForward />} variant="ghost" onClick={() => musicPlayer.nextChapter()} />
+              <SleepMenu />
+            </div>
+          )}
+          {!book && <div className="cn-now-playing__controls">
             <IconButton label={player.shuffle ? "Shuffle is on" : "Shuffle"} icon={<Shuffle />} variant="ghost" className={cx(player.shuffle && "cn-now-playing__toggle--on")} aria-pressed={player.shuffle} onClick={() => musicPlayer.setShuffle(!player.shuffle)} />
             <IconButton label="Previous" icon={<SkipBack />} variant="ghost" size="lg" onClick={() => musicPlayer.previous()} />
             <PlayButton size="lg" />
@@ -102,12 +123,13 @@ export default function NowPlaying() {
               aria-pressed={player.repeat !== "off"}
               onClick={() => musicPlayer.cycleRepeat()}
             />
-          </div>
+          </div>}
           {mode === "desktop" && <div className="cn-now-playing__volume"><VolumeControl /></div>}
         </section>
 
         <section className="cn-now-playing__side">
-          <div role="tablist" aria-label="Show" className="cn-now-playing__tabs">
+          {book && <Chapters />}
+          {!book && <div role="tablist" aria-label="Show" className="cn-now-playing__tabs">
             {(["queue", "lyrics"] as const).map((tab) => (
               <button
                 key={tab}
@@ -120,10 +142,97 @@ export default function NowPlaying() {
                 {tab === "queue" ? "Up next" : "Lyrics"}
               </button>
             ))}
-          </div>
-          {player.nowPlayingTab === "queue" ? <Queue /> : <Lyrics trackId={track.id} />}
+          </div>}
+          {!book && (player.nowPlayingTab === "lyrics" ? <Lyrics trackId={track.id} /> : <Queue />)}
         </section>
       </div>
+    </div>
+  );
+}
+
+function nextSpeed(speed: number) {
+  const i = PLAYBACK_SPEEDS.indexOf(speed as typeof PLAYBACK_SPEEDS[number]);
+  return PLAYBACK_SPEEDS[(i + 1) % PLAYBACK_SPEEDS.length];
+}
+
+const SLEEP_CHOICES: { value: SleepTimer; label: string }[] = [
+  { value: 15, label: "15 minutes" },
+  { value: 30, label: "30 minutes" },
+  { value: 45, label: "45 minutes" },
+  { value: 60, label: "1 hour" },
+  { value: "chapter", label: "End of this chapter" },
+];
+
+/**
+ * The sleep timer: a moon that shows how long is left once it's set.
+ */
+function SleepMenu() {
+  const { sleep } = useController(musicPlayer);
+  const [, setTick] = useState(0);
+
+  // The minutes left count down while the menu shows them
+  useEffect(() => {
+    if (sleep?.mode === "chapter" || !sleep) return;
+    const timer = setInterval(() => setTick((t) => t + 1), 1000);
+    return () => clearInterval(timer);
+  }, [sleep]);
+
+  const left = !sleep ? null : sleep.mode === "chapter" ? "chapter end" : formatClock(Math.max(0, (sleep.at - Date.now()) / 1000));
+  return (
+    <Menu.Root>
+      <Menu.Trigger className={cx("cn-now-playing__sleep", sleep && "cn-now-playing__toggle--on")} aria-label={sleep ? `Sleep timer: ${left}` : "Sleep timer"}>
+        <Moon />
+        {left && <span>{left}</span>}
+      </Menu.Trigger>
+      <Menu.Portal>
+        <Menu.Positioner sideOffset={8} className="cn-menu__positioner">
+          <Menu.Popup className="cn-menu">
+            {SLEEP_CHOICES.map((choice) => (
+              <Menu.Item key={choice.value} className="cn-menu__item" onClick={() => musicPlayer.setSleep(choice.value)}>
+                {sleep?.mode === choice.value ? <Check /> : <span className="cn-menu__spacer" />} {choice.label}
+              </Menu.Item>
+            ))}
+            {sleep && <Menu.Separator className="cn-menu__separator" />}
+            {sleep && <Menu.Item className="cn-menu__item" onClick={() => musicPlayer.setSleep(null)}><X /> Turn off</Menu.Item>}
+          </Menu.Popup>
+        </Menu.Positioner>
+      </Menu.Portal>
+    </Menu.Root>
+  );
+}
+
+/**
+ * An audiobook's chapters, with the one playing highlighted. Clicking one plays from its start.
+ */
+function Chapters() {
+  const player = useController(musicPlayer);
+  const list = useRef<HTMLOListElement>(null);
+  const current = player.currentChapterIndex();
+
+  useEffect(() => {
+    const el = list.current;
+    const item = el?.querySelector<HTMLElement>(".cn-queue__item--current");
+    if (el && item) scrollInside(el, item, "smooth");
+  }, [current]);
+
+  return (
+    <div className="cn-queue" role="region" aria-label="Chapters">
+      <div className="cn-queue__actions">
+        <span>{player.book?.chapters.length} chapters</span>
+      </div>
+      <ol ref={list} className="cn-queue__list">
+        {player.book?.chapters.map((chapter, i) => (
+          <li key={i} className={cx("cn-queue__item", i === current && "cn-queue__item--current", i < current && "cn-queue__item--past")}>
+            <button type="button" className="cn-queue__track" onClick={() => musicPlayer.seekTimeline(chapter.start)}>
+              <span className="cn-queue__number">{i === current && player.playing ? <Bars /> : i + 1}</span>
+              <span className="cn-queue__text">
+                <strong>{chapter.title}</strong>
+              </span>
+              <span className="cn-queue__time">{formatClock(chapter.end - chapter.start)}</span>
+            </button>
+          </li>
+        ))}
+      </ol>
     </div>
   );
 }

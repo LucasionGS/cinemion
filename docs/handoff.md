@@ -237,8 +237,8 @@ and on amd64 Intel's non-free VA driver + Quick Sync runtime), `docker/entrypoin
 | 10 | done | Watch together chat and reactions (below) |
 | 11 | done | Light theme (below) |
 | 12 | done | Music libraries: artists, albums, tracks, a mini-player that keeps playing, playlists, lyrics (below) |
-| 13 | **next** | Audiobooks and books: chapters, progress, sleep timer |
-| 14 | planned | More metadata (TVDB, OMDb ratings) and Trakt scrobbling |
+| 13 | done | Audiobooks and books: chapters, progress, sleep timer (below) |
+| 14 | **next** | More metadata (TVDB, OMDb ratings) and Trakt scrobbling |
 | 15 | planned | More subtitle sources and automatic subtitle downloads |
 | 16 | planned | Offline downloads |
 | 17 | planned | Casting to Chromecast / Google TV, and a lighter layout for old smart-TV browsers |
@@ -403,6 +403,32 @@ Follows the Round 3 admin mockup (artboard `Admin.dc.html` in the Round 3 canvas
   FLAC with a cover one folder up and lyrics in a tag, an M4A compilation, ALAC with an artist picture, an untagged
   Opus file).
 - **Not done**: the dashboard's "Now playing" doesn't list music yet; no online artist/album info.
+
+### Milestone 13: what was built
+- **Library types** `audiobooks` and `books`, items `audiobook` and `book` (`shared/src/books.ts`). Code in
+  `server/src/books/`: BookLibrary (sorting, details, covers), Epub (unzips with `fflate`, reads the OPF with regexes:
+  title, authors, description, subjects, cover, reading order, chapter titles from nav or NCX), BookSummaries.
+  Authors and narrators are `Credit`s with kinds `author`/`narrator`, so person pages list them.
+- **Audiobooks**: a folder of audio files is one book (`CD1`/`Disc 2`… folders join their parent), a file in the
+  library folder itself (like an `.m4b`) is its own. Files play in disc, track, then natural name order;
+  `media_files.chapters` holds ffprobe's chapter marks (ffprobe now runs with `-show_chapters`), otherwise each file
+  is a chapter. Narrator from `narrator`/`composer`/`performer`, description from the file or `desc.txt`.
+- **Books**: EPUB and PDF, "Author - Title" names split when there's no author. PDF covers come from the first page
+  when poppler's `pdftoppm` is there (added to the Docker image and the PKGBUILD's optdepends).
+- **Progress** in `watch_states`: audiobooks keep seconds into the whole book; books keep `position` 0–1 with
+  `duration` 1 plus `bookmark` (`chapter:fraction`). Migration `20261028090000-books`. Finished = `watched`
+  (automatically near the end). Home has `continueBooks` ("Pick up your book"); "Continue watching" leaves books out.
+- **API** `/api/books/libraries/:id/{books,genres}`, `/api/books/:id`, `PUT /:id/progress`,
+  `POST /:id/parts/:fileId/stream`, `GET /:id/read` (`BookReading`), `/api/books/content/:token/*` (files inside an
+  EPUB, or the PDF; sent with `script-src 'none'`).
+- **Listening**: the music player's book mode (`musicPlayer.playBook()`): the parts are the queue, `timeline()` and
+  `seekTimeline()` work over the whole book, chapters replace previous/next, ±30 s skips, speeds 0.75–2×, a sleep timer
+  (minutes or end of chapter), the place saved every 15 s and on pause, and restored from `localStorage` after a
+  reload. Now Playing shows the chapter list instead of the queue and lyrics.
+- **Reading** (`pages/Books/Reader.tsx`, `/read/:id`): each EPUB chapter loads in an `<iframe sandbox="allow-same-origin">`
+  (no scripts run; this page still styles it), with text size, light/sepia/dark pages (`.cn-light-theme` keeps the
+  reader's buttons readable on light pages), chapter picker, arrow keys, and the place saved while scrolling. PDFs
+  use the browser's viewer with "Mark as finished".
 
 ## 6. Design decisions
 

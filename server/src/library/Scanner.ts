@@ -12,6 +12,7 @@ import ItemLabels from "./ItemLabels.ts";
 import VideoDetails from "./VideoDetails.ts";
 import MusicLibrary from "../music/MusicLibrary.ts";
 import MusicTags from "../music/MusicTags.ts";
+import BookLibrary from "../books/BookLibrary.ts";
 import Events from "../integrations/Events.ts";
 import Tasks from "../lib/Tasks.ts";
 import { forEachLimit } from "../lib/async.ts";
@@ -35,12 +36,13 @@ export namespace Scanner {
   }
 
   /**
-   * What a library looks for: movies and episodes (skipping extras and samples), any video, or music.
+   * What a library looks for: movies and episodes (skipping extras and samples), any video, audio (music and
+   * audiobooks), or EPUB and PDF books.
    */
-  type WalkMode = "titles" | "videos" | "music";
+  type WalkMode = "titles" | "videos" | "audio" | "books";
 
   function walkMode(library: Library): WalkMode {
-    return library.type === "videos" ? "videos" : library.type === "music" ? "music" : "titles";
+    return ({ movies: "titles", shows: "titles", videos: "videos", music: "audio", audiobooks: "audio", books: "books" } as const)[library.type];
   }
 
   interface FoundFile {
@@ -127,7 +129,7 @@ export namespace Scanner {
     const visited = new Set<string>();
     const anyFile = mode !== "titles";
     const shouldSkip = (relative: string) => anyFile ? relative.split(/[\\/]/).some((p) => p.startsWith(".")) : NameParser.shouldSkip(relative);
-    const wanted = mode === "music" ? MusicTags.isAudio : NameParser.isVideo;
+    const wanted = mode === "audio" ? MusicTags.isAudio : mode === "books" ? BookLibrary.isEbook : NameParser.isVideo;
 
     async function visit(folder: string) {
       const real = await fsp.realpath(folder).catch(() => null);
@@ -232,15 +234,21 @@ export namespace Scanner {
       }
     }
 
-    // Read the files ffprobe hasn't seen yet
+    // Read the files ffprobe hasn't seen yet. EPUB and PDF books aren't media, so they're read later.
     const isMusic = library.type === "music";
+    const hasVideo = library.type === "movies" || library.type === "shows" || library.type === "videos";
     const toProbe = await MediaFile.findAll({ where: { libraryId: library.id, probedAt: null } });
     let probed = 0;
     await forEachLimit(toProbe, PROBE_CONCURRENCY, async (file) => {
       task.update("Reading files", probed / toProbe.length);
       try {
-        const { tags, ...details } = await Probe.read(file.path);
-        await file.update({ ...details, tags: isMusic ? tags : null, probedAt: new Date() });
+        if (library.type === "books") {
+          await file.update({ container: Path.extname(file.path).slice(1).toLowerCase(), probedAt: new Date() });
+          probed++;
+          return;
+        }
+        const { tags, chapters, ...details } = await Probe.read(file.path);
+        await file.update({ ...details, tags: hasVideo ? null : tags, chapters: library.type === "audiobooks" ? chapters : null, probedAt: new Date() });
       } catch (error) {
         log.warn(`Could not read ${file.path}`, { error });
         await file.update({ probedAt: new Date() });
@@ -250,23 +258,27 @@ export namespace Scanner {
 
     // Subtitle files come and go without the video changing, so look for them every scan
     task.update("Looking for subtitles");
-    for (const file of isMusic ? [] : await MediaFile.findAll({ where: { libraryId: library.id } })) {
+    for (const file of hasVideo ? await MediaFile.findAll({ where: { libraryId: library.id } }) : []) {
       if (!inScope(file.path)) continue;
       await Sidecars.refresh(file).catch((error) => log.warn(`Could not look for subtitles of ${file.path}`, { error }));
     }
 
     task.update("Sorting files");
     const roots = new Map(found.map((f) => [f.path, f.root]));
+    const isBooks = library.type === "audiobooks" || library.type === "books";
     let added: number[];
     if (isMusic) added = await MusicLibrary.assign(library, roots, new Set(toProbe.map((f) => f.id)));
+    else if (isBooks) added = await BookLibrary.assign(library, roots);
     else if (library.type === "movies") added = await assignMovies(library, roots);
     else if (library.type === "videos") added = await assignVideos(library, roots);
     else added = await assignEpisodes(library, roots);
     if (isMusic) await MusicLibrary.removeEmpty(library);
+    else if (isBooks) await BookLibrary.removeEmpty(library);
     else await removeEmptyItems(library);
 
     let refreshed: number;
     if (isMusic) refreshed = await MusicLibrary.refresh(library, task, { regenerate: opts.refreshMetadata });
+    else if (isBooks) refreshed = await BookLibrary.refresh(library, task, { regenerate: opts.refreshMetadata });
     else if (library.type === "videos") refreshed = await refreshVideos(library, task, opts);
     else refreshed = await refreshMetadata(library, task, opts);
 
@@ -276,7 +288,7 @@ export namespace Scanner {
       await library.save();
     }
     await Trickplay.cleanup().catch((error) => log.warn("Could not clean up seek thumbnails", { error }));
-    if (!isMusic) {
+    if (hasVideo) {
       Trickplay.queueLibrary(library.id);
       Markers.queueLibrary(library.id);
     }
@@ -303,7 +315,7 @@ export namespace Scanner {
 
     if (firstScan) {
       const count = library.type === "shows" ? new Set([...shows.values()].map((s) => s?.id)).size : library.type === "music" ? new Set(items.map((i) => i.parentId)).size : items.length;
-      const nouns = { movies: ["movie", "movies"], shows: ["show", "shows"], videos: ["video", "videos"], music: ["album", "albums"] }[library.type];
+      const nouns = { movies: ["movie", "movies"], shows: ["show", "shows"], videos: ["video", "videos"], music: ["album", "albums"], audiobooks: ["audiobook", "audiobooks"], books: ["book", "books"] }[library.type];
       const noun = nouns[count === 1 ? 0 : 1];
       Events.activity({ kind: "added", message: `${library.name} is ready, with ${count} ${noun}` });
       return;
@@ -339,9 +351,9 @@ export namespace Scanner {
       return;
     }
 
-    if (library.type === "movies") {
+    if (library.type === "movies" || library.type === "audiobooks" || library.type === "books") {
       if (items.length > ACTIVITY_GROUP_OVER) {
-        Events.activity({ kind: "added", message: `${items.length} movies were added to ${library.name}` });
+        Events.activity({ kind: "added", message: `${items.length} ${{ movies: "movies", audiobooks: "audiobooks", books: "books" }[library.type]} were added to ${library.name}` });
         return;
       }
       for (const item of items) Events.activity({ kind: "added", message: `${item.title} was added to ${library.name}`, itemId: item.id });

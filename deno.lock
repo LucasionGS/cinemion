@@ -12,6 +12,7 @@
     "npm:@types/react@^19.2.0": "19.3.0",
     "npm:@vitejs/plugin-react-swc@^4.3.3": "4.3.3_vite@8.3.4_@types+node@24.19.2",
     "npm:bcryptjs@^3.0.2": "3.0.3",
+    "npm:fflate@~0.8.2": "0.8.3",
     "npm:hls.js@^1.7.3": "1.7.3",
     "npm:hono@^4.13.0": "4.13.13",
     "npm:jassub@2.5.18": "2.5.18",
@@ -497,6 +498,9 @@
       "optionalPeers": [
         "picomatch"
       ]
+    },
+    "fflate@0.8.3": {
+      "integrity": "sha512-tbZNuJrLwGUp3zshBtdy4W+ORxZuIh8a5ilyIEQDC5rY1f3U20JMry0Ll3WBzU58EZKsEuJFXhb5gwv8CsPvgA=="
     },
     "fs-extra@7.0.1": {
       "integrity": "sha512-YJDaCJZEnBmcbw13fvdAM9AwNOJwOzrE4pqMqBq5nFiEqXUqHwlK4B+3pUw6JNvfSPtX05xFHtYy/1ni01eGCw==",
@@ -988,6 +992,7 @@
           "jsr:@std/encoding@1",
           "jsr:@std/path@1",
           "npm:bcryptjs@^3.0.2",
+          "npm:fflate@~0.8.2",
           "npm:hono@^4.13.0",
           "npm:mariadb@~2.5.6",
           "npm:sequelize@^6.37.8",

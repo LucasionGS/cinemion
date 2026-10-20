@@ -1,0 +1,184 @@
+.cn-book {
+  &__progress {
+    height: 0.3rem;
+    max-width: 30rem;
+    border-radius: var(--cn-radius-pill);
+    background: rgba(var(--cn-fg-rgb), 0.12);
+    overflow: hidden;
+
+    span {
+      display: block;
+      height: 100%;
+      background: var(--cn-accent);
+    }
+  }
+
+  &__description {
+    max-width: 48rem;
+    white-space: pre-line;
+    font-size: 1.05rem;
+    line-height: 1.65;
+    color: var(--cn-text-muted);
+  }
+
+  &__genres {
+    font-size: 0.875rem;
+    color: var(--cn-text-subtle);
+  }
+
+  &__chapters {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    max-width: 48rem;
+
+    button {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      width: 100%;
+      min-height: 3rem;
+      padding: 0.25rem 0.75rem;
+      border: 0;
+      border-radius: var(--cn-radius-md);
+      background: transparent;
+      text-align: left;
+      cursor: pointer;
+
+      &:hover {
+        background: var(--cn-glass);
+      }
+
+      strong {
+        flex: 1;
+        font-size: 0.9375rem;
+      }
+
+      > span:last-child {
+        font-variant-numeric: tabular-nums;
+        font-size: 0.875rem;
+        color: var(--cn-text-subtle);
+      }
+    }
+  }
+
+  &__chapter-number {
+    display: flex;
+    justify-content: center;
+    width: 1.5rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--cn-text-subtle);
+  }
+
+  &__chapter--current strong {
+    color: var(--cn-accent-text);
+  }
+}
+
+// The library grid has room for both square audiobook covers and portrait book covers
+.cn-books__grid {
+  align-items: end;
+}
+
+// The reader covers the whole window
+.cn-reader {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  background: var(--reader-bg, var(--cn-bg));
+  color: var(--reader-fg, var(--cn-text));
+
+  &__bar {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-height: 3.75rem;
+    padding: 0.5rem 1rem;
+    border-bottom: 1px solid var(--reader-line, var(--cn-border));
+
+    &--bottom {
+      border-top: 1px solid var(--reader-line, var(--cn-border));
+      border-bottom: 0;
+      justify-content: space-between;
+    }
+  }
+
+  &__title {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+
+    strong,
+    span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    span {
+      font-size: 0.8125rem;
+      opacity: 0.7;
+    }
+  }
+
+  &__tools {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+  }
+
+  &__select {
+    max-width: 16rem;
+
+    // The bar has no room for a label; screen readers still hear it
+    .cn-field__label {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+  }
+
+  &__theme {
+    width: 2rem;
+    height: 2rem;
+    border: 2px solid var(--reader-line, var(--cn-border-strong));
+    border-radius: 50%;
+    cursor: pointer;
+
+    &--active {
+      border-color: var(--cn-accent);
+      box-shadow: 0 0 0 2px var(--cn-accent);
+    }
+  }
+
+  &__frame {
+    flex: 1;
+    width: 100%;
+    border: 0;
+    background: var(--reader-bg, var(--cn-bg));
+  }
+
+  &__percent {
+    font-variant-numeric: tabular-nums;
+    font-size: 0.875rem;
+    opacity: 0.75;
+  }
+
+  &__message {
+    margin: auto;
+    padding: 2rem;
+    text-align: center;
+  }
+}
+
+:root[data-mode="mobile"] .cn-reader {
+  &__select {
+    display: none;
+  }
+}

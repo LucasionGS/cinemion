@@ -102,7 +102,7 @@ export interface UpdateSelfRequest {
 
 //#region Libraries
 
-export type LibraryType = "movies" | "shows" | "videos" | "music";
+export type LibraryType = "movies" | "shows" | "videos" | "music" | "audiobooks" | "books";
 
 export interface LibraryInfo {
   id: number;
@@ -110,7 +110,7 @@ export interface LibraryInfo {
   type: LibraryType;
   paths: string[];
   /**
-   * Movies, shows, videos or albums in the library.
+   * Movies, shows, videos, albums, audiobooks or books in the library.
    */
   itemCount: number;
   lastScannedAt: string | null;

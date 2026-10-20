@@ -6,3 +6,4 @@ export * from "./together.ts";
 export * from "./languages.ts";
 export * from "./admin.ts";
 export * from "./music.ts";
+export * from "./books.ts";

@@ -1,5 +1,5 @@
 import { type CSSProperties, useEffect } from "react";
-import { ListMusic, MicVocal, Pause, Play, SkipBack, SkipForward, Volume2, VolumeX, X } from "lucide-react";
+import { ListMusic, ListOrdered, MicVocal, Pause, Play, RotateCcw, RotateCw, SkipBack, SkipForward, Volume2, VolumeX, X } from "lucide-react";
 import { musicPlayer } from "../../lib/MusicPlayer.ts";
 import useController from "../../lib/useController.ts";
 import { router } from "../../lib/Router.tsx";
@@ -12,7 +12,7 @@ import { Cover } from "../MusicCard/MusicCard.tsx";
 import "./MiniPlayer.scss";
 
 // Pages without the app frame, where the mini player stays out of the way
-const HIDDEN_ON = /^\/(watch|setup|profiles|sign-in)\b/;
+const HIDDEN_ON = /^\/(watch|read|setup|profiles|sign-in)\b/;
 
 /**
  * The music player bar at the bottom of every page while something is queued. Opens the full "Now playing" view.
@@ -31,28 +31,42 @@ export default function MiniPlayer() {
   }, [visible]);
 
   if (!visible || !track) return null;
-  const artist = track.trackArtist ?? track.artistName;
+  const book = player.book;
+  // Audiobooks show the chapter, and the book where music shows the artist
+  const title = book ? player.currentChapter()?.title ?? book.title : track.title;
+  const artist = book ? book.title : track.trackArtist ?? track.artistName;
+  const { position, duration } = player.timeline();
 
   return (
     <div className="cn-mini-player" role="region" aria-label="Music player" style={track.palette ? { "--mini-tint": track.palette.accent } as CSSProperties : undefined}>
       <SeekBar compact />
-      <button type="button" className="cn-mini-player__track" onClick={() => musicPlayer.openNowPlaying()} aria-label={`Now playing: ${track.title} by ${artist}. Open the player.`}>
+      <button type="button" className="cn-mini-player__track" onClick={() => musicPlayer.openNowPlaying()} aria-label={`Now playing: ${title}, ${artist}. Open the player.`}>
         <Cover image={track.cover} title={track.albumTitle} width={160} className="cn-mini-player__cover" />
         <span className="cn-mini-player__text">
-          <strong>{track.title}</strong>
+          <strong>{title}</strong>
           <span>{player.error ?? artist}</span>
         </span>
       </button>
       <div className="cn-mini-player__controls">
-        {mode !== "mobile" && <IconButton label="Previous" icon={<SkipBack />} variant="ghost" onClick={() => musicPlayer.previous()} />}
+        {book
+          ? mode !== "mobile" && <IconButton label="Back 30 seconds" icon={<RotateCcw />} variant="ghost" onClick={() => musicPlayer.skip(-30)} />
+          : mode !== "mobile" && <IconButton label="Previous" icon={<SkipBack />} variant="ghost" onClick={() => musicPlayer.previous()} />}
         <PlayButton />
-        <IconButton label="Next" icon={<SkipForward />} variant="ghost" onClick={() => musicPlayer.next()} />
+        {book
+          ? <IconButton label="Forward 30 seconds" icon={<RotateCw />} variant="ghost" onClick={() => musicPlayer.skip(30)} />
+          : <IconButton label="Next" icon={<SkipForward />} variant="ghost" onClick={() => musicPlayer.next()} />}
       </div>
       {mode !== "mobile" && (
         <div className="cn-mini-player__extras">
-          <span className="cn-mini-player__time">{formatClock(player.position)} / {formatClock(player.duration)}</span>
-          <IconButton label="Lyrics" icon={<MicVocal />} variant="ghost" onClick={() => musicPlayer.openNowPlaying("lyrics")} />
-          <IconButton label="Queue" icon={<ListMusic />} variant="ghost" onClick={() => musicPlayer.openNowPlaying("queue")} />
+          <span className="cn-mini-player__time">{formatClock(position)} / {formatClock(duration)}</span>
+          {book
+            ? <IconButton label="Chapters" icon={<ListOrdered />} variant="ghost" onClick={() => musicPlayer.openNowPlaying("chapters")} />
+            : (
+              <>
+                <IconButton label="Lyrics" icon={<MicVocal />} variant="ghost" onClick={() => musicPlayer.openNowPlaying("lyrics")} />
+                <IconButton label="Queue" icon={<ListMusic />} variant="ghost" onClick={() => musicPlayer.openNowPlaying("queue")} />
+              </>
+            )}
           {mode === "desktop" && <VolumeControl />}
           <IconButton label="Stop and close" icon={<X />} variant="ghost" onClick={() => musicPlayer.stop()} />
         </div>
@@ -75,11 +89,11 @@ export function PlayButton(props: { size?: "md" | "lg" }) {
 }
 
 /**
- * Where the track is. `compact` is a thin line along the top of the mini player.
+ * Where the track (or the whole audiobook) is. `compact` is a thin line along the top of the mini player.
  */
 export function SeekBar(props: { compact?: boolean }) {
   const { compact = false } = props;
-  const { position, duration } = useController(musicPlayer);
+  const { position, duration } = useController(musicPlayer).timeline();
   const progress = duration ? Math.min(1, position / duration) : 0;
   return (
     <input
@@ -89,7 +103,7 @@ export function SeekBar(props: { compact?: boolean }) {
       max={duration || 1}
       step={0.1}
       value={Math.min(position, duration || 1)}
-      onChange={(e) => musicPlayer.seek(Number(e.target.value))}
+      onChange={(e) => musicPlayer.seekTimeline(Number(e.target.value))}
       aria-label="Position"
       aria-valuetext={`${formatClock(position)} of ${formatClock(duration)}`}
       style={{ "--progress": `${progress * 100}%` } as CSSProperties}

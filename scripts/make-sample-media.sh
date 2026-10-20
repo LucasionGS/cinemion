@@ -6,12 +6,15 @@
 # tidy and messy file names, several codecs, multiple audio and subtitle tracks, NFO files,
 # local artwork, multi-episode files, specials, extras and samples that should be skipped, a folder of
 # home videos with recording dates, a folder picture and nested folders, and music: tagged albums with covers,
-# a two-disc album, a compilation, lyrics, a format browsers can't play and an untagged file.
+# a two-disc album, a compilation, lyrics, a format browsers can't play and an untagged file, and audiobooks
+# (a folder of parts and an .m4b with chapters) and books (an EPUB and a PDF).
 #
 # Usage: scripts/make-sample-media.sh [FOLDER]
-#   FOLDER         Where to create "movies", "shows", "videos" and "music". Default is data/media.
+#   FOLDER         Where to create "movies", "shows", "videos", "music", "audiobooks" and "books". Default is
+#                  data/media.
 #   CLIP_SECONDS   Length of each clip (environment variable). Default is 90.
 #   TRACK_SECONDS  Length of each music track (environment variable). Default is 30.
+#   PART_SECONDS   Length of each audiobook part (environment variable). Default is 60.
 
 set -euo pipefail
 
@@ -21,8 +24,11 @@ MOVIES="$OUT/movies"
 SHOWS="$OUT/shows"
 VIDEOS="$OUT/videos"
 MUSIC="$OUT/music"
+AUDIOBOOKS="$OUT/audiobooks"
+BOOKS="$OUT/books"
 SECONDS_PER_CLIP="${CLIP_SECONDS:-90}"
 SECONDS_PER_TRACK="${TRACK_SECONDS:-30}"
+SECONDS_PER_PART="${PART_SECONDS:-60}"
 # Running time burned into every clip, to check seeking and resume
 TIMER="drawtext=text='%{pts\\:hms}':fontsize=36:fontcolor=white:box=1:boxcolor=black@0.5:x=24:y=24"
 
@@ -108,7 +114,7 @@ tune() {
 }
 
 echo "Creating sample media in $OUT..."
-rm -rf "$MOVIES" "$SHOWS" "$VIDEOS" "$MUSIC"
+rm -rf "$MOVIES" "$SHOWS" "$VIDEOS" "$MUSIC" "$AUDIOBOOKS" "$BOOKS"
 
 #region Movies
 echo "Movies..."
@@ -384,6 +390,132 @@ tune "$JO/Paper Boats (2023)/02 Folded.m4a" 294 -c:a alac -metadata title="Folde
 # No tags at all: the folder and file name have to do
 tune "$MUSIC/Field recordings/03 Morning birds.ogg" 520 -c:a libopus -map_metadata -1
 rm -rf "$COVERS"
+#endregion
+
+#region Audiobooks
+echo "Audiobooks..."
+
+# A book in parts: one MP3 per part, with the narrator in the composer tag like most taggers write it
+LK="$AUDIOBOOKS/Ada Lindqvist/The Lighthouse Keeper (2020)"
+mkdir -p "$LK"
+art "$LK/cover.jpg" 600 600 0x0F2A3F 0xE3B448 "The Lighthouse Keeper"
+for PART in 1 2 3; do
+  ffmpeg -loglevel error -y -f lavfi -i "anoisesrc=d=$SECONDS_PER_PART:c=pink:seed=$PART:a=0.15" -c:a libmp3lame -q:a 7 \
+    -metadata title="Part $PART" -metadata album="The Lighthouse Keeper" -metadata artist="Ada Lindqvist" -metadata composer="Sam Okoro" \
+    -metadata track="$PART/3" -metadata date=2020 -metadata genre="Audiobook; Mystery" "$LK/0$PART The Lighthouse Keeper.mp3"
+done
+
+# One .m4b with chapter marks, the cover inside and a description, right in the library folder
+CHAPTER_FILE="$(mktemp)"
+{
+  echo ";FFMETADATA1"
+  echo "title=The Clockmaker's Daughter"
+  echo "artist=Mira Holt"
+  echo "album=The Clockmaker's Daughter"
+  echo "composer=Jonah Reyes"
+  echo "date=2023"
+  echo "genre=Fantasy"
+  echo "comment=A clockmaker's apprentice finds a watch that runs backwards, and a town that would rather she didn't."
+  CHAPTER=0
+  for NAME in "Opening Credits" "The Shop on Wren Street" "Seven Minutes Past" "Closing Credits"; do
+    echo "[CHAPTER]"
+    echo "TIMEBASE=1/1000"
+    echo "START=$(( CHAPTER * SECONDS_PER_PART * 1000 / 2 ))"
+    echo "END=$(( (CHAPTER + 1) * SECONDS_PER_PART * 1000 / 2 ))"
+    echo "title=$NAME"
+    CHAPTER=$(( CHAPTER + 1 ))
+  done
+} > "$CHAPTER_FILE"
+art "$AUDIOBOOKS/clockmaker.jpg" 600 600 0x3B1F2B 0xC9A227 "Clockmaker"
+ffmpeg -loglevel error -y -f lavfi -i "anoisesrc=d=$(( SECONDS_PER_PART * 2 )):c=brown:seed=7:a=0.15" -i "$AUDIOBOOKS/clockmaker.jpg" -f ffmetadata -i "$CHAPTER_FILE" \
+  -map 0:a -map 1:v -map_metadata 2 -map_chapters 2 -c:a aac -b:a 64k -c:v mjpeg -disposition:v:0 attached_pic -f mp4 "$AUDIOBOOKS/The Clockmaker's Daughter.m4b"
+rm -f "$CHAPTER_FILE" "$AUDIOBOOKS/clockmaker.jpg"
+#endregion
+
+#region Books
+echo "Books..."
+
+# An EPUB 3 book, put together by hand: package file, navigation, chapters, a style sheet and a cover
+if command -v zip > /dev/null; then
+  EPUB_DIR="$(mktemp -d)"
+  mkdir -p "$EPUB_DIR/META-INF" "$EPUB_DIR/OEBPS"
+  printf "application/epub+zip" > "$EPUB_DIR/mimetype"
+  cat > "$EPUB_DIR/META-INF/container.xml" <<'EOF'
+<?xml version="1.0" encoding="UTF-8"?>
+<container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container">
+  <rootfiles><rootfile full-path="OEBPS/content.opf" media-type="application/oebps-package+xml"/></rootfiles>
+</container>
+EOF
+  cat > "$EPUB_DIR/OEBPS/content.opf" <<'EOF'
+<?xml version="1.0" encoding="UTF-8"?>
+<package xmlns="http://www.idpf.org/2007/opf" version="3.0" unique-identifier="id">
+  <metadata xmlns:dc="http://purl.org/dc/elements/1.1/">
+    <dc:identifier id="id">urn:uuid:5b0c6d2e-0d6f-4f2a-9a43-cinemion0001</dc:identifier>
+    <dc:title>Harbour Notes</dc:title>
+    <dc:creator>Ada Lindqvist</dc:creator>
+    <dc:language>en</dc:language>
+    <dc:date>2021-04-09</dc:date>
+    <dc:publisher>Sample Press</dc:publisher>
+    <dc:subject>Essays</dc:subject>
+    <dc:description>&lt;p&gt;Short essays about &lt;em&gt;tides&lt;/em&gt;, ferries &amp;amp; the people who wait for them.&lt;/p&gt;</dc:description>
+    <meta property="dcterms:modified">2021-04-09T00:00:00Z</meta>
+  </metadata>
+  <manifest>
+    <item id="nav" href="nav.xhtml" media-type="application/xhtml+xml" properties="nav"/>
+    <item id="cover" href="images/cover.jpg" media-type="image/jpeg" properties="cover-image"/>
+    <item id="css" href="style.css" media-type="text/css"/>
+    <item id="ch1" href="text/ch1.xhtml" media-type="application/xhtml+xml"/>
+    <item id="ch2" href="text/ch2.xhtml" media-type="application/xhtml+xml"/>
+    <item id="ch3" href="text/ch3.xhtml" media-type="application/xhtml+xml"/>
+  </manifest>
+  <spine><itemref idref="ch1"/><itemref idref="ch2"/><itemref idref="ch3"/></spine>
+</package>
+EOF
+  cat > "$EPUB_DIR/OEBPS/nav.xhtml" <<'EOF'
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops"><head><title>Contents</title></head>
+<body><nav epub:type="toc"><ol>
+  <li><a href="text/ch1.xhtml">Low Water</a></li>
+  <li><a href="text/ch2.xhtml">The Last Ferry</a></li>
+  <li><a href="text/ch3.xhtml">Lanterns</a></li>
+</ol></nav></body></html>
+EOF
+  printf "p { text-indent: 1.5em; margin: 0; }\nh1 { font-variant: small-caps; }\n.drop { color: #b0413e; }\n" > "$EPUB_DIR/OEBPS/style.css"
+  mkdir -p "$EPUB_DIR/OEBPS/text" "$EPUB_DIR/OEBPS/images"
+  art "$EPUB_DIR/OEBPS/images/cover.jpg" 600 900 0x1B2A49 0x9AC1A6 "Harbour Notes"
+  CHAPTER=1
+  for TITLE in "Low Water" "The Last Ferry" "Lanterns"; do
+    {
+      echo '<?xml version="1.0" encoding="UTF-8"?>'
+      echo "<html xmlns=\"http://www.w3.org/1999/xhtml\"><head><title>$TITLE</title><link rel=\"stylesheet\" href=\"../style.css\"/></head><body>"
+      echo "<h1>$CHAPTER. $TITLE</h1>"
+      [[ $CHAPTER == 1 ]] && echo '<p><img src="../images/cover.jpg" alt="The harbour" style="max-width: 40%"/></p>'
+      for N in $(seq 1 40); do
+        echo "<p><span class=\"drop\">$N.</span> The tide went out the way it always does, slowly and then all at once, and the boats settled into the mud like tired dogs. Somebody on the quay was whistling a tune nobody remembered the words to.</p>"
+      done
+      echo '<script>document.body.innerHTML = "Scripts in books must never run";</script>'
+      echo "</body></html>"
+    } > "$EPUB_DIR/OEBPS/text/ch$CHAPTER.xhtml"
+    CHAPTER=$(( CHAPTER + 1 ))
+  done
+  mkdir -p "$BOOKS/Ada Lindqvist"
+  ( cd "$EPUB_DIR" && zip -qX0 "$BOOKS/Ada Lindqvist/Harbour Notes.epub" mimetype && zip -qXr9D "$BOOKS/Ada Lindqvist/Harbour Notes.epub" META-INF OEBPS )
+  rm -rf "$EPUB_DIR"
+else
+  echo "zip isn't installed, so there's no sample EPUB."
+fi
+
+# A PDF with two picture pages, named "Author - Title"
+if command -v magick > /dev/null; then
+  PDF_DIR="$(mktemp -d)"
+  art "$PDF_DIR/1.jpg" 850 1100 0xF4F1EA 0xD9D2C3 "Tide Tables"
+  art "$PDF_DIR/2.jpg" 850 1100 0xF4F1EA 0xD9D2C3 "Page two"
+  mkdir -p "$BOOKS"
+  magick "$PDF_DIR/1.jpg" "$PDF_DIR/2.jpg" "$BOOKS/Harbour Office - Tide Tables 2025.pdf" 2> /dev/null || echo "ImageMagick can't write PDFs here, so there's no sample PDF."
+  rm -rf "$PDF_DIR"
+else
+  echo "ImageMagick isn't installed, so there's no sample PDF."
+fi
 #endregion
 
 rm -f "/tmp/cinemion-sample-subs.srt"

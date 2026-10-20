@@ -14,6 +14,7 @@ optdepends=(
   'vpl-gpu-rt: video conversion on Intel GPUs (Quick Sync)'
   'libva-mesa-driver: video conversion on AMD GPUs'
   'nvidia-utils: video conversion on NVIDIA GPUs (NVENC)'
+  'poppler: covers for PDF books'
 )
 provides=('cinemion')
 conflicts=('cinemion')

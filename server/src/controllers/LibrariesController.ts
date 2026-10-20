@@ -31,7 +31,7 @@ export namespace LibrariesController {
    * The item type a library counts and lists: its movies, shows, videos or albums.
    */
   function mainType(library: Library) {
-    return { movies: "movie", shows: "show", videos: "video", music: "album" }[library.type] as "movie" | "show" | "video" | "album";
+    return ({ movies: "movie", shows: "show", videos: "video", music: "album", audiobooks: "audiobook", books: "book" } as const)[library.type];
   }
 
   /**
@@ -106,7 +106,7 @@ export namespace LibrariesController {
         if (!name || name.length > 60) throw new Error("The library name must be between 1 and 60 characters long.");
         library.name = name;
       }
-      const ratingChanged = body.defaultRating !== undefined && (library.type === "videos" || library.type === "music") && Library.verifyDefaultRating(body.defaultRating) !== library.defaultRating;
+      const ratingChanged = body.defaultRating !== undefined && Library.hasDefaultRating(library.type) && Library.verifyDefaultRating(body.defaultRating) !== library.defaultRating;
       if (ratingChanged) library.defaultRating = Library.verifyDefaultRating(body.defaultRating);
 
       let pathsChanged = false;
@@ -124,7 +124,7 @@ export namespace LibrariesController {
 
       await library.save();
       if (ratingChanged && library.type === "videos") await VideoDetails.applyDefaultRating(library);
-      if (ratingChanged && library.type === "music") await MusicLibrary.applyDefaultRating(library);
+      if (ratingChanged && library.type !== "videos") await MusicLibrary.applyDefaultRating(library);
       if (pathsChanged) {
         await LibraryWatcher.refresh();
         // This library lets go of files in folders it no longer has; then the others can pick them up
@@ -198,6 +198,7 @@ export namespace LibrariesController {
     const library = await Library.findByPk(Number(c.req.param("id")));
     if (!library || !canSee(user, library.id)) return c.json({ message: "That library doesn't exist." }, 404);
     if (library.type === "music") return c.json({ message: "Music libraries list their albums, artists and tracks under /api/music." }, 400);
+    if (library.type === "audiobooks" || library.type === "books") return c.json({ message: "Audiobooks and Books libraries list their books under /api/books." }, 400);
 
     const sort = (c.req.query("sort") ?? "title") as SortOrder;
     const isVideos = library.type === "videos";

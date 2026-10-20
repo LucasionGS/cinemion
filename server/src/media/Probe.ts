@@ -20,6 +20,7 @@ export namespace Probe {
      * Tags of the file and its first audio stream, cleaned up by `MusicTags.clean()`. Only kept for music files.
      */
     tags: Record<string, string>;
+    chapters: { title: string | null; start: number; end: number }[];
   }
 
   const IMAGE_SUBTITLES = new Set(["hdmv_pgs_subtitle", "dvd_subtitle", "dvb_subtitle", "xsub"]);
@@ -63,6 +64,7 @@ export namespace Probe {
         isHearingImpaired: !!s.disposition?.hearing_impaired || /\b(sdh|cc|hearing)/i.test(s.tags?.title ?? ""),
       })),
       tags: MusicTags.clean(probe.format.tags, firstAudio?.tags),
+      chapters: (probe.chapters ?? []).map((c) => ({ title: c.tags?.title?.trim() || null, start: Number(c.start_time) || 0, end: Number(c.end_time) || 0 })).filter((c) => c.end > c.start),
     };
   }
 

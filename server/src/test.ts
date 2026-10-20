@@ -11,6 +11,9 @@ import VideoDetails from "./library/VideoDetails.ts";
 import Library from "./models/Library.ts";
 import Fingerprint from "./media/Fingerprint.ts";
 import MusicTags from "./music/MusicTags.ts";
+import BookLibrary from "./books/BookLibrary.ts";
+import Epub from "./books/Epub.ts";
+import type MediaFile from "./models/MediaFile.ts";
 import { parseLrc } from "@shared/music.ts";
 
 /**
@@ -262,6 +265,23 @@ check("same artist, other spelling", MusicTags.key("Beyoncé  Knowles") === Musi
 check("lyric tags aren't kept", Object.keys(MusicTags.clean({ TITLE: "A", "lyrics-eng": "la la", ENCODER: "x" })), ["title"]);
 check("lrc lines", parseLrc("[ar:Someone]\n[00:05.00]Two\n[00:01.50][00:10.00]One"), [{ time: 1.5, text: "One" }, { time: 5, text: "Two" }, { time: 10, text: "One" }]);
 check("no stamps is plain", parseLrc("Just words\nmore words"), null);
+//#endregion
+
+//#region Books
+console.log("Books");
+const part = (id: number, path: string, duration: number, tags: Record<string, string> = {}, chapters: { title: string | null; start: number; end: number }[] | null = null) =>
+  ({ id, path, duration, tags, chapters }) as unknown as MediaFile;
+const book = BookLibrary.layout([
+  part(2, "/b/Book/CD2/01 Part.mp3", 100, { disc: "2", track: "1", title: "Part Three" }),
+  part(1, "/b/Book/CD1/02 Part.mp3", 50, { disc: "1", track: "2" }),
+  part(3, "/b/Book/CD1/01 Part.mp3", 60, { disc: "1", track: "1", title: "Opening" }),
+]);
+check("parts in disc and track order", book.parts.map((p) => [p.fileId, p.offset]), [[3, 0], [1, 60], [2, 110]]);
+check("one chapter per file without marks", book.chapters.map((c) => [c.title, c.start]), [["Opening", 0], ["Part", 60], ["Part Three", 110]]);
+const marked = BookLibrary.layout([part(9, "/b/Book.m4b", 90, {}, [{ title: "One", start: 0, end: 45 }, { title: null, start: 45, end: 90 }])]);
+check("chapter marks inside a file", marked.chapters.map((c) => [c.title, c.start, c.end]), [["One", 0, 45], ["Chapter 2", 45, 90]]);
+check("natural file order", BookLibrary.orderFiles([part(1, "/b/Part 10.mp3", 1), part(2, "/b/Part 9.mp3", 1)]).map((f) => f.id), [2, 1]);
+check("escaped html description", Epub.plain("&lt;p&gt;Tides &amp;amp; ferries&lt;/p&gt;&lt;p&gt;More&lt;/p&gt;"), "Tides & ferries\nMore");
 //#endregion
 
 console.log(failed ? `\n${failed} failed` : "\nAll passed");

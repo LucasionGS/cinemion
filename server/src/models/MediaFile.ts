@@ -62,6 +62,10 @@ export class MediaFile extends Model<InferAttributes<MediaFile>, InferCreationAt
    */
   declare tags: CreationOptional<Record<string, string> | null>;
   /**
+   * Audiobook files: their chapters, in seconds from the start of the file. `null` for other files.
+   */
+  declare chapters: CreationOptional<MediaFile.Chapter[] | null>;
+  /**
    * When ffprobe last read the file. `null` = not read yet.
    */
   declare probedAt: CreationOptional<Date | null>;
@@ -119,6 +123,12 @@ export class MediaFile extends Model<InferAttributes<MediaFile>, InferCreationAt
 }
 
 export namespace MediaFile {
+  export interface Chapter {
+    title: string | null;
+    start: number;
+    end: number;
+  }
+
   /**
    * Subtitle files count from here, well past any stream index inside a video.
    */
@@ -158,6 +168,7 @@ MediaFile.init({
   markers: jsonColumn<Marker[], MediaFile>("markers", []),
   markersVersion: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 },
   tags: jsonColumn<Record<string, string> | null, MediaFile>("tags", null, true),
+  chapters: jsonColumn<MediaFile.Chapter[] | null, MediaFile>("chapters", null, true),
   probedAt: { type: DataTypes.DATE, allowNull: true, defaultValue: null },
   createdAt: DataTypes.DATE,
   updatedAt: DataTypes.DATE,

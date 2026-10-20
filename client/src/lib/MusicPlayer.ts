@@ -1,6 +1,9 @@
 import type { AudioFormat, TrackInfo } from "@shared/music.ts";
+import type { AudiobookPart, BookChapter, BookDetail, SleepTimer } from "@shared/books.ts";
+import type { Palette } from "@shared/media.ts";
 import Controller from "./Controller.ts";
 import MusicApi from "../Api/MusicApi.ts";
+import BooksApi from "../Api/BooksApi.ts";
 import ItemsApi from "../Api/ItemsApi.ts";
 import { router } from "./Router.tsx";
 
@@ -13,6 +16,28 @@ interface Saved {
   shuffle: boolean;
   repeat: RepeatMode;
   volume: number;
+  /**
+   * An audiobook instead of music, and where in it (seconds into the whole book).
+   */
+  book?: { id: number; position: number };
+  speed?: number;
+}
+
+/**
+ * An audiobook loaded in the player. Its parts are the queue.
+ */
+export interface BookSession {
+  id: number;
+  title: string;
+  authors: string[];
+  cover: string | null;
+  palette: Palette | null;
+  parts: AudiobookPart[];
+  chapters: BookChapter[];
+  /**
+   * Unit is in seconds.
+   */
+  duration: number;
 }
 
 /**
@@ -44,6 +69,8 @@ function shuffled<T>(items: T[]) {
 /**
  * The music player: one audio element for the whole app, so music keeps playing while you browse. Holds the queue,
  * shuffle and repeat, counts plays, and talks to the system's media controls (lock screen, media keys).
+ * It also plays audiobooks: then the queue is the book's files, and the player keeps a timeline over the whole
+ * book, chapters, speed, a sleep timer and the profile's place on the server.
  * The queue is saved in this browser per profile and comes back paused after a reload.
  */
 export class MusicPlayerController extends Controller {
@@ -65,7 +92,17 @@ export class MusicPlayerController extends Controller {
   public volume = 1;
   public muted = false;
   public nowPlayingOpen = false;
-  public nowPlayingTab: "lyrics" | "queue" = "queue";
+  public nowPlayingTab: "lyrics" | "queue" | "chapters" = "queue";
+  /**
+   * The audiobook playing, when the queue is its parts rather than music.
+   */
+  public book: BookSession | null = null;
+  public speed = 1;
+  /**
+   * When the sleep timer stops playback: `at` is a time in ms for minute timers, or a place in the book (seconds)
+   * for the end of a chapter. `null` = off.
+   */
+  public sleep: { mode: SleepTimer; at: number } | null = null;
 
   /**
    * Seconds a track has to play before it counts as played, unless it's shorter than twice this.
@@ -76,6 +113,10 @@ export class MusicPlayerController extends Controller {
    */
   private static readonly RESTART_WITHIN = 3;
   private static readonly STORAGE_PREFIX = "cn-music-";
+  /**
+   * How often the place in an audiobook is saved on the server while it plays. Unit is in ms.
+   */
+  private static readonly BOOK_SAVE_EVERY = 15_000;
 
   private _audio: HTMLAudioElement | null = null;
   private _formats: AudioFormat[] | null = null;
@@ -87,6 +128,8 @@ export class MusicPlayerController extends Controller {
   private _counted = false;
   private _lastSaved = 0;
   private _userId: number | null = null;
+  private _lastBookSave = 0;
+  private _sleepTimer: ReturnType<typeof setTimeout> | null = null;
 
   public get current(): TrackInfo | null {
     return this.queue[this.index] ?? null;
@@ -102,6 +145,7 @@ export class MusicPlayerController extends Controller {
   public play(tracks: TrackInfo[], start = 0, opts?: { shuffle?: boolean }) {
     opts ??= {};
     if (tracks.length === 0) return;
+    this._leaveBook();
     if (opts.shuffle) {
       this._unshuffled = [...tracks];
       this.queue = shuffled(tracks);
@@ -121,7 +165,7 @@ export class MusicPlayerController extends Controller {
    * Put `tracks` right after the current one.
    */
   public playNext(tracks: TrackInfo[]) {
-    if (!this.hasQueue()) return this.play(tracks);
+    if (!this.hasQueue() || this.book) return this.play(tracks);
     this.queue = [...this.queue.slice(0, this.index + 1), ...tracks, ...this.queue.slice(this.index + 1)];
     this._unshuffled = this._unshuffled ? [...this._unshuffled, ...tracks] : null;
     this._save(true);
@@ -132,7 +176,7 @@ export class MusicPlayerController extends Controller {
    * Add `tracks` to the end of the queue.
    */
   public addToQueue(tracks: TrackInfo[]) {
-    if (!this.hasQueue()) return this.play(tracks);
+    if (!this.hasQueue() || this.book) return this.play(tracks);
     this.queue = [...this.queue, ...tracks];
     this._unshuffled = this._unshuffled ? [...this._unshuffled, ...tracks] : null;
     this._save(true);
@@ -161,6 +205,7 @@ export class MusicPlayerController extends Controller {
    */
   public next(auto = false) {
     if (!this.hasQueue()) return;
+    if (this.book) return auto ? this._nextPart() : this.nextChapter();
     if (auto && this.repeat === "one") return this.seek(0, true);
     if (this.index < this.queue.length - 1) this.index++;
     else if (this.repeat === "all") this.index = 0;
@@ -175,6 +220,7 @@ export class MusicPlayerController extends Controller {
 
   public previous() {
     if (!this.hasQueue()) return;
+    if (this.book) return this.previousChapter();
     if (this.position > MusicPlayerController.RESTART_WITHIN || (this.index === 0 && this.repeat !== "all")) return this.seek(0);
     this.index = this.index > 0 ? this.index - 1 : this.queue.length - 1;
     this._load(true);
@@ -272,6 +318,7 @@ export class MusicPlayerController extends Controller {
    * Stop and forget the queue, which hides the mini player.
    */
   public stop() {
+    this._leaveBook();
     this._loadId++;
     if (this._audio) {
       this._audio.pause();
@@ -292,7 +339,7 @@ export class MusicPlayerController extends Controller {
     this.notify();
   }
 
-  public openNowPlaying(tab?: "lyrics" | "queue") {
+  public openNowPlaying(tab?: "lyrics" | "queue" | "chapters") {
     this.nowPlayingOpen = true;
     if (tab) this.nowPlayingTab = tab;
     this.notify();
@@ -303,7 +350,7 @@ export class MusicPlayerController extends Controller {
     this.notify();
   }
 
-  public setNowPlayingTab(tab: "lyrics" | "queue") {
+  public setNowPlayingTab(tab: "lyrics" | "queue" | "chapters") {
     this.nowPlayingTab = tab;
     this.notify();
   }
@@ -321,6 +368,14 @@ export class MusicPlayerController extends Controller {
       saved = JSON.parse(localStorage.getItem(MusicPlayerController.STORAGE_PREFIX + userId) ?? "null");
     } catch {
       // Nothing saved
+    }
+    this.speed = saved?.speed ?? 1;
+    if (saved?.book) {
+      const detail = await BooksApi.get(saved.book.id).catch(() => null);
+      if (this._userId !== userId || !detail) return;
+      this.volume = saved.volume ?? 1;
+      this._startBook(detail, saved.book.position, false);
+      return;
     }
     if (!saved?.ids?.length) return;
     const tracks = await MusicApi.tracksByIds(saved.ids).catch(() => [] as TrackInfo[]);
@@ -343,6 +398,7 @@ export class MusicPlayerController extends Controller {
     audio.volume = this.volume;
     audio.muted = this.muted;
     audio.addEventListener("playing", () => {
+      audio.playbackRate = this.book ? this.speed : 1;
       this.playing = true;
       this.loading = false;
       this.error = null;
@@ -353,6 +409,7 @@ export class MusicPlayerController extends Controller {
       this.playing = false;
       this._setPlaybackState("paused");
       this._save(true);
+      this._saveBook(true);
       this.notify();
     });
     audio.addEventListener("waiting", () => {
@@ -368,6 +425,8 @@ export class MusicPlayerController extends Controller {
       this.position = audio.currentTime;
       this._countPlay();
       this._save();
+      this._saveBook();
+      this._checkSleep();
       this.notify();
     });
     audio.addEventListener("ended", () => this.next(true));
@@ -398,7 +457,7 @@ export class MusicPlayerController extends Controller {
     this.notify();
     try {
       this._formats ??= detectAudioFormats();
-      const stream = await MusicApi.stream(track.id, this._formats);
+      const stream = this.book ? await BooksApi.partStream(this.book.id, track.id, this._formats) : await MusicApi.stream(track.id, this._formats);
       if (loadId !== this._loadId) return;
       const audio = this._ensureAudio();
       audio.src = stream.url;
@@ -434,7 +493,7 @@ export class MusicPlayerController extends Controller {
 
   private _countPlay() {
     const track = this.current;
-    if (this._counted || !track) return;
+    if (this._counted || !track || this.book) return;
     const needed = Math.min(MusicPlayerController.COUNT_AFTER, (this.duration || track.duration) / 2);
     if (this.position < needed) return;
     this._counted = true;
@@ -456,6 +515,11 @@ export class MusicPlayerController extends Controller {
         localStorage.removeItem(key);
         return;
       }
+      if (this.book) {
+        const saved: Saved = { ids: [], index: 0, position: 0, shuffle: false, repeat: "off", volume: this.volume, speed: this.speed, book: { id: this.book.id, position: this.bookPosition() } };
+        localStorage.setItem(key, JSON.stringify(saved));
+        return;
+      }
       // Long queues keep the part around the current track
       const start = Math.max(0, this.index - 100);
       const saved: Saved = {
@@ -465,12 +529,221 @@ export class MusicPlayerController extends Controller {
         shuffle: this.shuffle,
         repeat: this.repeat,
         volume: this.volume,
+        speed: this.speed,
       };
       localStorage.setItem(key, JSON.stringify(saved));
     } catch {
       // Storage full or blocked: the queue lasts until the tab closes
     }
   }
+
+  //#region Timeline and audiobooks
+
+  /**
+   * Where playback is and how long it all is: the track, or the whole audiobook. Unit is in seconds.
+   */
+  public timeline() {
+    return this.book ? { position: this.bookPosition(), duration: this.book.duration } : { position: this.position, duration: this.duration };
+  }
+
+  /**
+   * Seek on the timeline: in the track, or anywhere in the audiobook.
+   */
+  public seekTimeline(time: number) {
+    if (!this.book) return this.seek(time);
+    const t = Math.max(0, Math.min(time, this.book.duration - 0.5));
+    const index = this._partAt(t);
+    const part = this.book.parts[index];
+    if (index === this.index && this._audio?.src) return this.seek(t - part.offset);
+    this.index = index;
+    this._load(this.playing, t - part.offset);
+  }
+
+  /**
+   * Jump back or ahead, like 30 seconds in an audiobook.
+   * @param seconds Negative goes back.
+   */
+  public skip(seconds: number) {
+    this.seekTimeline(this.timeline().position + seconds);
+  }
+
+  /**
+   * Seconds into the whole audiobook.
+   */
+  public bookPosition() {
+    const part = this.book?.parts[this.index];
+    return part ? part.offset + this.position : 0;
+  }
+
+  public currentChapterIndex() {
+    if (!this.book) return -1;
+    const at = this.bookPosition() + 0.25;
+    let found = 0;
+    this.book.chapters.forEach((c, i) => {
+      if (c.start <= at) found = i;
+    });
+    return found;
+  }
+
+  public currentChapter() {
+    return this.book?.chapters[this.currentChapterIndex()] ?? null;
+  }
+
+  public nextChapter() {
+    const chapters = this.book?.chapters ?? [];
+    const next = chapters[this.currentChapterIndex() + 1];
+    if (next) this.seekTimeline(next.start);
+  }
+
+  /**
+   * To the start of this chapter, or the one before when it only just started.
+   */
+  public previousChapter() {
+    const chapters = this.book?.chapters ?? [];
+    const index = this.currentChapterIndex();
+    const chapter = chapters[index];
+    if (!chapter) return;
+    const into = this.bookPosition() - chapter.start;
+    this.seekTimeline(into > MusicPlayerController.RESTART_WITHIN || index === 0 ? chapter.start : chapters[index - 1].start);
+  }
+
+  /**
+   * Listen to an audiobook, from where the profile left off unless `startAt` says otherwise.
+   * @param startAt Seconds into the whole book.
+   */
+  public playBook(detail: BookDetail, startAt?: number) {
+    this._leaveBook();
+    this._startBook(detail, startAt ?? detail.position, true);
+  }
+
+  private _startBook(detail: BookDetail, startAt: number, autoplay: boolean) {
+    if (detail.parts.length === 0) return;
+    this.book = {
+      id: detail.id,
+      title: detail.title,
+      authors: detail.authors,
+      cover: detail.cover,
+      palette: detail.palette,
+      parts: detail.parts,
+      chapters: detail.chapters.length ? detail.chapters : detail.parts.map((p) => ({ title: p.title, start: p.offset, end: p.offset + p.duration })),
+      duration: detail.duration ?? detail.parts.reduce((sum, p) => sum + p.duration, 0),
+    };
+    // The parts stand in for tracks, so the mini player and media controls work the same
+    this.queue = detail.parts.map((part, i) => ({
+      id: part.fileId,
+      title: part.title,
+      albumId: null,
+      albumTitle: detail.title,
+      artistId: null,
+      artistName: detail.authors.join(", ") || detail.title,
+      trackArtist: null,
+      disc: null,
+      number: i + 1,
+      duration: part.duration,
+      cover: detail.cover,
+      palette: detail.palette,
+      playCount: 0,
+    }));
+    this._unshuffled = null;
+    this.shuffle = false;
+    this.repeat = "off";
+    this.nowPlayingTab = "chapters";
+    const start = Math.max(0, Math.min(startAt, this.book.duration - 1));
+    this.index = this._partAt(start);
+    const offset = start - this.book.parts[this.index].offset;
+    if (autoplay) {
+      this._load(true, offset);
+    }
+    else {
+      this.position = offset;
+      this.duration = this.current?.duration ?? 0;
+      this._updateMediaSession();
+      this.notify();
+    }
+  }
+
+  public setSpeed(speed: number) {
+    this.speed = speed;
+    if (this._audio && this.book) this._audio.playbackRate = speed;
+    this._updatePositionState();
+    this._save(true);
+    this.notify();
+  }
+
+  /**
+   * Stop playback after some minutes or at the end of the chapter. `null` turns the timer off.
+   */
+  public setSleep(mode: SleepTimer | null) {
+    if (this._sleepTimer) clearTimeout(this._sleepTimer);
+    this._sleepTimer = null;
+    if (mode === null) this.sleep = null;
+    else if (mode === "chapter") this.sleep = { mode, at: this.currentChapter()?.end ?? this.timeline().duration };
+    else {
+      this.sleep = { mode, at: Date.now() + mode * 60_000 };
+      this._sleepTimer = setTimeout(() => this._fallAsleep(), mode * 60_000);
+    }
+    this.notify();
+  }
+
+  private _checkSleep() {
+    if (this.sleep?.mode === "chapter" && this.bookPosition() >= this.sleep.at - 0.5) this._fallAsleep();
+  }
+
+  private _fallAsleep() {
+    if (this._sleepTimer) clearTimeout(this._sleepTimer);
+    this._sleepTimer = null;
+    this.sleep = null;
+    this.pause();
+    this.notify();
+  }
+
+  /**
+   * The part that plays at `time` seconds into the book.
+   */
+  private _partAt(time: number) {
+    const parts = this.book?.parts ?? [];
+    let index = 0;
+    parts.forEach((p, i) => {
+      if (p.offset <= time) index = i;
+    });
+    return index;
+  }
+
+  private _nextPart() {
+    if (!this.book) return;
+    if (this.index < this.queue.length - 1) {
+      this.index++;
+      this._load(true);
+      return;
+    }
+    // The end of the book
+    BooksApi.progress(this.book.id, { finished: true }).catch(() => { });
+    this.pause();
+    this.seek(0);
+  }
+
+  /**
+   * Save the place in the audiobook on the server. Called often while playing, so it only sends now and then.
+   * @param now Send right away.
+   */
+  private _saveBook(now = false) {
+    if (!this.book || (!now && Date.now() - this._lastBookSave < MusicPlayerController.BOOK_SAVE_EVERY)) return;
+    this._lastBookSave = Date.now();
+    BooksApi.progress(this.book.id, { position: this.bookPosition() }).catch(() => { });
+  }
+
+  /**
+   * Save the place in the audiobook and go back to music mode.
+   */
+  private _leaveBook() {
+    if (!this.book) return;
+    this._saveBook(true);
+    this.book = null;
+    this.setSleep(null);
+    if (this.nowPlayingTab === "chapters") this.nowPlayingTab = "queue";
+  }
+
+  //#endregion
 
   //#region Media Session
 
@@ -482,9 +755,9 @@ export class MusicPlayerController extends Controller {
       ["pause", () => this.pause()],
       ["previoustrack", () => this.previous()],
       ["nexttrack", () => this.next()],
-      ["seekbackward", (d) => this.seek(this.position - (d.seekOffset ?? 10))],
-      ["seekforward", (d) => this.seek(this.position + (d.seekOffset ?? 10))],
-      ["seekto", (d) => d.seekTime !== undefined && this.seek(d.seekTime)],
+      ["seekbackward", (d) => this.skip(-(d.seekOffset ?? (this.book ? 30 : 10)))],
+      ["seekforward", (d) => this.skip(d.seekOffset ?? (this.book ? 30 : 10))],
+      ["seekto", (d) => d.seekTime !== undefined && this.seekTimeline(d.seekTime)],
       ["stop", () => this.stop()],
     ];
     for (const [action, handler] of handlers) {
@@ -500,7 +773,7 @@ export class MusicPlayerController extends Controller {
     const track = this.current;
     if (!("mediaSession" in navigator) || !track) return;
     navigator.mediaSession.metadata = new MediaMetadata({
-      title: track.title,
+      title: this.book ? this.currentChapter()?.title ?? this.book.title : track.title,
       artist: track.trackArtist ?? track.artistName,
       album: track.albumTitle,
       artwork: track.cover ? [256, 512].map((size) => ({ src: new URL(ItemsApi.imageUrl(track.cover!, size), location.origin).toString(), sizes: `${size}x${size}`, type: "image/jpeg" })) : [],
@@ -513,9 +786,10 @@ export class MusicPlayerController extends Controller {
   }
 
   private _updatePositionState() {
-    if (!("mediaSession" in navigator) || !this.duration || !Number.isFinite(this.duration)) return;
+    const { position, duration } = this.timeline();
+    if (!("mediaSession" in navigator) || !duration || !Number.isFinite(duration)) return;
     try {
-      navigator.mediaSession.setPositionState({ duration: this.duration, position: Math.min(this.position, this.duration), playbackRate: 1 });
+      navigator.mediaSession.setPositionState({ duration, position: Math.min(position, duration), playbackRate: this.book ? this.speed : 1 });
     } catch {
       // Position out of range while switching tracks
     }

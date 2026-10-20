@@ -6,7 +6,6 @@ Planned, but not part of the first version. Roughly in the order they're likely 
 
 - **Music extras**: artist pictures and bios from online sources, and music in the dashboard's "Now playing".
 - **Photos**: browsing by folder and date and slideshows, like Videos libraries already do for home videos, with no online metadata (everything comes from the files themselves).
-- **Books & audiobooks**: progress per user, chapters, and a sleep timer for audiobooks.
 - **Live TV & DVR**: tuner support, a guide, and recordings that land in a library.
 
 ## Playback

@@ -6,6 +6,7 @@ import ItemsController from "./ItemsController.ts";
 import Visibility from "../library/Visibility.ts";
 import Summaries from "../library/Summaries.ts";
 import MusicSummaries from "../music/MusicSummaries.ts";
+import BooksController from "./BooksController.ts";
 import type { AppEnv } from "../lib/types.ts";
 
 export namespace HomeController {
@@ -22,7 +23,8 @@ export namespace HomeController {
       order: [["lastWatchedAt", "DESC"]],
       limit: 40,
     });
-    const items = await MediaItem.findAll({ where: { [Op.and]: [Visibility.where(user), { id: states.map((s) => s.itemId) }] } });
+    // Books and audiobooks have their own row
+    const items = await MediaItem.findAll({ where: { [Op.and]: [Visibility.where(user), { id: states.map((s) => s.itemId), type: ["movie", "episode", "video"] }] } });
     const byId = new Map(items.map((i) => [i.id, i]));
     return states.map((s) => byId.get(s.itemId)).filter((i): i is MediaItem => !!i).slice(0, ROW_SIZE);
   }
@@ -81,7 +83,7 @@ export namespace HomeController {
   async function recentlyAdded(user: User) {
     const rows: HomeData["recentlyAdded"] = [];
     for (const library of await Library.findAll({ order: [["id", "ASC"]] })) {
-      if (!Visibility.canSeeLibrary(user, library.id) || library.type === "music") continue;
+      if (!Visibility.canSeeLibrary(user, library.id) || !["movies", "shows", "videos"].includes(library.type)) continue;
       let items: MediaItem[];
       if (library.type === "movies" || library.type === "videos") {
         const type = library.type === "movies" ? "movie" : "video";
@@ -144,6 +146,7 @@ export namespace HomeController {
       nextUp: await Summaries.build(next, user),
       recentlyAdded: await recentlyAdded(user),
       recentlyAddedMusic: await recentlyAddedMusic(user),
+      continueBooks: await BooksController.continueBooks(user),
       becauseYouWatched: await becauseYouWatched(user),
     };
     return c.json(data);

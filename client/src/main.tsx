@@ -132,6 +132,20 @@ const routes: Route[] = [
     },
   }),
   requirement({ signedIn: true }, {
+    path: /^\/book\/(\d+)\/?$/,
+    component: async ([id]) => {
+      const Book = (await import("./pages/Books/Book.tsx")).default;
+      return <Book key={id} id={Number(id)} />;
+    },
+  }),
+  requirement({ signedIn: true }, {
+    path: /^\/read\/(\d+)\/?$/,
+    component: async ([id]) => {
+      const Reader = (await import("./pages/Books/Reader.tsx")).default;
+      return <Reader key={id} id={Number(id)} />;
+    },
+  }),
+  requirement({ signedIn: true }, {
     path: /^\/person\/(\d+)\/?$/,
     component: async ([id]) => {
       const Person = (await import("./pages/Person/Person.tsx")).default;
