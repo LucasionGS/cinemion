@@ -583,7 +583,7 @@ through a temporary spot, "done properly, ideally resumable" since files can be 
 
 ### Built-in TMDB key (16d)
 - `server/src/metadata/BuiltInKeys.ts` holds `BuiltInKeys.TMDB`, a read-only TMDB API Read Access Token (v4) shipped
-  with Cinemion. To rotate it, replace the value and release. **It's still empty**: the owner supplies the key later.
+  with Cinemion (from the owner's free, non-commercial TMDB developer account). To rotate it, replace the value and release.
 - `TmdbProvider.apiKey()` order: the key in Settings › Metadata, then `TMDB_API_KEY`, then the built-in one. A 401 on
   the built-in key says to update Cinemion or add an own key.
 - `ServerInfo.hasBuiltInTmdbKey` (public, never the key itself) lets the metadata form (setup and Settings) call the
