@@ -56,3 +56,14 @@ Mockups: https://claude.ai/artifact/RxQLnPd51KADJ5pEWwnfKC
 - **Cards:** 16:9 thumbnails taken from the video (or a picture next to it), with the length in the corner and the date below.
 - **Age limits:** each Videos library has a "rating for unrated videos" (e.g. G for family videos); single videos can get their own rating. A folder shows for anyone who may see a video in it.
 - **Editing by hand:** title, date, description, tags, age rating and thumbnail (upload, pick a frame, or automatic), for videos and folders only. Movies and shows keep NFO, TMDB and Fix match.
+
+## Round 5: photos
+
+- **Photos libraries:** for pictures and the videos phones take with them. Nothing is looked up online: dates, cameras, exposure and places come from the files (EXIF, then the file name, then the file date).
+- **Library page:** A · Albums first. A grid of album cards (folder cards with the stack behind them, 16:9, like Videos), newest first, then "Photos outside albums" for pictures in the library folder itself. A Timeline tab shows everything by month and day.
+- **Grids:** justified rows that keep each picture's shape, with day headings in albums; videos show their length.
+- **Albums:** both kinds. Every folder is an album automatically (nested like on disk), and anyone can make their own albums from photos anywhere in a library without moving files. The one who made an album and library managers can change it.
+- **Album page:** the folder path, title, date range and counts, Slideshow, Shuffle, Select; sub-albums above the photos; the page takes the cover's colours.
+- **Viewer:** both mockups. A full-screen picture with a filmstrip (Viewer A), and the (i) button opens the details panel (Viewer B: caption, date, file, camera, place, folder, albums, tags; editable by library managers). Slideshow, zoom to full size, swipes, arrow keys and the TV remote. Videos play right in the viewer.
+
+Mockups: https://claude.ai/artifact/XA2S3uKyad4VM9jmdUGrLS

@@ -2,6 +2,7 @@ import type { CreationOptional, ForeignKey, InferAttributes, InferCreationAttrib
 import { DataTypes, Model } from "sequelize";
 import type { AudioTrack, MediaFileInfo, SubtitleTrack } from "@shared/media.ts";
 import type { Marker } from "@shared/playback.ts";
+import type { PhotoMeta } from "@shared/photos.ts";
 import sequelize, { ID_TYPE, jsonColumn } from "./sequelize.ts";
 import type Library from "./Library.ts";
 import type MediaItem from "./MediaItem.ts";
@@ -65,6 +66,10 @@ export class MediaFile extends Model<InferAttributes<MediaFile>, InferCreationAt
    * Audiobook files: their chapters, in seconds from the start of the file. `null` for other files.
    */
   declare chapters: CreationOptional<MediaFile.Chapter[] | null>;
+  /**
+   * Photos: what their EXIF says (camera, exposure, place, when it was taken). `null` for other files.
+   */
+  declare photo: CreationOptional<PhotoMeta | null>;
   /**
    * Automatic subtitle searches per language (ISO 639-1): when the last one was, and how many there were. `null` =
    * never searched.
@@ -183,6 +188,7 @@ MediaFile.init({
   markersVersion: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 },
   tags: jsonColumn<Record<string, string> | null, MediaFile>("tags", null, true),
   chapters: jsonColumn<MediaFile.Chapter[] | null, MediaFile>("chapters", null, true),
+  photo: jsonColumn<PhotoMeta | null, MediaFile>("photo", null, true),
   subtitleSearches: jsonColumn<Record<string, MediaFile.SubtitleSearch> | null, MediaFile>("subtitleSearches", null, true),
   probedAt: { type: DataTypes.DATE, allowNull: true, defaultValue: null },
   createdAt: DataTypes.DATE,

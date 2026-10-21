@@ -28,13 +28,17 @@ export class RouterController extends Controller {
     this.notify();
   }
 
-  public navigate(to: string, opts?: { replace?: boolean }) {
+  /**
+   * @param opts.keepScroll Stay where the page is scrolled, for changes that open something over the page (like the
+   *   photo viewer) rather than a new page.
+   */
+  public navigate(to: string, opts?: { replace?: boolean; keepScroll?: boolean }) {
     opts ??= {};
     if (to === location.pathname + location.search) return;
     if (opts.replace) history.replaceState(null, "", to);
     else history.pushState(null, "", to);
     this.sync();
-    scrollTo({ top: 0 });
+    if (!opts.keepScroll) scrollTo({ top: 0 });
   }
 
   public back(fallback = "/") {

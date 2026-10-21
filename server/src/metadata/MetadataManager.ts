@@ -4,6 +4,7 @@ import type { Artwork, ExternalIds, ItemType, MatchCandidate } from "@shared/med
 import { Collection, Credit, Library, MediaFile, MediaItem, Person, Setting } from "../models/index.ts";
 import ContentRatings from "../library/ContentRatings.ts";
 import VideoDetails from "../library/VideoDetails.ts";
+import PhotoLibrary from "../photos/PhotoLibrary.ts";
 import type MetadataProvider from "./MetadataProvider.ts";
 import LocalProvider from "./providers/LocalProvider.ts";
 import TmdbProvider from "./providers/TmdbProvider.ts";
@@ -274,10 +275,12 @@ export namespace MetadataManager {
    */
   export async function refresh(item: MediaItem) {
     if (item.type === "movie") return await refreshMovie(item);
-    // Videos are never looked up; refreshing reads their files again and takes a new automatic thumbnail
-    if (item.type === "video" || item.type === "folder") {
+    // Videos and photos are never looked up; refreshing reads their files again and makes a new thumbnail
+    if (item.type === "video" || item.type === "photo" || item.type === "folder") {
       const library = await Library.findByPk(item.libraryId);
-      if (item.type === "video") await VideoDetails.refreshVideo(item, { regenerate: true, library });
+      if (item.type === "photo") await PhotoLibrary.refreshPhoto(item, { regenerate: true, library });
+      else if (item.type === "video" && library?.type === "photos") await PhotoLibrary.refreshVideo(item, { regenerate: true, library });
+      else if (item.type === "video") await VideoDetails.refreshVideo(item, { regenerate: true, library });
       if (library) await VideoDetails.refreshFolders(library);
       return;
     }

@@ -20,7 +20,7 @@ export namespace Ffmpeg {
     height?: number;
     channels?: number;
     color_transfer?: string;
-    side_data_list?: { side_data_type?: string }[];
+    side_data_list?: { side_data_type?: string; rotation?: number }[];
     disposition?: { default?: number; forced?: number; attached_pic?: number; hearing_impaired?: number };
     tags?: { language?: string; title?: string } & Record<string, string>;
   }

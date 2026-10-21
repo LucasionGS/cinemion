@@ -1,0 +1,149 @@
+.cn-photos {
+  &__section {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    h2 {
+      font-size: 1.35rem;
+    }
+  }
+
+  &__album-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1.5rem 2.5rem;
+  }
+
+  &__album-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+    min-width: 0;
+    max-width: 48rem;
+
+    h1 {
+      font-size: 2.75rem;
+      letter-spacing: -0.02em;
+      overflow-wrap: anywhere;
+    }
+  }
+
+  &__path {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+
+    a {
+      color: var(--cn-accent-text);
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+
+    > span {
+      display: inline-flex;
+      gap: 0.5rem;
+
+      > span {
+        color: var(--cn-text-faint);
+      }
+    }
+  }
+
+  &__album-meta {
+    color: var(--cn-text-muted);
+    font-weight: 600;
+  }
+
+  &__album-description {
+    color: var(--cn-text-muted);
+    line-height: 1.55;
+    white-space: pre-wrap;
+  }
+
+  &__album-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+  }
+
+  &__edit {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  &__textarea {
+    height: auto;
+    padding: 0.75rem 0.9rem;
+    line-height: 1.5;
+    resize: vertical;
+  }
+}
+
+// What to do with the picked photos, floating above the page
+.cn-photo-selection {
+  position: fixed;
+  left: 50%;
+  bottom: 1.5rem;
+  z-index: 35;
+  translate: -50% 0;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  max-width: calc(100vw - 2rem);
+  padding: 0.5rem 0.625rem 0.5rem 0.5rem;
+  border-radius: var(--cn-radius-pill);
+  border: 1px solid var(--cn-border);
+  background: var(--cn-elevated);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 1rem 2.5rem var(--cn-shadow);
+
+  &__count {
+    padding: 0 0.5rem 0 0.25rem;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+}
+
+:root[data-mini-player] .cn-photo-selection {
+  bottom: calc(var(--mini-player-height) + 2rem);
+}
+
+:root[data-mode="mobile"] {
+  .cn-photos__album-text h1 {
+    font-size: 1.85rem;
+  }
+
+  .cn-photos__album-actions {
+    width: 100%;
+
+    > .cn-button {
+      flex: 1;
+    }
+  }
+
+  .cn-photo-selection {
+    bottom: calc(5.75rem + env(safe-area-inset-bottom));
+    flex-wrap: wrap;
+    justify-content: center;
+    border-radius: var(--cn-radius-xl);
+  }
+
+  // Edge to edge pictures on phones, like their own galleries; the headings keep the page's margin
+  .cn-photos .cn-photo-grid {
+    margin: 0 calc(var(--cn-gutter) * -1);
+  }
+
+  .cn-photos .cn-photo-grid__month,
+  .cn-photos .cn-photo-grid__day {
+    padding: 0 var(--cn-gutter);
+  }
+}

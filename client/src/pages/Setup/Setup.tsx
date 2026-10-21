@@ -210,13 +210,13 @@ function guessCountry() {
   return COUNTRIES.some((c) => c.value === region) ? region! : "US";
 }
 
-const TYPE_NAMES: Record<LibraryType, string> = { movies: "Movies", shows: "Shows", videos: "Videos", music: "Music", audiobooks: "Audiobooks", books: "Books" };
+const TYPE_NAMES: Record<LibraryType, string> = { movies: "Movies", shows: "Shows", videos: "Videos", music: "Music", audiobooks: "Audiobooks", books: "Books", photos: "Photos" };
 
 /**
  * The kind of library not added yet, in the usual order.
  */
 function nextType(libraries: CreateLibraryRequest[]): LibraryType {
-  return (["movies", "shows", "videos", "music", "audiobooks", "books"] as const).find((t) => !libraries.some((l) => l.type === t)) ?? "movies";
+  return (["movies", "shows", "videos", "music", "photos", "audiobooks", "books"] as const).find((t) => !libraries.some((l) => l.type === t)) ?? "movies";
 }
 
 function LibrariesStep(props: { libraries: CreateLibraryRequest[]; onChange: (libraries: CreateLibraryRequest[]) => void }) {
@@ -265,7 +265,7 @@ function LibrariesStep(props: { libraries: CreateLibraryRequest[]; onChange: (li
 
       <div className="cn-setup__library">
         <div className="cn-setup__library-head">
-          <SegmentedControl<LibraryType> label="Library type" value={type} onChange={changeType} options={[{ value: "movies", label: "Movies" }, { value: "shows", label: "Shows" }, { value: "videos", label: "Videos" }, { value: "music", label: "Music" }, { value: "audiobooks", label: "Audiobooks" }, { value: "books", label: "Books" }]} />
+          <SegmentedControl<LibraryType> label="Library type" value={type} onChange={changeType} options={[{ value: "movies", label: "Movies" }, { value: "shows", label: "Shows" }, { value: "videos", label: "Videos" }, { value: "music", label: "Music" }, { value: "photos", label: "Photos" }, { value: "audiobooks", label: "Audiobooks" }, { value: "books", label: "Books" }]} />
           <TextField
             label="Name"
             value={name}

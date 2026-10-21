@@ -98,7 +98,7 @@ export default function LibrariesSettings() {
                     <Menu.Popup className="cn-menu">
                       <Menu.Item className="cn-menu__item" onClick={() => setUploading(l)}><Upload /> Upload files</Menu.Item>
                       <Menu.Item className="cn-menu__item" onClick={() => setEditing(l)}><Pencil /> Edit library</Menu.Item>
-                      <Menu.Item className="cn-menu__item" onClick={() => scan(l, true)}><ScanSearch /> {l.type === "videos" ? "Refresh details and thumbnails" : l.type === "music" ? "Find covers again" : l.type === "audiobooks" || l.type === "books" ? "Read book details again" : "Refresh all details"}</Menu.Item>
+                      <Menu.Item className="cn-menu__item" onClick={() => scan(l, true)}><ScanSearch /> {l.type === "videos" || l.type === "photos" ? "Refresh details and thumbnails" : l.type === "music" ? "Find covers again" : l.type === "audiobooks" || l.type === "books" ? "Read book details again" : "Refresh all details"}</Menu.Item>
                       <Menu.Separator className="cn-menu__separator" />
                       <Menu.Item className="cn-menu__item" onClick={() => setRemoving(l)}><Trash2 /> Remove library</Menu.Item>
                     </Menu.Popup>
@@ -149,21 +149,32 @@ function UploadProgress(props: { library: LibraryInfo; onOpen: () => void }) {
   );
 }
 
-const NOUNS: Record<LibraryType, [string, string]> = { movies: ["movie", "movies"], shows: ["show", "shows"], videos: ["video", "videos"], music: ["album", "albums"], audiobooks: ["audiobook", "audiobooks"], books: ["book", "books"] };
-const TYPE_NAMES: Record<LibraryType, string> = { movies: "Movies", shows: "Shows", videos: "Videos", music: "Music", audiobooks: "Audiobooks", books: "Books" };
+const NOUNS: Record<LibraryType, [string, string]> = { movies: ["movie", "movies"], shows: ["show", "shows"], videos: ["video", "videos"], music: ["album", "albums"], audiobooks: ["audiobook", "audiobooks"], books: ["book", "books"], photos: ["photo", "photos"] };
+const TYPE_NAMES: Record<LibraryType, string> = { movies: "Movies", shows: "Shows", videos: "Videos", music: "Music", audiobooks: "Audiobooks", books: "Books", photos: "Photos" };
 
 /**
  * The type a new library most likely has: whatever kind isn't there yet.
  */
 function nextType(libraries: LibraryInfo[]): LibraryType {
-  return (["movies", "shows", "videos", "music", "audiobooks", "books"] as const).find((t) => !libraries.some((l) => l.type === t)) ?? "movies";
+  return (["movies", "shows", "videos", "music", "photos", "audiobooks", "books"] as const).find((t) => !libraries.some((l) => l.type === t)) ?? "movies";
 }
 
 /**
- * The rating unrated videos or music get, for Videos and Music libraries.
+ * The rating unrated videos, music, books or photos get, for the libraries that have one.
  */
 function DefaultRatingSelect(props: { value: string; onChange: (value: string) => void; type?: LibraryType }) {
   const what = props.type === "music" ? "music" : props.type === "audiobooks" || props.type === "books" ? "books" : null;
+  if (props.type === "photos") {
+    return (
+      <Select
+        label="Rating for unrated photos"
+        description="Profiles with an age limit only see photos and videos rated within it. Pick “G / All ages” for family photos everyone may see."
+        value={props.value}
+        onChange={(e) => props.onChange(e.target.value)}
+        options={[{ value: "", label: "None: hide them from age-limited profiles" }, ...RATINGS]}
+      />
+    );
+  }
   return (
     <Select
       label={what ? `Rating for these ${what === "music" ? "albums" : "books"}` : "Rating for unrated videos"}
@@ -308,7 +319,7 @@ function AddLibraryDialog(props: { open: boolean; onOpenChange: (open: boolean) 
             setType(value);
             if (!nameEdited) setName(TYPE_NAMES[value]);
           }}
-          options={[{ value: "movies", label: "Movies" }, { value: "shows", label: "Shows" }, { value: "videos", label: "Videos" }, { value: "music", label: "Music" }, { value: "audiobooks", label: "Audiobooks" }, { value: "books", label: "Books" }]}
+          options={[{ value: "movies", label: "Movies" }, { value: "shows", label: "Shows" }, { value: "videos", label: "Videos" }, { value: "music", label: "Music" }, { value: "photos", label: "Photos" }, { value: "audiobooks", label: "Audiobooks" }, { value: "books", label: "Books" }]}
         />
         <TextField label="Name" value={name} style={{ flex: "1 1 14rem" }} onChange={(e) => {
           setName(e.target.value);
@@ -337,6 +348,12 @@ function AddLibraryDialog(props: { open: boolean; onOpenChange: (open: boolean) 
         <>
           <p className="cn-settings__row-text"><span>EPUB books are read right in Cinemion, with everyone's place saved; PDFs open in the browser's own viewer. Details and covers come from the files.</span></p>
           <DefaultRatingSelect value={rating} onChange={setRating} type="books" />
+        </>
+      )}
+      {type === "photos" && (
+        <>
+          <p className="cn-settings__row-text"><span>Photos and phone videos, with every folder as an album. Dates, cameras and places come from the photos themselves (HEIC from iPhones works too), and nothing is looked up online. Everyone can also make their own albums without moving any files.</span></p>
+          <DefaultRatingSelect value={rating} onChange={setRating} type="photos" />
         </>
       )}
       <FolderBrowser selected={paths} onSelect={(path) => setPaths([...paths, path])} />

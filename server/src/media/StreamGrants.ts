@@ -30,6 +30,17 @@ export namespace StreamGrants {
   }
 
   /**
+   * A live id for `fileId` and `userId`, the same one as last time when it hasn't expired, so the browser can keep
+   * what it loaded through it (like a photo opened again).
+   */
+  export function reuse(fileId: number, userId: number) {
+    for (const [token, g] of _grants) {
+      if (g.fileId === fileId && g.userId === userId && Date.now() - g.lastUsed < LIFETIME / 2) return token;
+    }
+    return grant(fileId, userId);
+  }
+
+  /**
    * The grant behind `token`, keeping it alive, or `null` when it expired or never existed.
    */
   export function use(token: string) {

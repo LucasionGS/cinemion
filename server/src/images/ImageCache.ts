@@ -44,16 +44,33 @@ export namespace ImageCache {
   }
 
   /**
-   * Make sure the image is in the cache and return its key. `null` when it can't be fetched.
+   * The key an image stored with `identity` gets (see `store()`).
    */
-  export async function store(source: Source): Promise<string | null> {
-    let identity: string;
-    if ("url" in source) identity = source.url;
-    else {
-      // A changed local file gets a new key, so stale artwork is never served
-      const stat = await fsp.stat(source.file).catch(() => null);
-      if (!stat) return null;
-      identity = `${source.file}:${stat.size}:${stat.mtime?.getTime()}`;
+  export async function keyFor(identity: string) {
+    return await hash(identity);
+  }
+
+  /**
+   * Whether an image with `key` is stored.
+   */
+  export async function has(key: string) {
+    return isKey(key) && await exists(originalPath(key));
+  }
+
+  /**
+   * Make sure the image is in the cache and return its key. `null` when it can't be fetched.
+   * @param identity What the image stands for, when that isn't the source itself, like a thumbnail made in a temp
+   *   file from a photo. The same identity always gives the same key.
+   */
+  export async function store(source: Source, identity?: string): Promise<string | null> {
+    if (identity === undefined) {
+      if ("url" in source) identity = source.url;
+      else {
+        // A changed local file gets a new key, so stale artwork is never served
+        const stat = await fsp.stat(source.file).catch(() => null);
+        if (!stat) return null;
+        identity = `${source.file}:${stat.size}:${stat.mtime?.getTime()}`;
+      }
     }
     const key = await hash(identity);
     if (await exists(originalPath(key))) return key;

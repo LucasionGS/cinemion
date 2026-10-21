@@ -28,10 +28,10 @@ export namespace LibrariesController {
   }
 
   /**
-   * The item type a library counts and lists: its movies, shows, videos or albums.
+   * The item type a library counts and lists: its movies, shows, videos, albums, books or photos.
    */
   function mainType(library: Library) {
-    return ({ movies: "movie", shows: "show", videos: "video", music: "album", audiobooks: "audiobook", books: "book" } as const)[library.type];
+    return ({ movies: "movie", shows: "show", videos: "video", music: "album", audiobooks: "audiobook", books: "book", photos: "photo" } as const)[library.type];
   }
 
   /**
@@ -123,8 +123,8 @@ export namespace LibrariesController {
       }
 
       await library.save();
-      if (ratingChanged && library.type === "videos") await VideoDetails.applyDefaultRating(library);
-      if (ratingChanged && library.type !== "videos") await MusicLibrary.applyDefaultRating(library);
+      if (ratingChanged && (library.type === "videos" || library.type === "photos")) await VideoDetails.applyDefaultRating(library);
+      else if (ratingChanged) await MusicLibrary.applyDefaultRating(library);
       if (pathsChanged) {
         await LibraryWatcher.refresh();
         // This library lets go of files in folders it no longer has; then the others can pick them up
@@ -199,6 +199,7 @@ export namespace LibrariesController {
     if (!library || !canSee(user, library.id)) return c.json({ message: "That library doesn't exist." }, 404);
     if (library.type === "music") return c.json({ message: "Music libraries list their albums, artists and tracks under /api/music." }, 400);
     if (library.type === "audiobooks" || library.type === "books") return c.json({ message: "Audiobooks and Books libraries list their books under /api/books." }, 400);
+    if (library.type === "photos") return c.json({ message: "Photos libraries list their albums and photos under /api/photos." }, 400);
 
     const sort = (c.req.query("sort") ?? "title") as SortOrder;
     const isVideos = library.type === "videos";

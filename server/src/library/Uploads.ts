@@ -11,6 +11,7 @@ import Sidecars from "./Sidecars.ts";
 import Scanner from "./Scanner.ts";
 import MusicTags from "../music/MusicTags.ts";
 import BookLibrary from "../books/BookLibrary.ts";
+import PhotoLibrary from "../photos/PhotoLibrary.ts";
 import MediaRoots from "../lib/MediaRoots.ts";
 import SystemStats from "../lib/SystemStats.ts";
 import ZipReader from "../lib/ZipReader.ts";
@@ -80,6 +81,8 @@ export namespace Uploads {
         return [...MusicTags.AUDIO_EXTENSIONS, ".cue", ".nfo", ".txt", ...IMAGE_EXTENSIONS];
       case "books":
         return [...BookLibrary.EBOOK_EXTENSIONS, ...IMAGE_EXTENSIONS];
+      case "photos":
+        return [...PhotoLibrary.IMAGE_EXTENSIONS, ...NameParser.VIDEO_EXTENSIONS];
     }
   }
 
@@ -96,7 +99,7 @@ export namespace Uploads {
   }
 
   export function rules(): UploadRules {
-    const types: LibraryType[] = ["movies", "shows", "videos", "music", "audiobooks", "books"];
+    const types: LibraryType[] = ["movies", "shows", "videos", "music", "audiobooks", "books", "photos"];
     return { maxSize: maxSize(), maxChunk: MAX_CHUNK, extensions: Object.fromEntries(types.map((t) => [t, extensions(t)])) as Record<LibraryType, string[]> };
   }
 
@@ -111,6 +114,7 @@ export namespace Uploads {
       music: "audio files, lyrics (.lrc) and pictures",
       audiobooks: "audio files, cue sheets, descriptions and pictures",
       books: "EPUB and PDF files and pictures",
+      photos: "pictures and videos",
     } as const)[type];
   }
 

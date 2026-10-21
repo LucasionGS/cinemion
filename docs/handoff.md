@@ -1,11 +1,11 @@
 # Cinemion handoff
 
 Everything an assistant needs to pick this project up with no earlier context. Read it fully before changing code.
-Last updated 2026-10-21, after the built-in TMDB key (16d).
+Last updated 2026-10-21, after Photos libraries (milestone 20).
 
 ## 1. What Cinemion is
 
-A self-hosted media server and player for movies and TV shows: very user friendly, with a fully custom, polished theme and
+A self-hosted media server and player for movies and TV shows (and home videos, music, books and photos): very user friendly, with a fully custom, polished theme and
 proper desktop, mobile and TV (10-foot) layouts. It runs as **one self-contained Docker image** (no database container;
 volumes for config, cache and media) or as **one compiled binary**. License GPL-3.0-or-later. Owner: Lucasion
 (lucasion@hotmail.com). The GitHub repo is `LucasionGS/cinemion` (public), so the image is `ghcr.io/lucasiongs/cinemion`.
@@ -123,12 +123,21 @@ set one in Settings › Metadata or `TMDB_API_KEY`.
   clips with a picture next to one of them (used as its thumbnail), a WebM with an NFO ("Mira turns 8"), and a
   "-trailer" file that a Videos library keeps. To add a Videos library through the API:
   `POST /api/libraries {"name":"Home videos","type":"videos","paths":["<abs>/data/media/videos"],"defaultRating":"G"}`.
+  `photos/` (made by `scripts/sample-photos.ts`, which writes its own EXIF) has Holiday 2024 › Lisbon/Algarve with
+  GPS and a Pixel camera, a photo stored sideways (orientation 6), a panorama, a portrait phone video with a
+  recording time, Mira turns 8 with a Canon and a PNG dated only by its name, loose photos dated by name
+  (`IMG_20261012_101500`, WhatsApp `IMG-…-WA0004`), a HEIC (when `heif-enc` is installed), and an `@eaDir`
+  thumbnail and a hidden file that scans must skip. Add it with `"type":"photos"` the same way.
+- **Browser checks and the service worker:** built apps register `sw.js`, which can hand headless Chrome old
+  chunks after a rebuild. Send `Network.setBypassServiceWorker` and `Network.setCacheDisabled` over CDP first.
 
 ## 4. Architecture
 
 Deno workspace (`deno.json` at the root, members `shared`, `server`, `client`).
-Library types: `movies`, `shows` and `videos`. Item types: movie, show → season → episode, and in Videos libraries
-folder (nested through `parentId`) and video; `isPlayable()` in `shared/src/media.ts` says which ones play. Root tasks: `dev`, `dev:client`, `build`,
+Library types: `movies`, `shows`, `videos`, `music`, `audiobooks`, `books` and `photos`. Item types: movie, show →
+season → episode; in Videos libraries folder (nested through `parentId`) and video; in Photos libraries folder, photo
+and video; artist → album → track; audiobook and book. `isPlayable()` in `shared/src/media.ts` says which ones play
+(never photos). Root tasks: `dev`, `dev:client`, `build`,
 `start`, `migrate`, `cli`, `compile` (`scripts/compile.sh` → `dist/linux_x64/bin/cinemion`, ~123 MB with the client
 embedded), `check`, `lint`.
 
@@ -136,6 +145,7 @@ embedded), `check`, `lint`.
 `api.ts` (setup, users, libraries, settings), `profiles.ts` (colours, permissions), `media.ts` (items, files, tracks,
 home, search), `playback.ts` (device capabilities, playback info, playback/subtitle settings, trickplay),
 `together.ts` (watch together protocol), `music.ts` (albums, artists, tracks, playlists, lyrics, `parseLrc`),
+`photos.ts` (photo and album summaries, EXIF details, `SLIDESHOW_SECONDS`),
 `languages.ts` (ISO 639-1/2 table), `mod.ts`.
 
 ### server/src
@@ -191,12 +201,16 @@ home, search), `playback.ts` (device capabilities, playback info, playback/subti
 - `together/WatchTogether.ts`: in-memory rooms, WebSocket connection handling, sync state.
 - `music/`: MusicTags (tags or folders → artist, album, disc, track), MusicLibrary (sorting tracks into albums,
   covers, artist pictures), MusicSummaries, AudioStream (direct or converted once to AAC), Lyrics (LRC files, tags).
+- `photos/`: Exif (reads JPEG, PNG, WebP, TIFF and HEIC/HEIF/AVIF headers itself), PhotoLibrary (file types, dates,
+  thumbnails, copies for viewing, `convert()`), PhotoSummaries. Model `PhotoAlbum` + `PhotoAlbumItem`, controller
+  `PhotosController` (`/api/photos`). See Milestone 20.
 - `cli.ts` maintenance CLI (`deno task cli help`), `test.ts` scratch checks.
 
 ### client/src (React 19 + Vite + SCSS, lucide-react icons, hls.js)
 - `main.tsx` route table with regex paths, lazy pages and a `requirement()` guard. Routes: `/setup`, `/profiles`,
   `/sign-in`, `/`, `/library/:id`, `/item/:id`, `/collection/:id`, `/person/:id`, `/search`, `/settings/:tab`,
-  `/watch/:id` (`?from=start`, `?together=CODE`), `/together[/:code]`, `/album/:id`, `/artist/:id`, `/playlist/:id`.
+  `/watch/:id` (`?from=start`, `?together=CODE`), `/together[/:code]`, `/album/:id`, `/artist/:id`, `/playlist/:id`,
+  `/photos/folder/:id` and `/photos/album/:id` (`?photo=ID` opens the viewer, `&slideshow=1` plays).
 - `theme/` tokens (`--cn-*`, TV scales rem with `calc(100vw/80)`) and base styles. Fonts Sora + Manrope via @fontsource.
 - `lib/`: Controller + useController, Router, DeviceMode (desktop/mobile/TV, MediaHub detection), spatialNavigation
   (TV D-pad focus engine), gamepad, ambient (title colours), Toasts, playback helpers, capabilities (what the browser
@@ -249,9 +263,10 @@ and on amd64 Intel's non-free VA driver + Quick Sync runtime), `docker/entrypoin
 | 17 | on hold | Casting to Chromecast / Google TV, and a lighter layout for old smart-TV browsers |
 | 18 | on hold | Android TV app (WebView wrapper; the SDK is in `~/Android/Sdk` on this machine) |
 | 19 | on hold | Live TV: IPTV playlists, a guide and recordings |
+| 20 | done | Photos libraries: folders as albums, hand-made albums, timeline, viewer with details and slideshows (below) |
 
-Not planned in these rounds: **photos** (the owner wants them later; see section 8) and **built-in remote access** (needs a
-relay service on ionnet.io that doesn't exist yet). The owner asked for each milestone to be committed and pushed, and
+Not planned in these rounds: **built-in remote access** (needs a relay service on ionnet.io that doesn't exist yet).
+Photos were asked for on 2026-10-21 and became milestone 20. The owner asked for each milestone to be committed and pushed, and
 for the work to continue unattended; releases go out with `./set_version.sh` + a tag when a milestone is worth one.
 After milestone 13 the owner said to do up to and including 16 and leave 17–19 for now; don't start them until asked.
 **0.2.0 released** after milestone 16 (milestones 8–16): GitHub release with both binaries, `ghcr.io/lucasiongs/cinemion:0.2.0`
@@ -600,6 +615,47 @@ through a temporary spot, "done properly, ideally resumable" since files can be 
 - **Open:** TMDB's terms also say not to keep their data longer than 6 months. Cinemion stores details until someone
   uses "Refresh all details", so a periodic re-fetch of TMDB details older than 6 months would close that gap.
 
+### Milestone 20: Photos libraries
+Picked in design round 5 (`docs/design/decisions.md`, mockups on claude.ai): albums first, both viewers, folders plus
+hand-made albums, videos mixed in.
+- **Model**: library type `photos`; items `photo` and `video` inside `folder`s (the Videos code: `assignVideos()`,
+  `FolderTree.itemsUnder()`, `VideoDetails.refreshFolders()`, which picks the newest by `takenAt` for photos).
+  Migration `20261101090000-photos`: `media_items.takenAt` (`YYYY-MM-DDTHH:MM:SS` on the camera's clock, indexed with
+  `libraryId`, so photos sort by the minute without time zone trouble), `media_files.photo` (EXIF as `PhotoMeta`),
+  tables `photo_albums` (library, maker, title, description, cover) and `photo_album_items`.
+- **Scanning**: walk mode `photos` (pictures + videos; hidden files and NAS folders like `@eaDir`, `#recycle` are
+  skipped, also in Videos libraries). Pictures aren't ffprobed: `PhotoLibrary.readFile()` stores the EXIF and the
+  size as shown (sideways orientations swapped). Dates: EXIF `DateTimeOriginal`, then the file name
+  (`takenFromName()`: IMG_20240713_143210, PXL_…, Screenshot 2025-03-02 at 18.04.10, IMG-…-WA0004), then the file
+  date. Videos get `takenAt` from `creation_time` (`VideoDetails.recordedAt()`) and their shown size from the
+  rotation side data. Thumbnails (longest side 1920, plus the 500 px grid size made right away) are stored under the
+  identity `photo:<path>:<size>:<mtime>`, so a changed file gets a new one; "Refresh details" reads the EXIF again.
+  No webhook per photo; one activity line per folder ("12 photos and 1 video were added to Lisbon in Photos").
+- **Decoding** (`PhotoLibrary.convert()`): ffmpeg's own turning differs between versions (9 turns PNG/WebP/AVIF by
+  EXIF, Debian's 7.1 only JPEG), so it runs with `-noautorotate` and the EXIF orientation is applied as filters.
+  HEIC/HEIF/AVIF go through `heif-convert` (libheif) when it's installed: Debian's ffmpeg 7.1 shows only one 512 px
+  tile of a phone's HEIC and ignores HEIF rotation. The Docker image installs `libheif-examples` with the libde265
+  and dav1d plugins (they're only "recommended"); the PKGBUILD lists libheif as optional. Checked in a trixie
+  container with the sample files.
+- **Viewing**: the viewer shows the 1920 thumbnail at once, then the full picture from `/api/photos/view/<token>`
+  (StreamGrants, `reuse()` hands out the same token for a while so the browser cache works): the original for
+  JPEG/PNG/WebP/GIF/AVIF/BMP, a JPEG copy (longest side 4096) in `CACHE_DIR/photos` for HEIC/TIFF/JXL, deleted
+  after 30 days unused. `?download=1` sends the original. Slideshows stay on thumbnails.
+- **API** `/api/photos`: `libraries/:id` (overview: top-level folders + hand-made albums, counts, `sort`),
+  `libraries/:id/items?scope=all|loose` (newest first), `folders/:id`, `folders/:id/items[?all=1]` (oldest first;
+  `all` takes subfolders in, for slideshows), `PUT folders/:id/cover`, `albums` CRUD, `albums/:id/items`,
+  `POST albums/:id/remove`, `/:id` (`PhotoDetail`). Caption, date (keeps the time of day), tags and rating are
+  edited with `PUT /api/items/:id/details` (photos are allowed there now). Home has `recentlyAddedPhotos`; search
+  has `photoAlbums` (photo-library folders left out of `videos`).
+- **Client**: `pages/Photos/` (PhotosLibrary with `?view=timeline`, PhotoAlbum for both kinds, `usePhotoList` with
+  `loadAll()`, `usePhotoViewer`, SelectionBar), `components/PhotoGrid` (justified rows from `lib/justify.ts`,
+  `content-visibility: auto` sections), `PhotoAlbumCard` (WideCard's folder look), `PhotoViewer` (+ PhotoInfo,
+  InlineVideo through PlayerController with the browser's own controls), `AddToPhotoAlbum` (one dialog at the root,
+  like AddToPlaylist). `router.navigate(…, { keepScroll: true })` keeps the page where it was when the viewer opens.
+  `/item/:id` sends photos and photo folders to the photo pages.
+- **Fixed on the way**: folder cards (Videos too) grew taller than 16:9 with a portrait picture; the card's image is
+  now positioned absolutely.
+
 ## 6. Design decisions
 
 All picks are in `docs/design/decisions.md`, with links to the three mockup artifacts on claude.ai (owner's account).
@@ -667,17 +723,10 @@ optional uploaded pictures, watch together as a side panel.
 - **Videos:** moving a video to another folder makes it a new video (like movies), so its hand-made details and
   watch progress stay behind. Editing by hand isn't there for movies and shows (the owner chose videos only for now).
   The phone tab bar has room for three libraries; a fourth is only reachable through the top bar on bigger screens.
-- **Photos are planned, but not yet** (the owner's words: later, not now). Keep types and shared code ready for them,
-  and don't build photo features until asked. Where they would plug in:
-  - Types: a `photos` `LibraryType` and a `photo` `ItemType`. Reuse the `folder` item type for albums.
-    `isPlayable()` must stay false for photos.
-  - `FolderTree` loads `folder` + `video` items; it would load `photo` too, and `videosUnder()` would become a general
-    "items under".
-  - Scanner: `walk()` only collects `NameParser.isVideo()` files, so photos need an image check. `assignVideos()` is
-    the model to copy, with EXIF dates instead of `creation_time`.
-  - Images go through `ImageCache`; originals stay on disk like videos do.
-  - `Visibility`, the per-library `defaultRating`, Edit details and the 16:9 grids already work per item, not per
-    media kind.
+- **Photos**: RAW files (CR2, NEF, ARW, DNG) aren't picked up; place names need an offline lookup (only coordinates
+  and an OpenStreetMap link now); no album download as a zip; overview counts load the whole `FolderTree` per
+  request, which is fine for tens of thousands of photos but could be cached; the timeline has no date scrubber
+  (mockup B had one). Real iPhone HEICs and Live Photos haven't been tried, only `heif-enc` files.
 - **Uploads** only take zip files, not RAR or 7z. Files go up one at a time; parallel pieces could be faster on
   high-latency links.
 - Ideas for later live in `docs/future-features.md`.

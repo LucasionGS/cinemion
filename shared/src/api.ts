@@ -106,7 +106,7 @@ export interface UpdateSelfRequest {
 
 //#region Libraries
 
-export type LibraryType = "movies" | "shows" | "videos" | "music" | "audiobooks" | "books";
+export type LibraryType = "movies" | "shows" | "videos" | "music" | "audiobooks" | "books" | "photos";
 
 export interface LibraryInfo {
   id: number;
@@ -114,12 +114,12 @@ export interface LibraryInfo {
   type: LibraryType;
   paths: string[];
   /**
-   * Movies, shows, videos, albums, audiobooks or books in the library.
+   * Movies, shows, videos, albums, audiobooks, books, or photos and videos in the library.
    */
   itemCount: number;
   lastScannedAt: string | null;
   /**
-   * Videos and Music libraries: the rating unrated videos and music get, so age-limited profiles can see them.
+   * Videos, Music, Books and Photos libraries: the rating unrated things in them get, so age-limited profiles can see them.
    * `null` = they stay hidden from those profiles.
    */
   defaultRating: string | null;
@@ -139,7 +139,7 @@ export interface CreateLibraryRequest {
   type: LibraryType;
   paths: string[];
   /**
-   * Videos and Music libraries only. See `LibraryInfo.defaultRating`.
+   * Videos, Music, Books and Photos libraries only. See `LibraryInfo.defaultRating`.
    */
   defaultRating?: string | null;
 }

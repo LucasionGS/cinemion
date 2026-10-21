@@ -1,6 +1,7 @@
 import type { LibraryType } from "./api.ts";
 import type { AlbumSummary, ArtistSummary, TrackInfo } from "./music.ts";
 import type { BookSummary } from "./books.ts";
+import type { PhotoAlbumSummary } from "./photos.ts";
 
 /**
  * Types for movies, shows, seasons, episodes, videos and their folders, and the files behind them.
@@ -9,13 +10,13 @@ import type { BookSummary } from "./books.ts";
 /**
  * `video` and `folder` live in Videos libraries: every file is a video, and the folders holding them are groups.
  * `artist`, `album` and `track` live in Music libraries (see `music.ts`), `audiobook` and `book` in Audiobooks and
- * Books libraries (see `books.ts`).
+ * Books libraries (see `books.ts`). Photos libraries hold `photo` and `video` items in `folder`s (see `photos.ts`).
  */
-export type ItemType = "movie" | "show" | "season" | "episode" | "video" | "folder" | "artist" | "album" | "track" | "audiobook" | "book";
+export type ItemType = "movie" | "show" | "season" | "episode" | "video" | "folder" | "artist" | "album" | "track" | "audiobook" | "book" | "photo";
 
 /**
  * Whether items of this type play in the video player by themselves (rather than holding things that play).
- * Tracks play in the music player instead.
+ * Tracks play in the music player instead, and photos are only looked at.
  */
 export function isPlayable(type: ItemType) {
   return type === "movie" || type === "episode" || type === "video";
@@ -322,9 +323,13 @@ export interface SearchResults {
   titles: ItemSummary[];
   episodes: ItemSummary[];
   /**
-   * Videos and folders from Videos libraries.
+   * Videos and folders from Videos libraries, and videos from Photos libraries.
    */
   videos: ItemSummary[];
+  /**
+   * Folders and hand-made albums from Photos libraries.
+   */
+  photoAlbums: PhotoAlbumSummary[];
   people: PersonSummary[];
   collections: CollectionSummary[];
   artists: ArtistSummary[];
@@ -347,6 +352,10 @@ export interface HomeData {
    * New albums in Music libraries.
    */
   recentlyAddedMusic: { libraryId: number; libraryName: string; albums: AlbumSummary[] }[];
+  /**
+   * Newest folders in Photos libraries.
+   */
+  recentlyAddedPhotos: { libraryId: number; libraryName: string; albums: PhotoAlbumSummary[] }[];
   /**
    * Audiobooks being listened to and books being read.
    */

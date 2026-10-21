@@ -291,16 +291,16 @@ export namespace ItemsController {
     }
   });
 
-  //#region Editing videos and folders
+  //#region Editing videos, photos and folders
   const manage = User.$middleware({ permissions: ["LIBRARY_MANAGE"] });
   const MAX_UPLOAD_BYTES = 15 * 1024 * 1024;
 
   /**
-   * A video or folder the profile may see. Other types get their details from files and providers.
+   * A video, photo or folder the profile may see. Other types get their details from files and providers.
    */
   async function findEditable(user: User, id: number) {
     const item = await findVisible(user, id);
-    return item && (item.type === "video" || item.type === "folder") ? item : null;
+    return item && (item.type === "video" || item.type === "photo" || item.type === "folder") ? item : null;
   }
 
   /**
@@ -332,12 +332,12 @@ export namespace ItemsController {
    * @swagger
    * /api/items/{id}/details:
    *   put:
-   *     summary: Set a video's or folder's details by hand. Body is an `EditDetailsRequest`. Refreshing keeps them.
+   *     summary: Set a video's, photo's or folder's details by hand. Body is an `EditDetailsRequest`. Refreshing keeps them.
    */
   router.put("/:id/details", manage, async (c) => {
     const user = c.get("user")!;
     const item = await findEditable(user, Number(c.req.param("id")));
-    if (!item) return c.json({ message: "Only videos and folders can be edited." }, 404);
+    if (!item) return c.json({ message: "Only videos, photos and folders can be edited." }, 404);
     let details: EditDetailsRequest;
     try {
       details = verifyDetails(await readJson<EditDetailsRequest>(c) ?? {});
@@ -348,7 +348,11 @@ export namespace ItemsController {
     const library = await Library.findByPk(item.libraryId);
     item.setTitle(details.title);
     item.overview = details.overview;
-    if (item.type === "video") {
+    if (item.type === "video" || item.type === "photo") {
+      // Photos keep the time they were taken on the new day, so they stay in order within it
+      if (item.takenAt !== null || item.type === "photo") {
+        item.takenAt = details.releaseDate ? `${details.releaseDate}T${item.takenAt?.slice(11) ?? "00:00:00"}` : item.takenAt;
+      }
       item.releaseDate = details.releaseDate;
       item.year = details.releaseDate ? parseInt(details.releaseDate.slice(0, 4)) : null;
       item.genres = details.tags;
@@ -357,8 +361,8 @@ export namespace ItemsController {
     }
     item.editedAt = new Date();
     await item.save();
-    // A folder's date and rating come from its videos
-    if (item.type === "video" && library) await VideoDetails.refreshFolders(library);
+    // A folder's date and rating come from what's inside it
+    if (item.type !== "folder" && library) await VideoDetails.refreshFolders(library);
     return c.json(await Summaries.one(item, user));
   });
 
@@ -387,7 +391,7 @@ export namespace ItemsController {
   router.put("/:id/thumbnail", manage, async (c) => {
     const user = c.get("user")!;
     const item = await findEditable(user, Number(c.req.param("id")));
-    if (!item) return c.json({ message: "Only videos and folders can get a thumbnail by hand." }, 404);
+    if (!item || item.type === "photo") return c.json({ message: "Only videos and folders can get a thumbnail by hand." }, 404);
 
     let key: string | null;
     try {
@@ -426,7 +430,7 @@ export namespace ItemsController {
   router.delete("/:id/thumbnail", manage, async (c) => {
     const user = c.get("user")!;
     const item = await findEditable(user, Number(c.req.param("id")));
-    if (!item) return c.json({ message: "Only videos and folders have a thumbnail set by hand." }, 404);
+    if (!item || item.type === "photo") return c.json({ message: "Only videos and folders have a thumbnail set by hand." }, 404);
     const library = await Library.findByPk(item.libraryId);
     item.customArtwork = false;
     if (item.type === "video") await VideoDetails.refreshVideo(item, { regenerate: true, library });

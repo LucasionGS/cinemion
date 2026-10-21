@@ -1,0 +1,372 @@
+// The photo viewer: full screen over the app, always dark like the video player
+.cn-photo-viewer {
+  --photo-bar-height: 5rem;
+  --photo-strip-height: 6rem;
+  --photo-panel-width: 23rem;
+
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  background: var(--cn-bg);
+  color: var(--cn-text);
+
+  &__main {
+    position: relative;
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__stage {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--photo-bar-height) 5.5rem var(--photo-strip-height);
+    overflow: hidden;
+    outline: none;
+    cursor: zoom-in;
+    // Swipes go to the viewer, not the page
+    touch-action: pan-y pinch-zoom;
+  }
+
+  &__image {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    user-select: none;
+    animation: cn-photo-in var(--cn-medium) var(--cn-ease);
+  }
+
+  &--playing &__image {
+    animation-duration: var(--cn-slow);
+  }
+
+  // At full size the picture can be bigger than the screen; the stage scrolls to move around it
+  &__stage--zoomed {
+    display: block;
+    padding: 0;
+    overflow: auto;
+    cursor: zoom-out;
+    touch-action: auto;
+
+    .cn-photo-viewer__image {
+      max-width: none;
+      max-height: none;
+      margin: auto;
+      animation: none;
+    }
+  }
+
+  &__video {
+    max-width: 100%;
+    max-height: 100%;
+    background: #000;
+  }
+
+  &__message {
+    color: var(--cn-text-muted);
+  }
+
+  &__bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    height: var(--photo-bar-height);
+    padding: 0 1.25rem;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.7), transparent);
+    transition: opacity var(--cn-medium) var(--cn-ease);
+  }
+
+  &__title {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    margin-left: 0.25rem;
+
+    strong,
+    span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    strong {
+      font-size: 1rem;
+    }
+
+    span {
+      font-size: 0.825rem;
+      color: var(--cn-text-muted);
+    }
+  }
+
+  &__play {
+    margin-right: 0.25rem;
+  }
+
+  &__nav {
+    position: absolute;
+    top: 50%;
+    translate: 0 -50%;
+    transition: opacity var(--cn-medium) var(--cn-ease);
+
+    &--prev {
+      left: 1.25rem;
+    }
+
+    &--next {
+      right: 1.25rem;
+    }
+  }
+
+  &__strip {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.375rem;
+    height: var(--photo-strip-height);
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.7), transparent);
+    transition: opacity var(--cn-medium) var(--cn-ease);
+  }
+
+  &__thumb {
+    flex: none;
+    width: 3.25rem;
+    height: 3.25rem;
+    padding: 0;
+    border: 0;
+    border-radius: var(--cn-radius-xs);
+    overflow: hidden;
+    background: var(--cn-surface-3);
+    opacity: 0.55;
+    cursor: pointer;
+    transition: opacity var(--cn-fast), transform var(--cn-fast) var(--cn-ease);
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    &:hover {
+      opacity: 0.9;
+    }
+
+    &--current {
+      opacity: 1;
+      transform: scale(1.18);
+      box-shadow: 0 0 0 2px var(--cn-text);
+    }
+  }
+
+  // While the slideshow runs and the mouse rests, only the picture shows
+  &--idle {
+    cursor: none;
+
+    .cn-photo-viewer__bar,
+    .cn-photo-viewer__nav,
+    .cn-photo-viewer__strip {
+      opacity: 0;
+      pointer-events: none;
+    }
+  }
+
+  &__panel {
+    flex: none;
+    width: var(--photo-panel-width);
+    overflow-y: auto;
+    background: var(--cn-surface);
+    border-left: 1px solid var(--cn-border);
+  }
+}
+
+@keyframes cn-photo-in {
+  from {
+    opacity: 0;
+  }
+}
+
+.cn-photo-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 1.25rem 1.5rem 2rem;
+
+  &__head {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+
+    h2 {
+      flex: 1;
+      font-size: 1.25rem;
+    }
+  }
+
+  &__loading {
+    display: flex;
+    justify-content: center;
+    padding: 2rem;
+  }
+
+  &__caption {
+    font-size: 1rem;
+    line-height: 1.55;
+    white-space: pre-wrap;
+  }
+
+  &__facts {
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+    margin: 0;
+  }
+
+  &__fact {
+    display: flex;
+    gap: 0.875rem;
+
+    dt {
+      font-weight: 700;
+      font-size: 0.9rem;
+      overflow-wrap: anywhere;
+    }
+
+    dd {
+      margin: 0.2rem 0 0;
+      font-size: 0.825rem;
+      color: var(--cn-text-muted);
+      line-height: 1.45;
+    }
+
+    a {
+      color: var(--cn-accent-text);
+      font-weight: 600;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  &__icon {
+    flex: none;
+    margin-top: 0.1rem;
+    color: var(--cn-text-subtle);
+
+    svg {
+      width: 1.2rem;
+      height: 1.2rem;
+    }
+  }
+
+  &__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+    margin-top: 0.15rem;
+  }
+
+  &__tag {
+    padding: 0.2rem 0.65rem;
+    border-radius: var(--cn-radius-pill);
+    background: var(--cn-glass-strong);
+    border: 1px solid var(--cn-border);
+    color: var(--cn-text);
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  &__textarea {
+    height: auto;
+    padding: 0.75rem 0.9rem;
+    line-height: 1.5;
+    resize: vertical;
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+  }
+}
+
+// Phones: controls over the picture, and the details as a sheet from the bottom
+:root[data-mode="mobile"] .cn-photo-viewer {
+  --photo-bar-height: 3.75rem;
+  --photo-strip-height: 0px;
+
+  &__stage {
+    padding: 0;
+  }
+
+  &__bar {
+    padding: 0 0.5rem;
+  }
+
+  &__play span {
+    display: none;
+  }
+
+  &__nav {
+    display: none;
+  }
+
+  &__panel {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: auto;
+    max-height: 62%;
+    border-left: 0;
+    border-top: 1px solid var(--cn-border);
+    border-radius: var(--cn-radius-xl) var(--cn-radius-xl) 0 0;
+    box-shadow: 0 -1rem 3rem var(--cn-shadow);
+  }
+}
+
+:root[data-mode="tv"] .cn-photo-viewer {
+  --photo-bar-height: 5.5rem;
+  --photo-strip-height: 2rem;
+  --photo-panel-width: 26rem;
+
+  &__stage {
+    padding-left: 4rem;
+    padding-right: 4rem;
+  }
+
+  // The remote's arrows move between photos; the buttons are for pointers
+  &__nav {
+    display: none;
+  }
+
+  &__stage:focus-visible {
+    box-shadow: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cn-photo-viewer__image {
+    animation: none;
+  }
+}

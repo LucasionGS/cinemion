@@ -1,12 +1,13 @@
 import { Hono } from "hono";
 import { Op } from "sequelize";
 import type { SearchResults } from "@shared/media.ts";
-import { Credit, MediaItem, Person, User } from "../models/index.ts";
+import { Credit, Library, MediaItem, Person, PhotoAlbum, User } from "../models/index.ts";
 import CollectionsController from "./CollectionsController.ts";
 import Visibility from "../library/Visibility.ts";
 import Summaries from "../library/Summaries.ts";
 import MusicSummaries from "../music/MusicSummaries.ts";
 import BookSummaries from "../books/BookSummaries.ts";
+import PhotoSummaries from "../photos/PhotoSummaries.ts";
 import type { AppEnv } from "../lib/types.ts";
 
 export namespace SearchController {
@@ -24,13 +25,13 @@ export namespace SearchController {
    * @swagger
    * /api/search:
    *   get:
-   *     summary: Find movies, shows, episodes, videos, people, collections, artists, albums and tracks by name. Query `q`.
+   *     summary: Find movies, shows, episodes, videos, people, collections, artists, albums, tracks, books and photo albums by name. Query `q`.
    */
   router.get("/", User.$middleware(), async (c) => {
     const user = c.get("user")!;
     const query = (c.req.query("q") ?? "").trim();
     if (query.length < 2) {
-      const empty: SearchResults = { titles: [], episodes: [], videos: [], people: [], collections: [], artists: [], albums: [], tracks: [], books: [] };
+      const empty: SearchResults = { titles: [], episodes: [], videos: [], photoAlbums: [], people: [], collections: [], artists: [], albums: [], tracks: [], books: [] };
       return c.json(empty);
     }
 
@@ -52,8 +53,19 @@ export namespace SearchController {
     titles.sort((a, b) => rank(a) - rank(b) || a.sortTitle.localeCompare(b.sortTitle));
 
     const episodes = await MediaItem.findAll({ where: { [Op.and]: [visible, { title: { [Op.like]: pattern } }, { type: "episode" }] }, limit: 12, order: [["sortTitle", "ASC"]] });
-    // Folders before videos, then by title
-    const videos = await MediaItem.findAll({ where: { [Op.and]: [visible, nameMatch, { type: ["folder", "video"] }] }, limit: 24, order: [["type", "ASC"], ["sortTitle", "ASC"]] });
+    // Folders before videos, then by title. Folders of Photos libraries are albums, listed on their own.
+    const photoLibraryIds = (await Library.findAll({ where: { type: "photos" }, attributes: ["id"] })).map((l) => l.id);
+    const videoTypes = { [Op.or]: [{ type: "video" }, { type: "folder", libraryId: { [Op.notIn]: photoLibraryIds } }] };
+    const videos = await MediaItem.findAll({ where: { [Op.and]: [visible, nameMatch, videoTypes] }, limit: 24, order: [["type", "ASC"], ["sortTitle", "ASC"]] });
+    const photoFolders = photoLibraryIds.length
+      ? await MediaItem.findAll({ where: { [Op.and]: [visible, nameMatch, { type: "folder", libraryId: photoLibraryIds }] }, limit: 24, order: [["sortTitle", "ASC"]] })
+      : [];
+    const madeAlbums = photoLibraryIds.length
+      ? await PhotoAlbum.findAll({ where: { title: { [Op.like]: pattern }, libraryId: photoLibraryIds.filter((id) => Visibility.canSeeLibrary(user, id)) }, limit: 24, order: [["title", "ASC"]] })
+      : [];
+    const photoAlbums = [...await PhotoSummaries.albums(madeAlbums, user), ...await PhotoSummaries.folders(photoFolders, user)]
+      .filter((a) => a.photoCount + a.videoCount > 0)
+      .slice(0, 24);
 
     // Music: artists and albums like titles, tracks also by who performs them
     const artists = await MediaItem.findAll({ where: { [Op.and]: [visible, nameMatch, { type: "artist" }] }, limit: 12, order: [["sortTitle", "ASC"]] });
@@ -85,6 +97,7 @@ export namespace SearchController {
       titles: await Summaries.build(titles.slice(0, 24), user),
       episodes: await Summaries.build(episodes, user),
       videos: await Summaries.build(videos, user),
+      photoAlbums,
       people: peopleWithTitles,
       collections: collections.slice(0, 12),
       artists: await MusicSummaries.artists(artists),

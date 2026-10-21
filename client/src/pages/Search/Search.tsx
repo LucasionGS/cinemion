@@ -7,6 +7,7 @@ import useController from "../../lib/useController.ts";
 import AppShell from "../../components/AppShell/AppShell.tsx";
 import PosterCard from "../../components/PosterCard/PosterCard.tsx";
 import WideCard from "../../components/WideCard/WideCard.tsx";
+import PhotoAlbumCard from "../../components/PhotoAlbumCard/PhotoAlbumCard.tsx";
 import PersonCard from "../../components/PersonCard/PersonCard.tsx";
 import Spinner from "../../components/Spinner/Spinner.tsx";
 import TrackList from "../../components/TrackList/TrackList.tsx";
@@ -36,7 +37,7 @@ export default function Search() {
       try {
         setResults(await ItemsApi.search(q));
       } catch {
-        setResults({ titles: [], episodes: [], videos: [], people: [], collections: [], artists: [], albums: [], tracks: [], books: [] });
+        setResults({ titles: [], episodes: [], videos: [], photoAlbums: [], people: [], collections: [], artists: [], albums: [], tracks: [], books: [] });
       } finally {
         setLoading(false);
       }
@@ -44,7 +45,7 @@ export default function Search() {
     return () => clearTimeout(timer);
   }, [query]);
 
-  const empty = results && [results.titles, results.episodes, results.videos, results.people, results.collections, results.artists, results.albums, results.tracks, results.books].every((list) => list.length === 0);
+  const empty = results && [results.titles, results.episodes, results.videos, results.photoAlbums, results.people, results.collections, results.artists, results.albums, results.tracks, results.books].every((list) => list.length === 0);
 
   return (
     <AppShell>
@@ -93,6 +94,15 @@ export default function Search() {
             <h2>Videos</h2>
             <div className="cn-search__episodes">
               {results.videos.map((item) => <WideCard key={item.id} item={item} variant="video" />)}
+            </div>
+          </section>
+        )}
+
+        {results && results.photoAlbums.length > 0 && (
+          <section className="cn-search__section">
+            <h2>Photo albums</h2>
+            <div className="cn-search__episodes">
+              {results.photoAlbums.map((album) => <PhotoAlbumCard key={`${album.kind}-${album.id}`} album={album} />)}
             </div>
           </section>
         )}

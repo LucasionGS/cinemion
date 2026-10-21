@@ -7,15 +7,15 @@ import type Library from "./Library.ts";
 export const EMPTY_ARTWORK: Artwork = { poster: null, backdrop: null, logo: null, thumb: null };
 
 /**
- * A movie, show, season or episode, a video or folder, or an artist, album or track. Seasons belong to a show and
- * episodes to a season through `parentId`; albums to their artist and tracks to their album the same way.
+ * A movie, show, season or episode, a video, photo or folder, or an artist, album or track. Seasons belong to a show
+ * and episodes to a season through `parentId`; albums to their artist and tracks to their album the same way.
  */
 export class MediaItem extends Model<InferAttributes<MediaItem>, InferCreationAttributes<MediaItem>> {
   declare id: CreationOptional<number>;
   declare libraryId: ForeignKey<Library["id"]>;
   /**
-   * The show of a season, the season of an episode, the folder of a video, the artist of an album or the album of
-   * a track. `null` for movies, shows, artists and things in a library folder itself.
+   * The show of a season, the season of an episode, the folder of a video or photo, the artist of an album or the
+   * album of a track. `null` for movies, shows, artists and things in a library folder itself.
    */
   declare parentId: CreationOptional<number | null>;
   declare type: ItemType;
@@ -53,6 +53,11 @@ export class MediaItem extends Model<InferAttributes<MediaItem>, InferCreationAt
    * `YYYY-MM-DD`.
    */
   declare releaseDate: CreationOptional<string | null>;
+  /**
+   * Photos, and videos in Photos libraries: when it was taken, on the camera's clock (`YYYY-MM-DDTHH:MM:SS`), so
+   * they sort by the minute. `null` for everything else.
+   */
+  declare takenAt: CreationOptional<string | null>;
   declare rating: CreationOptional<number | null>;
   /**
    * IMDb, Rotten Tomatoes and Metacritic ratings from OMDb. `null` = not looked up.
@@ -163,6 +168,7 @@ MediaItem.init({
   tagline: { type: DataTypes.STRING(512), allowNull: true, defaultValue: null },
   runtime: { type: DataTypes.INTEGER, allowNull: true, defaultValue: null },
   releaseDate: { type: DataTypes.STRING(10), allowNull: true, defaultValue: null },
+  takenAt: { type: DataTypes.STRING(19), allowNull: true, defaultValue: null },
   rating: { type: DataTypes.FLOAT, allowNull: true, defaultValue: null },
   ratings: jsonColumn<ExternalRatings | null, MediaItem>("ratings", null, true),
   contentRating: { type: DataTypes.STRING(16), allowNull: true, defaultValue: null },

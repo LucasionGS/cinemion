@@ -213,6 +213,12 @@
     }
   }
 
+  // Deleting and other things that can't be undone
+  &__item--danger,
+  &__item--danger svg {
+    color: var(--cn-danger-text);
+  }
+
   &__separator {
     height: 1px;
     margin: 0.375rem 0.5rem;

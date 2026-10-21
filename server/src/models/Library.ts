@@ -17,14 +17,15 @@ export class Library extends Model<InferAttributes<Library>, InferCreationAttrib
    */
   declare lastScannedAt: CreationOptional<Date | null>;
   /**
-   * Videos libraries: the rating of videos without one. `null` = unrated videos stay hidden from age-limited profiles.
+   * Videos, Music, Books and Photos libraries: the rating of things without one. `null` = unrated things stay hidden
+   * from age-limited profiles.
    */
   declare defaultRating: CreationOptional<string | null>;
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
 
   public static validateType(type: unknown): type is LibraryType {
-    return ["movies", "shows", "videos", "music", "audiobooks", "books"].includes(type as string);
+    return ["movies", "shows", "videos", "music", "audiobooks", "books", "photos"].includes(type as string);
   }
 
   /**
@@ -38,11 +39,11 @@ export class Library extends Model<InferAttributes<Library>, InferCreationAttrib
   }
 
   /**
-   * Whether a kind of library has a rating for everything in it, since nothing in it comes with one: videos, music
-   * and books. Movies and shows get theirs from their details.
+   * Whether a kind of library has a rating for everything in it, since nothing in it comes with one: videos, music,
+   * books and photos. Movies and shows get theirs from their details.
    */
   public static hasDefaultRating(type: LibraryType) {
-    return type === "videos" || type === "music" || type === "audiobooks" || type === "books";
+    return type === "videos" || type === "music" || type === "audiobooks" || type === "books" || type === "photos";
   }
 
   /**
@@ -83,7 +84,7 @@ export class Library extends Model<InferAttributes<Library>, InferCreationAttrib
   public static verifyLibrary(data: CreateLibraryRequest): CreateLibraryRequest {
     const name = data.name?.trim();
     if (!name || name.length > 60) throw new Error("The library name must be between 1 and 60 characters long.");
-    if (!Library.validateType(data.type)) throw new Error(`Unknown library type "${data.type}". Use "movies", "shows", "videos", "music", "audiobooks" or "books".`);
+    if (!Library.validateType(data.type)) throw new Error(`Unknown library type "${data.type}". Use "movies", "shows", "videos", "music", "audiobooks", "books" or "photos".`);
     const paths = Library.verifyPaths(data.paths, name);
     const defaultRating = Library.hasDefaultRating(data.type) ? Library.verifyDefaultRating(data.defaultRating) : null;
     return { name, type: data.type, paths, defaultRating };

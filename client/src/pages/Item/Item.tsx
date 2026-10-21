@@ -32,6 +32,7 @@ export interface ItemProps {
 export default function Item(props: ItemProps) {
   const { id } = props;
   const { item, error, reload } = useItem(id);
+  const libraries = LibrariesApi.useLibraries();
 
   // The page takes the title's colours
   useEffect(() => {
@@ -45,7 +46,10 @@ export default function Item(props: ItemProps) {
     if (item?.type === "album" || item?.type === "artist") router.navigate(`/${item.type}/${item.id}`, { replace: true });
     if (item?.type === "track" && item.parentId) router.navigate(`/album/${item.parentId}`, { replace: true });
     if (item?.type === "audiobook" || item?.type === "book") router.navigate(`/book/${item.id}`, { replace: true });
-  }, [item]);
+    // Photos open in the viewer over their folder (or the library, outside every folder)
+    if (item?.type === "photo") router.navigate(item.parentId ? `/photos/folder/${item.parentId}?photo=${item.id}` : `/library/${item.libraryId}?photo=${item.id}`, { replace: true });
+    if (item?.type === "folder" && libraries?.find((l) => l.id === item.libraryId)?.type === "photos") router.navigate(`/photos/folder/${item.id}`, { replace: true });
+  }, [item, libraries]);
 
   return (
     <AppShell>
@@ -61,7 +65,7 @@ export default function Item(props: ItemProps) {
       {item?.type === "show" && <ShowView item={item} reload={reload} />}
       {item?.type === "episode" && <EpisodeView item={item} reload={reload} />}
       {item?.type === "video" && <VideoView item={item} reload={reload} />}
-      {item?.type === "folder" && <FolderView item={item} reload={reload} />}
+      {item?.type === "folder" && libraries?.find((l) => l.id === item.libraryId)?.type !== "photos" && <FolderView item={item} reload={reload} />}
     </AppShell>
   );
 }

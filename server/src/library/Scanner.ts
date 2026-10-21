@@ -13,6 +13,7 @@ import VideoDetails from "./VideoDetails.ts";
 import MusicLibrary from "../music/MusicLibrary.ts";
 import MusicTags from "../music/MusicTags.ts";
 import BookLibrary from "../books/BookLibrary.ts";
+import PhotoLibrary from "../photos/PhotoLibrary.ts";
 import SubtitleAutomation from "../subtitles/SubtitleAutomation.ts";
 import Events from "../integrations/Events.ts";
 import Tasks from "../lib/Tasks.ts";
@@ -20,8 +21,8 @@ import { forEachLimit } from "../lib/async.ts";
 import log from "../lib/Logger.ts";
 
 /**
- * Finds the video or music files in a library, works out what they are, and keeps the database in step with the
- * disk. Unchanged files (same size and modification time) are skipped, so rescans are cheap.
+ * Finds the video, music, book or photo files in a library, works out what they are, and keeps the database in step
+ * with the disk. Unchanged files (same size and modification time) are skipped, so rescans are cheap.
  */
 export namespace Scanner {
   export interface ScanOptions {
@@ -38,13 +39,16 @@ export namespace Scanner {
 
   /**
    * What a library looks for: movies and episodes (skipping extras and samples), any video, audio (music and
-   * audiobooks), or EPUB and PDF books.
+   * audiobooks), EPUB and PDF books, or pictures and videos.
    */
-  type WalkMode = "titles" | "videos" | "audio" | "books";
+  type WalkMode = "titles" | "videos" | "audio" | "books" | "photos";
 
   function walkMode(library: Library): WalkMode {
-    return ({ movies: "titles", shows: "titles", videos: "videos", music: "audio", audiobooks: "audio", books: "books" } as const)[library.type];
+    return ({ movies: "titles", shows: "titles", videos: "videos", music: "audio", audiobooks: "audio", books: "books", photos: "photos" } as const)[library.type];
   }
+
+  // Folders NAS systems fill with their own thumbnails and deleted files, which would show up as photos
+  const SYSTEM_FOLDERS = new Set(["@eadir", "#recycle", "#snapshot", "@recycle", "$recycle.bin", "lost+found"]);
 
   interface FoundFile {
     path: string;
@@ -129,8 +133,8 @@ export namespace Scanner {
     const found: FoundFile[] = [];
     const visited = new Set<string>();
     const anyFile = mode !== "titles";
-    const shouldSkip = (relative: string) => anyFile ? relative.split(/[\\/]/).some((p) => p.startsWith(".")) : NameParser.shouldSkip(relative);
-    const wanted = mode === "audio" ? MusicTags.isAudio : mode === "books" ? BookLibrary.isEbook : NameParser.isVideo;
+    const shouldSkip = (relative: string) => anyFile ? relative.split(/[\\/]/).some((p) => p.startsWith(".") || SYSTEM_FOLDERS.has(p.toLowerCase())) : NameParser.shouldSkip(relative);
+    const wanted = mode === "audio" ? MusicTags.isAudio : mode === "books" ? BookLibrary.isEbook : mode === "photos" ? PhotoLibrary.isPhotoOrVideo : NameParser.isVideo;
 
     async function visit(folder: string) {
       const real = await fsp.realpath(folder).catch(() => null);
@@ -236,8 +240,10 @@ export namespace Scanner {
       }
     }
 
-    // Read the files ffprobe hasn't seen yet. EPUB and PDF books aren't media, so they're read later.
+    // Read the files ffprobe hasn't seen yet. EPUB and PDF books aren't media, so they're read later; pictures have
+    // their EXIF read instead.
     const isMusic = library.type === "music";
+    const isPhotos = library.type === "photos";
     const hasVideo = library.type === "movies" || library.type === "shows" || library.type === "videos";
     const toProbe = await MediaFile.findAll({ where: { libraryId: library.id, probedAt: null } });
     let probed = 0;
@@ -249,8 +255,13 @@ export namespace Scanner {
           probed++;
           return;
         }
+        if (isPhotos && PhotoLibrary.isImage(file.path)) {
+          await PhotoLibrary.readFile(file);
+          probed++;
+          return;
+        }
         const { tags, chapters, ...details } = await Probe.read(file.path);
-        await file.update({ ...details, tags: hasVideo ? null : tags, chapters: library.type === "audiobooks" ? chapters : null, probedAt: new Date() });
+        await file.update({ ...details, tags: hasVideo || isPhotos ? null : tags, chapters: library.type === "audiobooks" ? chapters : null, probedAt: new Date() });
       } catch (error) {
         log.warn(`Could not read ${file.path}`, { error });
         await file.update({ probedAt: new Date() });
@@ -272,7 +283,7 @@ export namespace Scanner {
     if (isMusic) added = await MusicLibrary.assign(library, roots, new Set(toProbe.map((f) => f.id)));
     else if (isBooks) added = await BookLibrary.assign(library, roots);
     else if (library.type === "movies") added = await assignMovies(library, roots);
-    else if (library.type === "videos") added = await assignVideos(library, roots);
+    else if (library.type === "videos" || isPhotos) added = await assignVideos(library, roots);
     else added = await assignEpisodes(library, roots);
     if (isMusic) await MusicLibrary.removeEmpty(library);
     else if (isBooks) await BookLibrary.removeEmpty(library);
@@ -282,6 +293,7 @@ export namespace Scanner {
     if (isMusic) refreshed = await MusicLibrary.refresh(library, task, { regenerate: opts.refreshMetadata });
     else if (isBooks) refreshed = await BookLibrary.refresh(library, task, { regenerate: opts.refreshMetadata });
     else if (library.type === "videos") refreshed = await refreshVideos(library, task, opts);
+    else if (isPhotos) refreshed = await refreshPhotos(library, task, opts, toProbe.map((f) => f.itemId).filter((id): id is number => id !== null));
     else refreshed = await refreshMetadata(library, task, opts);
 
     // Only a full scan counts for the schedule
@@ -293,6 +305,11 @@ export namespace Scanner {
     if (hasVideo) {
       Trickplay.queueLibrary(library.id);
       Markers.queueLibrary(library.id);
+    }
+    // Videos in Photos libraries get seek thumbnails too; there are no intros to find in them
+    if (isPhotos) {
+      Trickplay.queueLibrary(library.id);
+      await PhotoLibrary.cleanup().catch((error) => log.warn("Could not clean up photo copies", { error }));
     }
     await reportAdded(library, added, firstScan).catch((error) => log.warn("Could not report new titles", { error }));
     if (added.length && (library.type === "movies" || library.type === "shows")) SubtitleAutomation.queue({ libraryId: library.id }).catch(() => { });
@@ -316,9 +333,13 @@ export namespace Scanner {
     const shows = new Map<number, MediaItem | null>();
     for (const item of items) shows.set(item.id, item.type === "episode" ? await ItemLabels.showOf(item) : null);
 
+    if (library.type === "photos") {
+      reportPhotos(library, items, firstScan);
+      return;
+    }
     if (firstScan) {
       const count = library.type === "shows" ? new Set([...shows.values()].map((s) => s?.id)).size : library.type === "music" ? new Set(items.map((i) => i.parentId)).size : items.length;
-      const nouns = { movies: ["movie", "movies"], shows: ["show", "shows"], videos: ["video", "videos"], music: ["album", "albums"], audiobooks: ["audiobook", "audiobooks"], books: ["book", "books"] }[library.type];
+      const nouns = { movies: ["movie", "movies"], shows: ["show", "shows"], videos: ["video", "videos"], music: ["album", "albums"], audiobooks: ["audiobook", "audiobooks"], books: ["book", "books"], photos: ["photo", "photos"] }[library.type];
       const noun = nouns[count === 1 ? 0 : 1];
       Events.activity({ kind: "added", message: `${library.name} is ready, with ${count} ${noun}` });
       return;
@@ -378,6 +399,32 @@ export namespace Scanner {
   }
 
   /**
+   * One activity line per folder that got new photos and videos, or one for the whole library on its first scan.
+   * Photos come in hundreds, so they don't send a webhook each.
+   */
+  function reportPhotos(library: Library, items: MediaItem[], firstScan: boolean) {
+    const describe = (list: MediaItem[]) => {
+      const photos = list.filter((i) => i.type === "photo").length;
+      const videos = list.length - photos;
+      return [photos ? `${photos} ${photos === 1 ? "photo" : "photos"}` : null, videos ? `${videos} ${videos === 1 ? "video" : "videos"}` : null].filter(Boolean).join(" and ");
+    };
+    if (firstScan) {
+      Events.activity({ kind: "added", message: `${library.name} is ready, with ${describe(items)}` });
+      return;
+    }
+    const byFolder = new Map<number | null, MediaItem[]>();
+    for (const item of items) byFolder.set(item.parentId, [...byFolder.get(item.parentId) ?? [], item]);
+    (async () => {
+      for (const [folderId, list] of byFolder) {
+        const folder = folderId ? await MediaItem.findByPk(folderId, { attributes: ["id", "title"] }) : null;
+        const place = folder ? `${folder.title} in ${library.name}` : library.name;
+        const verb = list.length === 1 ? "was" : "were";
+        Events.activity({ kind: "added", message: `${describe(list)} ${verb} added to ${place}`, itemId: folder?.id ?? null });
+      }
+    })().catch((error) => log.warn("Could not report new photos", { error }));
+  }
+
+  /**
    * Details for new movies and shows (or all of them, when asked), from the metadata providers.
    */
   async function refreshMetadata(library: Library, task: Tasks.Handle, opts: ScanOptions) {
@@ -419,6 +466,29 @@ export namespace Scanner {
     });
     await VideoDetails.refreshFolders(library);
     return videos.length;
+  }
+
+  /**
+   * Dates and thumbnails for new photos and videos in a Photos library, and for ones whose file changed (or all of
+   * them, when asked), then every folder's summary.
+   * @param changed Items whose file was read again in this scan.
+   */
+  async function refreshPhotos(library: Library, task: Tasks.Handle, opts: ScanOptions, changed: number[]) {
+    const where = opts.refreshMetadata ? {} : { [Op.or]: [{ metadataUpdatedAt: null }, ...(changed.length ? [{ id: changed }] : [])] };
+    const items = await MediaItem.findAll({ where: { [Op.and]: [{ libraryId: library.id, type: ["photo", "video"] }, where] } });
+    let done = 0;
+    await forEachLimit(items, METADATA_CONCURRENCY, async (item) => {
+      task.update("Making thumbnails", done / items.length);
+      try {
+        if (item.type === "photo") await PhotoLibrary.refreshPhoto(item, { regenerate: opts.refreshMetadata, library });
+        else await PhotoLibrary.refreshVideo(item, { regenerate: opts.refreshMetadata, library });
+      } catch (error) {
+        log.warn(`Could not read details of "${item.title}"`, { error });
+      }
+      done++;
+    });
+    await VideoDetails.refreshFolders(library);
+    return items.length;
   }
 
   /**
@@ -513,8 +583,8 @@ export namespace Scanner {
   }
 
   /**
-   * Every file in a Videos library is its own video. The folders holding them become folder items, nested like on
-   * disk; files in a library folder itself have no folder. Returns the new videos.
+   * Every file in a Videos or Photos library is its own video or photo. The folders holding them become folder
+   * items, nested like on disk; files in a library folder itself have no folder. Returns the new videos and photos.
    */
   async function assignVideos(library: Library, roots: Map<string, string>) {
     const added: number[] = [];
@@ -535,7 +605,8 @@ export namespace Scanner {
     for (const file of await MediaFile.findAll({ where: { libraryId: library.id, itemId: null } })) {
       const dir = Path.dirname(file.path);
       const parentId = await folderFor(dir, roots.get(file.path) ?? library.paths[0]);
-      const video = MediaItem.build({ libraryId: library.id, parentId, type: "video", folderPath: dir, title: "", sortTitle: "", matchStatus: "matched" });
+      const type = library.type === "photos" && PhotoLibrary.isImage(file.path) ? "photo" : "video";
+      const video = MediaItem.build({ libraryId: library.id, parentId, type, folderPath: dir, title: "", sortTitle: "", matchStatus: "matched" });
       video.setTitle(VideoDetails.titleFromFile(file.path));
       await video.save();
       await file.update({ itemId: video.id });
@@ -545,11 +616,11 @@ export namespace Scanner {
   }
 
   /**
-   * Remove movies, episodes and videos whose files are all gone, then seasons, shows and folders left empty.
+   * Remove movies, episodes, videos and photos whose files are all gone, then seasons, shows and folders left empty.
    */
   async function removeEmptyItems(library: Library) {
     const withFiles = new Set((await MediaFile.findAll({ where: { libraryId: library.id, itemId: { [Op.ne]: null } }, attributes: ["itemId"] })).map((f) => f.itemId!));
-    const playable = await MediaItem.findAll({ where: { libraryId: library.id, type: ["movie", "episode", "video"] }, attributes: ["id"] });
+    const playable = await MediaItem.findAll({ where: { libraryId: library.id, type: ["movie", "episode", "video", "photo"] }, attributes: ["id"] });
     const orphans = playable.filter((i) => !withFiles.has(i.id)).map((i) => i.id);
     if (orphans.length) await MediaItem.destroy({ where: { id: orphans } });
 

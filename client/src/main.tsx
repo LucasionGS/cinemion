@@ -19,6 +19,7 @@ import Toaster from "./components/Toaster/Toaster.tsx";
 import MiniPlayer from "./components/MiniPlayer/MiniPlayer.tsx";
 import NowPlaying from "./components/NowPlaying/NowPlaying.tsx";
 import AddToPlaylist from "./components/AddToPlaylist/AddToPlaylist.tsx";
+import AddToPhotoAlbum from "./components/AddToPhotoAlbum/AddToPhotoAlbum.tsx";
 import Spinner from "./components/Spinner/Spinner.tsx";
 import Button from "./components/Button/Button.tsx";
 import Logo from "./components/Logo/Logo.tsx";
@@ -137,6 +138,13 @@ const routes: Route[] = [
     component: async ([id]) => {
       const Book = (await import("./pages/Books/Book.tsx")).default;
       return <Book key={id} id={Number(id)} />;
+    },
+  }),
+  requirement({ signedIn: true }, {
+    path: /^\/photos\/(folder|album)\/(\d+)\/?$/,
+    component: async ([kind, id]) => {
+      const PhotoAlbum = (await import("./pages/Photos/PhotoAlbum.tsx")).default;
+      return <PhotoAlbum key={`${kind}-${id}`} kind={kind as "folder" | "album"} id={Number(id)} />;
     },
   }),
   requirement({ signedIn: true }, {
@@ -262,6 +270,7 @@ function App() {
           <MiniPlayer />
           <NowPlaying />
           <AddToPlaylist />
+          <AddToPhotoAlbum />
         </>
       )}
       <Toaster />

@@ -74,6 +74,10 @@ export namespace AppSystem {
    */
   export const tempDir = Path.join(config.CACHE_DIR, "tmp");
   /**
+   * Full-size copies of photos in formats browsers can't show (HEIC, TIFF…), made when someone opens one.
+   */
+  export const photosDir = Path.join(config.CACHE_DIR, "photos");
+  /**
    * Uploads from the browser while they come in, one folder each. On the same drive as the libraries, finished
    * uploads move into place instantly; elsewhere they're copied.
    */
@@ -104,7 +108,7 @@ export namespace AppSystem {
    * Create the data folders and load or generate the token secret. Call once at startup.
    */
   export async function init() {
-    for (const dir of [config.CONFIG_DIR, config.CACHE_DIR, avatarsDir, imagesDir, tempDir, uploadsDir]) {
+    for (const dir of [config.CONFIG_DIR, config.CACHE_DIR, avatarsDir, imagesDir, tempDir, photosDir, uploadsDir]) {
       await fsp.mkdir(dir, { recursive: true });
     }
 

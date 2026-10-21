@@ -15,6 +15,7 @@ optdepends=(
   'libva-mesa-driver: video conversion on AMD GPUs'
   'nvidia-utils: video conversion on NVIDIA GPUs (NVENC)'
   'poppler: covers for PDF books'
+  'libheif: HEIC photos from phones with older ffmpeg versions'
 )
 provides=('cinemion')
 conflicts=('cinemion')

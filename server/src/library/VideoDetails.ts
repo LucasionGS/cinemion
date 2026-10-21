@@ -34,16 +34,25 @@ export namespace VideoDetails {
     return spaced.replace(/\s+/g, " ").trim() || name;
   }
 
-  function localDate(date: Date) {
-    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+  function localDateTime(date: Date) {
+    const pad = (n: number) => String(n).padStart(2, "0");
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
   }
 
   /**
-   * The day a video was recorded, from the creation time phones and cameras write into the file, or else the
-   * file's modification date. `YYYY-MM-DD` in the server's time zone.
+   * The day a video was recorded (see `recordedAt()`). `YYYY-MM-DD` in the server's time zone.
    * @param mtime Unit is in milliseconds since the epoch.
    */
   export async function recordedDate(path: string, mtime: number): Promise<string | null> {
+    return (await recordedAt(path, mtime))?.slice(0, 10) ?? null;
+  }
+
+  /**
+   * When a video was recorded, from the creation time phones and cameras write into the file, or else the file's
+   * modification time. `YYYY-MM-DDTHH:MM:SS` in the server's time zone.
+   * @param mtime Unit is in milliseconds since the epoch.
+   */
+  export async function recordedAt(path: string, mtime: number): Promise<string | null> {
     // Example output: {"format":{"tags":{"creation_time":"2024-07-12T14:03:22.000000Z"}},"streams":[...]}
     const result = await new Deno.Command(AppSystem.config.FFPROBE_PATH, {
       args: ["-v", "error", "-show_entries", "format_tags=creation_time:stream_tags=creation_time", "-of", "json", path],
@@ -56,13 +65,13 @@ export namespace VideoDetails {
         const times = [data.format?.tags?.creation_time, ...(data.streams ?? []).map((s: { tags?: { creation_time?: string } }) => s.tags?.creation_time)];
         for (const time of times) {
           const date = time ? new Date(time) : null;
-          if (date && !isNaN(date.getTime()) && date.getFullYear() >= EARLIEST_YEAR) return localDate(date);
+          if (date && !isNaN(date.getTime()) && date.getFullYear() >= EARLIEST_YEAR) return localDateTime(date);
         }
       } catch {
         // Fall back to the file date
       }
     }
-    return mtime ? localDate(new Date(mtime)) : null;
+    return mtime ? localDateTime(new Date(mtime)) : null;
   }
 
   async function firstExisting(paths: string[]) {
@@ -200,14 +209,18 @@ export namespace VideoDetails {
 
   /**
    * Update every folder of a library from what's inside it: the thumbnail (a picture in the folder, or the newest
-   * video's), the newest recording date, and the lowest age rating, so a folder shows for anyone who may see a
-   * video in it.
+   * video's or photo's), the newest date, and the lowest age rating, so a folder shows for anyone who may see
+   * something in it.
    */
   export async function refreshFolders(library: Library) {
     const folders = await MediaItem.findAll({ where: { libraryId: library.id, type: "folder" } });
     const tree = await FolderTree.load([library.id]);
+    // Photos are newest by when they were taken; videos in a Videos library by when they were added
+    const newestFirst = library.type === "photos"
+      ? (a: MediaItem, b: MediaItem) => (b.takenAt ?? "").localeCompare(a.takenAt ?? "") || b.addedAt.getTime() - a.addedAt.getTime()
+      : (a: MediaItem, b: MediaItem) => b.addedAt.getTime() - a.addedAt.getTime();
     for (const folder of folders) {
-      const videos = tree.videosUnder(folder.id);
+      const videos = tree.itemsUnder(folder.id);
       const ages = videos.map((v) => v.ageRating).filter((a): a is number => a !== null);
       folder.ageRating = ages.length ? Math.min(...ages) : null;
       folder.releaseDate = videos.map((v) => v.releaseDate).filter((d): d is string => !!d).sort().pop() ?? null;
@@ -217,7 +230,7 @@ export namespace VideoDetails {
       if (!folder.customArtwork) {
         const image = folder.folderPath ? await firstExisting(folderImages(folder.folderPath)) : null;
         const own = image ? await ImageCache.store({ file: image }) : null;
-        const newest = [...videos].sort((a, b) => b.addedAt.getTime() - a.addedAt.getTime()).find((v) => v.artwork.thumb);
+        const newest = [...videos].sort(newestFirst).find((v) => v.artwork.thumb);
         await setThumbnail(folder, own ?? newest?.artwork.thumb ?? null);
       }
       if (!folder.metadataUpdatedAt) folder.metadataUpdatedAt = new Date();
@@ -229,7 +242,7 @@ export namespace VideoDetails {
    * Give unrated videos the library's rating for unrated videos, after it changed.
    */
   export async function applyDefaultRating(library: Library) {
-    const videos = await MediaItem.findAll({ where: { libraryId: library.id, type: "video", contentRating: null } });
+    const videos = await MediaItem.findAll({ where: { libraryId: library.id, type: ["video", "photo"], contentRating: null } });
     for (const video of videos) {
       video.ageRating = library.defaultAge();
       if (video.changed()) await video.save();
@@ -242,7 +255,7 @@ export namespace VideoDetails {
    */
   export async function ancestors(item: MediaItem) {
     const result: { id: number; title: string }[] = [];
-    let parentId = item.type === "video" || item.type === "folder" ? item.parentId : null;
+    let parentId = item.type === "video" || item.type === "photo" || item.type === "folder" ? item.parentId : null;
     while (parentId) {
       const parent = await MediaItem.findByPk(parentId, { attributes: ["id", "title", "parentId", "type"] });
       if (!parent || parent.type !== "folder") break;

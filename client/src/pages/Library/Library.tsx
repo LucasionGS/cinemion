@@ -18,6 +18,7 @@ import SegmentedControl from "../../components/SegmentedControl/SegmentedControl
 import Spinner from "../../components/Spinner/Spinner.tsx";
 import MusicLibrary from "../Music/MusicLibrary.tsx";
 import BooksLibrary from "../Books/BooksLibrary.tsx";
+import PhotosLibrary from "../Photos/PhotosLibrary.tsx";
 import "./Library.scss";
 
 const PAGE_SIZE = 60;
@@ -41,7 +42,7 @@ export interface LibraryProps {
 }
 
 /**
- * One library. Music libraries have their own page; the others are a grid of titles.
+ * One library. Music, Books and Photos libraries have their own pages; the others are a grid of titles.
  */
 export default function Library(props: LibraryProps) {
   const { id } = props;
@@ -50,6 +51,7 @@ export default function Library(props: LibraryProps) {
   if (!libraries) return <AppShell><div className="cn-library__loading"><Spinner size="2rem" /></div></AppShell>;
   if (library?.type === "music") return <AppShell><MusicLibrary library={library} /></AppShell>;
   if (library?.type === "audiobooks" || library?.type === "books") return <AppShell><BooksLibrary key={library.id} library={library} /></AppShell>;
+  if (library?.type === "photos") return <AppShell><PhotosLibrary key={library.id} library={library} /></AppShell>;
   return <TitleLibrary id={id} libraries={libraries} />;
 }
 
@@ -153,7 +155,7 @@ function TitleLibrary(props: LibraryProps & { libraries: LibraryInfo[] }) {
             {show !== "collections" && items && items.length === 0 && !loading && !genre && show !== "unwatched" && (
               <section className="cn-library__empty">
                 <h2>Nothing in here yet</h2>
-                <p>{library.scan ? "Cinemion is scanning this library right now. Titles appear as they're found." : `${{ movies: "Movies", shows: "Shows", videos: "Videos", music: "Music", audiobooks: "Audiobooks", books: "Books" }[library.type]} from ${library.paths.join(", ")} appear here after a scan.`}</p>
+                <p>{library.scan ? "Cinemion is scanning this library right now. Titles appear as they're found." : `${{ movies: "Movies", shows: "Shows", videos: "Videos", music: "Music", audiobooks: "Audiobooks", books: "Books", photos: "Photos" }[library.type]} from ${library.paths.join(", ")} appear here after a scan.`}</p>
               </section>
             )}
 

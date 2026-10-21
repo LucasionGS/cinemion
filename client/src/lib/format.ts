@@ -64,6 +64,34 @@ export function formatDate(date: string, short = false) {
 }
 
 /**
+ * A span of days, as short as it can be said: "12 July 2024", "12 – 26 July 2024", "30 June – 2 July 2024" or
+ * "30 Dec 2024 – 2 Jan 2025", from `YYYY-MM-DD` dates.
+ */
+export function formatDateRange(from: string, to: string) {
+  if (from === to) return formatDate(from);
+  const date = (value: string) => {
+    const [y, m, d] = value.split("-").map(Number);
+    return new Date(y, (m || 1) - 1, d || 1);
+  };
+  const [a, b] = [date(from), date(to)];
+  const sameYear = a.getFullYear() === b.getFullYear();
+  if (sameYear && a.getMonth() === b.getMonth()) return `${a.getDate()} – ${formatDate(to)}`;
+  if (sameYear) return `${a.toLocaleDateString(undefined, { day: "numeric", month: "long" })} – ${formatDate(to)}`;
+  return `${formatDate(from, true)} – ${formatDate(to, true)}`;
+}
+
+/**
+ * "Saturday 13 July 2024, 14:32", from `YYYY-MM-DDTHH:MM:SS` on the camera's clock. Shown as written, without
+ * moving it into this device's time zone. With `short`, "13 Jul 2024, 14:32".
+ */
+export function formatDateTime(value: string, short = false) {
+  const [y, mo, d, h, mi] = value.split(/[-T:]/).map(Number);
+  const date = new Date(y, (mo || 1) - 1, d || 1, h || 0, mi || 0);
+  const day = date.toLocaleDateString(undefined, short ? { day: "numeric", month: "short", year: "numeric" } : { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+  return `${day}, ${date.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" })}`;
+}
+
+/**
  * "34%", from 0 to 1.
  */
 export function formatPercent(value: number) {

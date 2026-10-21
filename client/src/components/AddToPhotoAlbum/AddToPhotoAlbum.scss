@@ -1,0 +1,15 @@
+// More specific than the list item's own spans, which stretch
+.cn-add-playlist__item > .cn-add-photo-album__cover {
+  flex: none;
+  width: 4.5rem;
+  aspect-ratio: 16 / 10;
+  border-radius: var(--cn-radius-xs);
+  overflow: hidden;
+  background: var(--cn-surface-3);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}

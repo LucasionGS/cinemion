@@ -7,6 +7,7 @@ import Visibility from "../library/Visibility.ts";
 import Summaries from "../library/Summaries.ts";
 import MusicSummaries from "../music/MusicSummaries.ts";
 import BooksController from "./BooksController.ts";
+import PhotoSummaries from "../photos/PhotoSummaries.ts";
 import type { AppEnv } from "../lib/types.ts";
 
 export namespace HomeController {
@@ -117,6 +118,20 @@ export namespace HomeController {
   }
 
   /**
+   * Newest folders per Photos library, leaving out ones with nothing this profile may see.
+   */
+  async function recentlyAddedPhotos(user: User) {
+    const rows: HomeData["recentlyAddedPhotos"] = [];
+    for (const library of await Library.findAll({ where: { type: "photos" }, order: [["id", "ASC"]] })) {
+      if (!Visibility.canSeeLibrary(user, library.id)) continue;
+      const folders = await MediaItem.findAll({ where: { [Op.and]: [Visibility.where(user), { libraryId: library.id, type: "folder" }] }, order: [["addedAt", "DESC"]], limit: ROW_SIZE * 2 });
+      const albums = (await PhotoSummaries.folders(folders, user)).filter((a) => a.photoCount + a.videoCount > 0).slice(0, ROW_SIZE);
+      if (albums.length) rows.push({ libraryId: library.id, libraryName: library.name, albums });
+    }
+    return rows;
+  }
+
+  /**
    * Titles like the one the profile watched last. Music doesn't count.
    */
   async function becauseYouWatched(user: User): Promise<HomeData["becauseYouWatched"]> {
@@ -146,6 +161,7 @@ export namespace HomeController {
       nextUp: await Summaries.build(next, user),
       recentlyAdded: await recentlyAdded(user),
       recentlyAddedMusic: await recentlyAddedMusic(user),
+      recentlyAddedPhotos: await recentlyAddedPhotos(user),
       continueBooks: await BooksController.continueBooks(user),
       becauseYouWatched: await becauseYouWatched(user),
     };

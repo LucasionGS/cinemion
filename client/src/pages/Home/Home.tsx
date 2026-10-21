@@ -14,6 +14,7 @@ import cx from "../../lib/cx.ts";
 import AppShell from "../../components/AppShell/AppShell.tsx";
 import Button from "../../components/Button/Button.tsx";
 import Row from "../../components/Row/Row.tsx";
+import PhotoAlbumCard from "../../components/PhotoAlbumCard/PhotoAlbumCard.tsx";
 import { AlbumCard } from "../../components/MusicCard/MusicCard.tsx";
 import BookCard from "../../components/BookCard/BookCard.tsx";
 import PosterCard from "../../components/PosterCard/PosterCard.tsx";
@@ -47,7 +48,7 @@ export default function Home() {
   }, [spotlight?.palette?.accent]);
   useEffect(() => () => applyAmbient(null), []);
 
-  const isEmpty = home && !home.continueWatching.length && !home.nextUp.length && !home.recentlyAdded.length && !home.recentlyAddedMusic.length && !home.continueBooks.length;
+  const isEmpty = home && !home.continueWatching.length && !home.nextUp.length && !home.recentlyAdded.length && !home.recentlyAddedMusic.length && !home.recentlyAddedPhotos.length && !home.continueBooks.length;
 
   return (
     <AppShell>
@@ -89,6 +90,12 @@ export default function Home() {
         {home?.recentlyAddedMusic.map((row) => (
           <Row key={row.libraryId} title={`New in ${row.libraryName}`} href={`/library/${row.libraryId}`} kind="square">
             {row.albums.map((album) => <AlbumCard key={album.id} album={album} />)}
+          </Row>
+        ))}
+
+        {home?.recentlyAddedPhotos.map((row) => (
+          <Row key={row.libraryId} title={`New in ${row.libraryName}`} href={`/library/${row.libraryId}`} kind="wide">
+            {row.albums.map((album) => <PhotoAlbumCard key={album.id} album={album} />)}
           </Row>
         ))}
 
@@ -174,7 +181,7 @@ function useHome() {
   useEffect(() => {
     ItemsApi.home().then(setHome).catch((e: Error) => {
       toasts.error("Couldn't load the home screen", e.message);
-      setHome({ continueWatching: [], nextUp: [], recentlyAdded: [], recentlyAddedMusic: [], continueBooks: [], becauseYouWatched: null });
+      setHome({ continueWatching: [], nextUp: [], recentlyAdded: [], recentlyAddedMusic: [], recentlyAddedPhotos: [], continueBooks: [], becauseYouWatched: null });
     });
   }, []);
   return home;

@@ -1,6 +1,6 @@
 # Cinemion
 
-Your movies, shows, music and books, beautifully served from your own machine: a self-hosted media server that feels at home on the couch, at a desk and on a phone.
+Your movies, shows, music, books and photos, beautifully served from your own machine: a self-hosted media server that feels at home on the couch, at a desk and on a phone.
 
 [![CI](https://github.com/LucasionGS/cinemion/actions/workflows/ci.yml/badge.svg)](https://github.com/LucasionGS/cinemion/actions/workflows/ci.yml)
 [![Release](https://img.shields.io/github/v/release/LucasionGS/cinemion?include_prereleases)](https://github.com/LucasionGS/cinemion/releases)
@@ -15,6 +15,7 @@ Your movies, shows, music and books, beautifully served from your own machine: a
 - **Music, with a mini-player that keeps going**: albums, artists and songs sorted by their tags, covers from the files or a `cover.jpg`, a player that keeps playing while you browse (and on your lock screen), playlists for every profile, and lyrics that follow along when there's an LRC file. FLAC, ALAC and friends play everywhere: whatever a browser can't play is converted once.
 - **Audiobooks and books**: audiobooks keep everyone's place, with chapters, playback speed and a sleep timer for when you nod off. EPUB books open in a built-in reader with light, sepia and dark pages; PDFs open right in the browser.
 - **Home videos too**: a Videos library takes anything that isn't a movie or show (holidays, drone footage, recordings) without looking anything up. Folders become groups, titles come from the file names and dates from the recording, thumbnails are picked from the video itself, and you can edit it all by hand.
+- **Photo albums**: point a Photos library at your pictures and every folder becomes an album, with dates, cameras and places read from the photos themselves (iPhone HEICs included) and phone videos mixed right in. Browse albums or one long timeline, flip through them full screen with a filmstrip and a details panel, or lean back with a slideshow. Make your own albums from photos anywhere in the library without moving a single file.
 - **Posters, plots and cast**: from NFO files and artwork next to your videos, from TMDB (no key needed, Cinemion brings its own) and TheTVDB, in the order you choose, with IMDb, Rotten Tomatoes and Metacritic scores when you add an OMDb key. Wrong match? Fix it in two clicks.
 - **Trakt, per profile**: everyone can link their own Trakt account. What they watch is scrobbled as it plays, marking things watched lands in their Trakt history, and their Trakt history can come in the other way too.
 - **Plays (almost) anything, anywhere**: files your device can play go straight through untouched. Anything else is repackaged or converted on the fly, on the CPU or an Intel, AMD or NVIDIA GPU, with HDR turned into SDR for screens that need it. Pick audio tracks, subtitles and quality while you watch, or let Automatic quality follow your connection.
@@ -53,6 +54,12 @@ Your movies, shows, music and books, beautifully served from your own machine: a
 
 ![A Videos library](docs/screenshots/videos.webp)
 <sup>Videos libraries for everything else, with folders as groups and thumbnails from the videos themselves.</sup>
+
+![A Photos library](docs/screenshots/photos.webp)
+<sup>Photos libraries: folders become albums, and you can make your own.</sup>
+
+![The photo viewer](docs/screenshots/photo-viewer.webp)
+<sup>The photo viewer, with a filmstrip and what the camera wrote down.</sup>
 
 ![The server dashboard](docs/screenshots/dashboard.webp)
 <sup>The dashboard: who's watching what, whether it's converted (and why), and how busy the server is.</sup>

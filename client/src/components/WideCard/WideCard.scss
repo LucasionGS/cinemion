@@ -24,7 +24,11 @@
     background: var(--cn-surface-2);
     transition: box-shadow var(--cn-medium) var(--cn-ease);
 
+    // Out of the flow, so a portrait picture can't make the box taller than 16:9 (folders let their art overflow
+    // for the stacked cards, which would otherwise let the picture's own height win)
     img {
+      position: absolute;
+      inset: 0;
       width: 100%;
       height: 100%;
       object-fit: cover;

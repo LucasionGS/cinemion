@@ -22,6 +22,7 @@ import WebhooksController from "./WebhooksController.ts";
 import MusicController from "./MusicController.ts";
 import PlaylistsController from "./PlaylistsController.ts";
 import BooksController from "./BooksController.ts";
+import PhotosController from "./PhotosController.ts";
 import TraktController from "./TraktController.ts";
 import DownloadsController from "./DownloadsController.ts";
 import UploadsController from "./UploadsController.ts";
@@ -56,6 +57,7 @@ export namespace ApiController {
   router.route("/music", MusicController.router);
   router.route("/playlists", PlaylistsController.router);
   router.route("/books", BooksController.router);
+  router.route("/photos", PhotosController.router);
   router.route("/trakt", TraktController.router);
   router.route("/downloads", DownloadsController.router);
   router.route("/uploads", UploadsController.router);

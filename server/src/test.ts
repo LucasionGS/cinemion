@@ -25,6 +25,9 @@ import Uploads from "./library/Uploads.ts";
 import type { SubtitleSearchResult } from "@shared/playback.ts";
 import type MediaFile from "./models/MediaFile.ts";
 import { parseLrc } from "@shared/music.ts";
+import Exif from "./photos/Exif.ts";
+import PhotoLibrary from "./photos/PhotoLibrary.ts";
+import { withExif } from "../../scripts/sample-photos.ts";
 
 /**
  * Scratch runner for the parts that are easy to get subtly wrong. Run with `deno run -A server/src/test.ts`.
@@ -381,6 +384,34 @@ await Deno.writeFile(`${zipDir}/damaged.zip`, damaged);
 check("damaged entry fails its checksum", await unzipped(`${zipDir}/damaged.zip`).then(() => "read").catch((e: Error) => e.message), "\"Show/Season 1/E01.mkv\" in the zip file is damaged: its checksum doesn't match.");
 check("not a zip", await ZipReader.open(`${zipDir}/../`).then(() => "opened").catch(() => "refused"), "refused");
 await Deno.remove(zipDir, { recursive: true });
+//#endregion
+
+//#region Photos
+console.log("Photos");
+// A tiny JPEG: start marker, a frame header (SOF0) saying 4000 x 3000, then the start of the picture data
+const jpeg = new Uint8Array([0xFF, 0xD8, 0xFF, 0xC0, 0, 11, 8, 0x0B, 0xB8, 0x0F, 0xA0, 3, 1, 0x22, 0, 0xFF, 0xDA, 0, 2]);
+const sideways = await Exif.parse(withExif(jpeg, {
+  make: "NIKON CORPORATION", model: "NIKON D750", orientation: 6, taken: "2024:07:13 14:32:10", offset: "+02:00",
+  exposure: [1, 1200], fNumber: [28, 10], iso: 400, focalLength: [35, 1], latitude: 37.0896, longitude: -8.4127,
+}));
+const tempPhoto = await Deno.makeTempFile({ suffix: ".jpg" });
+await Deno.writeFile(tempPhoto, withExif(jpeg, { orientation: 6, taken: "2024:07:13 14:32:10", latitude: -33.8688, longitude: 151.2093 }));
+const meta = await Exif.read(tempPhoto);
+await Deno.remove(tempPhoto);
+check("EXIF tags found", sideways.tags.size > 10, true);
+check("EXIF from a file, turned upright", [meta.width, meta.height, meta.orientation, meta.takenAt, meta.latitude, meta.longitude], [3000, 4000, 6, "2024-07-13T14:32:10", -33.8688, 151.2093]);
+check("camera names", [Exif.cameraName("NIKON CORPORATION", "NIKON D750"), Exif.cameraName("Google", "Pixel 8 Pro"), Exif.cameraName("Canon", "Canon EOS R5"), Exif.cameraName(null, "iPhone 15"), Exif.cameraName("OLYMPUS IMAGING CORP.", "E-M10")], ["NIKON D750", "Google Pixel 8 Pro", "Canon EOS R5", "iPhone 15", "OLYMPUS E-M10"]);
+check("EXIF dates", [Exif.dateTime("2024:07:13 14:32:10"), Exif.dateTime("0000:00:00 00:00:00"), Exif.dateTime("    :  :     :  :  "), Exif.dateTime("2024:02:30 10:00:00")], ["2024-07-13T14:32:10", null, null, null]);
+check("not a picture", (await Exif.parse(new TextEncoder().encode("just some text, not a photo"))).tags.size, 0);
+check("dates in file names", [
+  "IMG_20240713_143210.jpg", "PXL_20240713_133210123.jpg", "20240713_143210.jpg", "Screenshot 2025-03-02 at 18.04.10.png",
+  "IMG-20260930-WA0004.jpg", "Screenshot_20240713-143210.png", "IMG_4512.HEIC", "Holiday 2024.jpg", "DSC_20241399.jpg",
+].map((n) => PhotoLibrary.takenFromName(`/photos/${n}`)), [
+  "2024-07-13T14:32:10", "2024-07-13T13:32:10", "2024-07-13T14:32:10", "2025-03-02T18:04:10",
+  "2026-09-30T00:00:00", "2024-07-13T14:32:10", null, null, null,
+]);
+check("photo files", ["a.JPG", "b.heic", "c.mp4", "d.xmp", "e.CR2"].map((n) => PhotoLibrary.isPhotoOrVideo(n)), [true, true, true, false, false]);
+check("photos library takes", [Uploads.accepts("photos", "IMG_1.HEIC"), Uploads.accepts("photos", "clip.MOV"), Uploads.accepts("photos", "notes.txt")], [true, true, false]);
 //#endregion
 
 console.log(failed ? `\n${failed} failed` : "\nAll passed");

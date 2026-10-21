@@ -6,12 +6,13 @@
 # tidy and messy file names, several codecs, multiple audio and subtitle tracks, NFO files,
 # local artwork, multi-episode files, specials, extras and samples that should be skipped, a folder of
 # home videos with recording dates, a folder picture and nested folders, and music: tagged albums with covers,
-# a two-disc album, a compilation, lyrics, a format browsers can't play and an untagged file, and audiobooks
-# (a folder of parts and an .m4b with chapters) and books (an EPUB and a PDF).
+# a two-disc album, a compilation, lyrics, a format browsers can't play and an untagged file, audiobooks
+# (a folder of parts and an .m4b with chapters), books (an EPUB and a PDF), and photos (albums, EXIF, a HEIC, a
+# phone video; made by scripts/sample-photos.ts).
 #
 # Usage: scripts/make-sample-media.sh [FOLDER]
-#   FOLDER         Where to create "movies", "shows", "videos", "music", "audiobooks" and "books". Default is
-#                  data/media.
+#   FOLDER         Where to create "movies", "shows", "videos", "music", "audiobooks", "books" and "photos".
+#                  Default is data/media.
 #   CLIP_SECONDS   Length of each clip (environment variable). Default is 90.
 #   TRACK_SECONDS  Length of each music track (environment variable). Default is 30.
 #   PART_SECONDS   Length of each audiobook part (environment variable). Default is 60.
@@ -515,6 +516,15 @@ if command -v magick > /dev/null; then
   rm -rf "$PDF_DIR"
 else
   echo "ImageMagick isn't installed, so there's no sample PDF."
+fi
+#endregion
+
+#region Photos
+echo "Photos..."
+if command -v deno > /dev/null; then
+  deno run -A "$ROOT/scripts/sample-photos.ts" "$OUT/photos"
+else
+  echo "Deno isn't installed, so there are no sample photos."
 fi
 #endregion
 
