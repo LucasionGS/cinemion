@@ -4,6 +4,7 @@ import IconButton from "../IconButton/IconButton.tsx";
 import TextField from "../TextField/TextField.tsx";
 import Select from "../Select/Select.tsx";
 import { session } from "../../Session.ts";
+import TmdbCredit from "../TmdbCredit/TmdbCredit.tsx";
 import "./MetadataForm.scss";
 
 const PROVIDERS: Record<string, { name: string; description: string }> = {
@@ -87,6 +88,7 @@ export default function MetadataForm(props: MetadataFormProps) {
                   : <>Free with a TMDB account. <a href="https://www.themoviedb.org/settings/api" target="_blank" rel="noreferrer">How to get one</a></>}
               />
             )}
+            {id === "tmdb" && <div className="cn-metadata-form__field"><TmdbCredit compact /></div>}
             {id === "tvdb" && (
               <div className="cn-metadata-form__keys">
                 <TextField

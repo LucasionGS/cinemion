@@ -178,6 +178,12 @@ client/   React + Vite + SCSS web app with Cinemion's own design system
 docs/     Design decisions and future plans
 ```
 
+## Credits
+
+<img src="client/public/credits/tmdb.svg" alt="TMDB" height="14">
+
+This product uses TMDB and the TMDB APIs but is not endorsed, certified, or otherwise approved by TMDB.
+
 ## License
 
 GPL-3.0-or-later. See [LICENSE](LICENSE).

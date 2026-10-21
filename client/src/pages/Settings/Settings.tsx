@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Captions, Clapperboard, FolderOpen, LayoutDashboard, Library as LibraryIcon, ListChecks, MonitorSmartphone, Plug, ScrollText, UserRound, Users, Webhook } from "lucide-react";
+import { Captions, Clapperboard, FolderOpen, Info, LayoutDashboard, Library as LibraryIcon, ListChecks, MonitorSmartphone, Plug, ScrollText, UserRound, Users, Webhook } from "lucide-react";
 import { session } from "../../Session.ts";
 import AdminApi from "../../Api/AdminApi.ts";
 import { Link } from "../../lib/Router.tsx";
@@ -19,6 +19,7 @@ import IntegrationsSettings from "./IntegrationsSettings.tsx";
 import WebhooksSettings from "./WebhooksSettings.tsx";
 import TasksSettings from "./TasksSettings.tsx";
 import LogsSettings from "./LogsSettings.tsx";
+import AboutSettings from "./AboutSettings.tsx";
 import "./Settings.scss";
 
 interface Tab {
@@ -48,6 +49,7 @@ export default function Settings(props: SettingsProps) {
   const tabs: Tab[] = [
     { id: "profile", label: "Your profile", icon: <UserRound />, group: "you", visible: true, render: () => <ProfileSettings /> },
     { id: "device", label: "This device", icon: <MonitorSmartphone />, group: "you", visible: true, render: () => <DeviceSettings /> },
+    { id: "about", label: "About", icon: <Info />, group: "you", visible: true, render: () => <AboutSettings /> },
     { id: "dashboard", label: "Dashboard", icon: <LayoutDashboard />, group: "server", visible: canManage, wide: true, render: () => <Dashboard /> },
     { id: "libraries", label: "Libraries", icon: <FolderOpen />, group: "server", visible: session.can("LIBRARY_MANAGE"), render: () => <LibrariesSettings /> },
     { id: "users", label: "Users", icon: <Users />, group: "server", visible: session.can("USERS_MANAGE"), render: () => <UsersSettings /> },

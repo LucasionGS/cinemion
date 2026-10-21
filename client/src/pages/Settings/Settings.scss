@@ -508,3 +508,41 @@ button.cn-settings__badge {
   font-size: 1rem;
   font-weight: 700;
 }
+
+//#region About
+.cn-about {
+  &__text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+
+    strong {
+      font-size: 1.05rem;
+    }
+
+    span {
+      color: var(--cn-text-muted);
+      line-height: 1.55;
+    }
+  }
+
+  &__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+
+    a {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      color: var(--cn-accent-text);
+      font-weight: 600;
+
+      svg {
+        width: 0.9rem;
+        height: 0.9rem;
+      }
+    }
+  }
+}
+//#endregion

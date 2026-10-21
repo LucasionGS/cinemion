@@ -589,6 +589,13 @@ through a temporary spot, "done properly, ideally resumable" since files can be 
 - `ServerInfo.hasBuiltInTmdbKey` (public, never the key itself) lets the metadata form (setup and Settings) call the
   field "Your own API key (optional)" with "Uses the key built into Cinemion" as the placeholder.
 - The repo is public, so the key is readable on GitHub and from the binary; that's accepted for a read-only token.
+- **TMDB attribution** (their API terms): the notice "This product uses TMDB and the TMDB APIs but is not endorsed,
+  certified, or otherwise approved by TMDB." word for word, plus their logo, less prominent than Cinemion's.
+  `components/TmdbCredit/` (logo from TMDB's logos page, unchanged, in `client/public/credits/tmdb.svg`) shows under
+  the TMDB source in the metadata form (setup and Settings › Metadata) and in Credits on the new Settings › About page
+  (every profile: version, license, links). The README has a Credits section too.
+- **Open:** TMDB's terms also say not to keep their data longer than 6 months. Cinemion stores details until someone
+  uses "Refresh all details", so a periodic re-fetch of TMDB details older than 6 months would close that gap.
 
 ## 6. Design decisions
 
