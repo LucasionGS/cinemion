@@ -10,6 +10,7 @@ import WatchTogether from "./together/WatchTogether.ts";
 import ActivePlayback from "./media/ActivePlayback.ts";
 import SubtitleAutomation from "./subtitles/SubtitleAutomation.ts";
 import OfflineCopies from "./media/OfflineCopies.ts";
+import Uploads from "./library/Uploads.ts";
 import { Activity } from "./models/index.ts";
 import log from "./lib/Logger.ts";
 
@@ -40,6 +41,7 @@ const ffmpegVersion = await Ffmpeg.version();
 if (!ffmpegVersion) log.warn(`ffmpeg was not found, so profile pictures and video conversion won't work. ${Ffmpeg.installHint()}`);
 
 await TranscodeSession.init();
+await Uploads.init();
 
 const app = createApp();
 const server = Deno.serve({
@@ -75,6 +77,7 @@ for (const signal of ["SIGINT", "SIGTERM"] as const) {
     ScanScheduler.stop();
     LibraryWatcher.stop();
     ActivePlayback.shutdown();
+    Uploads.stop();
     clearTimeout(firstDaily);
     clearInterval(dailyTimer);
     await TranscodeSession.shutdown();

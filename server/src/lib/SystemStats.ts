@@ -149,6 +149,15 @@ export namespace SystemStats {
     return { used: list.reduce((a, d) => a + d.used, 0), total: list.reduce((a, d) => a + d.total, 0), mounts: list.map((d) => d.mount) };
   }
 
+  /**
+   * Space left on the drive that holds `path`. Unit is in bytes. `null` when `df` isn't there or can't tell.
+   */
+  export async function freeSpace(path: string): Promise<number | null> {
+    const out = await run("df", ["-P", "-k", path]);
+    const match = out?.split("\n")[1]?.match(/^\S+\s+\d+\s+\d+\s+(\d+)\s+/);
+    return match ? Number(match[1]) * 1024 : null;
+  }
+
   async function storage(paths: string[]): Promise<Stats["storage"]> {
     const key = paths.join("\n");
     if (_storage && _storage.key === key && Date.now() - _storage.at < STORAGE_CACHE_MS) return _storage.value;

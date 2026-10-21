@@ -1,7 +1,7 @@
 # Cinemion handoff
 
 Everything an assistant needs to pick this project up with no earlier context. Read it fully before changing code.
-Last updated 2026-10-20, after the app API (16b).
+Last updated 2026-10-21, after uploads from the browser (16c).
 
 ## 1. What Cinemion is
 
@@ -244,6 +244,7 @@ and on amd64 Intel's non-free VA driver + Quick Sync runtime), `docker/entrypoin
 | 15 | done | More subtitle sources and automatic subtitle downloads (below) |
 | 16 | done | Offline downloads (below) |
 | 16b | done | App API: Seerr and Homepage can use Cinemion as their media server (below) |
+| 16c | done | Uploading media and zip files into libraries from the browser, resumable (below) |
 | 17 | on hold | Casting to Chromecast / Google TV, and a lighter layout for old smart-TV browsers |
 | 18 | on hold | Android TV app (WebView wrapper; the SDK is in `~/Android/Sdk` on this machine) |
 | 19 | on hold | Live TV: IPTV playlists, a guide and recordings |
@@ -540,6 +541,45 @@ the server's name, in code, docs and commits.
   a movie and a partly downloaded show, play links) and the `/Sessions` + `/Items/Counts` shapes Homepage's widget
   reads. `test.ts` checks the ids and item type names.
 
+### Uploads from the browser (16c): what was built
+Asked for by the owner: upload media (or zip files with whole seasons) from Settings › Libraries into a library folder,
+through a temporary spot, "done properly, ideally resumable" since files can be huge.
+- **Server** (`library/Uploads.ts`, `controllers/UploadsController.ts`, `LIBRARY_MANAGE`): each upload is a folder in
+  `AppSystem.uploadsDir` (`UPLOAD_DIR`, default `<CACHE_DIR>/uploads`) with `data` and `info.json`, so uploads survive
+  restarts (`Uploads.init()` reloads them, takes `received` from the data file's size and restarts ones that were being
+  added). `POST /api/uploads` starts one or returns the unfinished upload for the same library, folder, path, size,
+  date and fingerprint (a quick hash of the first and last MB; `crypto.subtle` isn't there on plain http).
+  `PUT /api/uploads/:id?offset=N` streams a piece (≤ 64 MB) to disk and counts bytes as they're written, so a piece cut
+  off halfway keeps what arrived; a wrong offset answers 409 with the upload. Checks before starting: path cleaned
+  (`Uploads.cleanPath`: no `..`, hidden parts, drive letters), file type per library type (`Uploads.extensions`, served
+  at `/rules`), the folder is inside the library (real paths, symlinked folders can't lead out), write access
+  (`GET /check`, shown in the dialog before anything is picked), free space via `df` (`SystemStats.freeSpace`) with a
+  256 MB margin, and `UPLOAD_MAX_GB`. Unfinished uploads are deleted after 3 days, finished ones after a day.
+- **Adding to the library** runs in the `uploads` task queue (visible on the Tasks page). Single files are renamed into
+  place, or copied across drives (EXDEV) after a space check. Zip files are read by `lib/ZipReader.ts` straight from
+  disk (central directory, zip64, stored and deflate through `DecompressionStream("deflate-raw")`, CRC and size
+  checked per entry); entries keep their folders, `__MACOSX`/`.DS_Store`/`Thumbs.db` are dropped quietly, others the
+  library doesn't take, encrypted or unsupported ones, and existing files (unless "replace") are listed as left out.
+  Everything is written as a hidden `.<name>.cinemion-upload` next to its target and renamed, so scans and the watcher
+  never see half a file. Then `Scanner.queueFolders()` scans where the files went, and the activity feed gets
+  "Ion uploaded 10 files to Shows" (new kind `upload`). A failed add keeps the data, so `POST /:id/retry` (optionally
+  with `replace`) can try again.
+- **Client** (`lib/Uploads.ts` controller `uploads`, `Api/UploadsApi.ts`, `components/UploadDialog/`): one file at a
+  time, pieces over XHR for progress (speed, time left), 32 MB pieces halved on a 413 down to 256 KB (nginx allows 1 MB
+  by default), connection drops retried with backoff (1–30 s, 40 tries) after asking the server how much arrived.
+  Uploads keep going with the dialog closed (the library row shows "Uploading 2 files · 45%"), `beforeunload` warns.
+  After a reload, unfinished uploads show as "Stopped at 38%" with "Pick the file"; the same file dropped again also
+  carries on. Dialog: FolderBrowser limited to the library (`roots`, `onNavigate`, `onSelect` now optional), an optional
+  new subfolder ("Saltwater Kings/Season 1"), drop zone for files and folders (`webkitGetAsEntry`), choose files or a
+  folder, a "Replace files that are already there" switch, and the library's uploads with left-out files listed.
+- **Read-only media** is the default in the README's Docker examples (`:ro`) and the systemd unit (`ProtectSystem=strict`),
+  so the dialog says how to allow writing (drop `:ro`, or `ReadWritePaths=` via `systemctl edit cinemion`); the README
+  has a section for it. Defaults were left read-only on purpose.
+- **Tested**: `test.ts` (paths, types, zip stored/deflate/zip64/damaged); end to end against a scratch server (cut-off
+  piece, wrong offset, server restart mid-upload, zip into Shows with a stray `.exe`, byte-identical results); in
+  headless Chrome (throttled upload with progress, reload mid-upload and carry on, wrong file refused, a mock proxy
+  with a 1 MB body limit, phone layout).
+
 ## 6. Design decisions
 
 All picks are in `docs/design/decisions.md`, with links to the three mockup artifacts on claude.ai (owner's account).
@@ -618,4 +658,6 @@ optional uploaded pictures, watch together as a side panel.
   - Images go through `ImageCache`; originals stay on disk like videos do.
   - `Visibility`, the per-library `defaultRating`, Edit details and the 16:9 grids already work per item, not per
     media kind.
+- **Uploads** only take zip files, not RAR or 7z. Files go up one at a time; parallel pieces could be faster on
+  high-latency links.
 - Ideas for later live in `docs/future-features.md`.

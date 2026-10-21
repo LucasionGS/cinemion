@@ -9,3 +9,4 @@ export * from "./music.ts";
 export * from "./books.ts";
 export * from "./trakt.ts";
 export * from "./downloads.ts";
+export * from "./uploads.ts";

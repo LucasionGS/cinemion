@@ -275,6 +275,20 @@
   font-weight: 600;
 }
 
+button.cn-settings__upload {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: inherit;
+  text-align: left;
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
 .cn-settings__scan-bar {
   flex: 0 0 6rem;
   height: 0.3rem;

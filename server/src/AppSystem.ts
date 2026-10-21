@@ -44,6 +44,8 @@ export namespace AppSystem {
     CONFIG_DIR: configDir,
     CACHE_DIR: Path.resolve(env("CACHE_DIR", isDocker ? "/cache" : Path.join(configDir, "cache"))),
     MEDIA_ROOTS: env("MEDIA_ROOTS", isDocker ? "/media" : os.homedir()).split(Path.delimiter).filter(Boolean).map((p) => Path.resolve(p)),
+    UPLOAD_DIR: env("UPLOAD_DIR", ""),
+    UPLOAD_MAX_GB: parseFloat(env("UPLOAD_MAX_GB", "0")) || 0,
 
     DB_DIALECT: env("DB_DIALECT", "sqlite") as "sqlite" | "mariadb",
     DB_HOST: env("DB_HOST", "localhost"),
@@ -72,6 +74,11 @@ export namespace AppSystem {
    */
   export const tempDir = Path.join(config.CACHE_DIR, "tmp");
   /**
+   * Uploads from the browser while they come in, one folder each. On the same drive as the libraries, finished
+   * uploads move into place instantly; elsewhere they're copied.
+   */
+  export const uploadsDir = Path.resolve(config.UPLOAD_DIR || Path.join(config.CACHE_DIR, "uploads"));
+  /**
    * The SQLite database file, when `DB_DIALECT=sqlite`.
    */
   export const databaseFile = Path.join(config.CONFIG_DIR, "cinemion.db");
@@ -97,7 +104,7 @@ export namespace AppSystem {
    * Create the data folders and load or generate the token secret. Call once at startup.
    */
   export async function init() {
-    for (const dir of [config.CONFIG_DIR, config.CACHE_DIR, avatarsDir, imagesDir, tempDir]) {
+    for (const dir of [config.CONFIG_DIR, config.CACHE_DIR, avatarsDir, imagesDir, tempDir, uploadsDir]) {
       await fsp.mkdir(dir, { recursive: true });
     }
 

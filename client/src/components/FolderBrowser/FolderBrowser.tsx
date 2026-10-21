@@ -11,8 +11,21 @@ export interface FolderBrowserProps {
   /**
    * Folders already picked, marked in the list.
    */
-  selected: string[];
-  onSelect: (path: string) => void;
+  selected?: string[];
+  /**
+   * Called with the open folder when "Use this folder" is clicked. Without it, there's no such button; follow the
+   * open folder with `onNavigate` instead.
+   */
+  onSelect?: (path: string) => void;
+  /**
+   * Called whenever another folder is opened. `null` = the list of roots.
+   */
+  onNavigate?: (path: string | null) => void;
+  /**
+   * Only these folders and what's inside them can be opened, like a library's folders. Default is the server's media
+   * roots, and typing a path.
+   */
+  roots?: string[];
 }
 
 /**
@@ -20,13 +33,20 @@ export interface FolderBrowserProps {
  * part of the path bar or the pencil.
  */
 export default function FolderBrowser(props: FolderBrowserProps) {
-  const { selected, onSelect } = props;
-  const [path, setPath] = useState<string | null>(null);
+  const { selected = [], onSelect, onNavigate, roots } = props;
+  const [path, setPath] = useState<string | null>(roots?.length === 1 ? roots[0] : null);
   const [listing, setListing] = useState<FsListing | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    onNavigate?.(path);
+    if (path === null && roots) {
+      setListing({ path: null, root: null, parent: null, entries: roots.map((r) => ({ name: r, path: r })) });
+      setError(null);
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     ServerApi.listFolders(path)
       .then((result) => {
@@ -39,7 +59,7 @@ export default function FolderBrowser(props: FolderBrowserProps) {
       .finally(() => setLoading(false));
   }, [path]);
 
-  const crumbs = listing ? breadcrumbs(listing) : [];
+  const crumbs = listing ? breadcrumbs(listing, roots) : [];
   const crumbsRef = useRef<HTMLElement>(null);
   const [typing, setTyping] = useState(false);
 
@@ -73,10 +93,10 @@ export default function FolderBrowser(props: FolderBrowserProps) {
           className="cn-folders__crumbs"
           aria-label="Folder path"
           onClick={(e) => {
-            if (e.target === e.currentTarget) setTyping(true);
+            if (e.target === e.currentTarget && !roots) setTyping(true);
           }}
         >
-          <button type="button" className="cn-folders__crumb" onClick={() => setPath(null)}><HardDrive /></button>
+          <button type="button" className="cn-folders__crumb" aria-label={roots ? "Top" : "Drives"} onClick={() => setPath(roots?.length === 1 ? roots[0] : null)}><HardDrive /></button>
           {crumbs.map((crumb, i) => (
             <Fragment key={crumb.path}>
               <ChevronRight className="cn-folders__sep" aria-hidden="true" />
@@ -86,8 +106,8 @@ export default function FolderBrowser(props: FolderBrowserProps) {
             </Fragment>
           ))}
         </nav>
-        <IconButton label="Type a path" icon={<Pencil />} size="sm" onClick={() => setTyping(true)} />
-        {path && !error && (
+        {!roots && <IconButton label="Type a path" icon={<Pencil />} size="sm" onClick={() => setTyping(true)} />}
+        {onSelect && path && !error && (
           <Button size="sm" variant="primary" icon={<FolderCheck />} onClick={() => onSelect(path)} disabled={selected.includes(path)}>
             {selected.includes(path) ? "Selected" : "Use this folder"}
           </Button>
@@ -243,15 +263,18 @@ function PathInput(props: { initial: string; onOpen: (path: string) => void; onC
 }
 
 /**
- * Split the listed path into clickable parts, starting at its media root. Folders above the root can't be opened.
+ * Split the listed path into clickable parts, starting at its media root (or the one of `roots` it's in). Folders above
+ * the root can't be opened.
  */
-function breadcrumbs(listing: FsListing) {
+function breadcrumbs(listing: FsListing, roots?: string[]) {
   if (!listing.path || !listing.root) return [];
   const sep = listing.root.includes("\\") ? "\\" : "/";
+  const path = listing.path;
+  const root = roots?.find((r) => path === r || path.startsWith(r.endsWith(sep) ? r : r + sep)) ?? listing.root;
   // The root is shown by its folder name; its full path is in the tooltip
-  const crumbs = [{ name: listing.root.split(sep).filter(Boolean).pop() ?? listing.root, path: listing.root }];
-  let current = listing.root;
-  for (const part of listing.path.slice(listing.root.length).split(sep).filter(Boolean)) {
+  const crumbs = [{ name: root.split(sep).filter(Boolean).pop() ?? root, path: root }];
+  let current = root;
+  for (const part of path.slice(root.length).split(sep).filter(Boolean)) {
     current = current.endsWith(sep) ? current + part : current + sep + part;
     crumbs.push({ name: part, path: current });
   }

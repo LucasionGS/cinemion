@@ -20,6 +20,8 @@ import MetadataManager from "./metadata/MetadataManager.ts";
 import SubtitleProvider from "./subtitles/SubtitleProvider.ts";
 import SubtitleAutomation from "./subtitles/SubtitleAutomation.ts";
 import { zipSync } from "fflate";
+import ZipReader from "./lib/ZipReader.ts";
+import Uploads from "./library/Uploads.ts";
 import type { SubtitleSearchResult } from "@shared/playback.ts";
 import type MediaFile from "./models/MediaFile.ts";
 import { parseLrc } from "@shared/music.ts";
@@ -338,6 +340,47 @@ check("id of another kind", CompatApi.decodeId("library", CompatApi.encodeId("it
 check("id with dashes and capitals", CompatApi.decodeId("item", "C0000000-0000-0000-0000-000000000012"), 18);
 check("not an id", [CompatApi.decodeId("item", "Me"), CompatApi.decodeId("item", "c0"), CompatApi.decodeId("item", null)], [null, null, null]);
 check("app item types", CompatApi.itemTypesFor(["Series", "Movie", "Others", "episode"]), ["show", "movie", "episode"]);
+//#endregion
+
+//#region Uploads
+console.log("Uploads");
+check("clean path", Uploads.cleanPath("Season 1\\Episode 1.mkv"), "Season 1/Episode 1.mkv");
+check("leading slash and dots", Uploads.cleanPath("/./Show/./S01/x.mkv"), "Show/S01/x.mkv");
+const refused = (path: string) => {
+  try {
+    Uploads.cleanPath(path);
+    return false;
+  } catch {
+    return true;
+  }
+};
+check("unsafe paths", ["../x.mkv", "a/../../x.mkv", ".hidden/x.mkv", "C:/x.mkv", "", "a/\u0000b.mkv"].map(refused), [true, true, true, true, true, true]);
+check("library takes", [Uploads.accepts("movies", "a/Movie.MKV"), Uploads.accepts("movies", "Movie.en.srt"), Uploads.accepts("movies", "setup.exe"), Uploads.accepts("music", "01.flac"), Uploads.accepts("books", "x.mkv")], [true, true, false, true, false]);
+const zipDir = await Deno.makeTempDir();
+const big = new Uint8Array(3 * 1024 * 1024).map((_, i) => (i * 7) % 251);
+const zipPath = `${zipDir}/test.zip`;
+await Deno.writeFile(zipPath, zipSync({ "Show/Season 1/E01.mkv": [big, { level: 0 }], "Show/Season 1/E01.en.srt": [encoded("hello"), { level: 9 }], "Show/": new Uint8Array(0) }));
+const unzipped = async (path: string) => {
+  const reader = await ZipReader.open(path);
+  const out: Record<string, number> = {};
+  for (const entry of reader.entries.filter((e) => !e.isDirectory)) {
+    let length = 0;
+    for await (const chunk of await reader.stream(entry)) length += chunk.length;
+    out[entry.name] = length;
+  }
+  reader.close();
+  return out;
+};
+check("zip stored and deflated", await unzipped(zipPath), { "Show/Season 1/E01.mkv": big.length, "Show/Season 1/E01.en.srt": 5 });
+// Info-ZIP's -fz writes zip64 records even for small files
+const zip64 = await new Deno.Command("zip", { args: ["-q", "-fz", "-j", `${zipDir}/z64.zip`, zipPath], stderr: "null" }).output().catch(() => null);
+if (zip64?.success) check("zip64", Object.values(await unzipped(`${zipDir}/z64.zip`)), [(await Deno.stat(zipPath)).size]);
+const damaged = await Deno.readFile(zipPath);
+damaged[200] ^= 0xff;
+await Deno.writeFile(`${zipDir}/damaged.zip`, damaged);
+check("damaged entry fails its checksum", await unzipped(`${zipDir}/damaged.zip`).then(() => "read").catch((e: Error) => e.message), "\"Show/Season 1/E01.mkv\" in the zip file is damaged: its checksum doesn't match.");
+check("not a zip", await ZipReader.open(`${zipDir}/../`).then(() => "opened").catch(() => "refused"), "refused");
+await Deno.remove(zipDir, { recursive: true });
 //#endregion
 
 console.log(failed ? `\n${failed} failed` : "\nAll passed");

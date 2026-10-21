@@ -1,0 +1,189 @@
+.cn-upload {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  // The folder list only needs a few rows here; the drop zone and the uploads matter more
+  .cn-folders__list {
+    max-height: 12rem;
+  }
+
+  &__destination {
+    margin-top: -0.25rem;
+    font-size: 0.875rem;
+    color: var(--cn-text-muted);
+    overflow-wrap: anywhere;
+
+    code {
+      font-family: var(--cn-font-mono);
+      color: var(--cn-text);
+    }
+  }
+
+  &__drop {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 1.5rem 1rem;
+    border: 2px dashed var(--cn-border-strong);
+    border-radius: var(--cn-radius-lg);
+    text-align: center;
+    transition: border-color var(--cn-fast) var(--cn-ease), background var(--cn-fast) var(--cn-ease);
+
+    > span {
+      font-size: 0.875rem;
+      color: var(--cn-text-muted);
+    }
+
+    &--active {
+      border-color: var(--cn-accent);
+      background: var(--cn-accent-soft);
+    }
+  }
+
+  &__drop-icon {
+    width: 1.75rem;
+    height: 1.75rem;
+    margin-bottom: 0.25rem;
+    color: var(--cn-accent-text);
+  }
+
+  &__drop-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+
+  &__error {
+    font-size: 0.875rem;
+    color: var(--cn-danger-text);
+  }
+
+  &__section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  &__section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+
+    h3 {
+      font-size: 1rem;
+    }
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  &__row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0.5rem 0.5rem 0.75rem;
+    border-radius: var(--cn-radius-md);
+    background: var(--cn-glass);
+    border: 1px solid var(--cn-border);
+
+    &--skipped {
+      opacity: 0.6;
+    }
+
+    &--failed .cn-upload__status {
+      color: var(--cn-danger-text);
+    }
+
+    &--done .cn-upload__status {
+      color: var(--cn-success-text);
+    }
+
+    &--retrying .cn-upload__status {
+      color: var(--cn-warning);
+    }
+  }
+
+  &__icon {
+    flex-shrink: 0;
+    width: 1.25rem;
+    height: 1.25rem;
+    color: var(--cn-text-subtle);
+  }
+
+  &__text {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+
+    strong {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 0.9rem;
+    }
+
+    > span {
+      font-size: 0.8125rem;
+      color: var(--cn-text-muted);
+    }
+  }
+
+  &__status {
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__bar {
+    display: block;
+    height: 0.25rem;
+    margin-top: 0.25rem;
+    border-radius: var(--cn-radius-pill);
+    background: rgba(var(--cn-fg-rgb), 0.12);
+    overflow: hidden;
+
+    span {
+      display: block;
+      height: 100%;
+      background: var(--cn-accent);
+      transition: width var(--cn-medium) var(--cn-ease);
+    }
+  }
+
+  &__skipped {
+    margin-top: 0.25rem;
+    font-size: 0.8125rem;
+    color: var(--cn-text-muted);
+
+    summary {
+      cursor: pointer;
+    }
+
+    ul {
+      margin: 0.25rem 0 0;
+      padding-left: 1rem;
+    }
+
+    code {
+      font-family: var(--cn-font-mono);
+      overflow-wrap: anywhere;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+}

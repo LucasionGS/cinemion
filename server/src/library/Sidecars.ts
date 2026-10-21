@@ -16,6 +16,10 @@ export namespace Sidecars {
   export const downloadsDir = Path.join(AppSystem.config.CONFIG_DIR, "subtitles");
 
   const CODECS: Record<string, string> = { ".srt": "subrip", ".vtt": "webvtt", ".ass": "ass", ".ssa": "ssa" };
+  /**
+   * File extensions of the subtitle files Cinemion reads, with the dot.
+   */
+  export const SUBTITLE_EXTENSIONS = Object.keys(CODECS);
   const SUB_FOLDERS = ["subs", "subtitles"];
 
   /**

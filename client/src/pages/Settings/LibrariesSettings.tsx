@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { Menu } from "@base-ui/react/menu";
-import { EllipsisVertical, Pencil, Plus, RefreshCw, ScanSearch, Trash2 } from "lucide-react";
+import { EllipsisVertical, Pencil, Plus, RefreshCw, ScanSearch, Trash2, Upload } from "lucide-react";
 import type { LibraryInfo, LibraryType } from "@shared/api.ts";
 import LibrariesApi from "../../Api/LibrariesApi.ts";
 import { toasts } from "../../lib/Toasts.ts";
@@ -14,6 +14,9 @@ import FolderBrowser from "../../components/FolderBrowser/FolderBrowser.tsx";
 import Dialog, { ConfirmDialog } from "../../components/Dialog/Dialog.tsx";
 import Spinner from "../../components/Spinner/Spinner.tsx";
 import LibraryIcon from "../../components/LibraryIcon/LibraryIcon.tsx";
+import UploadDialog from "../../components/UploadDialog/UploadDialog.tsx";
+import { uploads } from "../../lib/Uploads.ts";
+import useController from "../../lib/useController.ts";
 
 /**
  * Add, scan and remove libraries.
@@ -23,7 +26,14 @@ export default function LibrariesSettings() {
   const [adding, setAdding] = useState(false);
   const [editing, setEditing] = useState<LibraryInfo | null>(null);
   const [removing, setRemoving] = useState<LibraryInfo | null>(null);
+  const [uploading, setUploading] = useState<LibraryInfo | null>(null);
   const [busy, setBusy] = useState(false);
+  useController(uploads);
+
+  // Uploads from an earlier visit that stopped halfway show on their library's row
+  useEffect(() => {
+    uploads.load().catch(() => { });
+  }, []);
 
   async function remove() {
     if (!removing) return;
@@ -70,6 +80,7 @@ export default function LibrariesSettings() {
                 <strong>{l.name}</strong>
                 <span>{l.paths.join(", ")}</span>
                 {l.conflict && <span className="cn-settings__conflict" role="alert">{l.conflict} Use “Edit library” to change the folders.</span>}
+                <UploadProgress library={l} onOpen={() => setUploading(l)} />
                 {l.scan
                   ? (
                     <span className="cn-settings__scan">
@@ -85,6 +96,7 @@ export default function LibrariesSettings() {
                 <Menu.Portal>
                   <Menu.Positioner sideOffset={6} align="end" className="cn-menu__positioner">
                     <Menu.Popup className="cn-menu">
+                      <Menu.Item className="cn-menu__item" onClick={() => setUploading(l)}><Upload /> Upload files</Menu.Item>
                       <Menu.Item className="cn-menu__item" onClick={() => setEditing(l)}><Pencil /> Edit library</Menu.Item>
                       <Menu.Item className="cn-menu__item" onClick={() => scan(l, true)}><ScanSearch /> {l.type === "videos" ? "Refresh details and thumbnails" : l.type === "music" ? "Find covers again" : l.type === "audiobooks" || l.type === "books" ? "Read book details again" : "Refresh all details"}</Menu.Item>
                       <Menu.Separator className="cn-menu__separator" />
@@ -100,6 +112,7 @@ export default function LibrariesSettings() {
 
       <AddLibraryDialog open={adding} onOpenChange={setAdding} onAdded={reload} defaultType={nextType(libraries ?? [])} />
       <EditLibraryDialog library={editing} onClose={() => setEditing(null)} onSaved={reload} />
+      <UploadDialog key={uploading?.id} library={uploading} onClose={() => setUploading(null)} />
       <ConfirmDialog
         open={!!removing}
         onOpenChange={(open) => !open && setRemoving(null)}
@@ -111,6 +124,28 @@ export default function LibrariesSettings() {
         onConfirm={remove}
       />
     </>
+  );
+}
+
+/**
+ * "Uploading 2 files · 45%" on a library's row while its uploads run; a click opens them.
+ */
+function UploadProgress(props: { library: LibraryInfo; onOpen: () => void }) {
+  const { library, onOpen } = props;
+  const active = uploads.forLibrary(library.id).filter((e) => e.state === "waiting" || e.state === "uploading" || e.state === "retrying" || e.state === "processing");
+  const paused = uploads.forLibrary(library.id).filter((e) => e.state === "paused" || e.state === "failed").length;
+  if (active.length === 0 && paused === 0) return null;
+  const size = active.reduce((sum, e) => sum + e.size, 0);
+  const sent = active.reduce((sum, e) => sum + e.sent, 0);
+  const fraction = size ? sent / size : 0;
+  const unpacking = active.length > 0 && active.every((e) => e.state === "processing");
+  return (
+    <button type="button" className="cn-settings__scan cn-settings__upload" onClick={onOpen}>
+      {active.length > 0 && <span className="cn-settings__scan-bar"><span style={{ width: `${Math.round(fraction * 100)}%` }} /></span>}
+      {active.length > 0
+        ? unpacking ? `Adding ${active.length === 1 ? "an upload" : `${active.length} uploads`} to the library` : `Uploading ${active.length} ${active.length === 1 ? "file" : "files"} · ${Math.floor(fraction * 100)}%`
+        : `${paused} ${paused === 1 ? "upload needs" : "uploads need"} a look`}
+    </button>
   );
 }
 

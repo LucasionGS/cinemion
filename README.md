@@ -29,6 +29,7 @@ Your movies, shows, music and books, beautifully served from your own machine: a
 - **Picks up where you left off**: continue watching, next up, recently added and "because you watched", per profile. Collections, cast pages and search across titles, episodes and people.
 - **Safe for kids**: give a profile an age limit and anything rated above it (or not rated at all) simply isn't there. Family videos can get a library-wide rating so the kids see them too.
 - **A dashboard for the server**: who's watching what and on which device, whether it plays directly or is being converted (and why), CPU, GPU and disk use, running tasks, and a feed of what happened lately. "Mira finished Paper Moons" included.
+- **Upload from the browser**: drop movies, episodes, music or books (or whole folders, or a zip file with a season in it) on a library in Settings, pick the folder they go in, and Cinemion puts them in place and scans them. Big files go up in pieces, so a dropped connection, a closed tab or a server restart doesn't mean starting over.
 - **Sonarr and Radarr, connected**: paste one address into Sonarr or Radarr, and new downloads show up within seconds instead of at the next scan. Their folders look different in their container? A path mapping sorts that out.
 - **Seerr and Homepage, welcome too**: request apps and dashboards made for other media servers can use Cinemion instead. Seerr signs in with your Cinemion login, knows what you already have and links straight back to it; Homepage shows what's playing and how big your libraries are. Keys for them are in Settings › Integrations.
 - **Webhooks for everything else**: tell Home Assistant, a chat bot or your own script when playback starts, pauses or stops, a new episode arrives or someone signs in. Every message is signed, failed ones are retried, and there's a test button.
@@ -112,6 +113,17 @@ The service runs as the `cinemion` user, keeps its data in `/var/lib/cinemion`, 
 ### Single binary
 
 Download `cinemion-<version>-linux_x64.tar.gz` (or `linux_arm64`) from the [releases](https://github.com/LucasionGS/cinemion/releases), unpack it, make sure `ffmpeg` is installed (`sudo pacman -S ffmpeg` or `sudo apt install ffmpeg`), and run `./cinemion`. For GPU conversion, also install your GPU's VA-API driver (`intel-media-driver` / `intel-media-va-driver-non-free` for Intel, `libva-mesa-driver` / `mesa-va-drivers` for AMD). Settings and the database go to `~/.cinemion`, and the folder browser starts in your home folder. See `.env.example` for everything you can change.
+
+### Uploading from the browser
+
+Settings › Libraries › ⋮ › Upload files puts files straight into a library folder. Cinemion needs write access to that folder for this; the examples above mount media read-only (`:ro`), which is safer, so drop the `:ro` from the folders you want to upload into. With the AUR package, allow the folder with `sudo systemctl edit cinemion`:
+
+```ini
+[Service]
+ReadWritePaths=/srv/media/movies /srv/media/shows
+```
+
+Uploads wait in `<CACHE_DIR>/uploads` (`/cache/uploads` in Docker) until they're complete. Point `UPLOAD_DIR` at a folder on the same drive as your media and finished uploads move into place instantly instead of being copied. `UPLOAD_MAX_GB` caps the size of a single file. Behind a reverse proxy, allow request bodies of at least 64 MB (`client_max_body_size 64m;` in nginx) for the fastest uploads; smaller limits still work, just in smaller pieces.
 
 ### Locked out?
 

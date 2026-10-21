@@ -24,6 +24,7 @@ import PlaylistsController from "./PlaylistsController.ts";
 import BooksController from "./BooksController.ts";
 import TraktController from "./TraktController.ts";
 import DownloadsController from "./DownloadsController.ts";
+import UploadsController from "./UploadsController.ts";
 import type { AppEnv } from "../lib/types.ts";
 
 /**
@@ -57,6 +58,7 @@ export namespace ApiController {
   router.route("/books", BooksController.router);
   router.route("/trakt", TraktController.router);
   router.route("/downloads", DownloadsController.router);
+  router.route("/uploads", UploadsController.router);
 
   router.all("*", (c) => c.json({ message: `There's no API endpoint at ${c.req.method} ${c.req.path}.` }, 404));
 }
