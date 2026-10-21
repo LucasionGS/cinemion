@@ -276,6 +276,8 @@ After milestone 13 the owner said to do up to and including 16 and leave 17–19
 **0.3.0 released** with uploads from the browser (16c), the built-in TMDB key (16d), TMDB attribution and the About
 page: GitHub release with both binaries, `ghcr.io/lucasiongs/cinemion:0.3.0` (and `0.3`, `latest`), AUR `cinemion-bin`
 0.3.0.
+**0.4.0 released** with Photos libraries (milestone 20): GitHub release with both binaries,
+`ghcr.io/lucasiongs/cinemion:0.4.0` (and `0.4`, `latest`, with libheif for HEIC photos), AUR `cinemion-bin` 0.4.0.
 
 ### Milestone 6: what was built
 Follows the Round 3 admin mockup (artboard `Admin.dc.html` in the Round 3 canvas): app top bar + left settings nav.
