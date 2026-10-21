@@ -3,6 +3,7 @@ import type { MetadataSettings } from "@shared/api.ts";
 import IconButton from "../IconButton/IconButton.tsx";
 import TextField from "../TextField/TextField.tsx";
 import Select from "../Select/Select.tsx";
+import { session } from "../../Session.ts";
 import "./MetadataForm.scss";
 
 const PROVIDERS: Record<string, { name: string; description: string }> = {
@@ -50,6 +51,7 @@ export interface MetadataFormProps {
  */
 export default function MetadataForm(props: MetadataFormProps) {
   const { value, onChange } = props;
+  const builtIn = session.server?.hasBuiltInTmdbKey ?? false;
 
   function moveProvider(index: number, by: number) {
     const providers = [...value.providers];
@@ -74,13 +76,15 @@ export default function MetadataForm(props: MetadataFormProps) {
             </div>
             {id === "tmdb" && (
               <TextField
-                label="API key"
+                label={builtIn ? "Your own API key (optional)" : "API key"}
                 className="cn-metadata-form__field"
-                placeholder="Paste your TMDB API key or read access token"
+                placeholder={builtIn ? "Uses the key built into Cinemion" : "Paste your TMDB API key or read access token"}
                 autoComplete="off"
                 value={value.tmdbApiKey ?? ""}
                 onChange={(e) => onChange({ ...value, tmdbApiKey: e.target.value })}
-                description={<>Free with a TMDB account. <a href="https://www.themoviedb.org/settings/api" target="_blank" rel="noreferrer">How to get one</a></>}
+                description={builtIn
+                  ? <>TMDB works without one. Add your own key if the built-in one stops working or you'd rather use your own. <a href="https://www.themoviedb.org/settings/api" target="_blank" rel="noreferrer">How to get one</a></>
+                  : <>Free with a TMDB account. <a href="https://www.themoviedb.org/settings/api" target="_blank" rel="noreferrer">How to get one</a></>}
               />
             )}
             {id === "tvdb" && (

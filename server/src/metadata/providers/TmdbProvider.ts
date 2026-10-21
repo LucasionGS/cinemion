@@ -2,6 +2,7 @@ import type { ItemType, MatchCandidate } from "@shared/media.ts";
 import type { MetadataSettings } from "@shared/api.ts";
 import MetadataProvider from "../MetadataProvider.ts";
 import { Setting } from "../../models/index.ts";
+import BuiltInKeys from "../BuiltInKeys.ts";
 import log from "../../lib/Logger.ts";
 
 const API = "https://api.themoviedb.org/3";
@@ -37,7 +38,8 @@ interface TmdbImage {
 }
 
 /**
- * TheMovieDB: details, artwork and cast for movies and shows. Needs an API key (v3 key or v4 read token).
+ * TheMovieDB: details, artwork and cast for movies and shows. Uses the API key (v3 key or v4 read token) from Settings,
+ * then `TMDB_API_KEY`, then the key built into Cinemion.
  */
 export class TmdbProvider extends MetadataProvider {
   public readonly id = "tmdb";
@@ -52,8 +54,13 @@ export class TmdbProvider extends MetadataProvider {
     return { tmdbApiKey: null, tvdbApiKey: null, tvdbPin: null, omdbApiKey: null, language: "en", country: "US", providers: [], ...stored };
   }
 
-  private async apiKey() {
-    return (await this.settings()).tmdbApiKey || Deno.env.get("TMDB_API_KEY") || null;
+  /**
+   * The key to use, and whether it's the built-in one. `null` when there's none at all.
+   */
+  private async apiKey(): Promise<{ key: string; isBuiltIn: boolean } | null> {
+    const own = (await this.settings()).tmdbApiKey || Deno.env.get("TMDB_API_KEY");
+    if (own) return { key: own, isBuiltIn: false };
+    return BuiltInKeys.TMDB ? { key: BuiltInKeys.TMDB, isBuiltIn: true } : null;
   }
 
   public override async isAvailable() {
@@ -65,8 +72,9 @@ export class TmdbProvider extends MetadataProvider {
    * @throws When the request fails for another reason.
    */
   private async request<T>(path: string, params: Record<string, string | number | undefined> = {}): Promise<T> {
-    const key = await this.apiKey();
-    if (!key) throw new Error("TMDB needs an API key. Add one in Settings › Metadata.");
+    const found = await this.apiKey();
+    if (!found) throw new Error("TMDB needs an API key. Add one in Settings › Metadata.");
+    const { key, isBuiltIn } = found;
     const url = new URL(API + path);
     for (const [name, value] of Object.entries(params)) {
       if (value !== undefined && value !== "") url.searchParams.set(name, String(value));
@@ -83,7 +91,11 @@ export class TmdbProvider extends MetadataProvider {
         await new Promise((resolve) => setTimeout(resolve, Math.min(wait, 10_000)));
         continue;
       }
-      if (res.status === 401) throw new Error("TMDB rejected the API key. Check it in Settings › Metadata.");
+      if (res.status === 401) {
+        throw new Error(isBuiltIn
+          ? "TMDB rejected the key built into Cinemion. Update Cinemion, or add your own key in Settings › Metadata."
+          : "TMDB rejected the API key. Check it in Settings › Metadata.");
+      }
       if (!res.ok) throw new Error(`TMDB request failed: ${res.status} ${res.statusText}`);
       return await res.json() as T;
     }

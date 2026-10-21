@@ -1,5 +1,6 @@
 import { Hono } from "hono";
 import type { ServerInfo } from "@shared/api.ts";
+import BuiltInKeys from "../metadata/BuiltInKeys.ts";
 import AppSystem from "../AppSystem.ts";
 import { Setting } from "../models/index.ts";
 import type { AppEnv } from "../lib/types.ts";
@@ -25,6 +26,7 @@ export namespace ServerController {
       name: await Setting.get(Setting.Keys.SERVER_NAME, AppSystem.APP_NAME),
       version: AppSystem.VERSION,
       needsSetup: await needsSetup(),
+      hasBuiltInTmdbKey: BuiltInKeys.TMDB !== "",
     };
     return c.json(info);
   });

@@ -1,7 +1,7 @@
 # Cinemion handoff
 
 Everything an assistant needs to pick this project up with no earlier context. Read it fully before changing code.
-Last updated 2026-10-21, after uploads from the browser (16c).
+Last updated 2026-10-21, after the built-in TMDB key (16d).
 
 ## 1. What Cinemion is
 
@@ -245,6 +245,7 @@ and on amd64 Intel's non-free VA driver + Quick Sync runtime), `docker/entrypoin
 | 16 | done | Offline downloads (below) |
 | 16b | done | App API: Seerr and Homepage can use Cinemion as their media server (below) |
 | 16c | done | Uploading media and zip files into libraries from the browser, resumable (below) |
+| 16d | done | A TMDB key built into Cinemion, so TMDB works out of the box (below) |
 | 17 | on hold | Casting to Chromecast / Google TV, and a lighter layout for old smart-TV browsers |
 | 18 | on hold | Android TV app (WebView wrapper; the SDK is in `~/Android/Sdk` on this machine) |
 | 19 | on hold | Live TV: IPTV playlists, a guide and recordings |
@@ -579,6 +580,15 @@ through a temporary spot, "done properly, ideally resumable" since files can be 
   piece, wrong offset, server restart mid-upload, zip into Shows with a stray `.exe`, byte-identical results); in
   headless Chrome (throttled upload with progress, reload mid-upload and carry on, wrong file refused, a mock proxy
   with a 1 MB body limit, phone layout).
+
+### Built-in TMDB key (16d)
+- `server/src/metadata/BuiltInKeys.ts` holds `BuiltInKeys.TMDB`, a read-only TMDB API Read Access Token (v4) shipped
+  with Cinemion. To rotate it, replace the value and release. **It's still empty**: the owner supplies the key later.
+- `TmdbProvider.apiKey()` order: the key in Settings › Metadata, then `TMDB_API_KEY`, then the built-in one. A 401 on
+  the built-in key says to update Cinemion or add an own key.
+- `ServerInfo.hasBuiltInTmdbKey` (public, never the key itself) lets the metadata form (setup and Settings) call the
+  field "Your own API key (optional)" with "Uses the key built into Cinemion" as the placeholder.
+- The repo is public, so the key is readable on GitHub and from the binary; that's accepted for a read-only token.
 
 ## 6. Design decisions
 

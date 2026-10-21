@@ -17,6 +17,10 @@ export interface ServerInfo {
    * `true` until the first-run setup has been completed.
    */
   needsSetup: boolean;
+  /**
+   * Whether this build comes with its own TMDB key, so TMDB works without one in Settings › Metadata.
+   */
+  hasBuiltInTmdbKey: boolean;
 }
 
 //#endregion
