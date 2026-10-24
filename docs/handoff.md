@@ -271,6 +271,7 @@ and on amd64 Intel's non-free VA driver + Quick Sync runtime), `docker/entrypoin
 | 19 | on hold | Live TV: IPTV playlists, a guide and recordings |
 | 20 | done | Photos libraries: folders as albums, hand-made albums, timeline, viewer with details and slideshows (below) |
 | 21 | done | Clips libraries: game clips sorted by game, picture recognition, cutting, small copies, stars (below) |
+| 21b | done | Podium's upload protocol: Podium uploads into any library, with the clip's game and details (below) |
 
 Not planned in these rounds: **built-in remote access** (needs a relay service on ionnet.io that doesn't exist yet).
 Photos were asked for on 2026-10-21 and became milestone 20. The owner asked for each milestone to be committed and pushed, and
@@ -713,6 +714,31 @@ stars; no public share links.
 - **Tested**: `test.ts` (names, copy sizes, tokenizer); against a scratch server with `scripts/make-sample-media.sh`'s
   clips (scan, Steam lookups, merging CS2 into Counter-Strike 2, suggestions, set game, cut, small copy with mixed
   sound); picture recognition in the compiled binary; pages in headless Chrome (desktop, phone, TV).
+
+### Podium uploads (21b): what was built
+Asked for on 2026-10-24: Podium (the owner's clip recorder, `~/development/podium`, protocol in its
+`docs/upload-protocol.md` with a reference server) uploads to "Podium-compatible" servers.
+- **Targets** (`integrations/Podium.ts`, Settings › Integrations, `SERVER_MANAGE` to make): a name, a library, a folder
+  inside its first folder, and for Clips libraries a folder per game; each has its own token (stored like app keys, in
+  the `podium` setting). The protocol has no library field, so one target = one library; the server URL is the same
+  for all (`<SITE_URL or the request's origin>/api/podium`). Uploads act as the profile that made the target, which
+  must still have `LIBRARY_MANAGE`. Wrong tokens are rate limited per address.
+- **Protocol** (`controllers/PodiumController.ts`, mounted at `/api/podium`, Podium's `{ error: { code, message } }`
+  errors): `GET /server`, `POST /uploads` (an unfinished upload of the same file from the same target carries on; a
+  file the library already has, by `media_files.sha256`, answers `200` with its clip), `PUT` pieces of 8 MiB with
+  `Content-Range`, `GET` the offset, `POST …/complete` (SHA-256 checked while reading the file, then moved in, the
+  folder scanned through the scan queue, details applied; answers within 40 s with the item's link, or the library's
+  when the scan takes longer, and the same answer when asked again), `DELETE`.
+- **On top of `Uploads`**: sessions can wait for an explicit `complete()` (`manualFinish`) and keep `extra` data in
+  `info.json`, so Podium uploads survive restarts like browser uploads, and also show in a library's upload list.
+- **Details** (`Podium.applyDetails`): sound track names fill in tracks without a title. Clips: the game Podium names
+  (`steam:<appid>` ids match by Steam id, others by name) is set with `found: "upload"` (`ClipLibrary.setGameFromUpload`,
+  which adds and looks up an unknown game); a title that isn't just a game and date becomes the clip's own; Podium's
+  `recordedAt` is used only when the file name has no time, since names are on the recording computer's clock.
+  Videos and Photos libraries get the title and date as hand-made details. Movies and shows rely on the file name.
+- **Tested** with a Podium-like client script (three pieces, a repeated piece, early complete, repeated complete, the
+  same file again, a wrong checksum, a wrong type, a wrong token) against a scratch server: a known game by Steam id,
+  a new game looked up on Steam, a desktop recording, and a Videos library. Not tested with Podium itself.
 
 ## 6. Design decisions
 

@@ -1,8 +1,8 @@
-import type { AppKeyInfo, IntegrationSettings, PathMapping } from "@shared/admin.ts";
+import type { AppKeyInfo, CreatePodiumTargetRequest, IntegrationSettings, PathMapping, PodiumTargets } from "@shared/admin.ts";
 import BaseApi from "./BaseApi.ts";
 
 /**
- * Sonarr and Radarr, and keys for apps like Seerr and Homepage.
+ * Sonarr and Radarr, keys for apps like Seerr and Homepage, and Podium upload targets.
  */
 export namespace IntegrationsApi {
   export function get() {
@@ -36,6 +36,21 @@ export namespace IntegrationsApi {
    */
   export function removeAppKey(id: string) {
     return BaseApi.DELETE<AppKeyInfo[]>(`/integrations/keys/${id}`);
+  }
+
+  export function podiumTargets() {
+    return BaseApi.GET<PodiumTargets>("/integrations/podium");
+  }
+
+  /**
+   * Make a place Podium can upload to. Uploads act as the profile making it.
+   */
+  export function createPodiumTarget(request: CreatePodiumTargetRequest) {
+    return BaseApi.POST<PodiumTargets>("/integrations/podium", request);
+  }
+
+  export function removePodiumTarget(id: string) {
+    return BaseApi.DELETE<PodiumTargets>(`/integrations/podium/${id}`);
   }
 }
 

@@ -27,6 +27,7 @@ const FOUND: Record<ClipGameSource, string> = {
   file: "Game from the file's name",
   tags: "Game from the file's tags",
   steam: "Game from the Steam recording's name",
+  upload: "Game from the app that uploaded it",
   manual: "Game picked by hand",
 };
 

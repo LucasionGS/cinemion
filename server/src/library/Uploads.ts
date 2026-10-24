@@ -58,6 +58,19 @@ export namespace Uploads {
      * A piece is being written right now.
      */
     busy: boolean;
+    /**
+     * Wait for `complete()` before adding it to the library, rather than doing it when the last byte arrives. Used by
+     * Podium uploads, which check the file's checksum first.
+     */
+    manualFinish?: boolean;
+    /**
+     * What the caller keeps with the upload (Podium's details about the clip), saved with it.
+     */
+    extra?: unknown;
+    /**
+     * Adding it to the library, while that runs.
+     */
+    finishing?: Promise<void>;
   }
 
   const _sessions = new Map<string, Session>();
@@ -94,7 +107,10 @@ export namespace Uploads {
     return extensions(type).includes(Path.extname(path).toLowerCase());
   }
 
-  function maxSize() {
+  /**
+   * The largest file uploads take, from `UPLOAD_MAX_GB`. Unit is in bytes. `null` = no limit.
+   */
+  export function maxSize() {
     const gb = AppSystem.config.UPLOAD_MAX_GB;
     return gb > 0 ? Math.round(gb * 1024 ** 3) : null;
   }
@@ -155,7 +171,7 @@ export namespace Uploads {
     session.info.updatedAt = new Date().toISOString();
     const file = Path.join(dirOf(session.info.id), "info.json");
     // Written next to it and renamed, so a crash never leaves half a file
-    await fsp.writeFile(`${file}.tmp`, JSON.stringify({ ...session.info, userId: session.userId }));
+    await fsp.writeFile(`${file}.tmp`, JSON.stringify({ ...session.info, userId: session.userId, manualFinish: session.manualFinish, extra: session.extra }));
     await fsp.rename(`${file}.tmp`, file);
   }
 
@@ -173,12 +189,12 @@ export namespace Uploads {
       if (!entry.isDirectory()) continue;
       const id = entry.name;
       try {
-        const stored = JSON.parse(await fsp.readFile(Path.join(dirOf(id), "info.json"), "utf8")) as UploadInfo & { userId: number };
-        const { userId, ...info } = stored;
+        const stored = JSON.parse(await fsp.readFile(Path.join(dirOf(id), "info.json"), "utf8")) as UploadInfo & { userId: number; manualFinish?: boolean; extra?: unknown };
+        const { userId, manualFinish, extra, ...info } = stored;
         // The data on disk is the truth; the server may have stopped between writing a piece and saving the count
         const onDisk = (await fsp.stat(dataOf(id)).catch(() => null))?.size ?? 0;
         if (info.status === "uploading") info.received = Math.min(onDisk, info.size);
-        _sessions.set(id, { info, userId, busy: false });
+        _sessions.set(id, { info, userId, busy: false, manualFinish, extra });
       } catch {
         // No readable info: a start that never finished saving
         await fsp.rm(dirOf(id), { recursive: true, force: true }).catch(() => { });
@@ -331,7 +347,8 @@ export namespace Uploads {
    * Start an upload, or return the unfinished one for the same file so the browser carries on where it stopped.
    * @throws `Problem` when the file can't go there.
    */
-  export async function start(user: User, body: Partial<StartUploadRequest>): Promise<UploadInfo> {
+  export async function start(user: User, body: Partial<StartUploadRequest>, opts?: { manualFinish?: boolean; extra?: unknown }): Promise<UploadInfo> {
+    opts ??= {};
     const library = await Library.findByPk(Number(body.libraryId));
     if (!library) throw new Problem("That library doesn't exist.", 404);
 
@@ -400,7 +417,7 @@ export namespace Uploads {
       createdAt: now,
       updatedAt: now,
     };
-    const created: Session = { info, userId: user.id, busy: false };
+    const created: Session = { info, userId: user.id, busy: false, manualFinish: opts.manualFinish, extra: opts.extra };
     await fsp.mkdir(dirOf(info.id), { recursive: true });
     await fsp.writeFile(dataOf(info.id), new Uint8Array(0));
     await save(created);
@@ -460,8 +477,50 @@ export namespace Uploads {
       await save(s).catch(() => { });
     }
 
-    if (info.received === info.size) finish(s);
+    if (info.received === info.size && !s.manualFinish) finish(s);
     return info;
+  }
+
+  /**
+   * Where the bytes of an upload are while it's coming in.
+   */
+  export function dataPath(id: string) {
+    return dataOf(id);
+  }
+
+  /**
+   * What the caller kept with an upload, and the user who started it. `null` for an unknown upload.
+   */
+  export function extraOf(id: string) {
+    const s = _sessions.get(id);
+    return s ? { extra: s.extra, userId: s.userId } : null;
+  }
+
+  /**
+   * Change what the caller keeps with an upload.
+   */
+  export async function setExtra(id: string, extra: unknown) {
+    const s = session(id);
+    s.extra = extra;
+    await save(s);
+  }
+
+  /**
+   * Add a complete upload that waits for this (see `start()`'s `manualFinish`) to its library, and wait until it's
+   * there. Calling it again while that runs, or after, waits for the same.
+   * @throws `Problem` while bytes are missing, or when it couldn't be added (with the reason).
+   */
+  export async function complete(id: string): Promise<UploadInfo> {
+    const s = session(id);
+    const info = s.info;
+    if (info.status === "uploading") {
+      if (info.received < info.size) throw new Problem(`Only ${info.received} of ${info.size} bytes have arrived.`, 409, info);
+      finish(s);
+    }
+    else if (info.status === "failed") throw new Problem(info.message ?? "The file couldn't be added to the library.", 409, info);
+    await s.finishing;
+    if (s.info.status === "failed") throw new Problem(s.info.message ?? "The file couldn't be added to the library.", 409, s.info);
+    return s.info;
   }
 
   /**
@@ -502,7 +561,7 @@ export namespace Uploads {
     info.progress = 0;
     info.message = "Waiting to be added";
     save(s).catch(() => { });
-    Tasks.run(`upload:${info.id}`, `Adding ${Path.basename(info.path)}`, { libraryId: info.libraryId, queue: "uploads" }, async (task) => {
+    s.finishing = Tasks.run(`upload:${info.id}`, `Adding ${Path.basename(info.path)}`, { libraryId: info.libraryId, queue: "uploads" }, async (task) => {
       const update = (message: string, progress: number) => {
         info.message = message;
         info.progress = progress;
@@ -534,7 +593,7 @@ export namespace Uploads {
         await save(s).catch(() => { });
         log.warn(`Upload ${info.path} could not be added`, { error: info.message });
       }
-    }).catch(() => { });
+    }).catch(() => { }).finally(() => s.finishing = undefined);
   }
 
   /**

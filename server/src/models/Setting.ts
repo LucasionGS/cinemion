@@ -42,6 +42,7 @@ export namespace Setting {
     COMPAT_API: "compatApi",
     TRAKT: "trakt",
     CLIPS: "clips",
+    PODIUM: "podium",
   } as const;
 }
 

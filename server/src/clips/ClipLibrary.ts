@@ -352,6 +352,34 @@ export namespace ClipLibrary {
   }
 
   /**
+   * Put a clip in the game the app that uploaded it named (Podium knows the game it recorded). An unknown game is
+   * added and looked up right away, so it comes with its artwork.
+   * @param steamAppId The game's Steam app id, when the app knows it.
+   */
+  export async function setGameFromUpload(library: Library, clip: MediaItem, name: string, steamAppId: string | null) {
+    const index = await GameIndex.load(library);
+    const title = ClipNames.cleanGameName(name).slice(0, 200);
+    let game = (steamAppId ? index.byId("steam", steamAppId) : null) ?? (title ? index.byName(title) : null);
+    if (!game) {
+      if (!title && !steamAppId) return;
+      game = await createGame(library, title ? ClipNames.alias(title) ?? title : `Steam game ${steamAppId}`, steamAppId ? { steam: steamAppId } : {});
+      try {
+        await refreshGame(game);
+      } catch (error) {
+        log.debug(`Could not look up "${game.title}" yet; the next scan tries again`, { error });
+      }
+      // Looking it up may have found that the library has it already, under another name
+      game = await MediaItem.findByPk(game.id) ?? (steamAppId ? (await GameIndex.load(library)).byId("steam", steamAppId) : null);
+    }
+    if (!game) return;
+    clip.parentId = game.id;
+    clip.clip = { titled: false, suggestion: null, ...clip.clip, hint: title || null, steamAppId, found: "upload" };
+    await clip.save();
+    await removeEmptyGames(library);
+    await summarizeGames(library);
+  }
+
+  /**
    * Rename a game, match it with a game found online, or put its clips in another game of the library. The game is
    * then kept as it is on refreshes.
    * @returns The game its clips are in now (another one, when the library already had the matched game).

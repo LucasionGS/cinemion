@@ -1,9 +1,11 @@
 import { Hono } from "hono";
-import type { PathMapping } from "@shared/admin.ts";
+import type { CreatePodiumTargetRequest, PathMapping, PodiumTargets } from "@shared/admin.ts";
 import type { SaveTraktAppRequest } from "@shared/trakt.ts";
 import { User } from "../models/index.ts";
 import ArrWebhook from "../integrations/ArrWebhook.ts";
 import CompatApi from "../integrations/CompatApi.ts";
+import Podium from "../integrations/Podium.ts";
+import PodiumController from "./PodiumController.ts";
 import Trakt from "../integrations/Trakt.ts";
 import RateLimit from "../lib/RateLimit.ts";
 import Network from "../lib/Network.ts";
@@ -106,6 +108,45 @@ export namespace IntegrationsController {
   router.delete("/keys/:id", admin, async (c) => {
     if (!await CompatApi.removeKey(c.req.param("id"))) return c.json({ message: "That key doesn't exist." }, 404);
     return c.json(await CompatApi.keysForClient());
+  });
+
+  async function podiumTargets(c: Parameters<typeof PodiumController.originOf>[0]): Promise<PodiumTargets> {
+    return { serverUrl: `${PodiumController.originOf(c)}/api/podium`, targets: await Podium.targetsForClient() };
+  }
+
+  /**
+   * @swagger
+   * /api/integrations/podium:
+   *   get:
+   *     summary: Upload targets for Podium, and the server URL to paste into it.
+   */
+  router.get("/podium", manage, async (c) => c.json(await podiumTargets(c)));
+
+  /**
+   * @swagger
+   * /api/integrations/podium:
+   *   post:
+   *     summary: Make an upload target for Podium. Body is a `CreatePodiumTargetRequest`. Uploads act as the signed-in profile.
+   */
+  router.post("/podium", manage, async (c) => {
+    const body = await readJson<CreatePodiumTargetRequest>(c);
+    try {
+      await Podium.createTarget(c.get("user")!, body ?? {});
+      return c.json(await podiumTargets(c), 201);
+    } catch (error) {
+      return c.json({ message: errorMessage(error) }, 400);
+    }
+  });
+
+  /**
+   * @swagger
+   * /api/integrations/podium/{id}:
+   *   delete:
+   *     summary: Remove a Podium upload target. Podium can't upload with its token anymore.
+   */
+  router.delete("/podium/:id", manage, async (c) => {
+    if (!await Podium.removeTarget(c.req.param("id"))) return c.json({ message: "That upload target doesn't exist." }, 404);
+    return c.json(await podiumTargets(c));
   });
 
   /**

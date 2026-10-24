@@ -32,6 +32,7 @@ Your movies, shows, music, books and photos, beautifully served from your own ma
 - **Safe for kids**: give a profile an age limit and anything rated above it (or not rated at all) simply isn't there. Family videos can get a library-wide rating so the kids see them too.
 - **A dashboard for the server**: who's watching what and on which device, whether it plays directly or is being converted (and why), CPU, GPU and disk use, running tasks, and a feed of what happened lately. "Mira finished Paper Moons" included.
 - **Upload from the browser**: drop movies, episodes, music or books (or whole folders, or a zip file with a season in it) on a library in Settings, pick the folder they go in, and Cinemion puts them in place and scans them. Big files go up in pieces, so a dropped connection, a closed tab or a server restart doesn't mean starting over.
+- **Uploads straight from Podium**: Cinemion speaks Podium's upload protocol, so clips go from the recorder into any library you pick, with their game, title, recording time and sound track names along for the ride. Same clip twice? Cinemion notices.
 - **Sonarr and Radarr, connected**: paste one address into Sonarr or Radarr, and new downloads show up within seconds instead of at the next scan. Their folders look different in their container? A path mapping sorts that out.
 - **Seerr and Homepage, welcome too**: request apps and dashboards made for other media servers can use Cinemion instead. Seerr signs in with your Cinemion login, knows what you already have and links straight back to it; Homepage shows what's playing and how big your libraries are. Keys for them are in Settings › Integrations.
 - **Webhooks for everything else**: tell Home Assistant, a chat bot or your own script when playback starts, pauses or stops, a new episode arrives or someone signs in. Every message is signed, failed ones are retried, and there's a test button.
@@ -135,6 +136,10 @@ ReadWritePaths=/srv/media/movies /srv/media/shows
 ```
 
 Uploads wait in `<CACHE_DIR>/uploads` (`/cache/uploads` in Docker) until they're complete. Point `UPLOAD_DIR` at a folder on the same drive as your media and finished uploads move into place instantly instead of being copied. `UPLOAD_MAX_GB` caps the size of a single file. Behind a reverse proxy, allow request bodies of at least 64 MB (`client_max_body_size 64m;` in nginx) for the fastest uploads; smaller limits still work, just in smaller pieces.
+
+### Uploading from Podium
+
+Settings › Integrations › Podium makes an upload target for a library (and a folder in it, like `Podium`). In Podium, add a Podium-compatible server with the server URL shown there (`https://<your-server>/api/podium`) and the target's token. Uploads go up in 8 MB pieces, so a reverse proxy needs to allow request bodies of at least 9 MB (`client_max_body_size 16m;` in nginx). Cinemion needs write access to the library's folder, as for uploads from the browser.
 
 ### Locked out?
 

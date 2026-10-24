@@ -111,15 +111,6 @@ export namespace ClipTools {
   }
 
   /**
-   * Scan the folder a cut was saved in, through the scan queue, so it never runs at the same time as another scan.
-   */
-  async function scanFolder(library: Library, folder: string) {
-    await Tasks.run(`scan-folders:${library.id}:${Date.now()}`, "Scanning changed folders", { libraryId: library.id, queue: "scan" }, async (task) => {
-      await Scanner.scanLibrary(library, task, { folders: [folder] });
-    });
-  }
-
-  /**
    * Cut a clip down to `start`–`end` without converting it. The cut starts at the keyframe at or before `start`.
    * Either the original file is replaced, or the cut is saved next to it as a new clip, with the same game and
    * details.
@@ -168,12 +159,12 @@ export namespace ClipTools {
         // The same clip, with a shorter file: its length, thumbnail and seek thumbnails are made again
         clip.metadataUpdatedAt = null;
         await clip.save();
-        await scanFolder(library, dir);
+        await Scanner.scanFoldersNow(library, [dir]);
         await clip.reload();
         return clip;
       }
 
-      await scanFolder(library, dir);
+      await Scanner.scanFoldersNow(library, [dir]);
       const cutFile = await MediaFile.findOne({ where: { path: target } });
       const cut = cutFile?.itemId ? await MediaItem.findByPk(cutFile.itemId) : null;
       if (!cut) throw new Problem("The cut was saved, but didn't show up in the library. Try scanning it.", 500);

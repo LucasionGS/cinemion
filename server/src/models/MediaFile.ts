@@ -76,6 +76,11 @@ export class MediaFile extends Model<InferAttributes<MediaFile>, InferCreationAt
    */
   declare subtitleSearches: CreationOptional<Record<string, MediaFile.SubtitleSearch> | null>;
   /**
+   * SHA-256 of files uploaded through Podium, as hex, so the same file sent again is recognised. `null` for other
+   * files, and once the file changes.
+   */
+  declare sha256: CreationOptional<string | null>;
+  /**
    * When ffprobe last read the file. `null` = not read yet.
    */
   declare probedAt: CreationOptional<Date | null>;
@@ -190,6 +195,7 @@ MediaFile.init({
   chapters: jsonColumn<MediaFile.Chapter[] | null, MediaFile>("chapters", null, true),
   photo: jsonColumn<PhotoMeta | null, MediaFile>("photo", null, true),
   subtitleSearches: jsonColumn<Record<string, MediaFile.SubtitleSearch> | null, MediaFile>("subtitleSearches", null, true),
+  sha256: { type: DataTypes.STRING(64), allowNull: true, defaultValue: null },
   probedAt: { type: DataTypes.DATE, allowNull: true, defaultValue: null },
   createdAt: DataTypes.DATE,
   updatedAt: DataTypes.DATE,

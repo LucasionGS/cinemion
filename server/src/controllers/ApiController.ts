@@ -24,6 +24,7 @@ import PlaylistsController from "./PlaylistsController.ts";
 import BooksController from "./BooksController.ts";
 import PhotosController from "./PhotosController.ts";
 import ClipsController from "./ClipsController.ts";
+import PodiumController from "./PodiumController.ts";
 import TraktController from "./TraktController.ts";
 import DownloadsController from "./DownloadsController.ts";
 import UploadsController from "./UploadsController.ts";
@@ -60,6 +61,7 @@ export namespace ApiController {
   router.route("/books", BooksController.router);
   router.route("/photos", PhotosController.router);
   router.route("/clips", ClipsController.router);
+  router.route("/podium", PodiumController.router);
   router.route("/trakt", TraktController.router);
   router.route("/downloads", DownloadsController.router);
   router.route("/uploads", UploadsController.router);

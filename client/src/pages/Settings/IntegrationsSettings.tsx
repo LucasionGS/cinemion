@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { CircleAlert, CircleCheck, Copy, KeyRound, Plus, Trash2 } from "lucide-react";
-import type { AppKeyInfo, IntegrationSettings, PathMapping } from "@shared/admin.ts";
+import { CircleAlert, CircleCheck, Copy, KeyRound, Plus, Trash2, UploadCloud } from "lucide-react";
+import type { AppKeyInfo, IntegrationSettings, PathMapping, PodiumTargetInfo, PodiumTargets } from "@shared/admin.ts";
 import type { TraktAppSettings } from "@shared/trakt.ts";
 import IntegrationsApi from "../../Api/IntegrationsApi.ts";
 import TraktApi from "../../Api/TraktApi.ts";
+import LibrariesApi from "../../Api/LibrariesApi.ts";
 import { toasts } from "../../lib/Toasts.ts";
 import { copyText } from "../../lib/clipboard.ts";
 import { session } from "../../Session.ts";
@@ -12,13 +13,15 @@ import cx from "../../lib/cx.ts";
 import Button from "../../components/Button/Button.tsx";
 import IconButton from "../../components/IconButton/IconButton.tsx";
 import TextField from "../../components/TextField/TextField.tsx";
+import Select from "../../components/Select/Select.tsx";
+import Switch from "../../components/Switch/Switch.tsx";
 import Spinner from "../../components/Spinner/Spinner.tsx";
 import { ConfirmDialog } from "../../components/Dialog/Dialog.tsx";
 import "./Admin.scss";
 
 /**
  * Sonarr and Radarr (the address to paste into them, and path mappings for when they see the media elsewhere), keys
- * for apps like Seerr and Homepage, and the server's Trakt app.
+ * for apps like Seerr and Homepage, Podium upload targets, and the server's Trakt app.
  */
 export default function IntegrationsSettings() {
   const [settings, setSettings] = useState<IntegrationSettings | null>(null);
@@ -149,6 +152,7 @@ export default function IntegrationsSettings() {
       </section>
 
       {session.isAdmin() && <AppsCard />}
+      <PodiumCard />
 
       <TraktAppCard />
 
@@ -310,6 +314,131 @@ function AppsCard() {
         title={`Remove the key for ${removing?.app ?? ""}?`}
         description="The app using it can't reach Cinemion anymore until it gets a new key."
         confirmLabel="Remove key"
+        danger
+        onConfirm={remove}
+      />
+    </section>
+  );
+}
+
+/**
+ * Podium, a clip recorder, uploads straight into a library through its upload protocol. Each target is a library
+ * (and a folder in it) with its own token; Podium gets the server URL and a target's token.
+ */
+function PodiumCard() {
+  const libraries = LibrariesApi.useLibraries();
+  const [data, setData] = useState<PodiumTargets | null>(null);
+  const [name, setName] = useState("");
+  const [libraryId, setLibraryId] = useState<number | null>(null);
+  const [folder, setFolder] = useState("Podium");
+  const [gameFolders, setGameFolders] = useState(true);
+  const [creating, setCreating] = useState(false);
+  const [removing, setRemoving] = useState<PodiumTargetInfo | null>(null);
+  const library = libraries?.find((l) => l.id === libraryId) ?? libraries?.find((l) => l.type === "clips") ?? libraries?.[0] ?? null;
+
+  useEffect(() => {
+    IntegrationsApi.podiumTargets().then(setData).catch(() => setData({ serverUrl: `${location.origin}/api/podium`, targets: [] }));
+  }, []);
+
+  async function copy(text: string, what: string) {
+    if (await copyText(text)) toasts.success(`${what} copied`);
+    else toasts.error("Couldn't copy", "Select it and copy it by hand.");
+  }
+
+  async function create() {
+    if (!library) return;
+    setCreating(true);
+    try {
+      const before = new Set(data?.targets.map((t) => t.id));
+      const result = await IntegrationsApi.createPodiumTarget({ name, libraryId: library.id, folder, gameFolders });
+      setData(result);
+      setName("");
+      const made = result.targets.find((t) => !before.has(t.id));
+      if (made) await copy(made.token, "Token");
+    } catch (error) {
+      toasts.error("Couldn't make the target", (error as Error).message);
+    } finally {
+      setCreating(false);
+    }
+  }
+
+  async function remove() {
+    if (!removing) return;
+    try {
+      setData(await IntegrationsApi.removePodiumTarget(removing.id));
+      setRemoving(null);
+      toasts.success("Target removed", "Podium can't upload with its token anymore.");
+    } catch (error) {
+      toasts.error("Couldn't remove the target", (error as Error).message);
+    }
+  }
+
+  function describe(t: PodiumTargetInfo) {
+    if (!t.libraryName) return "Its library was removed, so it doesn't work";
+    if (!t.createdBy) return "Made by a profile that has been removed, so it doesn't work";
+    const where = [t.libraryName, t.folder].filter(Boolean).join(" › ");
+    const games = t.gameFolders && libraries?.find((l) => l.id === t.libraryId)?.type === "clips" ? ", a folder per game" : "";
+    return `Into ${where}${games} · ${t.lastUsedAt ? `last used ${timeAgo(t.lastUsedAt)}` : "not used yet"}`;
+  }
+
+  return (
+    <section className="cn-settings__card">
+      <h2>Podium</h2>
+      <p className="cn-settings__row-text">
+        <span>
+          Podium can upload clips straight into a library. Make a target for each library to upload to, then add a
+          Podium-compatible server in Podium with the server URL and the target's token. Clips keep the game Podium
+          recorded, their title, when they were recorded and the names of their sound tracks. Podium uploads into any
+          library; Clips libraries make the most of what it knows.
+        </span>
+      </p>
+      {data && (
+        <div className="cn-integrations__address">
+          <TextField label="Server URL" value={data.serverUrl} readOnly onFocus={(e) => e.target.select()} spellCheck={false} className="cn-integrations__address-field" />
+          <Button icon={<Copy />} onClick={() => copy(data.serverUrl, "Server URL")}>Copy</Button>
+        </div>
+      )}
+      {data && data.targets.length > 0 && (
+        <div className="cn-settings__list">
+          {data.targets.map((t) => (
+            <div key={t.id} className="cn-settings__item">
+              <UploadCloud />
+              <div className="cn-settings__item-text">
+                <strong>{t.name}</strong>
+                <span>{describe(t)}</span>
+              </div>
+              <IconButton label={`Copy the token for ${t.name}`} icon={<Copy />} onClick={() => copy(t.token, "Token")} />
+              <IconButton label={`Remove ${t.name}`} icon={<Trash2 />} onClick={() => setRemoving(t)} />
+            </div>
+          ))}
+        </div>
+      )}
+      {libraries && libraries.length > 0 && library && (
+        <>
+          <div className="cn-integrations__address">
+            <Select
+              label="New target for"
+              value={String(library.id)}
+              onChange={(e) => setLibraryId(Number(e.target.value))}
+              options={libraries.map((l) => ({ value: String(l.id), label: l.name }))}
+            />
+            <TextField label="Name in Podium" value={name} placeholder={library.name} maxLength={60} onChange={(e) => setName(e.target.value)} className="cn-integrations__key-field" />
+            <TextField label="Folder" value={folder} placeholder="The library folder itself" onChange={(e) => setFolder(e.target.value)} className="cn-integrations__key-field" />
+            <Button icon={<Plus />} onClick={create} loading={creating}>Make target</Button>
+          </div>
+          <p className="cn-settings__row-text"><span>Uploads go into this folder inside {library.paths[0] ?? "the library's first folder"}. Cinemion needs write access to it, like for uploads from the browser.</span></p>
+          {library.type === "clips" && (
+            <Switch label="A folder per game" description="Puts each clip in a folder named after its game, the way recorders do." checked={gameFolders} onChange={setGameFolders} />
+          )}
+        </>
+      )}
+
+      <ConfirmDialog
+        open={removing !== null}
+        onOpenChange={(open) => !open && setRemoving(null)}
+        title={`Remove ${removing?.name ?? ""}?`}
+        description="Podium can't upload with its token anymore. What it uploaded stays in the library."
+        confirmLabel="Remove target"
         danger
         onConfirm={remove}
       />

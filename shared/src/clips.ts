@@ -9,9 +9,10 @@ import type { ItemSummary } from "./media.ts";
 /**
  * How a clip got its game.
  * `folder`, `file` and `tags` = read from the folder name, the file name or the tags inside the file,
- * `steam` = a Steam app id in the name, `manual` = picked by hand (or a suggestion that was accepted).
+ * `steam` = a Steam app id in the name, `upload` = named by the app that uploaded it (Podium), `manual` = picked by
+ * hand (or a suggestion that was accepted).
  */
-export type ClipGameSource = "folder" | "file" | "tags" | "steam" | "manual";
+export type ClipGameSource = "folder" | "file" | "tags" | "steam" | "upload" | "manual";
 
 /**
  * A game Cinemion thinks a clip without one shows, from the picture.

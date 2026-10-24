@@ -106,6 +106,16 @@ export namespace Scanner {
   }
 
   /**
+   * Scan some folders of a library now, through the scan queue so it never runs at the same time as another scan,
+   * and wait for it. For files Cinemion just put there itself, like a cut clip or an upload.
+   */
+  export async function scanFoldersNow(library: Library, folders: string[]) {
+    await Tasks.run(`scan-folders:${library.id}:${Date.now()}`, "Scanning changed folders", { libraryId: library.id, queue: "scan" }, async (task) => {
+      await scanLibrary(library, task, { folders });
+    });
+  }
+
+  /**
    * Whether `path` is `folder` or somewhere inside it.
    */
   export function isInside(path: string, folder: string) {
@@ -238,7 +248,7 @@ export namespace Scanner {
       }
       else if (Number(existing.size) !== file.size || Number(existing.mtime) !== file.mtime) {
         // A changed file may have different subtitles, so automatic searches start over too
-        await existing.update({ size: file.size, mtime: file.mtime, probedAt: null, markersVersion: 0, subtitleSearches: null });
+        await existing.update({ size: file.size, mtime: file.mtime, probedAt: null, markersVersion: 0, subtitleSearches: null, sha256: null });
       }
     }
 

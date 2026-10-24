@@ -232,6 +232,49 @@ export interface AppKeyInfo {
   createdAt: string;
 }
 
+/**
+ * A place Podium can upload to: a library (and folder in it), reached with its own token.
+ */
+export interface PodiumTargetInfo {
+  id: string;
+  /**
+   * Shown in Settings, and to Podium as the server's name.
+   */
+  name: string;
+  token: string;
+  libraryId: number;
+  /**
+   * `null` when the library was removed (and the target stopped working).
+   */
+  libraryName: string | null;
+  /**
+   * A folder inside the library's first folder, like "Podium". Empty = the library folder itself.
+   */
+  folder: string;
+  /**
+   * Clips libraries: put clips in a folder per game.
+   */
+  gameFolders: boolean;
+  createdBy: string | null;
+  createdAt: string;
+  lastUsedAt: string | null;
+}
+
+export interface CreatePodiumTargetRequest {
+  name: string;
+  libraryId: number;
+  folder: string;
+  gameFolders: boolean;
+}
+
+export interface PodiumTargets {
+  /**
+   * The address to paste into Podium as the server URL.
+   */
+  serverUrl: string;
+  targets: PodiumTargetInfo[];
+}
+
 //#endregion
 
 //#region Webhooks
