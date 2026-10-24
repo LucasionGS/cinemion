@@ -288,6 +288,8 @@ page: GitHub release with both binaries, `ghcr.io/lucasiongs/cinemion:0.3.0` (an
 `ghcr.io/lucasiongs/cinemion:0.4.0` (and `0.4`, `latest`, with libheif for HEIC photos), AUR `cinemion-bin` 0.4.0.
 **0.5.0 released** with Clips libraries (milestone 21) and Podium uploads (21b): GitHub release with both binaries,
 `ghcr.io/lucasiongs/cinemion:0.5.0` (and `0.5`, `latest`), AUR `cinemion-bin` 0.5.0.
+**0.6.0 released** with the update check (21c): GitHub release with both binaries,
+`ghcr.io/lucasiongs/cinemion:0.6.0` (and `0.6`, `latest`). The AUR package still needs `scripts/aur-publish.sh`.
 
 ### Milestone 6: what was built
 Follows the Round 3 admin mockup (artboard `Admin.dc.html` in the Round 3 canvas): app top bar + left settings nav.
