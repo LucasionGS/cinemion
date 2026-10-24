@@ -61,6 +61,7 @@ export namespace AppSystem {
     FFPROBE_PATH: env("FFPROBE_PATH", "ffprobe"),
 
     UPDATE_CHECK: env("UPDATE_CHECK", "true") !== "false",
+    BACKUP_DIR: env("BACKUP_DIR", ""),
   };
 
   /**
@@ -84,6 +85,14 @@ export namespace AppSystem {
    * uploads move into place instantly; elsewhere they're copied.
    */
   export const uploadsDir = Path.resolve(config.UPLOAD_DIR || Path.join(config.CACHE_DIR, "uploads"));
+  /**
+   * Where backups go unless Settings › Backups names another folder.
+   */
+  export const backupsDir = Path.resolve(config.BACKUP_DIR || Path.join(config.CONFIG_DIR, "backups"));
+  /**
+   * The file the sign-in key is kept in when `JWT_SECRET` isn't set.
+   */
+  export const secretFile = Path.join(config.CONFIG_DIR, "secret.key");
   /**
    * The SQLite database file, when `DB_DIALECT=sqlite`.
    */
@@ -114,9 +123,15 @@ export namespace AppSystem {
       await fsp.mkdir(dir, { recursive: true });
     }
 
-    if (!_jwtSecret) {
+    await loadSecret();
+  }
+
+  /**
+   * Read the sign-in key from `secret.key`, or make one. Called again after a backup brought its own key back.
+   */
+  export async function loadSecret() {
+    if (!config.JWT_SECRET) {
       // Generated once and kept, so sign-ins survive restarts without any configuration
-      const secretFile = Path.join(config.CONFIG_DIR, "secret.key");
       if (fs.existsSync(secretFile)) {
         _jwtSecret = (await fsp.readFile(secretFile, "utf8")).trim();
       }

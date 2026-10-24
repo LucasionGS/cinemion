@@ -5,7 +5,10 @@ import { migrations } from "./migrations/index.ts";
 import AppSystem from "./AppSystem.ts";
 import log from "./lib/Logger.ts";
 
-function createUmzug() {
+/**
+ * The migration runner, with every migration Cinemion knows.
+ */
+export function createUmzug() {
   const queryInterface = sequelize.getQueryInterface();
   return new Umzug<QueryInterface>({
     migrations: migrations.map((m) => ({
@@ -25,6 +28,20 @@ function createUmzug() {
 export async function runPendingMigrations() {
   const applied = await createUmzug().up();
   return applied.map((m) => m.name);
+}
+
+/**
+ * Names of the migrations that haven't run yet, oldest first.
+ */
+export async function pendingMigrations() {
+  return (await createUmzug().pending()).map((m) => m.name);
+}
+
+/**
+ * Names of the migrations that have run, oldest first.
+ */
+export async function executedMigrations() {
+  return (await createUmzug().executed()).map((m) => m.name);
 }
 
 // Run directly: `deno task migrate` applies pending migrations, `deno task migrate down` reverts the last one

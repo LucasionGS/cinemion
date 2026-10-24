@@ -21,6 +21,13 @@ export class Setting extends Model<InferAttributes<Setting>, InferCreationAttrib
     return value;
   }
 
+  /**
+   * Forget every value read so far, after the settings table was replaced (restoring a backup).
+   */
+  public static clearCache() {
+    Setting._cache.clear();
+  }
+
   public static async set<T>(key: string, value: T) {
     await Setting.upsert({ key, value: JSON.stringify(value) });
     Setting._cache.set(key, value);
@@ -44,6 +51,7 @@ export namespace Setting {
     CLIPS: "clips",
     PODIUM: "podium",
     UPDATES: "updates",
+    BACKUPS: "backups",
   } as const;
 }
 

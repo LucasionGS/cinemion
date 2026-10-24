@@ -1,6 +1,6 @@
 import AppSystem from "./AppSystem.ts";
 import sequelize from "./models/index.ts";
-import { runPendingMigrations } from "./migrate.ts";
+import { executedMigrations, pendingMigrations, runPendingMigrations } from "./migrate.ts";
 import createApp from "./app.ts";
 import Ffmpeg from "./lib/Ffmpeg.ts";
 import LibraryWatcher from "./library/LibraryWatcher.ts";
@@ -13,6 +13,7 @@ import OfflineCopies from "./media/OfflineCopies.ts";
 import Uploads from "./library/Uploads.ts";
 import ClipTools from "./clips/ClipTools.ts";
 import UpdateCheck from "./lib/UpdateCheck.ts";
+import Backups from "./backups/Backups.ts";
 import { Activity } from "./models/index.ts";
 import log from "./lib/Logger.ts";
 
@@ -35,6 +36,9 @@ await sequelize.authenticate().catch((error) => {
 });
 
 if (AppSystem.config.AUTO_MIGRATE) {
+  // An update that changes the database can be undone with the backup made just before
+  const pending = await pendingMigrations();
+  if (pending.length > 0 && (await executedMigrations()).length > 0) await Backups.beforeUpdate(pending);
   const applied = await runPendingMigrations();
   if (applied.length > 0) log.info("Applied database migrations", { applied });
 }
@@ -63,6 +67,7 @@ const server = Deno.serve({
 await LibraryWatcher.refresh();
 ScanScheduler.start();
 UpdateCheck.start();
+Backups.start();
 
 // Once a day: the activity feed keeps a couple of months, missing subtitles are looked for again, and offline copies
 // nobody fetched lately are deleted
@@ -80,6 +85,7 @@ for (const signal of ["SIGINT", "SIGTERM"] as const) {
     log.info("Shutting down");
     ScanScheduler.stop();
     UpdateCheck.stop();
+    Backups.stop();
     LibraryWatcher.stop();
     ActivePlayback.shutdown();
     Uploads.stop();

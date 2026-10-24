@@ -210,6 +210,9 @@ home, search), `playback.ts` (device capabilities, playback info, playback/subti
   ClipLibrary (sorting clips into games, game lookups, setting games by hand), ClipTools (keyframes, cutting, small
   copies), Recognition + RecognitionWorker + ClipTokenizer (picture recognition). Model `ClipEmbedding`, controller
   `ClipsController` (`/api/clips`). See Milestone 21.
+- `backups/`: Backups (making, listing, schedule, restore) and DatabaseDump (every table as JSON lines, portable
+  between SQLite and MariaDB). `lib/Tar.ts` and `lib/Encryption.ts` are the archive and password layers. See
+  Milestone 23.
 - `cli.ts` maintenance CLI (`deno task cli help`), `test.ts` scratch checks.
 
 ### client/src (React 19 + Vite + SCSS, lucide-react icons, hls.js)
@@ -275,6 +278,7 @@ and on amd64 Intel's non-free VA driver + Quick Sync runtime), `docker/entrypoin
 | 21b | done | Podium's upload protocol: Podium uploads into any library, with the clip's game and details (below) |
 | 21c | done | Update check: admins are told when a newer release is out (below) |
 | 22 | done | Translations: every line of the client in `en.json`, a language per profile, `deno task i18n` (below) |
+| 23 | done | Backups and restore: by hand, on a schedule and before updates, password protection, restore from the setup wizard or the CLI (below) |
 
 Not planned in these rounds: **built-in remote access** (needs a relay service on ionnet.io that doesn't exist yet).
 Photos were asked for on 2026-10-21 and became milestone 20. The owner asked for each milestone to be committed and pushed, and
@@ -794,6 +798,49 @@ language matches. Guide for translators: `docs/translating.md`.
   sender's language.
 - **Tested** with a made-up language that wraps every line in brackets: a scan of every page found only library
   data, brand names and server text outside the brackets. Done by eight parallel workers, one per area.
+
+### Milestone 23: Backups and restore
+Asked for on 2026-10-25 (with every other item on the "what's next" list).
+- **What's in one** (`backups/Backups.ts`): a `.tar.gz` with `manifest.json` (format, version, kind, server name,
+  dialect, the migrations the database had, row counts), `db/<table>.jsonl` and `files/` (`secret.key` unless
+  `JWT_SECRET` is set, `avatars/*`, and `images/<xx>/<key>.img`: every original when "Include downloaded artwork" is
+  on, otherwise only keys in the artwork of items with `customArtwork`). Resized `-w*.webp` copies and the whole cache
+  are left out. Files are 0600 (they hold the sign-in key and API keys). Names are
+  `cinemion-backup-YYYYMMDD-HHMMSS-<manual|scheduled|update>.tar.gz[.enc]`; the time in the name is the server's
+  clock and is what the list shows (file dates change when backups are copied). Written as `.partial`, then renamed.
+- **The database** (`backups/DatabaseDump.ts`): SQLite is copied with `VACUUM INTO` and read with `node:sqlite`, so
+  the tables match each other while the server keeps writing; MariaDB is read in a REPEATABLE READ transaction. Date
+  columns become ISO strings. Restoring drops every table, runs the backup's own migrations (`umzug.up({ to })`),
+  inserts the rows with foreign keys off, then runs the newer migrations, so old backups restore into new versions
+  and SQLite backups restore on MariaDB (and back; MariaDB drops the milliseconds). Sequelize gives SQLite
+  transactions their own connection, where `PRAGMA foreign_keys` can't change any more, so that part runs `BEGIN` /
+  `COMMIT` by hand on the main connection. A backup with migrations this version doesn't know is refused.
+- **Passwords** (`lib/Encryption.ts`): the whole archive is AES-256-GCM in 1 MiB pieces, key from PBKDF2-SHA256
+  (600k rounds), nonce = random prefix + piece number, the last piece marked through its additional data, so a wrong
+  password, a changed byte and a cut-off file each give their own message. The password lives in the `backups`
+  setting (only `hasPassword` is ever sent).
+- **Restoring** unpacks and checks everything into `CONFIG_DIR/.restore-<id>` before changing anything, only lets
+  known paths out of the archive, then replaces the database, `secret.key` (and reloads it, so old sign-ins keep
+  working), the profile pictures, and merges the artwork. Afterwards `Setting.clearCache()` and
+  `LibraryWatcher.refresh()`. From the setup wizard ("Restore a backup" on the first page: backups found in
+  `AppSystem.backupsDir`, or an upload with the password in `X-Backup-Password`; `/api/setup/backups`,
+  `/api/setup/restore[/upload]`, only while setup is needed, polled with `GET /api/setup/restore`) or
+  `cinemion restore <file> [--yes]` (refuses while a server answers on `PORT`; `CINEMION_BACKUP_PASSWORD` or a prompt).
+- **Schedule**: off / every night / once a week, checked hourly; within an hour of being due it waits for 2–6 am
+  unless it's six hours late. Keeps the last N scheduled backups (default 7), the last 3 made before updates, and
+  never deletes ones made by hand. A failure is kept as `lastError`, shown on the page and in the activity feed
+  (kind `backup`). `index.ts` makes an `update` backup (without downloaded artwork) when migrations are pending on a
+  database that has some already.
+- **API** (`controllers/BackupsController.ts`, `SERVER_MANAGE`): `GET/POST /api/backups`, `PUT /settings`,
+  `POST /:name/link` (a 5-minute download link, since a plain link can't send the sign-in header), `DELETE /:name`.
+  Settings › Backups (`BackupsSettings.tsx`) and `pages/Setup/RestoreBackup.tsx`. `formatMoment()` in `lib/format.ts`
+  writes real moments in this device's time zone (`formatDateTime()` is for camera clock times).
+- **Tested**: `test.ts` (tar with pax names, cut-off archives; encryption round trip, wrong password, a changed byte,
+  cut short in a piece and between pieces); against scratch servers: backups with and without a password (readable
+  with plain `tar`), CLI restore into a fresh folder (a `.dump` diff with the original is empty apart from the
+  activity line), wrong password, junk and cut-off files leave everything alone, the wizard by API and in headless
+  Chrome, a backup from a database one migration behind (made by itself before the update, restored and migrated
+  up), and SQLite → MariaDB 11.8 → SQLite in a throwaway container.
 
 ## 6. Design decisions
 

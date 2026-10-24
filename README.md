@@ -37,6 +37,7 @@ Your movies, shows, music, books and photos, beautifully served from your own ma
 - **Seerr and Homepage, welcome too**: request apps and dashboards made for other media servers can use Cinemion instead. Seerr signs in with your Cinemion login, knows what you already have and links straight back to it; Homepage shows what's playing and how big your libraries are. Keys for them are in Settings › Integrations.
 - **Webhooks for everything else**: tell Home Assistant, a chat bot or your own script when playback starts, pauses or stops, a new episode arrives or someone signs in. Every message is signed, failed ones are retried, and there's a test button.
 - **Tasks and logs at hand**: start scans and thumbnail jobs, choose how often libraries are scanned, and read the server log with filters, all in Settings. No terminal needed when something acts up.
+- **Backups you'll actually have**: one click (or a nightly schedule) saves profiles, everyone's watch history, settings, playlists, albums and artwork into one file, optionally locked with a password. Cinemion makes one by itself before every update that changes its database, and a fresh install can be brought back from a backup right in the setup wizard.
 - **Knows when there's a new version**: twice a day Cinemion looks at its releases on GitHub, and when there's a newer one, admins (and only admins) get a dot on their profile picture and a note on how to update. Rather it didn't? It's one switch in Settings › About, or `UPDATE_CHECK=false`.
 - **Speaks your language (soon)**: every line of the interface lives in one translation file, so adding a language is filling in a copy of the English one. English is the only one so far; [here's how to add yours](docs/translating.md).
 - **One container, nothing else**: the Docker image includes everything. No database server, no extra services. There's also a single-file binary if you'd rather skip Docker.
@@ -143,6 +144,17 @@ Uploads wait in `<CACHE_DIR>/uploads` (`/cache/uploads` in Docker) until they're
 
 Settings › Integrations › Podium makes an upload target for a library (and a folder in it, like `Podium`). In Podium, add a Podium-compatible server with the server URL shown there (`https://<your-server>/api/podium`) and the target's token. Uploads go up in 8 MB pieces, so a reverse proxy needs to allow request bodies of at least 9 MB (`client_max_body_size 16m;` in nginx). Cinemion needs write access to the library's folder, as for uploads from the browser.
 
+### Backups
+
+Settings › Backups makes backups by hand or on a schedule (every night or once a week, keeping the last few), into `<CONFIG_DIR>/backups` (`/config/backups` in Docker) unless you pick another folder there or set `BACKUP_DIR`. Put them on another drive (in Docker, mount one: `-v /mnt/backup/cinemion:/backups` plus `BACKUP_DIR=/backups`) so they survive the disk they're backing up. A backup is a plain `.tar.gz`; with a password it's encrypted and ends in `.enc`. Before an update that changes the database, Cinemion makes a backup by itself.
+
+To restore one:
+
+- **On a new install**: pick "Restore a backup" on the first page of the setup wizard. It lists backups in the backup folder, or you can upload one.
+- **On an existing install**: stop Cinemion, then run `cinemion restore <file>` as the user it runs as (`sudo -u cinemion cinemion restore …`). With Docker, stop the container and run `docker compose run --rm cinemion cinemion restore /config/backups/<file>`.
+
+Backups work across databases too: one made on SQLite restores on MariaDB and the other way around.
+
 ### Locked out?
 
 The `cinemion` binary also has a few maintenance commands. Run `cinemion help` for all of them.
@@ -151,6 +163,8 @@ The `cinemion` binary also has a few maintenance commands. Run `cinemion help` f
 cinemion users                       # list everyone
 cinemion reset-password ion          # set a new password
 cinemion remove-pin mira             # take a profile's PIN off
+cinemion backup                      # make a backup now
+cinemion restore <file>              # put a backup back (stop the server first)
 ```
 
 Run them as the user the server runs as, so they use the same data: `sudo -u cinemion cinemion users` for the AUR package, or `docker exec -u 1000 cinemion cinemion users` in Docker.

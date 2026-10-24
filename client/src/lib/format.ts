@@ -100,6 +100,16 @@ export function formatDateTime(value: string, short = false) {
 }
 
 /**
+ * "13 Jul 2024, 14:32" for a moment in time (an ISO string with its time zone), in this device's time zone. Without
+ * `short`, the day and month are written out.
+ */
+export function formatMoment(iso: string, short = true) {
+  const date = new Date(iso);
+  const day = date.toLocaleDateString(i18n.locale, short ? { day: "numeric", month: "short", year: "numeric" } : { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+  return t("format.dateTime", { date: day, time: date.toLocaleTimeString(i18n.locale, { hour: "2-digit", minute: "2-digit" }) });
+}
+
+/**
  * "34%", from 0 to 1.
  */
 export function formatPercent(value: number) {

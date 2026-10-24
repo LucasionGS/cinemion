@@ -165,12 +165,114 @@ export interface UpdateInfo {
 
 //#endregion
 
+//#region Backups
+
+/**
+ * Why a backup was made: by hand, on the schedule, or by itself before an update changed the database.
+ */
+export type BackupKind = "manual" | "scheduled" | "update";
+
+export type BackupSchedule = "off" | "daily" | "weekly";
+
+export interface BackupInfo {
+  /**
+   * The file name, which is also its id.
+   */
+  name: string;
+  /**
+   * Unit is in bytes.
+   */
+  size: number;
+  createdAt: string;
+  kind: BackupKind;
+  /**
+   * Whether it's protected with a password.
+   */
+  encrypted: boolean;
+}
+
+export interface BackupSettings {
+  schedule: BackupSchedule;
+  /**
+   * Where backups go. `null` = the default folder in the config folder.
+   */
+  folder: string | null;
+  /**
+   * How many scheduled backups are kept; older ones are deleted.
+   */
+  keep: number;
+  /**
+   * Include downloaded artwork, which makes backups bigger but restores look complete straight away. Artwork made by
+   * hand is always included.
+   */
+  artwork: boolean;
+  /**
+   * Whether new backups are protected with a password. The password itself is never sent.
+   */
+  hasPassword: boolean;
+}
+
+export interface BackupSettingsUpdate extends Partial<Omit<BackupSettings, "hasPassword">> {
+  /**
+   * A new password, `null` to stop protecting new backups, or left out to keep the one there is.
+   */
+  password?: string | null;
+}
+
+export interface BackupsOverview {
+  settings: BackupSettings;
+  /**
+   * The folder in use, with the default filled in.
+   */
+  folder: string;
+  defaultFolder: string;
+  /**
+   * Newest first.
+   */
+  backups: BackupInfo[];
+  /**
+   * The backup being made right now.
+   */
+  running: TaskInfo | null;
+  /**
+   * When the next scheduled backup is due, or `null` when there's no schedule.
+   */
+  nextAt: string | null;
+  /**
+   * Why the last scheduled backup failed, or `null`.
+   */
+  lastError: string | null;
+  /**
+   * Free space where backups go. Unit is in bytes.
+   */
+  freeSpace: number | null;
+}
+
+/**
+ * How a restore is going, asked for again and again by the setup page while it runs.
+ */
+export interface RestoreStatus {
+  state: "idle" | "running" | "done" | "failed";
+  /**
+   * What it's doing, like "Restoring the database".
+   */
+  step: string | null;
+  progress: number | null;
+  error: string | null;
+  /**
+   * The backup being restored.
+   */
+  backup: { createdAt: string; version: string; serverName: string } | null;
+}
+
+//#endregion
+
 //#region Activity
 
 /**
  * What kind of thing happened, used for the dot colour in the feed.
  */
-export type ActivityKind = "added" | "watched" | "signIn" | "import" | "delete" | "subtitles" | "together" | "download" | "upload" | "update";
+export type ActivityKind = "added" | "watched" | "signIn" | "import" | "delete" | "subtitles" | "together" | "download" | "upload" | "update" | "backup";
 
 export interface ActivityInfo {
   id: number;

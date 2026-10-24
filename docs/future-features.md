@@ -4,11 +4,6 @@ Planned, but not part of the first version. Roughly in the order they're likely 
 
 ## Server & household
 
-- **Backups and restore**: one click in Settings makes a backup of the database, settings, profile pictures and hand-made
-  artwork and thumbnails (not the cache, which can be rebuilt). Backups can run on a schedule into a folder of your choice,
-  keeping the last few, and one is made by itself before every update that changes the database. Restoring works from the
-  setup wizard on a fresh install and from the CLI (`cinemion restore <file>`). Backups hold secrets (the sign-in key,
-  API keys), so they can be protected with a password.
 - **Watchlist**: a "My list" per profile. Add anything from its page, see it as a row on the home screen, and have it
   sync both ways with the profile's Trakt watchlist. Something on the list that arrives later (from Seerr, Sonarr or
   Radarr) is announced through notifications.

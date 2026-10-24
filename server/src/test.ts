@@ -32,6 +32,8 @@ import ClipNames from "./clips/ClipNames.ts";
 import ClipTokenizer from "./clips/ClipTokenizer.ts";
 import ClipTools from "./clips/ClipTools.ts";
 import UpdateCheck from "./lib/UpdateCheck.ts";
+import Tar from "./lib/Tar.ts";
+import Encryption from "./lib/Encryption.ts";
 
 /**
  * Scratch runner for the parts that are easy to get subtly wrong. Run with `deno run -A server/src/test.ts`.
@@ -458,6 +460,61 @@ check("newer releases", newer([["0.5.1", "0.5.0"], ["v0.6.0", "0.5.9"], ["1.0.0"
 check("same or older", newer([["0.5.0", "0.5.0"], ["v0.5.0", "0.5.0"], ["0.4.9", "0.5.0"], ["0.5.0", "0.10.0"]]), [false, false, false, false]);
 check("prereleases", newer([["0.6.0", "0.6.0-beta.1"], ["0.6.0-beta.1", "0.6.0"], ["0.6.0-beta.2", "0.6.0-beta.1"], ["0.6.0-beta.10", "0.6.0-beta.9"], ["0.6.0-rc.1", "0.6.0-beta.3"], ["0.6.0-beta.1", "0.5.0"]]), [true, false, true, true, true, true]);
 check("names that aren't versions", [newer([["nightly", "0.5.0"], ["0.6", "0.5.0"]]), UpdateCheck.parseVersion("v1.2.3+build.5")?.core], [[false, false], [1, 2, 3]]);
+//#endregion
+
+//#region Backups
+console.log("Backups");
+async function collect(stream: ReadableStream<Uint8Array>) {
+  return new Uint8Array(await new Response(stream).arrayBuffer());
+}
+async function packTar(files: [string, Uint8Array][]) {
+  const { readable, writable } = new TransformStream<Uint8Array, Uint8Array>();
+  const done = collect(readable);
+  const tar = new Tar.Writer(writable.getWriter());
+  for (const [name, bytes] of files) await tar.addBytes(name, bytes);
+  await tar.finish();
+  return await done;
+}
+const longName = `files/images/${"ab/".repeat(40)}cd.img`;
+const payload = crypto.getRandomValues(new Uint8Array(3000));
+const archive = await packTar([["manifest.json", encoded("{}")], [longName, payload], ["empty.txt", new Uint8Array(0)]]);
+const unpacked: [string, number, boolean][] = [];
+for await (const entry of Tar.read(new Blob([archive as BlobPart]).stream())) {
+  // The middle one is skipped without reading it
+  const bytes = entry.name === longName ? null : await entry.bytes();
+  unpacked.push([entry.name, entry.size, bytes === null || bytes.length === entry.size]);
+}
+check("tar with a long name", unpacked, [["manifest.json", 2, true], [longName, 3000, true], ["empty.txt", 0, true]]);
+let tarError = "";
+try {
+  for await (const entry of Tar.read(new Blob([archive.slice(0, 1500) as BlobPart]).stream())) await entry.bytes();
+} catch (error) {
+  tarError = (error as Error).message;
+}
+check("tar cut short", tarError.includes("cut short"), true);
+
+const plain = new Uint8Array(2.5 * 1024 * 1024).map((_, i) => (i * 7919) % 251);
+const sealed = await collect(new Blob([plain as BlobPart]).stream().pipeThrough(await Encryption.encrypt("correct horse")));
+check("encrypted file is marked", [Encryption.isEncrypted(sealed), Encryption.isEncrypted(archive)], [true, false]);
+const opened = await collect(new Blob([sealed as BlobPart]).stream().pipeThrough(Encryption.decrypt("correct horse")));
+check("encryption round trip", opened.length === plain.length && opened.every((b, i) => b === plain[i]), true);
+async function openError(bytes: Uint8Array, password: string) {
+  try {
+    await collect(new Blob([bytes as BlobPart]).stream().pipeThrough(Encryption.decrypt(password)));
+    return "opened";
+  } catch (error) {
+    return (error as Error).message;
+  }
+}
+const tampered = sealed.slice();
+tampered[2 * 1024 * 1024] ^= 1;
+check("wrong password, changed or cut short", [
+  await openError(sealed, "wrong horse"),
+  await openError(tampered, "correct horse"),
+  await openError(sealed.slice(0, sealed.length - 100), "correct horse"),
+  // Cut exactly between pieces: every piece left is fine, but the last one is missing
+  await openError(sealed.slice(0, 29 + 4 + 1024 * 1024 + 16), "correct horse"),
+], ["The password is wrong.", "The file is damaged: part of it doesn't match its checksum.", "The file is cut short.", "The file is cut short."]);
 //#endregion
 
 console.log(failed ? `\n${failed} failed` : "\nAll passed");

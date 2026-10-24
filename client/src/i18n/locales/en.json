@@ -172,7 +172,29 @@
       "skip": "Skip for now",
       "continue": "Continue"
     },
-    "failed": "Setup didn't finish"
+    "failed": "Setup didn't finish",
+    "restore": {
+      "hintTitle": "Moving or reinstalling?",
+      "hint": "Bring back a Cinemion from a backup instead of setting up from scratch.",
+      "open": "Restore a backup",
+      "title": "Restore a backup",
+      "intro": "Everything comes back as it was: profiles, what everyone watched, libraries, settings and artwork. You'll sign in as before.",
+      "foundLabel": "Backups found on this server",
+      "found": "Found in {folder}:",
+      "protected": "Protected",
+      "chooseFile": "Upload a backup file",
+      "otherFile": "Choose another file",
+      "password": "Backup password",
+      "passwordDescription": "The password the backup was protected with in Settings › Backups.",
+      "sending": "Sending the backup… {percent}",
+      "failed": "The restore didn't finish: {error}",
+      "warning": "If your media is in other folders on this server, change the libraries' folders in Settings › Libraries afterwards.",
+      "instead": "Set up from scratch",
+      "start": "Restore",
+      "doneTitle": "Welcome back",
+      "doneText": "{name} is back as it was on {date}. Sign in like you did before.",
+      "doneTextShort": "The backup is restored. Sign in like you did before."
+    }
   },
   "profiles": {
     "loading": "Loading profiles",
@@ -1549,7 +1571,8 @@
       "running": {
         "one": "{count} running",
         "other": "{count} running"
-      }
+      },
+      "backups": "Backups"
     },
     "about": {
       "title": "About",
@@ -2633,5 +2656,78 @@
   },
   "credits": {
     "tmdb": "This product uses TMDB and the TMDB APIs but is not endorsed, certified, or otherwise approved by TMDB."
+  },
+  "backups": {
+    "title": "Backups",
+    "intro": "Keep a copy of everything Cinemion can't get back by itself: profiles, what everyone watched, settings, playlists, albums and the details you edited.",
+    "makeNow": "Make a backup now",
+    "making": "Making a backup",
+    "makeFailed": "Couldn't make a backup",
+    "listTitle": "Your backups",
+    "none": "No backups yet. Make one now, or turn on a schedule below.",
+    "protected": "Protected with a password",
+    "downloadOne": "Download the backup from {date}",
+    "deleteOne": "Delete the backup from {date}",
+    "downloadFailed": "Couldn't download the backup",
+    "deleted": "Backup deleted",
+    "deleteFailed": "Couldn't delete the backup",
+    "confirmDeleteTitle": "Delete this backup?",
+    "confirmDeleteDescription": "The backup from {date} will be gone for good.",
+    "folderWithSpace": "Saved in {folder} · {free} free",
+    "folderOnly": "Saved in {folder}",
+    "kind": {
+      "manual": "Made by hand",
+      "scheduled": "Scheduled",
+      "update": "Before an update"
+    },
+    "schedule": {
+      "title": "Schedule",
+      "label": "Make a backup by itself",
+      "off": "Never",
+      "daily": "Every night",
+      "weekly": "Once a week",
+      "keep": "Keep",
+      "keepDescription": "Older scheduled backups are deleted. Ones you make by hand are kept until you delete them.",
+      "keepCount": {
+        "one": "The last backup",
+        "other": "The last {count} backups"
+      },
+      "next": "The next one is due {when}, at night when possible.",
+      "lastFailed": "The last scheduled backup didn't work: {error}",
+      "beforeUpdates": "Cinemion also makes a backup by itself before an update changes its database, so you can go back. It keeps the last three of those."
+    },
+    "contents": {
+      "title": "What goes in",
+      "text": "Every backup has the database, the sign-in key, profile pictures and artwork you picked or uploaded by hand. Conversions, seek thumbnails and other things in the cache are left out; they're made again when needed.",
+      "artwork": "Include downloaded artwork",
+      "artworkDescription": "Posters and backdrops from the internet. Backups get bigger, but a restored server looks complete straight away instead of after a refresh of all details.",
+      "folder": "Backup folder",
+      "folderDescription": "A full path on the server. Leave it empty to use the folder shown. A folder on another drive keeps your backups safe if this one fails.",
+      "folderSaved": "Backups will go in the new folder"
+    },
+    "password": {
+      "on": "Backups are protected with a password",
+      "off": "Backups aren't protected",
+      "text": "A backup holds the sign-in key and the keys of the services you connected, so anyone with the file could get into this server. A password locks new backups; without it they can't be restored, so keep it somewhere safe.",
+      "set": "Set a password",
+      "change": "Change the password",
+      "remove": "Remove the password",
+      "removeTitle": "Stop protecting new backups?",
+      "removeDescription": "New backups won't need a password. Backups that were protected still need the old one.",
+      "removed": "New backups won't be protected",
+      "saved": "New backups will be protected with this password",
+      "dialogTitle": "Protect backups with a password",
+      "dialogDescription": "New backups will need this password to be restored. Backups made before keep the password they had.",
+      "new": "Password",
+      "confirm": "Type it again",
+      "tooShort": "Use at least 8 characters.",
+      "mismatch": "The passwords don't match."
+    },
+    "restore": {
+      "title": "Restoring a backup",
+      "text": "A restore replaces everything on a server with what's in the backup, so it's done while nothing else is going on:",
+      "wizard": "On a new or reinstalled Cinemion, pick “Restore a backup” on the first page of the setup. It finds backups in the backup folder, or you can upload one.",
+      "cli": "On this server, stop Cinemion and run {command}, then start it again."
+    }
   }
 }

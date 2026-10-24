@@ -610,3 +610,61 @@
   }
 }
 //#endregion
+
+.cn-backups {
+  &__fields {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+  }
+
+  &__folder {
+    display: flex;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+
+    // Line the button up with the field, not its description
+    &:has(.cn-field__description) > .cn-button {
+      margin-bottom: 1.6rem;
+    }
+  }
+
+  &__folder-field {
+    flex: 1 1 20rem;
+    min-width: 0;
+  }
+
+  &__error {
+    padding: 0.75rem 1rem;
+    border-radius: var(--cn-radius-lg);
+    background: var(--cn-danger-soft);
+    color: var(--cn-danger-text);
+    font-size: 0.875rem;
+  }
+
+  &__steps {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding-left: 1.25rem;
+    color: var(--cn-text-subtle);
+    font-size: 0.875rem;
+    list-style: disc;
+
+    code {
+      font-family: var(--cn-font-mono);
+      color: var(--cn-text);
+    }
+  }
+
+  &__password {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+}
+
+:root[data-mode="mobile"] .cn-backups__fields {
+  grid-template-columns: minmax(0, 1fr);
+}

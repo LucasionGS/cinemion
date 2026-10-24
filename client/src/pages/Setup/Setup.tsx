@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Check, Trash2 } from "lucide-react";
+import { ArchiveRestore, Check, Trash2 } from "lucide-react";
 import type { CreateLibraryRequest, LibraryType, MetadataSettings } from "@shared/api.ts";
 import ServerApi from "../../Api/ServerApi.ts";
 import { session } from "../../Session.ts";
@@ -15,6 +15,7 @@ import SegmentedControl from "../../components/SegmentedControl/SegmentedControl
 import FolderBrowser from "../../components/FolderBrowser/FolderBrowser.tsx";
 import MetadataForm, { COUNTRIES } from "../../components/MetadataForm/MetadataForm.tsx";
 import LibraryIcon from "../../components/LibraryIcon/LibraryIcon.tsx";
+import RestoreBackup from "./RestoreBackup.tsx";
 import "./Setup.scss";
 
 const STEPS: { label: TranslationKey; sub: TranslationKey }[] = [
@@ -34,6 +35,7 @@ function usernameFrom(name: string) {
 export default function Setup() {
   const [step, setStep] = useState(0);
   const [submitting, setSubmitting] = useState(false);
+  const [restoring, setRestoring] = useState(false);
 
   // Account
   const [serverName, setServerName] = useState("Cinemion");
@@ -122,9 +124,11 @@ export default function Setup() {
       </aside>
 
       <main className="cn-setup__main">
-        <span className="cn-setup__progress">{t("setup.progress", { step: step + 1, total: STEPS.length })}</span>
+        {restoring && <RestoreBackup onCancel={() => setRestoring(false)} />}
 
-        {step === 0 && (
+        {!restoring && <span className="cn-setup__progress">{t("setup.progress", { step: step + 1, total: STEPS.length })}</span>}
+
+        {!restoring && step === 0 && (
           <section className="cn-setup__section cn-setup__section--narrow">
             <header className="cn-setup__header">
               <h1>{t("setup.account.title")}</h1>
@@ -167,14 +171,22 @@ export default function Setup() {
               description={t("setup.account.pinDescription")}
               error={showErrors ? accountErrors.pin : null}
             />
+            <div className="cn-setup__card cn-setup__restore-hint">
+              <ArchiveRestore />
+              <div>
+                <strong>{t("setup.restore.hintTitle")}</strong>
+                <span>{t("setup.restore.hint")}</span>
+              </div>
+              <Button size="sm" onClick={() => setRestoring(true)}>{t("setup.restore.open")}</Button>
+            </div>
           </section>
         )}
 
-        {step === 1 && <LibrariesStep libraries={libraries} onChange={setLibraries} />}
+        {!restoring && step === 1 && <LibrariesStep libraries={libraries} onChange={setLibraries} />}
 
-        {step === 2 && <MetadataStep metadata={metadata} onChange={setMetadata} />}
+        {!restoring && step === 2 && <MetadataStep metadata={metadata} onChange={setMetadata} />}
 
-        {step === 3 && (
+        {!restoring && step === 3 && (
           <section className="cn-setup__section cn-setup__section--narrow">
             <header className="cn-setup__header">
               <h1>{t("setup.done.title")}</h1>
@@ -195,12 +207,12 @@ export default function Setup() {
           </section>
         )}
 
-        <div className="cn-setup__actions">
+        {!restoring && <div className="cn-setup__actions">
           {step > 0 && step < 3 && <Button variant="secondary" size="lg" onClick={() => setStep(step - 1)}>{t("common.back")}</Button>}
           <Button variant="primary" size="lg" className="cn-setup__next" loading={submitting} onClick={next}>
             {step === 2 ? t("setup.actions.finish") : step === 3 ? t("setup.actions.goToCinemion") : step === 1 && libraries.length === 0 ? t("setup.actions.skip") : t("setup.actions.continue")}
           </Button>
-        </div>
+        </div>}
       </main>
     </div>
   );
