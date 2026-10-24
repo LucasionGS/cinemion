@@ -1,4 +1,4 @@
-import type { ActivityInfo, DashboardInfo, LogEntry, ScheduledScan, TasksOverview } from "@shared/admin.ts";
+import type { ActivityInfo, DashboardInfo, LogEntry, ScheduledScan, TasksOverview, UpdateInfo } from "@shared/admin.ts";
 import type { TaskInfo } from "@shared/media.ts";
 import BaseApi from "./BaseApi.ts";
 
@@ -8,6 +8,24 @@ import BaseApi from "./BaseApi.ts";
 export namespace AdminApi {
   export function dashboard() {
     return BaseApi.GET<DashboardInfo>("/admin/dashboard");
+  }
+
+  /**
+   * Whether a newer Cinemion is out, from the server's last check.
+   */
+  export function update() {
+    return BaseApi.GET<UpdateInfo>("/admin/update");
+  }
+
+  /**
+   * Look for a newer Cinemion now.
+   */
+  export function checkForUpdate() {
+    return BaseApi.POST<UpdateInfo>("/admin/update/check");
+  }
+
+  export function setUpdateCheck(enabled: boolean) {
+    return BaseApi.PUT<UpdateInfo>("/admin/update", { enabled });
   }
 
   /**

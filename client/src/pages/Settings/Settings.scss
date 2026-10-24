@@ -59,6 +59,15 @@
     }
   }
 
+  // Something new to look at on that page, like an update on About
+  &__link-dot {
+    margin-left: auto;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: var(--cn-accent);
+  }
+
   &__link-badge {
     margin-left: auto;
     min-width: 1.4rem;
@@ -542,6 +551,51 @@ button.cn-settings__badge {
         width: 0.9rem;
         height: 0.9rem;
       }
+    }
+  }
+}
+
+// A newer Cinemion is out
+.cn-update {
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 1rem 1.125rem;
+  border-radius: var(--cn-radius-lg);
+  background: var(--cn-accent-soft);
+
+  &__icon {
+    flex-shrink: 0;
+    width: 1.5rem;
+    height: 1.5rem;
+    color: var(--cn-accent);
+  }
+
+  &__text {
+    flex: 1 1 16rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+
+    span {
+      font-size: 0.875rem;
+      color: var(--cn-text-muted);
+      line-height: 1.55;
+    }
+  }
+
+  &__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    color: var(--cn-accent-text);
+    font-weight: 600;
+    white-space: nowrap;
+
+    svg {
+      width: 0.9rem;
+      height: 0.9rem;
     }
   }
 }

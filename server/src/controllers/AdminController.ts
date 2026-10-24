@@ -14,6 +14,7 @@ import SystemStats from "../lib/SystemStats.ts";
 import SubtitleManager from "../subtitles/SubtitleManager.ts";
 import SubtitleAutomation from "../subtitles/SubtitleAutomation.ts";
 import Tasks from "../lib/Tasks.ts";
+import UpdateCheck from "../lib/UpdateCheck.ts";
 import { readJson } from "../lib/http.ts";
 import log from "../lib/Logger.ts";
 import type { AppEnv } from "../lib/types.ts";
@@ -71,6 +72,39 @@ export namespace AdminController {
       activity: activity.map((a) => a.toJSON()),
     };
     return c.json(info);
+  });
+
+  /**
+   * @swagger
+   * /api/admin/update:
+   *   get:
+   *     summary: Whether a newer Cinemion is out, from the last check.
+   */
+  router.get("/update", async (c) => {
+    return c.json(await UpdateCheck.info());
+  });
+
+  /**
+   * @swagger
+   * /api/admin/update/check:
+   *   post:
+   *     summary: Look for a newer Cinemion now.
+   */
+  router.post("/update/check", async (c) => {
+    if (!AppSystem.config.UPDATE_CHECK) return c.json({ message: "Checking for updates is turned off with UPDATE_CHECK=false." }, 409);
+    return c.json(await UpdateCheck.check());
+  });
+
+  /**
+   * @swagger
+   * /api/admin/update:
+   *   put:
+   *     summary: Turn checking for new releases on or off. Body `{ enabled }`.
+   */
+  router.put("/update", async (c) => {
+    const body = await readJson<{ enabled: boolean }>(c);
+    if (typeof body?.enabled !== "boolean") return c.json({ message: "Send `enabled` as true or false." }, 400);
+    return c.json(await UpdateCheck.setEnabled(body.enabled));
   });
 
   /**

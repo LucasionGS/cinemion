@@ -31,6 +31,7 @@ import { withExif } from "../../scripts/sample-photos.ts";
 import ClipNames from "./clips/ClipNames.ts";
 import ClipTokenizer from "./clips/ClipTokenizer.ts";
 import ClipTools from "./clips/ClipTools.ts";
+import UpdateCheck from "./lib/UpdateCheck.ts";
 
 /**
  * Scratch runner for the parts that are easy to get subtly wrong. Run with `deno run -A server/src/test.ts`.
@@ -448,6 +449,15 @@ check("small copy that can't fit", tooLong.startsWith("600 seconds don't fit in 
 // A tiny made-up vocabulary: "game" splits into "ga" + "me</w>"
 const tokenizer = new ClipTokenizer({ model: { vocab: { "ga": 1, "me</w>": 2, "a</w>": 3 }, merges: ["g a", "m e</w>"] } });
 check("CLIP tokens", tokenizer.encode("Game  a"), [ClipTokenizer.START, 1, 2, 3, ClipTokenizer.END]);
+//#endregion
+
+//#region Updates
+console.log("Updates");
+const newer = (pairs: [string, string][]) => pairs.map(([a, b]) => UpdateCheck.isNewer(a, b));
+check("newer releases", newer([["0.5.1", "0.5.0"], ["v0.6.0", "0.5.9"], ["1.0.0", "0.99.99"], ["0.10.0", "0.9.0"]]), [true, true, true, true]);
+check("same or older", newer([["0.5.0", "0.5.0"], ["v0.5.0", "0.5.0"], ["0.4.9", "0.5.0"], ["0.5.0", "0.10.0"]]), [false, false, false, false]);
+check("prereleases", newer([["0.6.0", "0.6.0-beta.1"], ["0.6.0-beta.1", "0.6.0"], ["0.6.0-beta.2", "0.6.0-beta.1"], ["0.6.0-beta.10", "0.6.0-beta.9"], ["0.6.0-rc.1", "0.6.0-beta.3"], ["0.6.0-beta.1", "0.5.0"]]), [true, false, true, true, true, true]);
+check("names that aren't versions", [newer([["nightly", "0.5.0"], ["0.6", "0.5.0"]]), UpdateCheck.parseVersion("v1.2.3+build.5")?.core], [[false, false], [1, 2, 3]]);
 //#endregion
 
 console.log(failed ? `\n${failed} failed` : "\nAll passed");

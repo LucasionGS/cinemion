@@ -6,6 +6,7 @@ import ItemsApi from "../../Api/ItemsApi.ts";
 import { Link } from "../../lib/Router.tsx";
 import { toasts } from "../../lib/Toasts.ts";
 import usePoll from "../../lib/usePoll.ts";
+import { useUpdates } from "../../lib/Updates.ts";
 import { formatClock } from "../../lib/playback.ts";
 import { formatBitrate, formatBytes, formatPercent, formatSpan, timeAgo, timeUntil } from "../../lib/format.ts";
 import cx from "../../lib/cx.ts";
@@ -21,6 +22,7 @@ import "./Admin.scss";
 export default function Dashboard() {
   const { data, error, reload } = usePoll(AdminApi.dashboard, 3000);
   const [scanning, setScanning] = useState(false);
+  const update = useUpdates().available();
 
   async function scanAll() {
     setScanning(true);
@@ -43,7 +45,10 @@ export default function Dashboard() {
       <header className="cn-settings__header">
         <div>
           <h1>Dashboard</h1>
-          <p>{server.name} · Cinemion {server.version} · up {formatSpan(server.startedAt)}</p>
+          <p>
+            {server.name} · Cinemion {server.version}
+            {update && <> (<Link href="/settings/about" className="cn-dashboard__update">{update.version} is out</Link>)</>} · up {formatSpan(server.startedAt)}
+          </p>
         </div>
         <Button icon={<RefreshCw />} onClick={scanAll} loading={scanning}>Scan all libraries</Button>
       </header>

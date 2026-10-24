@@ -28,6 +28,11 @@
 
 //#region Dashboard
 .cn-dashboard {
+  &__update {
+    color: var(--cn-accent-text);
+    font-weight: 600;
+  }
+
   &__stats {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));

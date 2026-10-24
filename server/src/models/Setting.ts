@@ -43,6 +43,7 @@ export namespace Setting {
     TRAKT: "trakt",
     CLIPS: "clips",
     PODIUM: "podium",
+    UPDATES: "updates",
   } as const;
 }
 

@@ -59,6 +59,8 @@ export namespace AppSystem {
 
     FFMPEG_PATH: env("FFMPEG_PATH", "ffmpeg"),
     FFPROBE_PATH: env("FFPROBE_PATH", "ffprobe"),
+
+    UPDATE_CHECK: env("UPDATE_CHECK", "true") !== "false",
   };
 
   /**

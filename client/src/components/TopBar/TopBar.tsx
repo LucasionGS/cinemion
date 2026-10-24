@@ -1,11 +1,12 @@
 import { Menu } from "@base-ui/react/menu";
-import { Download, House, LayoutDashboard, LogOut, Popcorn, Search, Settings, Users } from "lucide-react";
+import { CircleArrowUp, Download, House, LayoutDashboard, LogOut, Popcorn, Search, Settings, Users } from "lucide-react";
 import type { LibraryInfo } from "@shared/api.ts";
 import { Link, router } from "../../lib/Router.tsx";
 import useController from "../../lib/useController.ts";
 import { deviceMode } from "../../lib/DeviceMode.ts";
 import cx from "../../lib/cx.ts";
 import { session } from "../../Session.ts";
+import { useUpdates } from "../../lib/Updates.ts";
 import Logo from "../Logo/Logo.tsx";
 import Avatar from "../Avatar/Avatar.tsx";
 import LibraryIcon from "../LibraryIcon/LibraryIcon.tsx";
@@ -84,12 +85,14 @@ export default function TopBar(props: TopBarProps) {
 
 function ProfileMenu() {
   const { user } = useController(session);
+  const update = useUpdates().available();
   if (!user) return null;
 
   return (
     <Menu.Root>
-      <Menu.Trigger className="cn-topbar__profile" aria-label={`Profile: ${user.name}`}>
+      <Menu.Trigger className="cn-topbar__profile" aria-label={`Profile: ${user.name}${update ? ". A new Cinemion is out" : ""}`}>
         <Avatar profile={user} size={2.6} />
+        {update && <span className="cn-topbar__dot" aria-hidden="true" />}
       </Menu.Trigger>
       <Menu.Portal>
         <Menu.Positioner sideOffset={10} align="end" className="cn-menu__positioner">
@@ -101,6 +104,7 @@ function ProfileMenu() {
                 <span>{user.role === "admin" ? "Admin" : "Profile"}</span>
               </div>
             </div>
+            {update && <Menu.Item className="cn-menu__item cn-menu__item--accent" onClick={() => router.navigate("/settings/about")}><CircleArrowUp /> Cinemion {update.version} is out</Menu.Item>}
             <Menu.Item className="cn-menu__item" onClick={() => router.navigate("/settings/profile")}><Settings /> Profile &amp; settings</Menu.Item>
             {session.can("SERVER_MANAGE") && <Menu.Item className="cn-menu__item" onClick={() => router.navigate("/settings/dashboard")}><LayoutDashboard /> Server dashboard</Menu.Item>}
             <Menu.Item className="cn-menu__item" onClick={() => router.navigate("/together")}><Popcorn /> Join watch together</Menu.Item>

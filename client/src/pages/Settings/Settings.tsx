@@ -6,6 +6,7 @@ import { Link } from "../../lib/Router.tsx";
 import useController from "../../lib/useController.ts";
 import usePoll from "../../lib/usePoll.ts";
 import cx from "../../lib/cx.ts";
+import { useUpdates } from "../../lib/Updates.ts";
 import AppShell from "../../components/AppShell/AppShell.tsx";
 import ProfileSettings from "./ProfileSettings.tsx";
 import DeviceSettings from "./DeviceSettings.tsx";
@@ -33,6 +34,10 @@ interface Tab {
    */
   wide?: boolean;
   badge?: number;
+  /**
+   * Shows a dot after the label; the text is for screen readers.
+   */
+  dot?: string | null;
   render: () => ReactNode;
 }
 
@@ -45,11 +50,12 @@ export default function Settings(props: SettingsProps) {
   useController(session);
   const canManage = session.can("SERVER_MANAGE");
   const running = useRunningTasks(canManage);
+  const update = useUpdates().available();
 
   const tabs: Tab[] = [
     { id: "profile", label: "Your profile", icon: <UserRound />, group: "you", visible: true, render: () => <ProfileSettings /> },
     { id: "device", label: "This device", icon: <MonitorSmartphone />, group: "you", visible: true, render: () => <DeviceSettings /> },
-    { id: "about", label: "About", icon: <Info />, group: "you", visible: true, render: () => <AboutSettings /> },
+    { id: "about", label: "About", icon: <Info />, group: "you", visible: true, dot: update && `Cinemion ${update.version} is out`, render: () => <AboutSettings /> },
     { id: "dashboard", label: "Dashboard", icon: <LayoutDashboard />, group: "server", visible: canManage, wide: true, render: () => <Dashboard /> },
     { id: "libraries", label: "Libraries", icon: <FolderOpen />, group: "server", visible: session.can("LIBRARY_MANAGE"), render: () => <LibrariesSettings /> },
     { id: "users", label: "Users", icon: <Users />, group: "server", visible: session.can("USERS_MANAGE"), render: () => <UsersSettings /> },
@@ -79,6 +85,7 @@ export default function Settings(props: SettingsProps) {
                 <Link key={t.id} href={`/settings/${t.id}`} className={cx("cn-settings__link", t === current && "cn-settings__link--active")} aria-current={t === current ? "page" : undefined}>
                   {t.icon}
                   {t.label}
+                  {t.dot && <span className="cn-settings__link-dot" role="img" aria-label={t.dot} />}
                   {!!t.badge && <span className="cn-settings__link-badge" aria-label={`${t.badge} running`}>{t.badge}</span>}
                 </Link>
               ))}

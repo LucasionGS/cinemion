@@ -115,12 +115,62 @@ export interface DashboardInfo {
 
 //#endregion
 
+//#region Updates
+
+/**
+ * How this server was installed, which says how to update it.
+ */
+export type InstallKind = "docker" | "aur" | "binary" | "source";
+
+export interface ReleaseInfo {
+  /**
+   * Without the "v": "0.5.1".
+   */
+  version: string;
+  /**
+   * The release page, with what's new.
+   */
+  url: string;
+  publishedAt: string;
+}
+
+/**
+ * Whether a newer Cinemion is out, from the releases on GitHub. Only for people who manage the server.
+ */
+export interface UpdateInfo {
+  current: string;
+  /**
+   * The newest release seen, or `null` before the first check.
+   */
+  latest: ReleaseInfo | null;
+  /**
+   * `true` when `latest` is newer than this server.
+   */
+  available: boolean;
+  /**
+   * Whether Cinemion looks for new releases on its own.
+   */
+  enabled: boolean;
+  /**
+   * `true` when `UPDATE_CHECK=false` turned the check off, so Settings can't turn it on.
+   */
+  disabledByEnv: boolean;
+  checkedAt: string | null;
+  /**
+   * Why the last check failed, or `null`.
+   */
+  error: string | null;
+  install: InstallKind;
+}
+
+//#endregion
+
 //#region Activity
 
 /**
  * What kind of thing happened, used for the dot colour in the feed.
  */
-export type ActivityKind = "added" | "watched" | "signIn" | "import" | "delete" | "subtitles" | "together" | "download" | "upload";
+export type ActivityKind = "added" | "watched" | "signIn" | "import" | "delete" | "subtitles" | "together" | "download" | "upload" | "update";
 
 export interface ActivityInfo {
   id: number;

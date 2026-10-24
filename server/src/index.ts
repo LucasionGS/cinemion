@@ -12,6 +12,7 @@ import SubtitleAutomation from "./subtitles/SubtitleAutomation.ts";
 import OfflineCopies from "./media/OfflineCopies.ts";
 import Uploads from "./library/Uploads.ts";
 import ClipTools from "./clips/ClipTools.ts";
+import UpdateCheck from "./lib/UpdateCheck.ts";
 import { Activity } from "./models/index.ts";
 import log from "./lib/Logger.ts";
 
@@ -61,6 +62,7 @@ const server = Deno.serve({
 
 await LibraryWatcher.refresh();
 ScanScheduler.start();
+UpdateCheck.start();
 
 // Once a day: the activity feed keeps a couple of months, missing subtitles are looked for again, and offline copies
 // nobody fetched lately are deleted
@@ -77,6 +79,7 @@ for (const signal of ["SIGINT", "SIGTERM"] as const) {
   Deno.addSignalListener(signal, async () => {
     log.info("Shutting down");
     ScanScheduler.stop();
+    UpdateCheck.stop();
     LibraryWatcher.stop();
     ActivePlayback.shutdown();
     Uploads.stop();

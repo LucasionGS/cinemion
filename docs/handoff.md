@@ -1,7 +1,7 @@
 # Cinemion handoff
 
 Everything an assistant needs to pick this project up with no earlier context. Read it fully before changing code.
-Last updated 2026-10-24, after Clips libraries (milestone 21).
+Last updated 2026-10-24, after the update check (21c).
 
 ## 1. What Cinemion is
 
@@ -160,7 +160,7 @@ home, search), `playback.ts` (device capabilities, playback info, playback/subti
   last 1000 lines for the Logs page), `Network.ts` (LAN vs remote, trusts X-Forwarded-For only from private proxies),
   `RateLimit.ts`, `Avatars.ts`, `MediaRoots.ts`, `http.ts`, `async.ts`, `SystemStats.ts` (CPU from `/proc/stat`
   deltas, memory, GPU usage from `nvidia-smi` / AMD `gpu_busy_percent` / Intel idle residency, disk use via `df -P`),
-  `UserAgent.ts` (device names like "TV · Chrome" from the user agent plus the client's `X-Cinemion-Device-Mode` header).
+  `UserAgent.ts` (device names like "TV · Chrome" from the user agent plus the client's `X-Cinemion-Device-Mode` header), `UpdateCheck.ts` (looks for a newer release on GitHub; see "Update check (21c)").
 - `models/`: Role, User (bcrypt, JWT, `User.$middleware({ required, admin, permissions })`, `User.fromToken`),
   Setting (JSON per key, `Setting.Keys`), Library, MediaItem (movie/show/season/episode), MediaFile (probe data,
   `sidecars`, `allSubtitles()`; subtitle files get track indexes from 10000), Person, Credit, WatchState, Collection,
@@ -741,6 +741,25 @@ Asked for on 2026-10-24: Podium (the owner's clip recorder, `~/development/podiu
 - **Tested** with a Podium-like client script (three pieces, a repeated piece, early complete, repeated complete, the
   same file again, a wrong checksum, a wrong type, a wrong token) against a scratch server: a known game by Steam id,
   a new game looked up on Steam, a desktop recording, and a Videos library. Not tested with Podium itself.
+
+### Update check (21c)
+Asked for on 2026-10-24: tell admins when a newer Cinemion is out; nothing is downloaded or installed.
+- **Server** (`lib/UpdateCheck.ts`, started in `index.ts`): a minute after startup, then hourly, it checks whether the
+  last check is 12 hours old and if so asks `api.github.com/repos/LucasionGS/cinemion/releases/latest` (drafts and
+  prereleases are left out; the request carries only `User-Agent: Cinemion`). The result is kept in the `updates`
+  setting (`enabled`, `latest`, `checkedAt`, `error`, `announced`), so the notice survives restarts without asking
+  GitHub again. Each new version gets one `update` line in the activity feed and the log. `isNewer` follows semver,
+  prereleases included (checked in `test.ts`). `UPDATE_CHECK=false` turns it off for good.
+- **API** (`AdminController`, `SERVER_MANAGE`): `GET /api/admin/update`, `POST /api/admin/update/check`,
+  `PUT /api/admin/update { enabled }`. `UpdateInfo.install` (`docker`, `aur` for `/usr/bin/cinemion` on Arch,
+  `source` when run by `deno`, else `binary`) picks the "how to update" text.
+- **Client** (`lib/Updates.ts`, an `UpdatesController` that only loads for profiles with `SERVER_MANAGE` and
+  refreshes hourly): a dot on the profile picture and a "Cinemion x.y.z is out" item at the top of the profile menu,
+  a dot on Settings › About, an Updates card there (what's new link, how to update, Check now, the on/off switch),
+  and a link next to the version on the dashboard. Other profiles never ask for it, and the API refuses them.
+- **Tested** against a scratch server: the real GitHub check (finds 0.5.0, nothing to show), a made-up 0.5.1 in the
+  stored setting (screenshots of About, the menu and the dashboard), a profile without `SERVER_MANAGE` (no dot, no
+  card, 403 from the API), and switching the check off and on.
 
 ## 6. Design decisions
 

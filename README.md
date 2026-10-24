@@ -37,6 +37,7 @@ Your movies, shows, music, books and photos, beautifully served from your own ma
 - **Seerr and Homepage, welcome too**: request apps and dashboards made for other media servers can use Cinemion instead. Seerr signs in with your Cinemion login, knows what you already have and links straight back to it; Homepage shows what's playing and how big your libraries are. Keys for them are in Settings › Integrations.
 - **Webhooks for everything else**: tell Home Assistant, a chat bot or your own script when playback starts, pauses or stops, a new episode arrives or someone signs in. Every message is signed, failed ones are retried, and there's a test button.
 - **Tasks and logs at hand**: start scans and thumbnail jobs, choose how often libraries are scanned, and read the server log with filters, all in Settings. No terminal needed when something acts up.
+- **Knows when there's a new version**: twice a day Cinemion looks at its releases on GitHub, and when there's a newer one, admins (and only admins) get a dot on their profile picture and a note on how to update. Rather it didn't? It's one switch in Settings › About, or `UPDATE_CHECK=false`.
 - **One container, nothing else**: the Docker image includes everything. No database server, no extra services. There's also a single-file binary if you'd rather skip Docker.
 - **Plays nice with MediaHub**: open it in MediaHub and it starts straight in the TV layout, controller included.
 
