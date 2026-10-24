@@ -34,6 +34,8 @@ import ClipTools from "./clips/ClipTools.ts";
 import UpdateCheck from "./lib/UpdateCheck.ts";
 import Tar from "./lib/Tar.ts";
 import Encryption from "./lib/Encryption.ts";
+import Certificates from "./https/Certificates.ts";
+import Der from "./https/Der.ts";
 
 /**
  * Scratch runner for the parts that are easy to get subtly wrong. Run with `deno run -A server/src/test.ts`.
@@ -515,6 +517,27 @@ check("wrong password, changed or cut short", [
   // Cut exactly between pieces: every piece left is fine, but the last one is missing
   await openError(sealed.slice(0, 29 + 4 + 1024 * 1024 + 16), "correct horse"),
 ], ["The password is wrong.", "The file is damaged: part of it doesn't match its checksum.", "The file is cut short.", "The file is cut short."]);
+//#endregion
+
+//#region HTTPS
+console.log("HTTPS");
+check("DER lengths and integers", [Der.tlv(0x04, new Uint8Array(200)).slice(0, 3), Der.integer(new Uint8Array([0x80])), Der.integer(0), Der.oid("1.2.840.10045.4.3.2")].map((b) => [...b]), [
+  [0x04, 0x81, 200], [0x02, 0x02, 0x00, 0x80], [0x02, 0x01, 0x00], [0x06, 0x08, 0x2a, 0x86, 0x48, 0xce, 0x3d, 0x04, 0x03, 0x02],
+]);
+check("DER times", [Der.readTime(Der.read(Der.time(new Date("2036-10-21T23:02:03Z")))).toISOString(), Der.read(Der.time(new Date("2051-01-01T00:00:00Z"))).tag], ["2036-10-21T23:02:03.000Z", Der.TAGS.GENERALIZED_TIME]);
+const authority = await Certificates.makeAuthority("Test");
+const server = await Certificates.makeServer(authority, ["localhost", "cinemion.lan", "192.168.1.20", "::1"]);
+const serverInfo = Certificates.read(server.cert);
+check("certificate authority", [Certificates.read(authority.cert).isCa, Certificates.read(authority.cert).subject], [true, "Test (Cinemion)"]);
+check("server certificate", [serverInfo.isCa, serverInfo.issuer, serverInfo.names, Date.parse(serverInfo.notAfter) - Date.now() > 390 * 24 * 60 * 60 * 1000], [false, "Test (Cinemion)", ["localhost", "cinemion.lan", "192.168.1.20", "::1"], true]);
+const tlsServer = Deno.serve({ port: 0, hostname: "127.0.0.1", cert: server.cert, key: server.key, onListen: () => { } }, () => new Response("tls ok"));
+const tlsClient = Deno.createHttpClient({ caCerts: [authority.cert] });
+const tlsAnswer = await fetch(`https://localhost:${tlsServer.addr.port}/`, { client: tlsClient }).then((r) => r.text()).catch((e) => String(e));
+tlsClient.close();
+await tlsServer.shutdown();
+check("serving with it, trusting only the authority", tlsAnswer, "tls ok");
+const request = Der.read(await Certificates.makeRequest(await Certificates.generateKey(), ["example.com"]));
+check("certificate request", [request.children.length, request.children[0].children.length], [3, 4]);
 //#endregion
 
 console.log(failed ? `\n${failed} failed` : "\nAll passed");

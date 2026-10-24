@@ -41,6 +41,7 @@ Your movies, shows, music, books and photos, beautifully served from your own ma
 - **Backups you'll actually have**: one click (or a nightly schedule) saves profiles, everyone's watch history, settings, playlists, albums and artwork into one file, optionally locked with a password. Cinemion makes one by itself before every update that changes its database, and a fresh install can be brought back from a backup right in the setup wizard.
 - **Knows when there's a new version**: twice a day Cinemion looks at its releases on GitHub, and when there's a newer one, admins (and only admins) get a dot on their profile picture and a note on how to update. Rather it didn't? It's one switch in Settings › About, or `UPDATE_CHECK=false`.
 - **Speaks your language (soon)**: every line of the interface lives in one translation file, so adding a language is filling in a copy of the English one. English is the only one so far; [here's how to add yours](docs/translating.md).
+- **https built in**: switch on a secure address in Settings, with a certificate Cinemion makes itself (trust it once per device), a free one from Let's Encrypt for your own domain, or one you already have. No reverse proxy needed, and offline downloads work on your home network.
 - **One container, nothing else**: the Docker image includes everything. No database server, no extra services. There's also a single-file binary if you'd rather skip Docker.
 - **Plays nice with MediaHub**: open it in MediaHub and it starts straight in the TV layout, controller included.
 
@@ -87,7 +88,7 @@ Cinemion runs on Linux (x64 and arm64). Pick whichever way of installing suits y
 
 ```sh
 docker run -d --name cinemion \
-  -p 8600:8600 \
+  -p 8600:8600 -p 8443:8443 \
   -v /path/to/config:/config \
   -v /path/to/movies:/media/movies:ro \
   -v /path/to/shows:/media/shows:ro \
@@ -105,6 +106,7 @@ services:
     restart: unless-stopped
     ports:
       - "8600:8600"
+      - "8443:8443" # built-in https, when it's turned on
     environment:
       PUID: "1000"
       PGID: "1000"
@@ -144,6 +146,16 @@ Uploads wait in `<CACHE_DIR>/uploads` (`/cache/uploads` in Docker) until they're
 ### Uploading from Podium
 
 Settings › Integrations › Podium makes an upload target for a library (and a folder in it, like `Podium`). In Podium, add a Podium-compatible server with the server URL shown there (`https://<your-server>/api/podium`) and the target's token. Uploads go up in 8 MB pieces, so a reverse proxy needs to allow request bodies of at least 9 MB (`client_max_body_size 16m;` in nginx). Cinemion needs write access to the library's folder, as for uploads from the browser.
+
+### HTTPS
+
+Settings › HTTPS turns on a second, encrypted address (port 8443, or `HTTPS_PORT`) next to the plain http one, so offline downloads work without a reverse proxy. The certificate comes from one of three places:
+
+- **Made by Cinemion**: works on any home network. Cinemion runs its own little certificate authority; download its certificate from the settings page (or `http://<your-server>:8600/api/https/cinemion-ca.crt` on a phone) and trust it once per device. The page has the steps for Windows, Mac, iPhone, Android, Linux and Firefox. In Docker, add the address you open Cinemion at under "Extra names", since the container can't see it.
+- **Let's Encrypt**: for a domain of your own. Point it at your home, forward port 80 to Cinemion's http port (Let's Encrypt checks the domain through it) and port 443 to the https port. Renewals happen by themselves.
+- **Your own**: paste a certificate and key you already have.
+
+"Send browsers to https" moves people who open the http address over; the API stays on http for Sonarr, Radarr, Seerr and webhooks. Behind a reverse proxy that already does https, leave all of this off.
 
 ### Backups
 

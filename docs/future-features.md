@@ -6,9 +6,6 @@ Planned, but not part of the first version. Roughly in the order they're likely 
 
 - **More translations**: the interface can be translated (see `docs/translating.md`) but only English exists. Next:
   actual languages, and the server's own messages (errors, the activity feed, task names) as translatable lines too.
-- **Built-in HTTPS**: turn on https in Settings without a reverse proxy. Either Cinemion makes its own certificate
-  (with a short guide for trusting it on each device), gets a free Let's Encrypt certificate for your own domain, or
-  uses a certificate you upload. This also makes offline downloads and notifications on phones work on a home network.
 
 ## Notifications
 
@@ -59,7 +56,7 @@ Clips libraries are there (see the handoff, milestone 21); ideas left over:
 ## Playback
 
 - **Downloads over plain http**: offline downloads need https (browsers only allow service workers there). Built-in
-  HTTPS (above) covers most homes; a small companion app would make them work on plain LAN addresses too.
+  HTTPS covers most homes; a small companion app would make them work on plain LAN addresses too.
 
 ## Clients
 

@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { ArchiveRestore, Captions, Clapperboard, FolderOpen, Info, LayoutDashboard, Library as LibraryIcon, ListChecks, MonitorSmartphone, Plug, ScrollText, UserRound, Users, Webhook } from "lucide-react";
+import { ArchiveRestore, Captions, LockKeyhole, Clapperboard, FolderOpen, Info, LayoutDashboard, Library as LibraryIcon, ListChecks, MonitorSmartphone, Plug, ScrollText, UserRound, Users, Webhook } from "lucide-react";
 import { session } from "../../Session.ts";
 import AdminApi from "../../Api/AdminApi.ts";
 import { Link } from "../../lib/Router.tsx";
@@ -23,6 +23,7 @@ import TasksSettings from "./TasksSettings.tsx";
 import LogsSettings from "./LogsSettings.tsx";
 import AboutSettings from "./AboutSettings.tsx";
 import BackupsSettings from "./BackupsSettings.tsx";
+import HttpsSettings from "./HttpsSettings.tsx";
 import "./Settings.scss";
 
 interface Tab {
@@ -66,6 +67,7 @@ export default function Settings(props: SettingsProps) {
     { id: "subtitles", label: t("settings.tabs.subtitles"), icon: <Captions />, group: "server", visible: canManage, render: () => <SubtitleSettings /> },
     { id: "integrations", label: t("settings.tabs.integrations"), icon: <Plug />, group: "server", visible: canManage, render: () => <IntegrationsSettings /> },
     { id: "webhooks", label: t("settings.tabs.webhooks"), icon: <Webhook />, group: "server", visible: canManage, render: () => <WebhooksSettings /> },
+    { id: "https", label: t("settings.tabs.https"), icon: <LockKeyhole />, group: "server", visible: canManage, render: () => <HttpsSettings /> },
     { id: "backups", label: t("settings.tabs.backups"), icon: <ArchiveRestore />, group: "server", visible: canManage, render: () => <BackupsSettings /> },
     { id: "tasks", label: t("settings.tabs.tasks"), icon: <ListChecks />, group: "server", visible: canManage, badge: running, render: () => <TasksSettings /> },
     { id: "logs", label: t("settings.tabs.logs"), icon: <ScrollText />, group: "server", visible: canManage, wide: true, render: () => <LogsSettings /> },

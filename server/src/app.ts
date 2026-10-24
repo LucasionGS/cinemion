@@ -4,6 +4,8 @@ import { Hono, type Context } from "hono";
 import AppSystem from "./AppSystem.ts";
 import ApiController from "./controllers/ApiController.ts";
 import CompatController from "./controllers/CompatController.ts";
+import Https from "./https/Https.ts";
+import Acme from "./https/Acme.ts";
 import log from "./lib/Logger.ts";
 import type { AppEnv } from "./lib/types.ts";
 
@@ -64,6 +66,18 @@ export function createApp() {
   app.onError((error, c) => {
     log.error(`${c.req.method} ${c.req.path} failed`, { error });
     return c.json({ message: "Something went wrong on the server. The server log has the details." }, 500);
+  });
+
+  // Let's Encrypt checking that the domain leads here, before a certificate is handed out
+  app.get("/.well-known/acme-challenge/:token", (c) => {
+    const answer = Acme.challengeAnswer(c.req.param("token"));
+    return answer ? c.text(answer) : c.text("Not found", 404);
+  });
+  // Pages opened over plain http go to https when that's turned on
+  app.use("*", async (c, next) => {
+    const target = Https.redirectFor(c.req.raw);
+    if (target) return c.redirect(target, 302);
+    await next();
   });
 
   app.route("/api", ApiController.router);

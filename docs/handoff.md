@@ -280,6 +280,7 @@ and on amd64 Intel's non-free VA driver + Quick Sync runtime), `docker/entrypoin
 | 22 | done | Translations: every line of the client in `en.json`, a language per profile, `deno task i18n` (below) |
 | 23 | done | Backups and restore: by hand, on a schedule and before updates, password protection, restore from the setup wizard or the CLI (below) |
 | 24 | done | My list: a watchlist per profile, a home row, two-way sync with the Trakt watchlist (below) |
+| 25 | done | Built-in HTTPS: a certificate made by Cinemion, from Let's Encrypt or your own, renewed by itself (below) |
 
 Not planned in these rounds: **built-in remote access** (needs a relay service on ionnet.io that doesn't exist yet).
 Photos were asked for on 2026-10-21 and became milestone 20. The owner asked for each milestone to be committed and pushed, and
@@ -867,6 +868,33 @@ Asked for on 2026-10-25 (with every other item on the "what's next" list).
 - **Tested** against a scratch server and a fake Trakt API (`TRAKT_API_URL`): adding and removing, the first merge
   after linking, pushes, removals on either side, titles added on Trakt, and a movie with matching NFO ids arriving
   in a new library.
+
+### Milestone 25: Built-in HTTPS
+- **Listener** (`https/Https.ts`, started in `index.ts` with `app.fetch`): a second `Deno.serve` with `cert`/`key` on
+  `settings.port` (default `HTTPS_PORT`, 8443) next to the plain http one, restarted when settings or certificates
+  change. Restarting calls `shutdown()` and waits at most 2 s; the port is free once it stops listening. Don't pass an
+  abort `signal` too: aborting after a finished shutdown crashed Deno with "Bad resource ID". Settings in the `https`
+  setting; files in `CONFIG_DIR/tls/` (keys 0600). Checked every 12 hours; renewed 30 days before they run out.
+- **Certificates made by Cinemion** (`https/Certificates.ts` on top of `https/Der.ts`, WebCrypto ECDSA P-256, no
+  openssl needed): a 10-year certificate authority ("<server name> (Cinemion)", `basicConstraints` CA, pathLen 0) and a
+  397-day server certificate (Apple's limit) for `localhost`, the host name (+ `.local`), `SITE_URL`'s host, 127.0.0.1,
+  the machine's IPv4 addresses (Docker/VM bridges left out) and `extraNames`. A new one is made when a name is missing.
+  The authority is public at `/api/https/cinemion-ca.crt` (`application/x-x509-ca-cert`, so iPhones offer to install
+  it); the settings page has trust steps per platform. Checked with `openssl verify`, `openssl req -verify` and a TLS
+  fetch that trusts only the authority (also in `test.ts`).
+- **Let's Encrypt** (`https/Acme.ts`): RFC 8555 with ES256 JWS (raw r‖s), HTTP-01 answered at
+  `/.well-known/acme-challenge/:token` in `app.ts`, a PKCS #10 request with the SAN in an extensionRequest, and the PEM
+  chain. The account key is kept in `acme-account.json` per directory. `ACME_DIRECTORY` points elsewhere for tests.
+  A failed renewal keeps the current certificate while it's still valid (shown as a warning). Tested end to end with
+  Pebble in Docker (`--network host`, `httpPort` = Cinemion's http port, `DENO_CERT` = Pebble's minica), including
+  real HTTP-01 checks, an unknown domain and a blocked one.
+- **Your own**: PEM certificate (with chain) and key, checked with `Deno.listenTls` (a key that doesn't match is
+  refused: rustls says KeyMismatch).
+- **Redirect** ("Send browsers to https", off by default): only GET/HEAD page loads that accept HTML, never `/api`,
+  `/.well-known` or the capitalised paths of the app API, and not when `X-Forwarded-Proto` is https.
+- Docker publishes 8443 (`EXPOSE`, compose). Settings › HTTPS (`HttpsSettings.tsx`): the switch, port, addresses,
+  a kind picker where "Use this certificate" switches over, a hint to add the address the page was opened at, the
+  trust guide, Let's Encrypt steps (port 80 → http port, 443 → https port), and the redirect switch.
 
 ## 6. Design decisions
 

@@ -15,6 +15,7 @@ import ClipTools from "./clips/ClipTools.ts";
 import UpdateCheck from "./lib/UpdateCheck.ts";
 import Backups from "./backups/Backups.ts";
 import Watchlist from "./library/Watchlist.ts";
+import Https from "./https/Https.ts";
 import { Activity } from "./models/index.ts";
 import log from "./lib/Logger.ts";
 
@@ -65,6 +66,7 @@ const server = Deno.serve({
   },
 }, app.fetch);
 
+await Https.start(app.fetch);
 await LibraryWatcher.refresh();
 ScanScheduler.start();
 UpdateCheck.start();
@@ -94,6 +96,7 @@ for (const signal of ["SIGINT", "SIGTERM"] as const) {
     Uploads.stop();
     clearTimeout(firstDaily);
     clearInterval(dailyTimer);
+    await Https.stop();
     await TranscodeSession.shutdown();
     WatchTogether.shutdown();
     await server.shutdown();

@@ -43,6 +43,7 @@ COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 ENV CINEMION_DOCKER=1 \
   APP_ENV=production \
   PORT=8600 \
+  HTTPS_PORT=8443 \
   CONFIG_DIR=/config \
   CACHE_DIR=/cache \
   MEDIA_ROOTS=/media \
@@ -51,7 +52,7 @@ ENV CINEMION_DOCKER=1 \
 
 RUN mkdir -p /config /cache /media
 VOLUME ["/config", "/cache"]
-EXPOSE 8600
+EXPOSE 8600 8443
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s CMD bash -c 'exec 3<>/dev/tcp/127.0.0.1/${PORT}' || exit 1
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["cinemion"]

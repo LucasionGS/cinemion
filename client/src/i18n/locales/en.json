@@ -1498,7 +1498,7 @@
     "offline": "Offline",
     "unsupported": {
       "title": "This browser can't save downloads here",
-      "text": "Offline downloads need Cinemion opened over https (or as localhost on the server itself). Over a plain http address, browsers don't allow it."
+      "text": "Offline downloads need Cinemion opened over https (or as localhost on the server itself). Over a plain http address, browsers don't allow it. Whoever manages the server can turn on https in Settings › HTTPS."
     },
     "empty": {
       "title": "Nothing saved yet",
@@ -1542,7 +1542,7 @@
       "asIs": "Plays as it is, at full quality",
       "madeOnServer": "Made on the server first",
       "needsHttps": "Downloads need https",
-      "needsHttpsDescription": "Browsers only let sites save videos when they're opened over https (or as localhost on the server).",
+      "needsHttpsDescription": "Browsers only let sites save videos when they're opened over https (or as localhost on the server). It can be turned on in Settings › HTTPS.",
       "sizesFailed": "Couldn't get the download sizes",
       "started": "Download started",
       "startedDescription": "Follow it in Downloads, in the profile menu.",
@@ -1578,7 +1578,8 @@
         "one": "{count} running",
         "other": "{count} running"
       },
-      "backups": "Backups"
+      "backups": "Backups",
+      "https": "HTTPS"
     },
     "about": {
       "title": "About",
@@ -2767,6 +2768,103 @@
       "notYet": "Kept in step with your Trakt watchlist, both ways. The first sync happens in a few minutes.",
       "failed": "The last sync with Trakt didn't work: {error}",
       "notLinked": "Link Trakt in <link>Settings › Your profile</link> to keep this list in step with your Trakt watchlist."
+    }
+  },
+  "https": {
+    "title": "HTTPS",
+    "intro": "A secure address for Cinemion, without setting up a reverse proxy. Browsers need it for offline downloads and for notifications on phones.",
+    "notStarted": "https didn't start",
+    "renewed": "The certificate is renewed",
+    "renewFailed": "Couldn't renew the certificate",
+    "address": {
+      "title": "Secure address",
+      "switch": "Turn on https",
+      "switchDescription": "Cinemion also answers on a second port, encrypted. The plain http address keeps working next to it.",
+      "turnedOn": "https is on",
+      "turnedOff": "https is off",
+      "port": "https port",
+      "portDescription": "8443 unless something else uses it. With Docker, publish this port too.",
+      "openAt": "Open Cinemion at:"
+    },
+    "certificate": {
+      "title": "Certificate",
+      "kind": "Where the certificate comes from",
+      "inUse": "In use",
+      "use": "Use this certificate",
+      "switched": "Using the new certificate",
+      "facts": "From {issuer}, valid until {date}. It's renewed by itself before it runs out."
+    },
+    "kind": {
+      "cinemion": "Made by Cinemion",
+      "letsencrypt": "Let's Encrypt",
+      "own": "Your own"
+    },
+    "cinemion": {
+      "text": "Works on any home network, no domain needed. Cinemion signs its own certificate, so each device has to trust Cinemion once (see below); until then browsers warn about the address.",
+      "names": "Extra names and addresses",
+      "namesDescription": "Cinemion covers this computer's name and addresses by itself. Add others it's reached at, like a name your router hands out or the computer's address when Cinemion runs in Docker.",
+      "covers": "Valid for {names}.",
+      "notCovered": "You opened this page at {host}, which the certificate doesn't cover yet.",
+      "add": "Add {host}",
+      "added": "The certificate now covers that address",
+      "remake": "Make a new certificate"
+    },
+    "trust": {
+      "title": "Trust Cinemion on your devices",
+      "text": "Do this once on every device that opens Cinemion over https. It makes the device trust certificates this Cinemion signs, and nothing else.",
+      "download": "Download Cinemion's certificate",
+      "onPhone": "On a phone or tablet, open {address} in its browser to download it there.",
+      "windows": {
+        "title": "Windows",
+        "steps": "Open the downloaded file and choose Install Certificate.\nPick Local Machine, then Place all certificates in the following store, Browse, and Trusted Root Certification Authorities.\nFinish, then restart the browser."
+      },
+      "mac": {
+        "title": "Mac",
+        "steps": "Open the downloaded file; Keychain Access adds it to the login keychain.\nDouble-click the certificate there, open Trust, and set When using this certificate to Always Trust.\nClose the window and enter your password to save."
+      },
+      "iphone": {
+        "title": "iPhone and iPad",
+        "steps": "Open the download address in Safari and allow the profile to download.\nGo to Settings › General › VPN & Device Management, open the Cinemion profile and install it.\nThen go to Settings › General › About › Certificate Trust Settings and switch on full trust for Cinemion."
+      },
+      "android": {
+        "title": "Android",
+        "steps": "Download the file in the browser.\nGo to Settings › Security › More security settings (or Encryption & credentials) › Install a certificate › CA certificate, and pick the file.\nThe wording differs a little between phones; searching Settings for \"certificate\" finds it."
+      },
+      "linux": {
+        "title": "Linux",
+        "steps": "Arch: sudo trust anchor cinemion-ca.crt\nDebian and Ubuntu: copy the file to /usr/local/share/ca-certificates/ and run sudo update-ca-certificates.\nChrome on Linux keeps its own list: Settings › Privacy and security › Security › Manage certificates › Authorities › Import."
+      },
+      "firefox": {
+        "title": "Firefox (any computer)",
+        "steps": "Firefox has its own list. Go to Settings › Privacy & Security › Certificates › View Certificates › Authorities › Import, pick the file and tick Trust this CA to identify websites."
+      }
+    },
+    "letsencrypt": {
+      "text": "A certificate every device trusts straight away, free from Let's Encrypt, for a domain of your own that points at this server.",
+      "stepDomain": "Point the domain (or a subdomain) at your home's internet address.",
+      "stepPort80": "Forward port 80 on your router to port {port} on this computer. Let's Encrypt checks the domain through it, again every couple of months.",
+      "stepPort443": "Forward port 443 to the https port {port}, so the domain opens Cinemion over https.",
+      "domain": "Domain",
+      "email": "Email address (optional)",
+      "emailDescription": "Let's Encrypt writes here if a certificate is about to run out without being renewed.",
+      "terms": "Getting a certificate means agreeing to <link>Let's Encrypt's subscriber agreement</link>.",
+      "get": "Get a certificate",
+      "done": "Let's Encrypt handed out a certificate",
+      "renew": "Renew now"
+    },
+    "own": {
+      "text": "Already have a certificate, from your router, your own certificate authority or a wildcard for your domain? Paste it here. You'll have to replace it yourself before it runs out.",
+      "certificate": "Certificate",
+      "certificateDescription": "PEM text, with the intermediate certificates after your own (the full chain).",
+      "key": "Private key",
+      "use": "Use this certificate",
+      "replace": "Replace the certificate",
+      "saved": "Using your certificate"
+    },
+    "redirect": {
+      "title": "Plain http",
+      "switch": "Send browsers to https",
+      "description": "Pages opened at the http address move to the https one. Apps, Sonarr, Radarr and webhooks keep using http as before. Only turn this on once your devices trust the certificate."
     }
   }
 }

@@ -8,6 +8,8 @@ services:
     restart: unless-stopped
     ports:
       - "8600:8600"
+      # Built-in https (Settings › HTTPS)
+      - "8443:8443"
     environment:
       PUID: "${PUID:-1000}"
       PGID: "${PGID:-1000}"

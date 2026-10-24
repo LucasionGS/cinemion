@@ -37,6 +37,7 @@ export namespace AppSystem {
 
   export const config = {
     PORT: parseInt(env("PORT", "8600")),
+    HTTPS_PORT: parseInt(env("HTTPS_PORT", "8443")),
     SITE_URL: env("SITE_URL", ""),
     APP_ENV: env("APP_ENV", "production"),
     VITE_DEV_URL: env("VITE_DEV_URL", "http://localhost:5173"),

@@ -668,3 +668,117 @@
 :root[data-mode="mobile"] .cn-backups__fields {
   grid-template-columns: minmax(0, 1fr);
 }
+
+.cn-https {
+  &__step {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--cn-text-muted);
+    font-size: 0.9rem;
+  }
+
+  &__addresses {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 1rem;
+    font-size: 0.9rem;
+    color: var(--cn-text-subtle);
+
+    a {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      color: var(--cn-accent-text);
+      font-family: var(--cn-font-mono);
+      font-size: 0.85rem;
+
+      svg {
+        width: 0.9em;
+        height: 0.9em;
+      }
+    }
+  }
+
+  &__warning {
+    padding: 0.75rem 1rem;
+    border-radius: var(--cn-radius-lg);
+    background: var(--cn-warning-soft);
+    color: var(--cn-text);
+    font-size: 0.875rem;
+  }
+
+  &__missing {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+
+    span {
+      flex: 1 1 16rem;
+    }
+  }
+
+  &__in-use {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    align-self: flex-start;
+
+    svg {
+      width: 0.9rem;
+      height: 0.9rem;
+    }
+  }
+
+  &__port {
+    flex: 0 1 22rem;
+  }
+
+  &__download {
+    color: var(--cn-text);
+    text-decoration: none;
+  }
+
+  &__subheading {
+    font-size: 1rem;
+  }
+
+  &__guides {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  &__guide {
+    border-radius: var(--cn-radius-lg);
+    background: var(--cn-glass);
+    border: 1px solid var(--cn-border);
+
+    summary {
+      padding: 0.75rem 1rem;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+
+    p {
+      padding: 0 1rem 0.875rem;
+      color: var(--cn-text-muted);
+      font-size: 0.875rem;
+      line-height: 1.55;
+      white-space: pre-line;
+    }
+  }
+
+  &__pem {
+    font-family: var(--cn-font-mono);
+    font-size: 0.8rem;
+    resize: vertical;
+  }
+
+  &__numbered {
+    list-style: decimal;
+  }
+}
