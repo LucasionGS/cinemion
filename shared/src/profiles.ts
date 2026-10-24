@@ -1,3 +1,5 @@
+import type { NotificationPreferences, NotifyMode } from "./notifications.ts";
+
 /**
  * Colours a profile can use for its initials tile. `bg` is the tile, `fg` the initial on top of it.
  */
@@ -60,6 +62,7 @@ export interface SubtitleStyle {
  */
 export interface ProfilePreferences {
   subtitles: SubtitleStyle;
+  notifications: NotificationPreferences;
   /**
    * The interface's language, like `en` or `pt-BR`. `null` = the browser's language.
    */
@@ -68,6 +71,7 @@ export interface ProfilePreferences {
 
 export const DEFAULT_PREFERENCES: ProfilePreferences = {
   subtitles: { size: "medium", color: "white", background: "box", keepStyling: true },
+  notifications: { mode: "all", libraries: {}, email: null },
   language: null,
 };
 
@@ -77,6 +81,8 @@ export const DEFAULT_PREFERENCES: ProfilePreferences = {
 export function normalizePreferences(value: unknown): ProfilePreferences {
   const subtitles = ((value as Partial<ProfilePreferences> | null)?.subtitles ?? {}) as Partial<SubtitleStyle>;
   const language = (value as Partial<ProfilePreferences> | null)?.language;
+  const notifications = ((value as Partial<ProfilePreferences> | null)?.notifications ?? {}) as Partial<NotificationPreferences>;
+  const modes: NotifyMode[] = ["all", "following", "none"];
   const pick = <T extends string>(given: unknown, allowed: readonly T[], fallback: T): T => allowed.includes(given as T) ? given as T : fallback;
   const d = DEFAULT_PREFERENCES.subtitles;
   return {
@@ -85,6 +91,11 @@ export function normalizePreferences(value: unknown): ProfilePreferences {
       color: pick(subtitles.color, ["white", "yellow", "cyan", "green"], d.color),
       background: pick(subtitles.background, ["none", "shadow", "box"], d.background),
       keepStyling: typeof subtitles.keepStyling === "boolean" ? subtitles.keepStyling : d.keepStyling,
+    },
+    notifications: {
+      mode: pick(notifications.mode, modes, DEFAULT_PREFERENCES.notifications.mode),
+      libraries: Object.fromEntries(Object.entries(notifications.libraries ?? {}).filter(([id, mode]) => /^\d+$/.test(id) && modes.includes(mode))),
+      email: typeof notifications.email === "string" && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(notifications.email.trim()) ? notifications.email.trim().slice(0, 254) : null,
     },
     // Example: en, pt-BR, zh-Hant
     language: typeof language === "string" && /^[a-z]{2,3}(-[A-Za-z0-9]{2,8})*$/.test(language) ? language : null,

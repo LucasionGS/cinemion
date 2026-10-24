@@ -281,6 +281,7 @@ and on amd64 Intel's non-free VA driver + Quick Sync runtime), `docker/entrypoin
 | 23 | done | Backups and restore: by hand, on a schedule and before updates, password protection, restore from the setup wizard or the CLI (below) |
 | 24 | done | My list: a watchlist per profile, a home row, two-way sync with the Trakt watchlist (below) |
 | 25 | done | Built-in HTTPS: a certificate made by Cinemion, from Let's Encrypt or your own, renewed by itself (below) |
+| 26 | done | Notifications: a bell, browser push and email for new titles and arrivals from My list (below) |
 
 Not planned in these rounds: **built-in remote access** (needs a relay service on ionnet.io that doesn't exist yet).
 Photos were asked for on 2026-10-21 and became milestone 20. The owner asked for each milestone to be committed and pushed, and
@@ -895,6 +896,35 @@ Asked for on 2026-10-25 (with every other item on the "what's next" list).
 - Docker publishes 8443 (`EXPOSE`, compose). Settings › HTTPS (`HttpsSettings.tsx`): the switch, port, addresses,
   a kind picker where "Use this certificate" switches over, a hint to add the address the page was opened at, the
   trust guide, Let's Encrypt steps (port 80 → http port, 443 → https port), and the redirect switch.
+
+### Milestone 26: Notifications
+- **Model** (migration `20261105090000-notifications`, `models/Notification.ts`): `notifications` (per profile,
+  `data` = `NotificationData`: the facts, not words, so the bell words them in the reader's language; `groupKey`
+  `show:<id>` or `item:<id>`; `image`, `readAt`; kept 60 days, pruned daily) and `push_subscriptions` (endpoint, its
+  SHA-256 as the unique key since MariaDB can't index long TEXT, `p256dh`, `auth`, device name).
+- **What's made** (`notifications/Notifications.ts`, called from `Scanner.reportAdded`, never on a library's first
+  scan): one per movie, album, audiobook or book, one per show for its new episodes (joined into an unread one from
+  the last 24 hours: "5 new episodes"). Photos, clips and home videos make none. Each profile only hears about what
+  it can see (`Visibility`, per episode), and as much as `preferences.notifications` says: `mode` all / following
+  (shows with a started or finished earlier episode, or on My list; movies only through My list) / none, overridable
+  per library. `Watchlist.onArrived` (awaited, so it comes before "New in…") makes "From your list" ones.
+- **Push** (`notifications/WebPush.ts`, no package): VAPID keys made once (setting `pushKeys`), RFC 8291 aes128gcm
+  encryption (checked against the RFC's example and a fresh-key round trip in `test.ts`), ES256 JWT, `Topic` = the
+  group, 404/410 forget the device. `client/public/sw.js` shows `{ title, body, url, tag, icon }` (a newer one about
+  the same show replaces the older) and opens the title on click. Only built apps have the service worker. Tested:
+  subscribing headless Chrome, FCM taking the message (201), and the worker showing a message delivered through
+  DevTools (`ServiceWorker.deliverPushMessage`); real delivery couldn't be seen there (that Chrome had no connection
+  to Google's push network, see chrome://gcm-internals). Chrome drops a subscription that gets pushes it isn't
+  allowed to show, and the next send forgets it.
+- **Email** (`notifications/Mailer.ts`, setting `email`, Settings › Integrations › Email): SMTP with TLS, STARTTLS or
+  none, AUTH PLAIN or LOGIN, base64 UTF-8 bodies, one email per batch to `preferences.notifications.email`. Tested with
+  Mailpit in Docker (STARTTLS with a certificate from `Certificates`, `DENO_CERT` for its authority).
+- **Words** for push and email come from `Notifications.describe()` (English for now); the bell uses
+  `notificationText()` in `components/NotificationBell/`.
+- **API** `/api/notifications` (`GET`, `POST /read`, `GET /setup`, `POST|DELETE /push`, `POST /push/test`, admin
+  `GET|PUT /email`, `POST /email/test`). Client: `lib/Notifications.ts` (the bell's controller, every minute while
+  visible; `Push` helpers), the bell in the top bar (Base UI Popover), `pages/Settings/NotificationsCard.tsx` on
+  Settings › Your profile (`#notifications`).
 
 ## 6. Design decisions
 

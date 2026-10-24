@@ -2293,6 +2293,27 @@
         "save": "Save Trakt app",
         "setUp": "Trakt is set up",
         "setUpDescription": "Profiles can link their accounts in Settings › Your profile."
+      },
+      "email": {
+        "title": "Email",
+        "text": "Lets Cinemion email profiles that want their notifications by email. Use your mail provider's SMTP server, or one on your network.",
+        "host": "Mail server",
+        "port": "Port",
+        "security": "Encryption",
+        "starttls": "STARTTLS (usually port 587)",
+        "tls": "TLS (usually port 465)",
+        "none": "None (only on your own network)",
+        "from": "From",
+        "username": "User name",
+        "password": "Password",
+        "passwordSaved": "Saved; type to change it",
+        "saved": "Email settings saved",
+        "off": "Cinemion won't send email",
+        "turnOff": "Turn off email",
+        "testTo": "Send a test to",
+        "test": "Send test",
+        "testSent": "Sent a test to {to}",
+        "testFailed": "The test email didn't go out"
       }
     },
     "webhooks": {
@@ -2865,6 +2886,57 @@
       "title": "Plain http",
       "switch": "Send browsers to https",
       "description": "Pages opened at the http address move to the https one. Apps, Sonarr, Radarr and webhooks keep using http as before. Only turn this on once your devices trust the certificate."
+    }
+  },
+  "notifications": {
+    "bell": "Notifications",
+    "bellUnread": {
+      "one": "Notifications, {count} unread",
+      "other": "Notifications, {count} unread"
+    },
+    "title": "Notifications",
+    "markAllRead": "Mark all read",
+    "empty": "Nothing new yet. New movies, episodes and titles from your list show up here.",
+    "settings": "Notification settings",
+    "episodeCode": "S{season} E{episode}",
+    "episode": "{code} is here to watch",
+    "episodeWithTitle": "{code} · {title} is here to watch",
+    "episodes": {
+      "one": "A new episode to watch",
+      "other": "{count} new episodes to watch"
+    },
+    "albumBy": "A new album by {artist}",
+    "newIn": "New in {library}",
+    "fromList": "From your list, now here to watch",
+    "prefs": {
+      "title": "Notifications",
+      "mode": "Tell me about",
+      "modeDescription": "New movies, episodes, albums and books in the libraries you can see. Titles from My list always count.",
+      "all": "Everything new",
+      "following": "Shows I watch and titles on My list",
+      "none": "Nothing",
+      "sameAsAbove": "Same as above",
+      "push": "Notifications on this device",
+      "pushDescription": "Get them like messages from other apps, also when Cinemion isn't open.",
+      "pushUnavailable": "This server can't send push notifications right now.",
+      "pushNeedsHttps": "This browser can only get them when Cinemion is opened over https (Settings › HTTPS). iPhones and iPads need Cinemion added to the home screen first.",
+      "pushOn": "This device gets notifications now",
+      "pushFailed": "Couldn't turn on notifications",
+      "pushDenied": "The browser was told not to show notifications from Cinemion. Allow them in the browser's site settings, then try again.",
+      "pushNoWorker": "Reload the page once and try again; the part that receives notifications wasn't running yet.",
+      "thisDevice": "{name} (this device)",
+      "since": "Since {ago}",
+      "removeDevice": "Stop notifications on {name}",
+      "test": "Send a test",
+      "testSent": {
+        "one": "Sent to 1 device",
+        "other": "Sent to {count} devices"
+      },
+      "testNone": "No device took the test. Turn notifications off and on again on the device.",
+      "email": "Email",
+      "emailDescription": "Leave empty for no email. You get one email per batch of new things.",
+      "emailSaved": "Notifications will be emailed too",
+      "emailOff": "No more notification emails"
     }
   }
 }

@@ -19,6 +19,7 @@ import Spinner from "../../components/Spinner/Spinner.tsx";
 import Select from "../../components/Select/Select.tsx";
 import cx from "../../lib/cx.ts";
 import { I18nController, LANGUAGES, rich, t } from "../../i18n/I18n.ts";
+import NotificationsCard from "./NotificationsCard.tsx";
 import "../../components/Player/Player.scss";
 
 /**
@@ -112,6 +113,7 @@ export default function ProfileSettings() {
       </section>
 
       <LanguageCard />
+      <NotificationsCard />
       <SubtitleStyleCard />
       <TraktCard />
 

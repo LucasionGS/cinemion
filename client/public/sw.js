@@ -115,3 +115,38 @@ async function media(request, url) {
   if (!range) return new Response(new Blob(parts, { type: manifest.type }), { status: 200, headers });
   return new Response(new Blob(parts, { type: manifest.type }), { status: 206, headers: { ...headers, "Content-Range": `bytes ${start}-${end}/${size}` } });
 }
+
+// Push notifications: the server sends { title, body, url, tag, icon }, already in words
+self.addEventListener("push", (event) => {
+  let message = {};
+  try {
+    message = event.data ? event.data.json() : {};
+  } catch {
+    message = { body: event.data ? event.data.text() : "" };
+  }
+  event.waitUntil(self.registration.showNotification(message.title || "Cinemion", {
+    body: message.body || "",
+    icon: message.icon || "/favicon.svg",
+    badge: "/favicon.svg",
+    // A newer message about the same show replaces the older one
+    tag: message.tag || undefined,
+    renotify: !!message.tag,
+    data: { url: message.url || "/" },
+  }));
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const url = new URL(event.notification.data?.url || "/", self.location.origin).href;
+  event.waitUntil((async () => {
+    // An open Cinemion goes to the title; otherwise a new window opens there
+    const windows = await self.clients.matchAll({ type: "window", includeUncontrolled: true });
+    const open = windows.find((w) => new URL(w.url).origin === self.location.origin);
+    if (open) {
+      await open.focus();
+      if ("navigate" in open) await open.navigate(url).catch(() => { });
+      return;
+    }
+    await self.clients.openWindow(url);
+  })());
+});

@@ -7,16 +7,6 @@ Planned, but not part of the first version. Roughly in the order they're likely 
 - **More translations**: the interface can be translated (see `docs/translating.md`) but only English exists. Next:
   actual languages, and the server's own messages (errors, the activity feed, task names) as translatable lines too.
 
-## Notifications
-
-- **"New in your library"**: a notification when something arrives, like "Saltwater Kings S2 E4 was added" or "Northbound
-  was added to Movies". A batch is grouped ("5 new episodes of Saltwater Kings"), and each profile only hears about
-  libraries it can see and titles within its age limit.
-- **Per profile choices**: everything new, only shows you're watching and your watchlist, or nothing. Choose per library.
-- **Where they show up**: a bell in the top bar with the latest ones, and browser push notifications on desktops and
-  phones (needs https, see Built-in HTTPS). Optionally email, with the server's own mail settings. Webhooks already
-  cover chat bots and Home Assistant.
-
 ## Statistics
 
 - **Per profile**: time spent watching, listening and reading, per week, month and year. Top shows, movies, genres,

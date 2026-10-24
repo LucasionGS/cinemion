@@ -10,6 +10,7 @@ import Markers from "../media/Markers.ts";
 import MetadataManager from "../metadata/MetadataManager.ts";
 import ItemLabels from "./ItemLabels.ts";
 import Watchlist from "./Watchlist.ts";
+import Notifications from "../notifications/Notifications.ts";
 import VideoDetails from "./VideoDetails.ts";
 import MusicLibrary from "../music/MusicLibrary.ts";
 import MusicTags from "../music/MusicTags.ts";
@@ -358,6 +359,7 @@ export namespace Scanner {
       const titles = [...items.filter((i) => i.type === "movie"), ...new Map([...shows.values()].filter((s): s is MediaItem => !!s).map((s) => [s.id, s])).values()];
       await Watchlist.arrived(titles).catch((error) => log.warn("Could not check the watchlists for new titles", { error }));
     }
+    if (!firstScan) await Notifications.itemsAdded(library, items, shows).catch((error) => log.warn("Could not make notifications for new titles", { error }));
 
     if (library.type === "photos") {
       reportPhotos(library, items, firstScan);

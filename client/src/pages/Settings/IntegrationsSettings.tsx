@@ -2,8 +2,10 @@ import { useEffect, useState } from "react";
 import { CircleAlert, CircleCheck, Copy, KeyRound, Plus, Trash2, UploadCloud } from "lucide-react";
 import type { AppKeyInfo, IntegrationSettings, PathMapping, PodiumTargetInfo, PodiumTargets } from "@shared/admin.ts";
 import type { TraktAppSettings } from "@shared/trakt.ts";
+import type { EmailSettings } from "@shared/notifications.ts";
 import IntegrationsApi from "../../Api/IntegrationsApi.ts";
 import TraktApi from "../../Api/TraktApi.ts";
+import NotificationsApi from "../../Api/NotificationsApi.ts";
 import LibrariesApi from "../../Api/LibrariesApi.ts";
 import { toasts } from "../../lib/Toasts.ts";
 import { copyText } from "../../lib/clipboard.ts";
@@ -156,6 +158,7 @@ export default function IntegrationsSettings() {
       <PodiumCard />
 
       <TraktAppCard />
+      <EmailCard />
 
       <ConfirmDialog
         open={confirmNew}
@@ -438,6 +441,107 @@ function PodiumCard() {
         danger
         onConfirm={remove}
       />
+    </section>
+  );
+}
+
+/**
+ * How the server sends notification emails: an SMTP server, like the one of your mail provider.
+ */
+function EmailCard() {
+  const [loaded, setLoaded] = useState(false);
+  const [current, setCurrent] = useState<EmailSettings | null>(null);
+  const [host, setHost] = useState("");
+  const [port, setPort] = useState("587");
+  const [security, setSecurity] = useState<EmailSettings["security"]>("starttls");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [from, setFrom] = useState("");
+  const [to, setTo] = useState(session.user?.preferences.notifications.email ?? "");
+  const [busy, setBusy] = useState<string | null>(null);
+
+  function fill(settings: EmailSettings | null) {
+    setCurrent(settings);
+    setHost(settings?.host ?? "");
+    setPort(String(settings?.port ?? 587));
+    setSecurity(settings?.security ?? "starttls");
+    setUsername(settings?.username ?? "");
+    setPassword("");
+    setFrom(settings?.from ?? "");
+  }
+
+  useEffect(() => {
+    NotificationsApi.email().then(fill).catch(() => fill(null)).finally(() => setLoaded(true));
+  }, []);
+
+  async function save() {
+    setBusy("save");
+    try {
+      fill(await NotificationsApi.updateEmail({ host, port: Number(port), security, username: username || null, from, ...(password ? { password } : {}) }));
+      toasts.success(t("admin.integrations.email.saved"));
+    } catch (error) {
+      toasts.error(t("common.couldntSave"), (error as Error).message);
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  async function turnOff() {
+    setBusy("off");
+    try {
+      fill(await NotificationsApi.updateEmail({ host: "" }));
+      toasts.success(t("admin.integrations.email.off"));
+    } catch (error) {
+      toasts.error(t("common.couldntSave"), (error as Error).message);
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  async function test() {
+    setBusy("test");
+    try {
+      await NotificationsApi.testEmail(to.trim());
+      toasts.success(t("admin.integrations.email.testSent", { to: to.trim() }));
+    } catch (error) {
+      toasts.error(t("admin.integrations.email.testFailed"), (error as Error).message);
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  if (!loaded) return null;
+  return (
+    <section className="cn-settings__card">
+      <h2>{t("admin.integrations.email.title")}</h2>
+      <p className="cn-settings__row-text"><span>{t("admin.integrations.email.text")}</span></p>
+      <div className="cn-backups__fields">
+        <TextField label={t("admin.integrations.email.host")} value={host} placeholder="smtp.example.com" spellCheck={false} onChange={(e) => setHost(e.target.value)} />
+        <TextField label={t("admin.integrations.email.port")} value={port} inputMode="numeric" onChange={(e) => setPort(e.target.value.replace(/\D/g, ""))} />
+        <Select
+          label={t("admin.integrations.email.security")}
+          value={security}
+          options={[
+            { value: "starttls", label: t("admin.integrations.email.starttls") },
+            { value: "tls", label: t("admin.integrations.email.tls") },
+            { value: "none", label: t("admin.integrations.email.none") },
+          ]}
+          onChange={(e) => setSecurity(e.target.value as EmailSettings["security"])}
+        />
+        <TextField label={t("admin.integrations.email.from")} value={from} placeholder="Cinemion <cinemion@example.com>" onChange={(e) => setFrom(e.target.value)} />
+        <TextField label={t("admin.integrations.email.username")} value={username} autoComplete="off" onChange={(e) => setUsername(e.target.value)} />
+        <TextField label={t("admin.integrations.email.password")} type="password" value={password} autoComplete="new-password" placeholder={current?.hasPassword ? t("admin.integrations.email.passwordSaved") : ""} onChange={(e) => setPassword(e.target.value)} />
+      </div>
+      <div className="cn-settings__row">
+        <Button variant="primary" loading={busy === "save"} disabled={!host.trim() || !from.trim()} onClick={save}>{t("common.save")}</Button>
+        {current && <Button variant="ghost" loading={busy === "off"} onClick={turnOff}>{t("admin.integrations.email.turnOff")}</Button>}
+      </div>
+      {current && (
+        <div className="cn-backups__folder">
+          <TextField label={t("admin.integrations.email.testTo")} type="email" value={to} onChange={(e) => setTo(e.target.value)} className="cn-backups__folder-field" />
+          <Button loading={busy === "test"} disabled={!to.trim()} onClick={test}>{t("admin.integrations.email.test")}</Button>
+        </div>
+      )}
     </section>
   );
 }

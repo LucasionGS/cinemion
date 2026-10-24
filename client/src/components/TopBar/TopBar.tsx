@@ -11,6 +11,7 @@ import { t, type TranslationKey } from "../../i18n/I18n.ts";
 import Logo from "../Logo/Logo.tsx";
 import Avatar from "../Avatar/Avatar.tsx";
 import LibraryIcon from "../LibraryIcon/LibraryIcon.tsx";
+import NotificationBell from "../NotificationBell/NotificationBell.tsx";
 import "./TopBar.scss";
 
 export interface TopBarProps {
@@ -47,7 +48,12 @@ export default function TopBar(props: TopBarProps) {
       <>
         <header className="cn-topbar cn-topbar--mobile">
           <Link href="/" className="cn-topbar__logo"><Logo size={1.6} /></Link>
-          {user && <ProfileMenu />}
+          {user && (
+            <div className="cn-topbar__end">
+              <NotificationBell />
+              <ProfileMenu />
+            </div>
+          )}
         </header>
         <nav className="cn-tabbar" aria-label={t("topbar.mainNavigation")}>
           {tabs.map((item) => (
@@ -78,6 +84,7 @@ export default function TopBar(props: TopBarProps) {
             <span>{searchLabel(libraries)}</span>
           </Link>
         )}
+        {user && <NotificationBell />}
         {user && <ProfileMenu />}
       </div>
     </header>

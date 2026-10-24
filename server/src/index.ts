@@ -16,6 +16,7 @@ import UpdateCheck from "./lib/UpdateCheck.ts";
 import Backups from "./backups/Backups.ts";
 import Watchlist from "./library/Watchlist.ts";
 import Https from "./https/Https.ts";
+import Notifications from "./notifications/Notifications.ts";
 import { Activity } from "./models/index.ts";
 import log from "./lib/Logger.ts";
 
@@ -72,6 +73,7 @@ ScanScheduler.start();
 UpdateCheck.start();
 Backups.start();
 Watchlist.start();
+Watchlist.onArrived((entry, item) => Notifications.watchlistArrived(entry.userId, item));
 
 // Once a day: the activity feed keeps a couple of months, missing subtitles are looked for again, and offline copies
 // nobody fetched lately are deleted
@@ -79,6 +81,7 @@ const daily = () => {
   Activity.prune().catch((error) => log.warn("Could not clean up old activity", { error }));
   SubtitleAutomation.queue().catch(() => { });
   OfflineCopies.prune();
+  Notifications.prune().catch(() => { });
 };
 // The first run waits for startup scans to settle
 const firstDaily = setTimeout(daily, 10 * 60 * 1000);

@@ -36,6 +36,8 @@ import Tar from "./lib/Tar.ts";
 import Encryption from "./lib/Encryption.ts";
 import Certificates from "./https/Certificates.ts";
 import Der from "./https/Der.ts";
+import WebPush from "./notifications/WebPush.ts";
+import { decodeBase64Url, encodeBase64Url } from "@std/encoding/base64url";
 
 /**
  * Scratch runner for the parts that are easy to get subtly wrong. Run with `deno run -A server/src/test.ts`.
@@ -538,6 +540,37 @@ await tlsServer.shutdown();
 check("serving with it, trusting only the authority", tlsAnswer, "tls ok");
 const request = Der.read(await Certificates.makeRequest(await Certificates.generateKey(), ["example.com"]));
 check("certificate request", [request.children.length, request.children[0].children.length], [3, 4]);
+//#endregion
+
+//#region Notifications
+console.log("Notifications");
+// The example from RFC 8291, appendix A
+const pushBody = await WebPush.encrypt(encoded("When I grow up, I want to be a watermelon"), {
+  p256dh: "BCVxsr7N_eNgVRqvHtD0zTZsEc6-VV-JvLexhqUzORcxaOzi6-AYWXvTBHm4bjyPjs7Vd8pZGH6SRpkNtoIAiw4",
+  auth: "BTBZMqHH6r4Tts7J_aSIgg",
+}, { salt: decodeBase64Url("DGv6ra1nlYgDCS1FRnbzlw"), privateKey: "yfWPiYE-n46HLnH0KqZOF1fJJU3MYrct3AELtAQ-oRw", publicKey: decodeBase64Url("BP4z9KsN6nGRTbVYI_c7VJSPQTBtkgcy27mlmlMoZIIgDll6e3vCYLocInmYWAmS6TlzAC8wEqKK6PBru3jl7A8") });
+// A browser's side, with fresh keys: decrypting what was encrypted for it gives the message back
+async function decryptPush(body: Uint8Array, uaPrivate: CryptoKey, uaPublic: Uint8Array, auth: Uint8Array) {
+  const derive = async (salt: Uint8Array, ikm: Uint8Array, info: string | Uint8Array, length: number) => {
+    const key = await crypto.subtle.importKey("raw", ikm as BufferSource, "HKDF", false, ["deriveBits"]);
+    const infoBytes = typeof info === "string" ? encoded(info) : info;
+    return new Uint8Array(await crypto.subtle.deriveBits({ name: "HKDF", hash: "SHA-256", salt: salt as BufferSource, info: infoBytes as BufferSource }, key, length * 8));
+  };
+  const salt = body.slice(0, 16);
+  const asPublic = body.slice(21, 21 + body[20]);
+  const shared = new Uint8Array(await crypto.subtle.deriveBits({ name: "ECDH", public: await crypto.subtle.importKey("raw", asPublic, { name: "ECDH", namedCurve: "P-256" }, false, []) }, uaPrivate, 256));
+  const info = new Uint8Array([...encoded("WebPush: info\0"), ...uaPublic, ...asPublic]);
+  const ikm = await derive(auth, shared, info, 32);
+  const cek = await crypto.subtle.importKey("raw", await derive(salt, ikm, "Content-Encoding: aes128gcm\0", 16) as BufferSource, "AES-GCM", false, ["decrypt"]);
+  const plain = new Uint8Array(await crypto.subtle.decrypt({ name: "AES-GCM", iv: await derive(salt, ikm, "Content-Encoding: nonce\0", 12) as BufferSource }, cek, body.slice(21 + body[20])));
+  return new TextDecoder().decode(plain.slice(0, plain.lastIndexOf(2)));
+}
+const browserKeys = await crypto.subtle.generateKey({ name: "ECDH", namedCurve: "P-256" }, true, ["deriveBits"]) as CryptoKeyPair;
+const browserPublic = new Uint8Array(await crypto.subtle.exportKey("raw", browserKeys.publicKey));
+const browserAuth = new Uint8Array(16).map((_, i) => i * 7);
+const sealedPush = await WebPush.encrypt(encoded("{\"title\":\"Harbor Lights\"}"), { p256dh: encodeBase64Url(browserPublic), auth: encodeBase64Url(browserAuth) });
+check("push round trip with fresh keys", await decryptPush(sealedPush, browserKeys.privateKey, browserPublic, browserAuth), "{\"title\":\"Harbor Lights\"}");
+check("push encryption (RFC 8291)", encodeBase64Url(pushBody), "DGv6ra1nlYgDCS1FRnbzlwAAEABBBP4z9KsN6nGRTbVYI_c7VJSPQTBtkgcy27mlmlMoZIIgDll6e3vCYLocInmYWAmS6TlzAC8wEqKK6PBru3jl7A_yl95bQpu6cVPTpK4Mqgkf1CXztLVBSt2Ks3oZwbuwXPXLWyouBWLVWGNWQexSgSxsj_Qulcy4a-fN");
 //#endregion
 
 console.log(failed ? `\n${failed} failed` : "\nAll passed");

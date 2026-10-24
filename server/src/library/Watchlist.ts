@@ -17,7 +17,7 @@ export namespace Watchlist {
   /**
    * Told when a title on someone's list that wasn't here arrives in a library.
    */
-  export type ArrivalListener = (entry: WatchlistItem, item: MediaItem) => void;
+  export type ArrivalListener = (entry: WatchlistItem, item: MediaItem) => void | Promise<void>;
 
   const SYNC_TIMER_MS = 15 * 60 * 1000;
   /**
@@ -86,7 +86,7 @@ export namespace Watchlist {
       log.info("A title on someone's list arrived", { title: item.title, userId: entry.userId });
       for (const listener of _listeners) {
         try {
-          listener(entry, item);
+          await listener(entry, item);
         } catch (error) {
           log.warn("A watchlist listener failed", { error });
         }

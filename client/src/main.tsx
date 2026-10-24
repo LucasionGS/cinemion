@@ -16,6 +16,7 @@ import { initGamepad } from "./lib/gamepad.ts";
 import { applyAmbient } from "./lib/ambient.ts";
 import { musicPlayer } from "./lib/MusicPlayer.ts";
 import offline from "./lib/Offline.ts";
+import { notifications } from "./lib/Notifications.ts";
 import Toaster from "./components/Toaster/Toaster.tsx";
 import MiniPlayer from "./components/MiniPlayer/MiniPlayer.tsx";
 import NowPlaying from "./components/NowPlaying/NowPlaying.tsx";
@@ -246,6 +247,13 @@ function App() {
   // Each profile has its own queue; switching profiles stops the music
   useEffect(() => {
     if (ready) musicPlayer.setUser(user?.id ?? null);
+  }, [ready, user?.id]);
+
+  // The bell follows whoever is signed in
+  useEffect(() => {
+    if (!ready) return;
+    notifications.stop();
+    if (user) notifications.start();
   }, [ready, user?.id]);
 
   // Downloads carry on, and what was watched offline goes to the server
