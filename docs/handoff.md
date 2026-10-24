@@ -286,6 +286,8 @@ page: GitHub release with both binaries, `ghcr.io/lucasiongs/cinemion:0.3.0` (an
 0.3.0.
 **0.4.0 released** with Photos libraries (milestone 20): GitHub release with both binaries,
 `ghcr.io/lucasiongs/cinemion:0.4.0` (and `0.4`, `latest`, with libheif for HEIC photos), AUR `cinemion-bin` 0.4.0.
+**0.5.0 released** with Clips libraries (milestone 21) and Podium uploads (21b): GitHub release with both binaries,
+`ghcr.io/lucasiongs/cinemion:0.5.0` (and `0.5`, `latest`), AUR `cinemion-bin` 0.5.0.
 
 ### Milestone 6: what was built
 Follows the Round 3 admin mockup (artboard `Admin.dc.html` in the Round 3 canvas): app top bar + left settings nav.
