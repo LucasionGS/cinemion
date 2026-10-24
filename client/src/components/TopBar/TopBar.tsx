@@ -124,6 +124,7 @@ function searchLabel(libraries: LibraryInfo[]) {
   if (libraries.some((l) => l.type === "music")) words.push("music");
   if (libraries.some((l) => l.type === "audiobooks" || l.type === "books")) words.push("books");
   if (libraries.some((l) => l.type === "photos")) words.push("albums");
+  if (libraries.some((l) => l.type === "clips")) words.push("games");
   // A long list doesn't fit in the box
   if (words.length > 3) return "Search your libraries";
   return `Search ${words.slice(0, -1).join(", ")} and ${words[words.length - 1]}`;

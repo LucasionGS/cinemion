@@ -11,6 +11,7 @@ import ActivePlayback from "./media/ActivePlayback.ts";
 import SubtitleAutomation from "./subtitles/SubtitleAutomation.ts";
 import OfflineCopies from "./media/OfflineCopies.ts";
 import Uploads from "./library/Uploads.ts";
+import ClipTools from "./clips/ClipTools.ts";
 import { Activity } from "./models/index.ts";
 import log from "./lib/Logger.ts";
 
@@ -42,6 +43,7 @@ if (!ffmpegVersion) log.warn(`ffmpeg was not found, so profile pictures and vide
 
 await TranscodeSession.init();
 await Uploads.init();
+await ClipTools.init();
 
 const app = createApp();
 const server = Deno.serve({

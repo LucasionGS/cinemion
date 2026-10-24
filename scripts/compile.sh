@@ -57,6 +57,7 @@ EOF
 
 echo "Compiling for $TARGET..."
 mkdir -p "$(dirname "$OUTPUT")"
-(cd "$STAGE/server" && deno compile -A --quiet --target "$TARGET" --include ../client/dist -o "$OUTPUT" src/index.ts)
+# Workers are loaded by URL, so they have to be named to be compiled in
+(cd "$STAGE/server" && deno compile -A --quiet --target "$TARGET" --include ../client/dist --include src/clips/RecognitionWorker.ts -o "$OUTPUT" src/index.ts)
 
 echo "Done! Built $OUTPUT ($(du -h "$OUTPUT" | cut -f1))"

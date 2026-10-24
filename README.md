@@ -16,6 +16,7 @@ Your movies, shows, music, books and photos, beautifully served from your own ma
 - **Audiobooks and books**: audiobooks keep everyone's place, with chapters, playback speed and a sleep timer for when you nod off. EPUB books open in a built-in reader with light, sepia and dark pages; PDFs open right in the browser.
 - **Home videos too**: a Videos library takes anything that isn't a movie or show (holidays, drone footage, recordings) without looking anything up. Folders become groups, titles come from the file names and dates from the recording, thumbnails are picked from the video itself, and you can edit it all by hand.
 - **Photo albums**: point a Photos library at your pictures and every folder becomes an album, with dates, cameras and places read from the photos themselves (iPhone HEICs included) and phone videos mixed right in. Browse albums or one long timeline, flip through them full screen with a filmstrip and a details panel, or lean back with a slideshow. Make your own albums from photos anywhere in the library without moving a single file.
+- **Game clips, sorted by game**: point a Clips library at your recordings and every clip lands under its game, read from the names NVIDIA's overlay, AMD's software, Xbox Game Bar, PlayStation, Steam and friends give their files, with covers from Steam. OBS recordings with nothing but a date in the name? Download picture recognition and Cinemion suggests the game from what's on screen, mostly by comparing with clips you've already sorted. Star the good ones, cut them down without losing quality, and make a copy small enough for Discord in two clicks.
 - **Posters, plots and cast**: from NFO files and artwork next to your videos, from TMDB (no key needed, Cinemion brings its own) and TheTVDB, in the order you choose, with IMDb, Rotten Tomatoes and Metacritic scores when you add an OMDb key. Wrong match? Fix it in two clicks.
 - **Trakt, per profile**: everyone can link their own Trakt account. What they watch is scrobbled as it plays, marking things watched lands in their Trakt history, and their Trakt history can come in the other way too.
 - **Plays (almost) anything, anywhere**: files your device can play go straight through untouched. Anything else is repackaged or converted on the fly, on the CPU or an Intel, AMD or NVIDIA GPU, with HDR turned into SDR for screens that need it. Pick audio tracks, subtitles and quality while you watch, or let Automatic quality follow your connection.
@@ -60,6 +61,9 @@ Your movies, shows, music, books and photos, beautifully served from your own ma
 
 ![The photo viewer](docs/screenshots/photo-viewer.webp)
 <sup>The photo viewer, with a filmstrip and what the camera wrote down.</sup>
+
+![A Clips library](docs/screenshots/clips.webp)
+<sup>Clips libraries sort recordings into games by their names, with "No game" for the rest (and a guess, if you let it look).</sup>
 
 ![The server dashboard](docs/screenshots/dashboard.webp)
 <sup>The dashboard: who's watching what, whether it's converted (and why), and how busy the server is.</sup>
@@ -172,7 +176,7 @@ Other tasks:
 
 `./set_version.sh 1.2.0` sets the version everywhere (the server, the `deno.json` files and the AUR package). Commit it as "Bumped to 1.2.0", then tag and push: `git tag v1.2.0 && git push origin v1.2.0`. The Release workflow checks the code, builds the x64 and arm64 binaries onto a GitHub release, and pushes the Docker image (amd64 and arm64) to `ghcr.io/lucasiongs/cinemion`. Once it's done, `scripts/aur-publish.sh` updates the `cinemion-bin` AUR package.
 
-`scripts/make-sample-media.sh` fills `data/media` with a small fake library (short ffmpeg clips with tidy and messy names, NFO files, artwork, extras and samples) for trying things out. Online matching through TMDB works out of the box with the built-in key.
+`scripts/make-sample-media.sh` fills `data/media` with a small fake library (short ffmpeg clips with tidy and messy names, NFO files, artwork, extras and samples, and game clips named the way recorders name them) for trying things out. Online matching through TMDB works out of the box with the built-in key.
 
 `deno run -A server/src/test.ts` runs the scratch checks: file names, playback decisions, Sonarr/Radarr payloads, webhook signatures and more.
 
@@ -190,6 +194,8 @@ docs/     Design decisions and future plans
 <img src="client/public/credits/tmdb.svg" alt="TMDB" height="14">
 
 This product uses TMDB and the TMDB APIs but is not endorsed, certified, or otherwise approved by TMDB.
+
+Game names and artwork come from the Steam store and, with your own key, [SteamGridDB](https://www.steamgriddb.com). Picture recognition uses OpenAI's [CLIP](https://github.com/openai/CLIP) model (the ONNX conversion by [Xenova](https://huggingface.co/Xenova/clip-vit-base-patch16)), run by [ONNX Runtime](https://onnxruntime.ai); both are downloaded only when you ask for them.
 
 ## License
 

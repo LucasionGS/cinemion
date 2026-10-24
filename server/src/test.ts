@@ -28,6 +28,9 @@ import { parseLrc } from "@shared/music.ts";
 import Exif from "./photos/Exif.ts";
 import PhotoLibrary from "./photos/PhotoLibrary.ts";
 import { withExif } from "../../scripts/sample-photos.ts";
+import ClipNames from "./clips/ClipNames.ts";
+import ClipTokenizer from "./clips/ClipTokenizer.ts";
+import ClipTools from "./clips/ClipTools.ts";
 
 /**
  * Scratch runner for the parts that are easy to get subtly wrong. Run with `deno run -A server/src/test.ts`.
@@ -412,6 +415,39 @@ check("dates in file names", [
 ]);
 check("photo files", ["a.JPG", "b.heic", "c.mp4", "d.xmp", "e.CR2"].map((n) => PhotoLibrary.isPhotoOrVideo(n)), [true, true, true, false, false]);
 check("photos library takes", [Uploads.accepts("photos", "IMG_1.HEIC"), Uploads.accepts("photos", "clip.MOV"), Uploads.accepts("photos", "notes.txt")], [true, true, false]);
+//#endregion
+
+//#region Clips
+const clip = (path: string) => {
+  const p = ClipNames.parse(`/clips/${path}`, "/clips");
+  return [p.hint, p.source, p.recordedAt, p.title];
+};
+check("NVIDIA instant replay", clip("Counter-strike 2/Counter-strike 2 2025.03.15 - 21.04.33.02.DVR.mp4"), ["Counter-strike 2", "file", "2025-03-15T21:04:33", null]);
+check("NVIDIA desktop", [ClipNames.parse("/clips/Desktop/Desktop 2025.03.16 - 10.00.00.01.mp4", "/clips").desktop, clip("Desktop/Desktop 2025.03.16 - 10.00.00.01.mp4")[0]], [true, null]);
+check("AMD replay", clip("Radeon ReLive/Elden Ring/ELDEN RING_replay_2025.04.02-19.45.mp4"), ["ELDEN RING", "file", "2025-04-02T19:45:00", null]);
+check("Xbox Game Bar", clip("Captures/CS2 2025-05-01 18-22-40.mp4"), ["CS2", "file", "2025-05-01T18:22:40", null]);
+check("OBS replay buffer", clip("OBS/Replay 2025-05-02 22-10-05.mkv"), [null, null, "2025-05-02T22:10:05", null]);
+check("OBS in a game folder by year", clip("Valorant/2025/March/2025-03-02 20-00-00.mkv"), ["Valorant", "folder", "2025-03-02T20:00:00", null]);
+check("PlayStation", clip("Apex Legends_20250315210433.mp4"), ["Apex Legends", "file", "2025-03-15T21:04:33", null]);
+check("Outplayed", clip("League of Legends/League of Legends_03-15-2025_21-04-33-123.mp4"), ["League of Legends", "file", "2025-03-15T21:04:33", null]);
+check("Medal, glued name", clip("Medal/Clips/Rocket League/MedalTVRocketLeague20250315210433.mp4"), ["Rocket League", "folder", "2025-03-15T21:04:33", null]);
+check("named by hand", clip("CS2/best ace ever.mp4"), ["CS2", "folder", null, "best ace ever"]);
+check("Steam recording", [ClipNames.parse("/clips/clip_252950_20250510_201500.mp4", "/clips").steamAppId, clip("clip_252950_20250510_201500.mp4")[1]], ["252950", "steam"]);
+check("program names", [ClipNames.cleanGameName("VALORANT-Win64-Shipping"), ClipNames.cleanGameName("Counter-Strike® 2™"), ClipNames.alias("r5apex")], ["VALORANT", "Counter-Strike 2", "Apex Legends"]);
+check("game name keys", [ClipNames.key("Counter-Strike 2"), ClipNames.key("counter strike 2"), ClipNames.key("CounterStrike2™")], ["counterstrike2", "counterstrike2", "counterstrike2"]);
+check("recording titles", [ClipNames.formatRecorded("2025-03-15T21:04:33"), ClipNames.formatRecorded("2025-03-15T00:00:00")], ["15 March 2025, 21:04", "15 March 2025"]);
+check("game in tags", [ClipNames.fromTags({ GAME: "Halo Infinite" }), ClipNames.fromTags({ encoder: "Lavf" })], ["Halo Infinite", null]);
+check("small copy sizes", [ClipTools.plan(30, 10, 1080, true).height, ClipTools.plan(30, 50, 1080, true).height, ClipTools.plan(60, 500, 720, true).height, ClipTools.plan(120, 10, 1080, true).height], [720, 1080, 720, 360]);
+let tooLong = "";
+try {
+  ClipTools.plan(600, 10, 1080, true);
+} catch (error) {
+  tooLong = (error as Error).message;
+}
+check("small copy that can't fit", tooLong.startsWith("600 seconds don't fit in 10 MB"), true);
+// A tiny made-up vocabulary: "game" splits into "ga" + "me</w>"
+const tokenizer = new ClipTokenizer({ model: { vocab: { "ga": 1, "me</w>": 2, "a</w>": 3 }, merges: ["g a", "m e</w>"] } });
+check("CLIP tokens", tokenizer.encode("Game  a"), [ClipTokenizer.START, 1, 2, 3, ClipTokenizer.END]);
 //#endregion
 
 console.log(failed ? `\n${failed} failed` : "\nAll passed");

@@ -7,6 +7,7 @@ import useController from "../../lib/useController.ts";
 import AppShell from "../../components/AppShell/AppShell.tsx";
 import PosterCard from "../../components/PosterCard/PosterCard.tsx";
 import WideCard from "../../components/WideCard/WideCard.tsx";
+import ClipCard from "../../components/ClipCard/ClipCard.tsx";
 import PhotoAlbumCard from "../../components/PhotoAlbumCard/PhotoAlbumCard.tsx";
 import PersonCard from "../../components/PersonCard/PersonCard.tsx";
 import Spinner from "../../components/Spinner/Spinner.tsx";
@@ -37,7 +38,7 @@ export default function Search() {
       try {
         setResults(await ItemsApi.search(q));
       } catch {
-        setResults({ titles: [], episodes: [], videos: [], photoAlbums: [], people: [], collections: [], artists: [], albums: [], tracks: [], books: [] });
+        setResults({ titles: [], episodes: [], videos: [], photoAlbums: [], games: [], people: [], collections: [], artists: [], albums: [], tracks: [], books: [] });
       } finally {
         setLoading(false);
       }
@@ -45,7 +46,7 @@ export default function Search() {
     return () => clearTimeout(timer);
   }, [query]);
 
-  const empty = results && [results.titles, results.episodes, results.videos, results.photoAlbums, results.people, results.collections, results.artists, results.albums, results.tracks, results.books].every((list) => list.length === 0);
+  const empty = results && [results.titles, results.episodes, results.videos, results.photoAlbums, results.games, results.people, results.collections, results.artists, results.albums, results.tracks, results.books].every((list) => list.length === 0);
 
   return (
     <AppShell>
@@ -93,7 +94,16 @@ export default function Search() {
           <section className="cn-search__section">
             <h2>Videos</h2>
             <div className="cn-search__episodes">
-              {results.videos.map((item) => <WideCard key={item.id} item={item} variant="video" />)}
+              {results.videos.map((item) => item.clip ? <ClipCard key={item.id} item={item} /> : <WideCard key={item.id} item={item} variant="video" />)}
+            </div>
+          </section>
+        )}
+
+        {results && results.games.length > 0 && (
+          <section className="cn-search__section">
+            <h2>Games</h2>
+            <div className="cn-search__grid">
+              {results.games.map((game) => <PosterCard key={game.id} item={game} subtitle={`${game.childCount} ${game.childCount === 1 ? "clip" : "clips"}`} />)}
             </div>
           </section>
         )}

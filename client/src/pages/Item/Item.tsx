@@ -20,6 +20,8 @@ import PersonCard from "../../components/PersonCard/PersonCard.tsx";
 import Select from "../../components/Select/Select.tsx";
 import Spinner from "../../components/Spinner/Spinner.tsx";
 import Button from "../../components/Button/Button.tsx";
+import GameView from "../Clips/GameView.tsx";
+import ClipView from "../Clips/ClipView.tsx";
 import "./Item.scss";
 
 export interface ItemProps {
@@ -27,7 +29,7 @@ export interface ItemProps {
 }
 
 /**
- * The page for a movie, show, episode, video or folder. Seasons open their show with that season selected.
+ * The page for a movie, show, episode, video, folder, game or clip. Seasons open their show with that season selected.
  */
 export default function Item(props: ItemProps) {
   const { id } = props;
@@ -64,7 +66,9 @@ export default function Item(props: ItemProps) {
       {item?.type === "movie" && <MovieView item={item} reload={reload} />}
       {item?.type === "show" && <ShowView item={item} reload={reload} />}
       {item?.type === "episode" && <EpisodeView item={item} reload={reload} />}
-      {item?.type === "video" && <VideoView item={item} reload={reload} />}
+      {item?.type === "video" && !item.clip && <VideoView item={item} reload={reload} />}
+      {item?.type === "video" && item.clip && <ClipView item={item} reload={reload} />}
+      {item?.type === "game" && <GameView item={item} reload={reload} />}
       {item?.type === "folder" && libraries?.find((l) => l.id === item.libraryId)?.type !== "photos" && <FolderView item={item} reload={reload} />}
     </AppShell>
   );

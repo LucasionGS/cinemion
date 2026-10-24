@@ -1,0 +1,67 @@
+.cn-clips {
+  // The tile for clips without a game, shaped like the game covers next to it
+  &__no-game {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--cn-glass-strong);
+    color: var(--cn-text-subtle);
+
+    svg {
+      width: 2.5rem;
+      height: 2.5rem;
+    }
+  }
+
+  &__browser {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    // Room for the selection bar along the bottom
+    padding-bottom: 4rem;
+  }
+
+  &__filters {
+    justify-content: flex-start;
+  }
+
+  // "Cinemion has a guess for 3 clips", and a clip's own suggestion
+  &__notice {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem 1rem;
+    padding: 0.875rem 1.125rem;
+    border-radius: var(--cn-radius-lg);
+    border: 1px solid var(--cn-border);
+    background: var(--cn-glass);
+
+    > svg {
+      flex: none;
+      width: 1.25rem;
+      height: 1.25rem;
+      color: var(--cn-accent);
+    }
+
+    p {
+      flex: 1 1 16rem;
+      line-height: 1.45;
+    }
+
+    &--inline {
+      max-width: 46rem;
+    }
+  }
+
+  &__star--on {
+    color: var(--cn-warning);
+
+    svg {
+      fill: currentColor;
+    }
+  }
+}
+
+:root[data-mode="tv"] .cn-clips__browser .cn-library__grid--wide {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}

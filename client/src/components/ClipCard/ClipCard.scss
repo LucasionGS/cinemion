@@ -1,0 +1,130 @@
+.cn-clip {
+  position: relative;
+  min-width: 0;
+
+  &__open {
+    width: 100%;
+  }
+
+  // What picture recognition thinks the game is, until someone says
+  &__suggestion {
+    position: absolute;
+    left: 0.625rem;
+    bottom: 0.625rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    max-width: calc(100% - 5rem);
+    padding: 0.15rem 0.5rem;
+    border-radius: var(--cn-radius-pill);
+    background: rgba(0, 0, 0, 0.7);
+    font-size: 0.75rem;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    svg {
+      flex: none;
+      width: 0.8rem;
+      height: 0.8rem;
+      color: var(--cn-accent);
+    }
+  }
+
+  &__check {
+    position: absolute;
+    top: 0.625rem;
+    left: 0.625rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.6rem;
+    height: 1.6rem;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    background: rgba(0, 0, 0, 0.35);
+    color: var(--cn-on-accent);
+
+    svg {
+      width: 0.95rem;
+      height: 0.95rem;
+      stroke-width: 3;
+    }
+  }
+
+  &--selected &__check {
+    border-color: var(--cn-accent);
+    background: var(--cn-accent);
+  }
+
+  // The star sits on the art, next to the main button rather than inside it (a button can't hold another)
+  &__star {
+    position: absolute;
+    top: 0.625rem;
+    left: 0.625rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.55);
+    color: #fff;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity var(--cn-fast) var(--cn-ease), transform var(--cn-medium) var(--cn-ease);
+
+    svg {
+      width: 1rem;
+      height: 1rem;
+    }
+
+    &--on {
+      opacity: 1;
+      color: var(--cn-warning);
+
+      svg {
+        fill: currentColor;
+      }
+    }
+
+    &:focus-visible {
+      opacity: 1;
+    }
+  }
+
+  &:hover &__star {
+    opacity: 1;
+  }
+
+  // Follows the card when it lifts on hover
+  &:hover:not(.cn-clip--picking) &__star {
+    transform: translateY(-0.2rem);
+  }
+}
+
+// Touch screens have no hover, so the star is always there
+@media (hover: none) {
+  .cn-clip__star {
+    opacity: 1;
+  }
+}
+
+.cn-clip-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+
+  &__month {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    h2 {
+      font-size: 1.15rem;
+    }
+  }
+}

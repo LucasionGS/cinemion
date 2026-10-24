@@ -79,14 +79,14 @@ export namespace HomeController {
   }
 
   /**
-   * Newest movies or videos, or shows ordered by their newest episode, per library.
+   * Newest movies, videos or clips, or shows ordered by their newest episode, per library.
    */
   async function recentlyAdded(user: User) {
     const rows: HomeData["recentlyAdded"] = [];
     for (const library of await Library.findAll({ order: [["id", "ASC"]] })) {
-      if (!Visibility.canSeeLibrary(user, library.id) || !["movies", "shows", "videos"].includes(library.type)) continue;
+      if (!Visibility.canSeeLibrary(user, library.id) || !["movies", "shows", "videos", "clips"].includes(library.type)) continue;
       let items: MediaItem[];
-      if (library.type === "movies" || library.type === "videos") {
+      if (library.type === "movies" || library.type === "videos" || library.type === "clips") {
         const type = library.type === "movies" ? "movie" : "video";
         items = await MediaItem.findAll({ where: { [Op.and]: [Visibility.where(user), { libraryId: library.id, type }] }, order: [["addedAt", "DESC"]], limit: ROW_SIZE });
       }

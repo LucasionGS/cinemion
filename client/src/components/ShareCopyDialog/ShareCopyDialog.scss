@@ -1,0 +1,40 @@
+.cn-share-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+
+  &__options {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 1rem;
+  }
+
+  &__note {
+    color: var(--cn-text-muted);
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+
+  &__progress {
+    height: 0.5rem;
+    border-radius: var(--cn-radius-pill);
+    background: var(--cn-surface-3);
+    overflow: hidden;
+
+    span {
+      display: block;
+      height: 100%;
+      background: var(--cn-accent);
+      transition: width var(--cn-medium) var(--cn-ease);
+    }
+  }
+
+  &__ready {
+    font-weight: 700;
+  }
+
+  &__error {
+    color: var(--cn-danger-text);
+  }
+}

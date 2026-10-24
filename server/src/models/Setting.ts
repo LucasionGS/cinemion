@@ -41,6 +41,7 @@ export namespace Setting {
     INTEGRATIONS: "integrations",
     COMPAT_API: "compatApi",
     TRAKT: "trakt",
+    CLIPS: "clips",
   } as const;
 }
 

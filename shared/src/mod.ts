@@ -8,6 +8,7 @@ export * from "./admin.ts";
 export * from "./music.ts";
 export * from "./books.ts";
 export * from "./photos.ts";
+export * from "./clips.ts";
 export * from "./trakt.ts";
 export * from "./downloads.ts";
 export * from "./uploads.ts";

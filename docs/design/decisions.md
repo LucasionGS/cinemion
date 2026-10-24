@@ -67,3 +67,10 @@ Mockups: https://claude.ai/artifact/RxQLnPd51KADJ5pEWwnfKC
 - **Viewer:** both mockups. A full-screen picture with a filmstrip (Viewer A), and the (i) button opens the details panel (Viewer B: caption, date, file, camera, place, folder, albums, tags; editable by library managers). Slideshow, zoom to full size, swipes, arrow keys and the TV remote. Videos play right in the viewer.
 
 Mockups: https://claude.ai/artifact/XA2S3uKyad4VM9jmdUGrLS
+
+## Round 6: clips (picked in chat, with text mockups)
+
+- **Clips libraries:** for game recordings. Every clip is a video in a game; the game comes from the names recorders give files and folders, Steam's store (and SteamGridDB, with a key) for names and artwork, or a pick by hand.
+- **Library page:** Games first. A grid of 2:3 game covers with clip counts, a "No game" tile, and the newest clips below. An "All clips" tab lists every clip by month, with filters for game, tag and stars.
+- **Picture recognition:** yes, as an add-on downloaded from Settings (an image model run on the server's CPU). Suggestions only; nothing changes until someone takes one.
+- **Extras in the first version:** cutting without converting, small copies for chat apps, tags (through Edit details) and stars per profile. Not chosen: share links that work without an account.

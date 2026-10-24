@@ -46,6 +46,7 @@ const KINDS: Record<LibraryType, string> = {
   audiobooks: "Audio files, cue sheets, descriptions and covers",
   books: "EPUB and PDF files and covers",
   photos: "Photos (JPG, HEIC, PNG and more) and videos",
+  clips: "Video files, subtitles and pictures",
 };
 
 const FOLDER_EXAMPLES: Record<LibraryType, string> = {
@@ -56,6 +57,7 @@ const FOLDER_EXAMPLES: Record<LibraryType, string> = {
   audiobooks: "Author/Book title",
   books: "Author",
   photos: "Holiday 2025/Day 1",
+  clips: "Counter-Strike 2",
 };
 
 /**

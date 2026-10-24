@@ -1,0 +1,17 @@
+.cn-trim {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+
+  &__note {
+    color: var(--cn-text-muted);
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+
+  &__loading {
+    display: flex;
+    justify-content: center;
+    padding: 3rem;
+  }
+}

@@ -13,6 +13,7 @@ import Activity from "./Activity.ts";
 import Webhook from "./Webhook.ts";
 import Playlist, { PlaylistItem } from "./Playlist.ts";
 import PhotoAlbum, { PhotoAlbumItem } from "./PhotoAlbum.ts";
+import ClipEmbedding from "./ClipEmbedding.ts";
 
 //#region Associations
 User.belongsTo(Role, { as: "role", foreignKey: "roleId" });
@@ -53,10 +54,12 @@ PhotoAlbum.hasMany(PhotoAlbumItem, { as: "entries", foreignKey: "albumId", onDel
 PhotoAlbumItem.belongsTo(PhotoAlbum, { as: "album", foreignKey: "albumId" });
 MediaItem.hasMany(PhotoAlbumItem, { as: "photoAlbumEntries", foreignKey: "itemId", onDelete: "CASCADE" });
 PhotoAlbumItem.belongsTo(MediaItem, { as: "item", foreignKey: "itemId" });
+MediaItem.hasOne(ClipEmbedding, { as: "embedding", foreignKey: "itemId", onDelete: "CASCADE" });
+ClipEmbedding.belongsTo(MediaItem, { as: "item", foreignKey: "itemId" });
 //#endregion
 
 // Every user lookup needs the role for permission checks
 User.addScope("defaultScope", { include: [{ model: Role, as: "role" }] }, { override: true });
 
-export { Activity, Collection, Credit, Library, MediaFile, MediaItem, Person, PhotoAlbum, PhotoAlbumItem, Playlist, PlaylistItem, Role, Setting, User, WatchState, Webhook };
+export { Activity, ClipEmbedding, Collection, Credit, Library, MediaFile, MediaItem, Person, PhotoAlbum, PhotoAlbumItem, Playlist, PlaylistItem, Role, Setting, User, WatchState, Webhook };
 export default sequelize;

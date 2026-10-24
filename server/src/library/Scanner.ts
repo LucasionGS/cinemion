@@ -14,6 +14,8 @@ import MusicLibrary from "../music/MusicLibrary.ts";
 import MusicTags from "../music/MusicTags.ts";
 import BookLibrary from "../books/BookLibrary.ts";
 import PhotoLibrary from "../photos/PhotoLibrary.ts";
+import ClipLibrary from "../clips/ClipLibrary.ts";
+import Recognition from "../clips/Recognition.ts";
 import SubtitleAutomation from "../subtitles/SubtitleAutomation.ts";
 import Events from "../integrations/Events.ts";
 import Tasks from "../lib/Tasks.ts";
@@ -44,7 +46,7 @@ export namespace Scanner {
   type WalkMode = "titles" | "videos" | "audio" | "books" | "photos";
 
   function walkMode(library: Library): WalkMode {
-    return ({ movies: "titles", shows: "titles", videos: "videos", music: "audio", audiobooks: "audio", books: "books", photos: "photos" } as const)[library.type];
+    return ({ movies: "titles", shows: "titles", videos: "videos", music: "audio", audiobooks: "audio", books: "books", photos: "photos", clips: "videos" } as const)[library.type];
   }
 
   // Folders NAS systems fill with their own thumbnails and deleted files, which would show up as photos
@@ -244,7 +246,8 @@ export namespace Scanner {
     // their EXIF read instead.
     const isMusic = library.type === "music";
     const isPhotos = library.type === "photos";
-    const hasVideo = library.type === "movies" || library.type === "shows" || library.type === "videos";
+    const isClips = library.type === "clips";
+    const hasVideo = library.type === "movies" || library.type === "shows" || library.type === "videos" || isClips;
     const toProbe = await MediaFile.findAll({ where: { libraryId: library.id, probedAt: null } });
     let probed = 0;
     await forEachLimit(toProbe, PROBE_CONCURRENCY, async (file) => {
@@ -261,7 +264,8 @@ export namespace Scanner {
           return;
         }
         const { tags, chapters, ...details } = await Probe.read(file.path);
-        await file.update({ ...details, tags: hasVideo || isPhotos ? null : tags, chapters: library.type === "audiobooks" ? chapters : null, probedAt: new Date() });
+        // Clips keep their tags, since some recorders write the game into them
+        await file.update({ ...details, tags: (hasVideo && !isClips) || isPhotos ? null : tags, chapters: library.type === "audiobooks" ? chapters : null, probedAt: new Date() });
       } catch (error) {
         log.warn(`Could not read ${file.path}`, { error });
         await file.update({ probedAt: new Date() });
@@ -284,16 +288,19 @@ export namespace Scanner {
     else if (isBooks) added = await BookLibrary.assign(library, roots);
     else if (library.type === "movies") added = await assignMovies(library, roots);
     else if (library.type === "videos" || isPhotos) added = await assignVideos(library, roots);
+    else if (isClips) added = await ClipLibrary.assign(library, roots);
     else added = await assignEpisodes(library, roots);
     if (isMusic) await MusicLibrary.removeEmpty(library);
     else if (isBooks) await BookLibrary.removeEmpty(library);
     else await removeEmptyItems(library);
+    if (isClips) await ClipLibrary.removeEmptyGames(library);
 
     let refreshed: number;
     if (isMusic) refreshed = await MusicLibrary.refresh(library, task, { regenerate: opts.refreshMetadata });
     else if (isBooks) refreshed = await BookLibrary.refresh(library, task, { regenerate: opts.refreshMetadata });
     else if (library.type === "videos") refreshed = await refreshVideos(library, task, opts);
     else if (isPhotos) refreshed = await refreshPhotos(library, task, opts, toProbe.map((f) => f.itemId).filter((id): id is number => id !== null));
+    else if (isClips) refreshed = await ClipLibrary.refresh(library, task, { regenerate: opts.refreshMetadata });
     else refreshed = await refreshMetadata(library, task, opts);
 
     // Only a full scan counts for the schedule
@@ -304,7 +311,8 @@ export namespace Scanner {
     await Trickplay.cleanup().catch((error) => log.warn("Could not clean up seek thumbnails", { error }));
     if (hasVideo) {
       Trickplay.queueLibrary(library.id);
-      Markers.queueLibrary(library.id);
+      // Clips have no intros or credits to find
+      if (!isClips) Markers.queueLibrary(library.id);
     }
     // Videos in Photos libraries get seek thumbnails too; there are no intros to find in them
     if (isPhotos) {
@@ -312,6 +320,7 @@ export namespace Scanner {
       await PhotoLibrary.cleanup().catch((error) => log.warn("Could not clean up photo copies", { error }));
     }
     await reportAdded(library, added, firstScan).catch((error) => log.warn("Could not report new titles", { error }));
+    if (isClips && await Recognition.shouldRunAfterScan(library)) Recognition.queue(library.id).catch(() => { });
     if (added.length && (library.type === "movies" || library.type === "shows")) SubtitleAutomation.queue({ libraryId: library.id }).catch(() => { });
     const seconds = Math.round((Date.now() - started) / 100) / 10;
     if (scope) {
@@ -339,7 +348,7 @@ export namespace Scanner {
     }
     if (firstScan) {
       const count = library.type === "shows" ? new Set([...shows.values()].map((s) => s?.id)).size : library.type === "music" ? new Set(items.map((i) => i.parentId)).size : items.length;
-      const nouns = { movies: ["movie", "movies"], shows: ["show", "shows"], videos: ["video", "videos"], music: ["album", "albums"], audiobooks: ["audiobook", "audiobooks"], books: ["book", "books"], photos: ["photo", "photos"] }[library.type];
+      const nouns = { movies: ["movie", "movies"], shows: ["show", "shows"], videos: ["video", "videos"], music: ["album", "albums"], audiobooks: ["audiobook", "audiobooks"], books: ["book", "books"], photos: ["photo", "photos"], clips: ["clip", "clips"] }[library.type];
       const noun = nouns[count === 1 ? 0 : 1];
       Events.activity({ kind: "added", message: `${library.name} is ready, with ${count} ${noun}` });
       return;
@@ -362,6 +371,11 @@ export namespace Scanner {
       return;
     }
     for (const item of items) Events.emit("item.added", { library: ref, item: await ItemLabels.forWebhook(item, shows.get(item.id)) });
+
+    if (library.type === "clips") {
+      await reportClips(library, items);
+      return;
+    }
 
     if (library.type === "videos") {
       const byFolder = new Map<number | null, MediaItem[]>();
@@ -395,6 +409,20 @@ export namespace Scanner {
         ? `${show.title} ${ItemLabels.episodeCode(episodes[0])} was added to ${library.name}`
         : `${episodes.length} episodes of ${show.title} were added to ${library.name}`;
       Events.activity({ kind: "added", message, itemId: episodes.length === 1 ? episodes[0].id : show.id });
+    }
+  }
+
+  /**
+   * One activity line per game that got new clips: "Counter-Strike 2 has 3 new clips in Clips".
+   */
+  async function reportClips(library: Library, clips: MediaItem[]) {
+    const byGame = new Map<number | null, MediaItem[]>();
+    for (const clip of clips) byGame.set(clip.parentId, [...byGame.get(clip.parentId) ?? [], clip]);
+    for (const [gameId, list] of byGame) {
+      const game = gameId ? await MediaItem.findByPk(gameId, { attributes: ["id", "title"] }) : null;
+      const what = list.length === 1 ? "A clip" : `${list.length} clips`;
+      const message = game ? `${what} of ${game.title} ${list.length === 1 ? "was" : "were"} added to ${library.name}` : `${what} ${list.length === 1 ? "was" : "were"} added to ${library.name}`;
+      Events.activity({ kind: "added", message, itemId: list.length === 1 ? list[0].id : game?.id ?? null });
     }
   }
 

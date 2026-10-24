@@ -2,6 +2,7 @@ import type { LibraryType } from "./api.ts";
 import type { AlbumSummary, ArtistSummary, TrackInfo } from "./music.ts";
 import type { BookSummary } from "./books.ts";
 import type { PhotoAlbumSummary } from "./photos.ts";
+import type { ClipExtras } from "./clips.ts";
 
 /**
  * Types for movies, shows, seasons, episodes, videos and their folders, and the files behind them.
@@ -10,9 +11,10 @@ import type { PhotoAlbumSummary } from "./photos.ts";
 /**
  * `video` and `folder` live in Videos libraries: every file is a video, and the folders holding them are groups.
  * `artist`, `album` and `track` live in Music libraries (see `music.ts`), `audiobook` and `book` in Audiobooks and
- * Books libraries (see `books.ts`). Photos libraries hold `photo` and `video` items in `folder`s (see `photos.ts`).
+ * Books libraries (see `books.ts`). Photos libraries hold `photo` and `video` items in `folder`s (see `photos.ts`), and
+ * Clips libraries hold `video` items in `game`s (see `clips.ts`).
  */
-export type ItemType = "movie" | "show" | "season" | "episode" | "video" | "folder" | "artist" | "album" | "track" | "audiobook" | "book" | "photo";
+export type ItemType = "movie" | "show" | "season" | "episode" | "video" | "folder" | "artist" | "album" | "track" | "audiobook" | "book" | "photo" | "game";
 
 /**
  * Whether items of this type play in the video player by themselves (rather than holding things that play).
@@ -73,6 +75,11 @@ export interface ExternalIds {
   tmdb?: string;
   imdb?: string;
   tvdb?: string;
+  /**
+   * Games: the Steam app id and the SteamGridDB game id.
+   */
+  steam?: string;
+  steamgriddb?: string;
 }
 
 /**
@@ -96,6 +103,10 @@ export interface UserData {
    */
   unwatchedCount: number | null;
   lastWatchedAt: string | null;
+  /**
+   * Starred by this profile. Used for clips.
+   */
+  favorite: boolean;
 }
 
 /**
@@ -123,7 +134,7 @@ export interface ItemSummary {
    */
   releaseDate: string | null;
   /**
-   * Seasons of a show, episodes of a season, or every video inside a folder (subfolders included).
+   * Seasons of a show, episodes of a season, every video inside a folder (subfolders included), or a game's clips.
    */
   childCount: number;
   seasonNumber: number | null;
@@ -136,6 +147,10 @@ export interface ItemSummary {
   collectionId: number | null;
   addedAt: string;
   userData: UserData | null;
+  /**
+   * For clips in Clips libraries: their game and when they were recorded. `null` for everything else.
+   */
+  clip: ClipExtras | null;
 }
 
 export interface CreditInfo {
@@ -330,6 +345,10 @@ export interface SearchResults {
    * Folders and hand-made albums from Photos libraries.
    */
   photoAlbums: PhotoAlbumSummary[];
+  /**
+   * Games in Clips libraries.
+   */
+  games: ItemSummary[];
   people: PersonSummary[];
   collections: CollectionSummary[];
   artists: ArtistSummary[];

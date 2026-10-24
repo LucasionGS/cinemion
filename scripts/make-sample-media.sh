@@ -7,11 +7,12 @@
 # local artwork, multi-episode files, specials, extras and samples that should be skipped, a folder of
 # home videos with recording dates, a folder picture and nested folders, and music: tagged albums with covers,
 # a two-disc album, a compilation, lyrics, a format browsers can't play and an untagged file, audiobooks
-# (a folder of parts and an .m4b with chapters), books (an EPUB and a PDF), and photos (albums, EXIF, a HEIC, a
-# phone video; made by scripts/sample-photos.ts).
+# (a folder of parts and an .m4b with chapters), books (an EPUB and a PDF), photos (albums, EXIF, a HEIC, a
+# phone video; made by scripts/sample-photos.ts), and game clips named the way recorders name them.
 #
 # Usage: scripts/make-sample-media.sh [FOLDER]
-#   FOLDER         Where to create "movies", "shows", "videos", "music", "audiobooks", "books" and "photos".
+#   FOLDER         Where to create "movies", "shows", "videos", "music", "audiobooks", "books", "photos" and
+#                  "clips".
 #                  Default is data/media.
 #   CLIP_SECONDS   Length of each clip (environment variable). Default is 90.
 #   TRACK_SECONDS  Length of each music track (environment variable). Default is 30.
@@ -27,6 +28,7 @@ VIDEOS="$OUT/videos"
 MUSIC="$OUT/music"
 AUDIOBOOKS="$OUT/audiobooks"
 BOOKS="$OUT/books"
+CLIPS="$OUT/clips"
 SECONDS_PER_CLIP="${CLIP_SECONDS:-90}"
 SECONDS_PER_TRACK="${TRACK_SECONDS:-30}"
 SECONDS_PER_PART="${PART_SECONDS:-60}"
@@ -526,6 +528,51 @@ if command -v deno > /dev/null; then
 else
   echo "Deno isn't installed, so there are no sample photos."
 fi
+#endregion
+
+#region Clips
+echo "Clips..."
+
+# Make a short game clip at 60 frames per second, with a keyframe every 2 seconds so cuts have somewhere to start.
+# Each "game" has its own picture, so picture recognition has something to tell apart.
+# Usage: gameclip <output> <picture> <label> [extra ffmpeg output args...]
+gameclip() {
+  local OUTPUT="$1"
+  local PICTURE="$2"
+  local LABEL="$3"
+  shift 3
+  mkdir -p "$(dirname "$OUTPUT")"
+  ffmpeg -loglevel error -y \
+    -f lavfi -i "$PICTURE,$TIMER,drawtext=text='$LABEL':fontsize=40:fontcolor=white:box=1:boxcolor=black@0.5:x=(w-text_w)/2:y=h-100" \
+    -f lavfi -i "sine=frequency=330:duration=12" \
+    -t 12 -g 120 -keyint_min 120 "$@" "$OUTPUT"
+}
+ARENA="testsrc2=size=1280x720:rate=60"
+FRACTAL="mandelbrot=size=1280x720:rate=60"
+CELLS="life=size=1280x720:rate=60:mold=10:ratio=0.1:life_color=#3DDC97:death_color=#0E1218"
+H264=(-c:v libx264 -preset veryfast -crf 30 -c:a aac)
+
+# NVIDIA's overlay: a folder per game, instant replays end in .DVR
+gameclip "$CLIPS/Counter-strike 2/Counter-strike 2 2025.03.15 - 21.04.33.02.DVR.mp4" "$ARENA" "Ace" "${H264[@]}" -movflags +faststart
+gameclip "$CLIPS/Counter-strike 2/Counter-strike 2 2025.03.15 - 21.31.07.05.DVR.mp4" "$ARENA" "Clutch" "${H264[@]}" -movflags +faststart
+gameclip "$CLIPS/Desktop/Desktop 2025.03.16 - 10.00.00.01.mp4" "smptehdbars=size=1280x720:rate=60" "Desktop" "${H264[@]}"
+# AMD's software, in HEVC
+gameclip "$CLIPS/Radeon ReLive/Elden Ring/ELDEN RING_replay_2025.04.02-19.45.mp4" "$FRACTAL" "Boss" -c:v libx265 -preset ultrafast -crf 32 -tag:v hvc1 -c:a aac
+gameclip "$CLIPS/Radeon ReLive/Elden Ring/ELDEN RING_2025.04.03-20.10.12.mp4" "$FRACTAL" "Jump" -c:v libx265 -preset ultrafast -crf 32 -tag:v hvc1 -c:a aac
+# Xbox Game Bar, by window title, with a short name the lookup knows
+gameclip "$CLIPS/Captures/CS2 2025-05-01 18-22-40.mp4" "$ARENA" "Captures" "${H264[@]}"
+# OBS's replay buffer: no game in the name, and the game and microphone as separate sound tracks
+mkdir -p "$CLIPS/OBS"
+ffmpeg -loglevel error -y \
+  -f lavfi -i "$ARENA,$TIMER,drawtext=text='Replay':fontsize=40:fontcolor=white:box=1:boxcolor=black@0.5:x=(w-text_w)/2:y=h-100" \
+  -f lavfi -i "sine=frequency=330:duration=12" -f lavfi -i "anoisesrc=d=12:c=pink:a=0.1" \
+  -map 0 -map 1 -map 2 -t 12 -g 120 "${H264[@]}" -metadata:s:a:0 title="Game" -metadata:s:a:1 title="Microphone" \
+  "$CLIPS/OBS/Replay 2025-05-02 22-10-05.mkv"
+gameclip "$CLIPS/OBS/2025-05-03 17-01-44.mkv" "$CELLS" "Cells" "${H264[@]}"
+# A folder named by hand, and a clip someone named themselves
+gameclip "$CLIPS/Valorant/best ace ever.mp4" "$CELLS" "Ace ever" "${H264[@]}" -movflags +faststart
+# A Steam game recording, by app id
+gameclip "$CLIPS/clip_252950_20250510_201500.mp4" "$FRACTAL" "Steam" "${H264[@]}" -movflags +faststart
 #endregion
 
 rm -f "/tmp/cinemion-sample-subs.srt"

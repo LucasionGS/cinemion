@@ -11,6 +11,7 @@ import * as traktRatings from "./20261029090000-trakt-ratings.ts";
 import * as subtitleSearches from "./20261030090000-subtitle-searches.ts";
 import * as downloads from "./20261031090000-downloads.ts";
 import * as photos from "./20261101090000-photos.ts";
+import * as clips from "./20261102090000-clips.ts";
 
 /**
  * Every migration, oldest first. Listed by hand (not globbed) so they're included in compiled binaries.
@@ -30,4 +31,5 @@ export const migrations = [
   { name: "20261030090000-subtitle-searches", ...subtitleSearches },
   { name: "20261031090000-downloads", ...downloads },
   { name: "20261101090000-photos", ...photos },
+  { name: "20261102090000-clips", ...clips },
 ];

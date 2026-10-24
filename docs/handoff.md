@@ -1,7 +1,7 @@
 # Cinemion handoff
 
 Everything an assistant needs to pick this project up with no earlier context. Read it fully before changing code.
-Last updated 2026-10-21, after Photos libraries (milestone 20).
+Last updated 2026-10-24, after Clips libraries (milestone 21).
 
 ## 1. What Cinemion is
 
@@ -134,11 +134,12 @@ set one in Settings › Metadata or `TMDB_API_KEY`.
 ## 4. Architecture
 
 Deno workspace (`deno.json` at the root, members `shared`, `server`, `client`).
-Library types: `movies`, `shows`, `videos`, `music`, `audiobooks`, `books` and `photos`. Item types: movie, show →
-season → episode; in Videos libraries folder (nested through `parentId`) and video; in Photos libraries folder, photo
-and video; artist → album → track; audiobook and book. `isPlayable()` in `shared/src/media.ts` says which ones play
+Library types: `movies`, `shows`, `videos`, `music`, `audiobooks`, `books`, `photos` and `clips`. Item types: movie,
+show → season → episode; in Videos libraries folder (nested through `parentId`) and video; in Photos libraries folder,
+photo and video; in Clips libraries game → video (a clip; `parentId` null = no game); artist → album → track;
+audiobook and book. `isPlayable()` in `shared/src/media.ts` says which ones play
 (never photos). Root tasks: `dev`, `dev:client`, `build`,
-`start`, `migrate`, `cli`, `compile` (`scripts/compile.sh` → `dist/linux_x64/bin/cinemion`, ~123 MB with the client
+`start`, `migrate`, `cli`, `compile` (`scripts/compile.sh` → `dist/linux_x64/bin/cinemion`, ~131 MB with the client
 embedded), `check`, `lint`.
 
 ### shared/src (types used by both sides, imported as `@shared/…`)
@@ -169,7 +170,8 @@ home, search), `playback.ts` (device capabilities, playback info, playback/subti
   `models/index.ts` has associations. Primary keys are auto-increment integers.
 - `migrations/` (Umzug; listed by hand in `migrations/index.ts` so they compile into the binary): initial, media,
   browsing, extras (`media_files.sidecars`), admin (`activities`, `webhooks`), videos (`libraries.defaultRating`,
-  `media_items.editedAt`, `media_items.customArtwork`).
+  `media_items.editedAt`, `media_items.customArtwork`), …, photos, clips (`media_items.clip`, `watch_states.favorite`,
+  `clip_embeddings`).
 - `controllers/` (one namespace per resource exporting a Hono `router`, mounted in `ApiController.ts`): server, setup,
   auth, profiles, users, libraries, fs, items, images, settings, home, search, collections, people, playback, subtitles,
   together, admin (dashboard, activity, tasks, logs), integrations (Sonarr/Radarr receiver + path mappings), webhooks.
@@ -204,6 +206,10 @@ home, search), `playback.ts` (device capabilities, playback info, playback/subti
 - `photos/`: Exif (reads JPEG, PNG, WebP, TIFF and HEIC/HEIF/AVIF headers itself), PhotoLibrary (file types, dates,
   thumbnails, copies for viewing, `convert()`), PhotoSummaries. Model `PhotoAlbum` + `PhotoAlbumItem`, controller
   `PhotosController` (`/api/photos`). See Milestone 20.
+- `clips/`: ClipNames (recorder file and folder names), GameInfo (Steam store + SteamGridDB), ClipSettings,
+  ClipLibrary (sorting clips into games, game lookups, setting games by hand), ClipTools (keyframes, cutting, small
+  copies), Recognition + RecognitionWorker + ClipTokenizer (picture recognition). Model `ClipEmbedding`, controller
+  `ClipsController` (`/api/clips`). See Milestone 21.
 - `cli.ts` maintenance CLI (`deno task cli help`), `test.ts` scratch checks.
 
 ### client/src (React 19 + Vite + SCSS, lucide-react icons, hls.js)
@@ -223,7 +229,7 @@ home, search), `playback.ts` (device capabilities, playback info, playback/subti
   dialog, EditDetailsDialog (videos and folders, with the thumbnail picker), LibraryIcon, and `Player/` (PlayerController, PlayerView, Scrubber, Thumbnail, TrackPanel,
   SubtitleSearchDialog, TogetherPanel, Player.scss).
 - `pages/`: Setup, Profiles, SignIn, Home, Library (16:9 grid for Videos libraries, Music/MusicLibrary for music), Item (also VideoView and
-  FolderView with the folder path), Search, Person, Collection, Player, Together, Settings
+  FolderView with the folder path; GameView and ClipView from `pages/Clips/`), Clips (ClipsLibrary, ClipBrowser), Search, Person, Collection, Player, Together, Settings
   (nav groups "You": Profile, Device; "Server": Dashboard, Libraries, Users, Playback, Metadata, Subtitles,
   Integrations, Webhooks, Tasks (badge with the running count), Logs; the server pages share `Admin.scss`).
   The top bar's profile menu has "Server dashboard" for people with `SERVER_MANAGE`.
@@ -264,6 +270,7 @@ and on amd64 Intel's non-free VA driver + Quick Sync runtime), `docker/entrypoin
 | 18 | on hold | Android TV app (WebView wrapper; the SDK is in `~/Android/Sdk` on this machine) |
 | 19 | on hold | Live TV: IPTV playlists, a guide and recordings |
 | 20 | done | Photos libraries: folders as albums, hand-made albums, timeline, viewer with details and slideshows (below) |
+| 21 | done | Clips libraries: game clips sorted by game, picture recognition, cutting, small copies, stars (below) |
 
 Not planned in these rounds: **built-in remote access** (needs a relay service on ionnet.io that doesn't exist yet).
 Photos were asked for on 2026-10-21 and became milestone 20. The owner asked for each milestone to be committed and pushed, and
@@ -658,6 +665,55 @@ hand-made albums, videos mixed in.
 - **Fixed on the way**: folder cards (Videos too) grew taller than 16:9 with a portrait picture; the card's image is
   now positioned absolutely.
 
+### Milestone 21: Clips libraries
+Asked for on 2026-10-24 ("being able to tag a game, and if possible auto detect a game by analysing the video"). Picks
+(round 6 in `docs/design/decisions.md`): games first, picture recognition as an add-on, cutting, small copies, tags and
+stars; no public share links.
+- **Model**: library type `clips`. Clips are `video` items (so the player, downloads, Edit details and thumbnails work
+  as for videos) whose parent is a `game` item, or none. `media_items.clip` (JSON, `MediaItem.ClipInfo`): the name the
+  game was found under (`hint`), a Steam app id, `found` (folder, file, tags, steam, manual), `titled`, `desktop`, the
+  picture `suggestion` and `notGames` (suggestions someone turned down). `ItemSummary.clip` (`ClipExtras`) carries the
+  game, `takenAt`, the length in seconds and the suggestion to lists. Stars are `watch_states.favorite` per profile
+  (`UserData.favorite`). Games keep their Steam/SteamGridDB ids in `externalIds.steam` / `steamgriddb`.
+- **Finding the game** (`ClipNames.parse`): the date patterns of NVIDIA (`Game 2025.03.15 - 21.04.33.02.DVR`), AMD
+  (`Game_replay_2025.03.15-21.04`), Xbox Game Bar / OBS (`2025-03-15 21-04-33`), PlayStation (`Game_20250315210433`),
+  Outplayed (US dates) and Steam (`clip_<appid>_<date>_<time>`); the text before the date is the game, after it the
+  clip's own title. Otherwise the nearest folder that isn't generic (recorder folders, years, months). Glued names
+  ("RocketLeague") lose to the folder's. "Desktop" recordings get no game and no suggestions. Short and program names
+  (CS2, r5apex, VALORANT-Win64-Shipping) go through `ClipNames.ALIASES` / `cleanGameName`. A `game` tag inside the file
+  counts too. These name patterns come from how the recorders are known to name files and are only tested with the
+  sample clips, not real recordings.
+- **Games** (`ClipLibrary`): `GameIndex` finds a new clip's game by name key, the names other clips gave it, or an
+  online id; new games are made unmatched and looked up in the scan (`refreshGames`): Steam store search (exact name
+  key match only) or `appdetails` by id, then SteamGridDB with a key. Artwork: Steam's `library_600x900_2x.jpg`,
+  `library_hero.jpg` and `logo.png` on `shared.steamstatic.com`, SteamGridDB filling gaps. A lookup that finds a game
+  the library already has merges the two. No connection = tried again next scan. `lookups: false` turns all of it off.
+  Games are removed when they have no clips; their age rating is the lowest of their clips.
+- **Picture recognition** (`Recognition`): CLIP ViT-B/16, quantized (Xenova's ONNX export, pinned to a revision with
+  SHA-256 checks), plus ONNX Runtime Web 1.20.1's `ort.bundle.min.mjs` and wasm from jsDelivr: about 166 MB, downloaded
+  into `CONFIG_DIR/models/clip-vit-b16-q8` from Settings › Metadata. Bundling ONNX Runtime as an npm package added
+  ~100 MB to the binary, so it's downloaded and loaded with a dynamic `import()` in a Worker
+  (`RecognitionWorker.ts`, listed with `--include` in `scripts/compile.sh`); threads don't work that way, so it runs
+  on one thread (about 0.65 s a frame). Four frames per clip are averaged into one vector (`clip_embeddings`).
+  Suggestions: the nearest clips that have a game vote (`similar`), and zero-shot against the library's games plus
+  `POPULAR_GAMES` (`picture`, counted at 80%); shown from 35% sure. Runs after scans (`autoSuggest`) and after games are
+  set by hand. Tested on Steam store screenshots: zero-shot alone got 47% of 40 right, so it's a best guess; matching
+  against tagged clips is the strong part.
+- **Cutting** (`ClipTools.trim`): ffmpeg stream copy from the keyframe at or before the start (keyframes from packet
+  flags), saved next to the original as "<name> (cut)" (a new clip with the same game, tags and date) or over it
+  (asks first). Needs write access to the folder, like uploads. Runs in the `clips` task queue, then scans the folder
+  through the `scan` queue.
+- **Small copies** (`ClipTools.startShare`): two-pass x264 + AAC in MP4 sized to 10–500 MB (`plan()` picks bitrate,
+  height and 30/60 fps; one retry if it comes out too big), the main sound track, one track or all mixed. Kept in
+  `CACHE_DIR/shares` for a day, downloadable by their random id without signing in (`MEDIA_DOWNLOAD` to make one).
+- **Client**: `pages/Clips/` (ClipsLibrary with `?view=clips&game=`, ClipBrowser by month with filters and selection,
+  GameView, ClipView), `components/` ClipCard (star on the art), SetGameDialog, ClipRange (preview through
+  PlayerController, keyframe ticks, handles), TrimDialog, ShareCopyDialog; `pages/Settings/GamesSettings.tsx` on the
+  Metadata page. Home has a "New in …" row per Clips library; search has Games.
+- **Tested**: `test.ts` (names, copy sizes, tokenizer); against a scratch server with `scripts/make-sample-media.sh`'s
+  clips (scan, Steam lookups, merging CS2 into Counter-Strike 2, suggestions, set game, cut, small copy with mixed
+  sound); picture recognition in the compiled binary; pages in headless Chrome (desktop, phone, TV).
+
 ## 6. Design decisions
 
 All picks are in `docs/design/decisions.md`, with links to the three mockup artifacts on claude.ai (owner's account).
@@ -731,4 +787,8 @@ optional uploaded pictures, watch together as a side panel.
   (mockup B had one). Real iPhone HEICs and Live Photos haven't been tried, only `heif-enc` files.
 - **Uploads** only take zip files, not RAR or 7z. Files go up one at a time; parallel pieces could be faster on
   high-latency links.
+- **Clips**: recorder name patterns are from documentation and memory, not real files (worth checking with real
+  NVIDIA, AMD, Xbox, Medal and Steam exports). SteamGridDB is untested (no key). Recognition confidence numbers are
+  tuned on test patterns and store screenshots, not real gameplay. Steam's own recording folders (DASH pieces) aren't
+  read; only exported files are.
 - Ideas for later live in `docs/future-features.md`.

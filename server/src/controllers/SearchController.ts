@@ -25,13 +25,13 @@ export namespace SearchController {
    * @swagger
    * /api/search:
    *   get:
-   *     summary: Find movies, shows, episodes, videos, people, collections, artists, albums, tracks, books and photo albums by name. Query `q`.
+   *     summary: Find movies, shows, episodes, videos, people, collections, artists, albums, tracks, books, photo albums and games by name. Query `q`.
    */
   router.get("/", User.$middleware(), async (c) => {
     const user = c.get("user")!;
     const query = (c.req.query("q") ?? "").trim();
     if (query.length < 2) {
-      const empty: SearchResults = { titles: [], episodes: [], videos: [], photoAlbums: [], people: [], collections: [], artists: [], albums: [], tracks: [], books: [] };
+      const empty: SearchResults = { titles: [], episodes: [], videos: [], photoAlbums: [], games: [], people: [], collections: [], artists: [], albums: [], tracks: [], books: [] };
       return c.json(empty);
     }
 
@@ -73,6 +73,8 @@ export namespace SearchController {
     const tracks = await MediaItem.findAll({ where: { [Op.and]: [visible, { [Op.or]: [nameMatch, { artist: { [Op.like]: pattern } }] }, { type: "track" }] }, limit: 20, order: [["sortTitle", "ASC"]] });
     const books = await MediaItem.findAll({ where: { [Op.and]: [visible, nameMatch, { type: ["audiobook", "book"] }] }, limit: 24, order: [["sortTitle", "ASC"]] });
     books.sort((a, b) => rank(a) - rank(b));
+    const games = await MediaItem.findAll({ where: { [Op.and]: [visible, nameMatch, { type: "game" }] }, limit: 24, order: [["sortTitle", "ASC"]] });
+    games.sort((a, b) => rank(a) - rank(b));
     artists.sort((a, b) => rank(a) - rank(b));
     albums.sort((a, b) => rank(a) - rank(b));
     tracks.sort((a, b) => rank(a) - rank(b));
@@ -98,6 +100,7 @@ export namespace SearchController {
       episodes: await Summaries.build(episodes, user),
       videos: await Summaries.build(videos, user),
       photoAlbums,
+      games: await Summaries.build(games, user),
       people: peopleWithTitles,
       collections: collections.slice(0, 12),
       artists: await MusicSummaries.artists(artists),

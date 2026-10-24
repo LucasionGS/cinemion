@@ -2,15 +2,72 @@
 
 Planned, but not part of the first version. Roughly in the order they're likely to happen.
 
+## Server & household
+
+- **Backups and restore**: one click in Settings makes a backup of the database, settings, profile pictures and hand-made
+  artwork and thumbnails (not the cache, which can be rebuilt). Backups can run on a schedule into a folder of your choice,
+  keeping the last few, and one is made by itself before every update that changes the database. Restoring works from the
+  setup wizard on a fresh install and from the CLI (`cinemion restore <file>`). Backups hold secrets (the sign-in key,
+  API keys), so they can be protected with a password.
+- **Watchlist**: a "My list" per profile. Add anything from its page, see it as a row on the home screen, and have it
+  sync both ways with the profile's Trakt watchlist. Something on the list that arrives later (from Seerr, Sonarr or
+  Radarr) is announced through notifications.
+- **Translations**: the whole interface in other languages, picked per profile, with dates and numbers in that
+  language's style. Strings move into translation files so others can help translate.
+- **Built-in HTTPS**: turn on https in Settings without a reverse proxy. Either Cinemion makes its own certificate
+  (with a short guide for trusting it on each device), gets a free Let's Encrypt certificate for your own domain, or
+  uses a certificate you upload. This also makes offline downloads and notifications on phones work on a home network.
+
+## Notifications
+
+- **"New in your library"**: a notification when something arrives, like "Saltwater Kings S2 E4 was added" or "Northbound
+  was added to Movies". A batch is grouped ("5 new episodes of Saltwater Kings"), and each profile only hears about
+  libraries it can see and titles within its age limit.
+- **Per profile choices**: everything new, only shows you're watching and your watchlist, or nothing. Choose per library.
+- **Where they show up**: a bell in the top bar with the latest ones, and browser push notifications on desktops and
+  phones (needs https, see Built-in HTTPS). Optionally email, with the server's own mail settings. Webhooks already
+  cover chat bots and Home Assistant.
+
+## Statistics
+
+- **Per profile**: time spent watching, listening and reading, per week, month and year. Top shows, movies, genres,
+  artists and books, longest binge, and streaks.
+- **A year in review**: a shareable recap at the end of the year, for each profile and for the whole household.
+- **For the server owner**: the same numbers across everyone, plus which libraries and titles nobody touches.
+  A profile can keep its own statistics private.
+
+## Library upkeep
+
+- **Missing episodes**: show which episodes of a season you don't have (from TMDB or TheTVDB), as greyed-out entries
+  that can be hidden.
+- **Duplicates**: the same movie or episode in several files, side by side with their quality, size and age.
+- **Broken files**: files that can't be read, are cut short or fail to play, in one list, with the reason.
+- **Space used**: disk use per library, per show and per file type, and the biggest files.
+- **Deleting from Cinemion**: remove a file (or a whole season) from its page, for people with permission, behind a
+  confirmation. Needs write access to the folder, like uploads.
+- **Ready-made versions**: convert chosen titles ahead of time for devices that can't play them, so they play straight
+  away without the server converting them live.
+
 ## Media types
 
 - **Music extras**: artist pictures and bios from online sources, and music in the dashboard's "Now playing".
 - **Photo extras**: place names from GPS (without an online lookup), a map view, RAW files (CR2, NEF, ARW, DNG), live photos, downloading a whole album as a zip, and faces.
 - **Live TV & DVR**: tuner support, a guide, and recordings that land in a library.
 
+### Clips extras
+
+Clips libraries are there (see the handoff, milestone 21); ideas left over:
+
+- **Share links**: a link to one clip that works for people without an account, with an expiry date.
+- **Recorder extras**: turn long recordings into chapters where the recorder marked highlights, and read Steam's own
+  recording folders (video split into pieces) without exporting them first.
+- **Switch captures**: name the game from the id in the Switch's file names, with a table of ids.
+- **Better guesses**: a larger image model as an option, for servers with the memory and CPU for it.
+
 ## Playback
 
-- **Downloads over plain http**: offline downloads need https (browsers only allow service workers there). A small companion app, or a built-in https setup, would make them work on plain LAN addresses too.
+- **Downloads over plain http**: offline downloads need https (browsers only allow service workers there). Built-in
+  HTTPS (above) covers most homes; a small companion app would make them work on plain LAN addresses too.
 
 ## Clients
 

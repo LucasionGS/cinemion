@@ -1,21 +1,24 @@
 import type { CreationOptional, ForeignKey, InferAttributes, InferCreationAttributes, NonAttribute } from "sequelize";
 import { col, DataTypes, Model, Op, where } from "sequelize";
 import type { Artwork, ExternalIds, ExternalRatings, ItemSummary, ItemType, MatchStatus, Palette } from "@shared/media.ts";
+import type { ClipGameSource, GameSuggestion } from "@shared/clips.ts";
 import sequelize, { ID_TYPE, jsonColumn } from "./sequelize.ts";
 import type Library from "./Library.ts";
 
 export const EMPTY_ARTWORK: Artwork = { poster: null, backdrop: null, logo: null, thumb: null };
 
 /**
- * A movie, show, season or episode, a video, photo or folder, or an artist, album or track. Seasons belong to a show
- * and episodes to a season through `parentId`; albums to their artist and tracks to their album the same way.
+ * A movie, show, season or episode, a video, photo or folder, an artist, album or track, or a game. Seasons belong to
+ * a show and episodes to a season through `parentId`; albums to their artist, tracks to their album and clips to their
+ * game the same way.
  */
 export class MediaItem extends Model<InferAttributes<MediaItem>, InferCreationAttributes<MediaItem>> {
   declare id: CreationOptional<number>;
   declare libraryId: ForeignKey<Library["id"]>;
   /**
-   * The show of a season, the season of an episode, the folder of a video or photo, the artist of an album or the
-   * album of a track. `null` for movies, shows, artists and things in a library folder itself.
+   * The show of a season, the season of an episode, the folder of a video or photo, the artist of an album, the
+   * album of a track or the game of a clip. `null` for movies, shows, artists, games, things in a library folder
+   * itself and clips without a game.
    */
   declare parentId: CreationOptional<number | null>;
   declare type: ItemType;
@@ -90,6 +93,10 @@ export class MediaItem extends Model<InferAttributes<MediaItem>, InferCreationAt
    * The thumbnail was uploaded or picked by hand, so refreshing keeps it.
    */
   declare customArtwork: CreationOptional<boolean>;
+  /**
+   * Clips in Clips libraries: where their game came from. `null` for everything else.
+   */
+  declare clip: CreationOptional<MediaItem.ClipInfo | null>;
   declare addedAt: CreationOptional<Date>;
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
@@ -119,7 +126,7 @@ export class MediaItem extends Model<InferAttributes<MediaItem>, InferCreationAt
    * @param extra What the item doesn't know by itself: child count, the profile's progress, the show it's in.
    *   `Summaries.build()` fills these in for lists.
    */
-  public toSummary(extra?: Partial<Pick<ItemSummary, "childCount" | "userData" | "showId" | "showTitle">>): ItemSummary {
+  public toSummary(extra?: Partial<Pick<ItemSummary, "childCount" | "userData" | "showId" | "showTitle" | "clip">>): ItemSummary {
     return {
       id: this.id,
       libraryId: this.libraryId,
@@ -143,6 +150,7 @@ export class MediaItem extends Model<InferAttributes<MediaItem>, InferCreationAt
       collectionId: this.collectionId,
       addedAt: this.addedAt.toISOString(),
       userData: extra?.userData ?? null,
+      clip: extra?.clip ?? null,
     };
   }
 
@@ -183,10 +191,44 @@ MediaItem.init({
   metadataUpdatedAt: { type: DataTypes.DATE, allowNull: true, defaultValue: null },
   editedAt: { type: DataTypes.DATE, allowNull: true, defaultValue: null },
   customArtwork: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
+  clip: jsonColumn<MediaItem.ClipInfo | null, MediaItem>("clip", null, true),
   addedAt: { type: DataTypes.DATE, allowNull: false, defaultValue: DataTypes.NOW },
   createdAt: DataTypes.DATE,
   updatedAt: DataTypes.DATE,
 }, { sequelize, tableName: "media_items" });
+
+export namespace MediaItem {
+  /**
+   * What a clip's names say about its game, and what picture recognition thinks it is.
+   */
+  export interface ClipInfo {
+    /**
+     * The game's name as the folder, file name or tags gave it, like "Counter-strike 2". `null` = none found.
+     */
+    hint: string | null;
+    /**
+     * Steam app id from the name of a Steam game recording.
+     */
+    steamAppId: string | null;
+    /**
+     * Where the clip's game came from. `null` = it has none.
+     */
+    found: ClipGameSource | null;
+    /**
+     * The title came from the file name (or was typed in), rather than being when it was recorded.
+     */
+    titled: boolean;
+    /**
+     * A recording of the desktop rather than a game, so no game is suggested.
+     */
+    desktop?: boolean;
+    suggestion: GameSuggestion | null;
+    /**
+     * Games someone said a clip isn't, by title, so they aren't suggested again.
+     */
+    notGames?: string[];
+  }
+}
 
 export type MediaItemAttributes = InferAttributes<MediaItem>;
 

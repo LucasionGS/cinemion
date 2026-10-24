@@ -7,6 +7,7 @@ import Visibility from "../library/Visibility.ts";
 import Summaries from "../library/Summaries.ts";
 import ItemLabels from "../library/ItemLabels.ts";
 import VideoDetails from "../library/VideoDetails.ts";
+import ClipLibrary from "../clips/ClipLibrary.ts";
 import FolderTree from "../library/FolderTree.ts";
 import ContentRatings from "../library/ContentRatings.ts";
 import Events from "../integrations/Events.ts";
@@ -30,11 +31,12 @@ export namespace ItemsController {
 
   /**
    * Movies, episodes and videos under an item: itself for those, every episode for shows and seasons, every video
-   * for folders.
+   * for folders, every clip for games.
    */
   export async function playableIds(item: MediaItem): Promise<number[]> {
     if (isPlayable(item.type)) return [item.id];
     if (item.type === "folder") return (await FolderTree.load([item.libraryId])).videosUnder(item.id).map((v) => v.id);
+    if (item.type === "game") return (await MediaItem.findAll({ where: { parentId: item.id, type: "video" }, attributes: ["id"] })).map((c) => c.id);
     const seasons = item.type === "show" ? (await MediaItem.findAll({ where: { parentId: item.id }, attributes: ["id"] })).map((s) => s.id) : [item.id];
     return (await MediaItem.findAll({ where: { parentId: seasons, type: "episode" }, attributes: ["id"] })).map((e) => e.id);
   }
@@ -62,12 +64,13 @@ export namespace ItemsController {
   }
 
   /**
-   * Videos in the same folder as `video` (itself included), in folder order.
+   * Videos in the same folder as `video` (itself included), in folder order. For clips, the clips of the same game,
+   * newest first.
    */
   async function siblings(video: MediaItem, user: User, limit?: number) {
     return await MediaItem.findAll({
       where: { [Op.and]: [Visibility.where(user), { libraryId: video.libraryId, parentId: video.parentId, type: "video" }] },
-      order: [["sortTitle", "ASC"], ["id", "ASC"]],
+      order: video.clip ? [["takenAt", "DESC"], ["id", "DESC"]] : [["sortTitle", "ASC"], ["id", "ASC"]],
       limit,
     });
   }
@@ -83,7 +86,8 @@ export namespace ItemsController {
     const item = await findVisible(user, Number(c.req.param("id")));
     if (!item) return c.json({ message: "That title doesn't exist." }, 404);
 
-    const children = await MediaItem.findAll({
+    // A game's clips can be thousands; its page loads them a page at a time from /api/clips
+    const children = item.type === "game" ? [] : await MediaItem.findAll({
       where: item.type === "folder" ? { [Op.and]: [Visibility.where(user), { parentId: item.id }] } : { parentId: item.id },
       // Folders hold subfolders ("folder" sorts before "video") and then videos, by title
       order: item.type === "show" ? [["seasonNumber", "ASC"]] : item.type === "folder" ? [["type", "ASC"], ["sortTitle", "ASC"]] : [["episodeNumber", "ASC"]],
@@ -157,7 +161,7 @@ export namespace ItemsController {
    * @swagger
    * /api/items/{id}/next:
    *   get:
-   *     summary: For an episode, the one after it; for a video, the next one in its folder. For a show, season or folder, what "Play" starts:
+   *     summary: For an episode, the one after it; for a video, the next one in its folder (or game). For a show, season, folder or game, what "Play" starts:
    *       something in progress first, then the next one after the furthest watched, then the first one. `null` when there's nothing.
    */
   router.get("/:id/next", User.$middleware(), async (c) => {
@@ -169,10 +173,13 @@ export namespace ItemsController {
       const next = list[list.findIndex((v) => v.id === item.id) + 1];
       return c.json(next ? await Summaries.one(next, user) : null);
     }
-    if (!item || (item.type !== "show" && item.type !== "season" && item.type !== "folder")) return c.json({ message: "Only shows, seasons, episodes, videos and folders have a next one." }, 404);
+    if (!item || (item.type !== "show" && item.type !== "season" && item.type !== "folder" && item.type !== "game")) return c.json({ message: "Only shows, seasons, episodes, videos, folders and games have a next one." }, 404);
 
     let list: MediaItem[];
-    if (item.type === "folder") {
+    if (item.type === "game") {
+      list = await MediaItem.findAll({ where: { [Op.and]: [Visibility.where(user), { parentId: item.id, type: "video" }] }, order: [["takenAt", "DESC"], ["id", "DESC"]] });
+    }
+    else if (item.type === "folder") {
       const ids = (await FolderTree.load([item.libraryId])).videosUnder(item.id).map((v) => v.id);
       const videos = await MediaItem.findAll({ where: { [Op.and]: [Visibility.where(user), { id: ids }] } });
       const byId = new Map(videos.map((v) => [v.id, v]));
@@ -361,8 +368,9 @@ export namespace ItemsController {
     }
     item.editedAt = new Date();
     await item.save();
-    // A folder's date and rating come from what's inside it
+    // A folder's date and rating come from what's inside it, and so does a game's rating
     if (item.type !== "folder" && library) await VideoDetails.refreshFolders(library);
+    if (library?.type === "clips") await ClipLibrary.summarizeGames(library);
     return c.json(await Summaries.one(item, user));
   });
 

@@ -5,9 +5,10 @@ import { toasts } from "../../lib/Toasts.ts";
 import MetadataForm from "../../components/MetadataForm/MetadataForm.tsx";
 import Button from "../../components/Button/Button.tsx";
 import Spinner from "../../components/Spinner/Spinner.tsx";
+import GamesSettings from "./GamesSettings.tsx";
 
 /**
- * Where posters, plots and cast come from.
+ * Where posters, plots and cast come from, and the artwork of games in Clips libraries.
  */
 export default function MetadataSettings() {
   const [saved, setSaved] = useState<Settings | null>(null);
@@ -55,6 +56,7 @@ export default function MetadataSettings() {
           </div>
         </section>
       )}
+      {value && <GamesSettings />}
     </>
   );
 }

@@ -210,6 +210,7 @@ export namespace CompatApi {
     audiobooks: "books",
     books: "books",
     photos: "homevideos",
+    clips: "homevideos",
   };
 
   export function libraryJson(library: Library, serverId: string) {
@@ -236,6 +237,7 @@ export namespace CompatApi {
     audiobook: "AudioBook",
     book: "Book",
     photo: "Photo",
+    game: "Folder",
   };
 
   /**

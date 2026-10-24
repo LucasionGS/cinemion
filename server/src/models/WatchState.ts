@@ -5,7 +5,8 @@ import type MediaItem from "./MediaItem.ts";
 import type User from "./User.ts";
 
 /**
- * One profile's progress on a movie, episode or audiobook, where it is in a book, or how often it played a track.
+ * One profile's progress on a movie, episode or audiobook, where it is in a book, how often it played a track, or
+ * whether it starred a clip.
  * Books keep their progress as a fraction: `position` from 0 to 1 with a `duration` of 1.
  */
 export class WatchState extends Model<InferAttributes<WatchState>, InferCreationAttributes<WatchState>> {
@@ -27,6 +28,10 @@ export class WatchState extends Model<InferAttributes<WatchState>, InferCreation
    * Books: where reading stopped, like "4:0.35". `null` for everything else.
    */
   declare bookmark: CreationOptional<string | null>;
+  /**
+   * Starred by this profile. Used for clips.
+   */
+  declare favorite: CreationOptional<boolean>;
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
 
@@ -112,6 +117,18 @@ export class WatchState extends Model<InferAttributes<WatchState>, InferCreation
   }
 
   /**
+   * Star an item for a profile, or take the star off.
+   */
+  public static async setFavorite(userId: number, itemIds: number[], favorite: boolean) {
+    for (const itemId of itemIds) {
+      const state = await WatchState.findOrBuildState(userId, itemId);
+      if (state.isNewRecord ? !favorite : state.favorite === favorite) continue;
+      state.favorite = favorite;
+      await state.save();
+    }
+  }
+
+  /**
    * Count a play of a track. Tracks have no resume position; `lastWatchedAt` is when it was last played.
    */
   public static async recordPlay(userId: number, itemId: number) {
@@ -131,6 +148,7 @@ WatchState.init({
   playCount: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 },
   lastWatchedAt: { type: DataTypes.DATE, allowNull: true, defaultValue: null },
   bookmark: { type: DataTypes.STRING(512), allowNull: true, defaultValue: null },
+  favorite: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
   createdAt: DataTypes.DATE,
   updatedAt: DataTypes.DATE,
 }, { sequelize, tableName: "watch_states" });

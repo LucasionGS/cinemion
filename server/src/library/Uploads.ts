@@ -74,6 +74,7 @@ export namespace Uploads {
       case "movies":
       case "shows":
       case "videos":
+      case "clips":
         return [...NameParser.VIDEO_EXTENSIONS, ...Sidecars.SUBTITLE_EXTENSIONS, ".nfo", ...IMAGE_EXTENSIONS];
       case "music":
         return [...MusicTags.AUDIO_EXTENSIONS, ".lrc", ".cue", ...IMAGE_EXTENSIONS];
@@ -99,7 +100,7 @@ export namespace Uploads {
   }
 
   export function rules(): UploadRules {
-    const types: LibraryType[] = ["movies", "shows", "videos", "music", "audiobooks", "books", "photos"];
+    const types: LibraryType[] = ["movies", "shows", "videos", "music", "audiobooks", "books", "photos", "clips"];
     return { maxSize: maxSize(), maxChunk: MAX_CHUNK, extensions: Object.fromEntries(types.map((t) => [t, extensions(t)])) as Record<LibraryType, string[]> };
   }
 
@@ -111,6 +112,7 @@ export namespace Uploads {
       movies: "video files, subtitles, NFO files and pictures",
       shows: "video files, subtitles, NFO files and pictures",
       videos: "video files, subtitles, NFO files and pictures",
+      clips: "video files, subtitles, NFO files and pictures",
       music: "audio files, lyrics (.lrc) and pictures",
       audiobooks: "audio files, cue sheets, descriptions and pictures",
       books: "EPUB and PDF files and pictures",

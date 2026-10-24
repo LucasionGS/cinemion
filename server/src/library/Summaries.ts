@@ -1,16 +1,17 @@
 import { col, fn } from "sequelize";
 import { isPlayable, type ItemSummary, type UserData } from "@shared/media.ts";
-import { MediaItem, type User, WatchState } from "../models/index.ts";
+import type { ClipExtras } from "@shared/clips.ts";
+import { MediaFile, MediaItem, type User, WatchState } from "../models/index.ts";
 import FolderTree from "./FolderTree.ts";
 import Visibility from "./Visibility.ts";
 
 /**
  * Builds `ItemSummary` lists with everything an item doesn't know by itself, loaded in a few batched queries:
- * child counts, the profile's progress, and the show a season or episode belongs to.
+ * child counts, the profile's progress, the show a season or episode belongs to, and the game of a clip.
  */
 export namespace Summaries {
   /**
-   * Number of children (seasons of shows, episodes of seasons) per id.
+   * Number of children (seasons of shows, episodes of seasons, clips of games) per id.
    */
   export async function childCounts(ids: number[]) {
     if (ids.length === 0) return new Map<number, number>();
@@ -63,6 +64,30 @@ export namespace Summaries {
   }
 
   /**
+   * What lists show about clips: their game and when they were recorded.
+   */
+  async function clips(items: MediaItem[]) {
+    const result = new Map<number, ClipExtras>();
+    const list = items.filter((i) => i.type === "video" && i.clip);
+    if (list.length === 0) return result;
+    const gameIds = [...new Set(list.map((c) => c.parentId).filter((id): id is number => id !== null))];
+    const games = gameIds.length ? await MediaItem.findAll({ where: { id: gameIds, type: "game" }, attributes: ["id", "title"] }) : [];
+    const byId = new Map(games.map((g) => [g.id, { id: g.id, title: g.title }]));
+    const seconds = new Map((await MediaFile.findAll({ where: { itemId: list.map((c) => c.id) }, attributes: ["itemId", "duration"] })).map((f) => [f.itemId, f.duration]));
+    for (const clip of list) {
+      result.set(clip.id, {
+        game: clip.parentId ? byId.get(clip.parentId) ?? null : null,
+        takenAt: clip.takenAt,
+        seconds: seconds.get(clip.id) ?? null,
+        titled: clip.clip!.titled || !!clip.editedAt,
+        found: clip.clip!.found,
+        suggestion: clip.clip!.suggestion,
+      });
+    }
+    return result;
+  }
+
+  /**
    * The profile's progress per item. Shows and seasons count their episodes, folders every video inside them.
    * @param folderVideos The videos in each folder of `items` this profile may see, from `folderVideos()`.
    */
@@ -103,6 +128,7 @@ export namespace Summaries {
           progress: state && duration && state.position ? Math.min(1, state.position / duration) : null,
           unwatchedCount: null,
           lastWatchedAt: state?.lastWatchedAt?.toISOString() ?? null,
+          favorite: state?.favorite ?? false,
         });
       }
       else {
@@ -115,6 +141,7 @@ export namespace Summaries {
           progress: episodes.length ? watched / episodes.length : null,
           unwatchedCount: episodes.length - watched,
           lastWatchedAt: last ? new Date(last).toISOString() : null,
+          favorite: false,
         });
       }
     }
@@ -126,16 +153,18 @@ export namespace Summaries {
    */
   export async function build(items: MediaItem[], user: User | null): Promise<ItemSummary[]> {
     if (items.length === 0) return [];
-    const counts = await childCounts(items.filter((i) => i.type === "show" || i.type === "season").map((i) => i.id));
+    const counts = await childCounts(items.filter((i) => i.type === "show" || i.type === "season" || i.type === "game").map((i) => i.id));
     const inFolders = await folderVideos(items, user);
     for (const [folderId, videos] of inFolders) counts.set(folderId, videos.length);
     const showOf = await shows(items);
     const data = user ? await userData(items, user.id, inFolders) : new Map<number, UserData>();
+    const clipOf = await clips(items);
     return items.map((item) => item.toSummary({
       childCount: counts.get(item.id) ?? 0,
       userData: data.get(item.id) ?? null,
       showId: showOf.get(item.id)?.id ?? null,
       showTitle: showOf.get(item.id)?.title ?? null,
+      clip: clipOf.get(item.id) ?? null,
     }));
   }
 

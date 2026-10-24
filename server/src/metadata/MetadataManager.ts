@@ -5,6 +5,7 @@ import { Collection, Credit, Library, MediaFile, MediaItem, Person, Setting } fr
 import ContentRatings from "../library/ContentRatings.ts";
 import VideoDetails from "../library/VideoDetails.ts";
 import PhotoLibrary from "../photos/PhotoLibrary.ts";
+import ClipLibrary from "../clips/ClipLibrary.ts";
 import type MetadataProvider from "./MetadataProvider.ts";
 import LocalProvider from "./providers/LocalProvider.ts";
 import TmdbProvider from "./providers/TmdbProvider.ts";
@@ -271,7 +272,8 @@ export namespace MetadataManager {
   }
 
   /**
-   * Refresh whatever an item belongs to: a movie or video itself, or the whole show for shows, seasons and episodes.
+   * Refresh whatever an item belongs to: a movie, video or game itself, or the whole show for shows, seasons and
+   * episodes.
    */
   export async function refresh(item: MediaItem) {
     if (item.type === "movie") return await refreshMovie(item);
@@ -280,10 +282,14 @@ export namespace MetadataManager {
       const library = await Library.findByPk(item.libraryId);
       if (item.type === "photo") await PhotoLibrary.refreshPhoto(item, { regenerate: true, library });
       else if (item.type === "video" && library?.type === "photos") await PhotoLibrary.refreshVideo(item, { regenerate: true, library });
+      else if (item.type === "video" && library?.type === "clips") await ClipLibrary.refreshClip(item, { regenerate: true, library });
       else if (item.type === "video") await VideoDetails.refreshVideo(item, { regenerate: true, library });
       if (library) await VideoDetails.refreshFolders(library);
+      if (library?.type === "clips") await ClipLibrary.summarizeGames(library);
       return;
     }
+    // Games are looked up again by the game they were matched with
+    if (item.type === "game") return await ClipLibrary.refreshGame(item);
     let show: MediaItem | null = item;
     while (show && show.type !== "show") show = show.parentId ? await MediaItem.findByPk(show.parentId) : null;
     if (show) await refreshShow(show);

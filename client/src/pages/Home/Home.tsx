@@ -19,6 +19,7 @@ import { AlbumCard } from "../../components/MusicCard/MusicCard.tsx";
 import BookCard from "../../components/BookCard/BookCard.tsx";
 import PosterCard from "../../components/PosterCard/PosterCard.tsx";
 import WideCard from "../../components/WideCard/WideCard.tsx";
+import ClipCard from "../../components/ClipCard/ClipCard.tsx";
 import Spinner from "../../components/Spinner/Spinner.tsx";
 import { PlayRing } from "../../components/ItemActions/ItemActions.tsx";
 import "./Home.scss";
@@ -69,7 +70,13 @@ export default function Home() {
           </Row>
         )}
 
-        {home?.recentlyAdded.map((row) => row.libraryType === "videos"
+        {home?.recentlyAdded.map((row) => row.libraryType === "clips"
+          ? (
+            <Row key={row.libraryId} title={`New in ${row.libraryName}`} href={`/library/${row.libraryId}?view=clips`} kind="wide">
+              {row.items.map((item) => <ClipCard key={item.id} item={item} onSelect={() => setSelected(item)} />)}
+            </Row>
+          )
+          : row.libraryType === "videos"
           ? (
             <Row key={row.libraryId} title={`Recently added in ${row.libraryName}`} href={`/library/${row.libraryId}?sort=added`} kind="wide">
               {row.items.map((item) => <WideCard key={item.id} item={item} variant="video" onSelect={() => setSelected(item)} />)}

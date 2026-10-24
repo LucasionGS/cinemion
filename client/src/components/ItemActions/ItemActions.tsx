@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { type ReactNode, useState } from "react";
 import { Menu } from "@base-ui/react/menu";
 import { Check, EllipsisVertical, Pencil, Plus, RefreshCw, RotateCcw, Wand2 } from "lucide-react";
 import { type ItemDetail, type ItemSummary, isPlayable } from "@shared/media.ts";
@@ -23,6 +23,10 @@ export interface ItemActionsProps {
    * Called after anything changed the item, so the page can reload it.
    */
   onChanged: () => void;
+  /**
+   * More buttons for this kind of item, after the others, like the star and cutting for clips.
+   */
+  children?: ReactNode;
 }
 
 /**
@@ -30,7 +34,7 @@ export interface ItemActionsProps {
  * Refresh.
  */
 export default function ItemActions(props: ItemActionsProps) {
-  const { item, playTarget, onChanged } = props;
+  const { item, playTarget, onChanged, children } = props;
   const [fixing, setFixing] = useState(false);
   const [editing, setEditing] = useState(false);
   const target = playTarget ?? (isPlayable(item.type) ? item : null);
@@ -82,6 +86,7 @@ export default function ItemActions(props: ItemActionsProps) {
           onClick={toggleWatched}
         />
         {isPlayable(item.type) && session.can("MEDIA_DOWNLOAD") && <DownloadButton item={item} />}
+        {children}
         {session.can("LIBRARY_MANAGE") && (
           <Menu.Root>
             <Menu.Trigger className="cn-icon-button cn-icon-button--glass cn-icon-button--lg" aria-label="More options"><EllipsisVertical /></Menu.Trigger>

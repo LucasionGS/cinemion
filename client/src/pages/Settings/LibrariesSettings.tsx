@@ -98,7 +98,7 @@ export default function LibrariesSettings() {
                     <Menu.Popup className="cn-menu">
                       <Menu.Item className="cn-menu__item" onClick={() => setUploading(l)}><Upload /> Upload files</Menu.Item>
                       <Menu.Item className="cn-menu__item" onClick={() => setEditing(l)}><Pencil /> Edit library</Menu.Item>
-                      <Menu.Item className="cn-menu__item" onClick={() => scan(l, true)}><ScanSearch /> {l.type === "videos" || l.type === "photos" ? "Refresh details and thumbnails" : l.type === "music" ? "Find covers again" : l.type === "audiobooks" || l.type === "books" ? "Read book details again" : "Refresh all details"}</Menu.Item>
+                      <Menu.Item className="cn-menu__item" onClick={() => scan(l, true)}><ScanSearch /> {l.type === "videos" || l.type === "photos" ? "Refresh details and thumbnails" : l.type === "clips" ? "Refresh thumbnails and games" : l.type === "music" ? "Find covers again" : l.type === "audiobooks" || l.type === "books" ? "Read book details again" : "Refresh all details"}</Menu.Item>
                       <Menu.Separator className="cn-menu__separator" />
                       <Menu.Item className="cn-menu__item" onClick={() => setRemoving(l)}><Trash2 /> Remove library</Menu.Item>
                     </Menu.Popup>
@@ -149,18 +149,18 @@ function UploadProgress(props: { library: LibraryInfo; onOpen: () => void }) {
   );
 }
 
-const NOUNS: Record<LibraryType, [string, string]> = { movies: ["movie", "movies"], shows: ["show", "shows"], videos: ["video", "videos"], music: ["album", "albums"], audiobooks: ["audiobook", "audiobooks"], books: ["book", "books"], photos: ["photo", "photos"] };
-const TYPE_NAMES: Record<LibraryType, string> = { movies: "Movies", shows: "Shows", videos: "Videos", music: "Music", audiobooks: "Audiobooks", books: "Books", photos: "Photos" };
+const NOUNS: Record<LibraryType, [string, string]> = { movies: ["movie", "movies"], shows: ["show", "shows"], videos: ["video", "videos"], music: ["album", "albums"], audiobooks: ["audiobook", "audiobooks"], books: ["book", "books"], photos: ["photo", "photos"], clips: ["clip", "clips"] };
+const TYPE_NAMES: Record<LibraryType, string> = { movies: "Movies", shows: "Shows", videos: "Videos", music: "Music", audiobooks: "Audiobooks", books: "Books", photos: "Photos", clips: "Clips" };
 
 /**
  * The type a new library most likely has: whatever kind isn't there yet.
  */
 function nextType(libraries: LibraryInfo[]): LibraryType {
-  return (["movies", "shows", "videos", "music", "photos", "audiobooks", "books"] as const).find((t) => !libraries.some((l) => l.type === t)) ?? "movies";
+  return (["movies", "shows", "videos", "music", "photos", "clips", "audiobooks", "books"] as const).find((t) => !libraries.some((l) => l.type === t)) ?? "movies";
 }
 
 /**
- * The rating unrated videos, music, books or photos get, for the libraries that have one.
+ * The rating unrated videos, music, books, photos or clips get, for the libraries that have one.
  */
 function DefaultRatingSelect(props: { value: string; onChange: (value: string) => void; type?: LibraryType }) {
   const what = props.type === "music" ? "music" : props.type === "audiobooks" || props.type === "books" ? "books" : null;
@@ -177,9 +177,11 @@ function DefaultRatingSelect(props: { value: string; onChange: (value: string) =
   }
   return (
     <Select
-      label={what ? `Rating for these ${what === "music" ? "albums" : "books"}` : "Rating for unrated videos"}
+      label={what ? `Rating for these ${what === "music" ? "albums" : "books"}` : props.type === "clips" ? "Rating for unrated clips" : "Rating for unrated videos"}
       description={what
         ? `Profiles with an age limit only see ${what} rated within it. Pick “G / All ages” so everyone can ${what === "music" ? "listen" : "read and listen"}.`
+        : props.type === "clips"
+        ? "Profiles with an age limit only see clips rated within it. Pick one that suits the games you play, like “12”."
         : "Profiles with an age limit only see videos rated within it. Pick “G / All ages” for family videos everyone may see."}
       value={props.value}
       onChange={(e) => props.onChange(e.target.value)}
@@ -319,7 +321,7 @@ function AddLibraryDialog(props: { open: boolean; onOpenChange: (open: boolean) 
             setType(value);
             if (!nameEdited) setName(TYPE_NAMES[value]);
           }}
-          options={[{ value: "movies", label: "Movies" }, { value: "shows", label: "Shows" }, { value: "videos", label: "Videos" }, { value: "music", label: "Music" }, { value: "photos", label: "Photos" }, { value: "audiobooks", label: "Audiobooks" }, { value: "books", label: "Books" }]}
+          options={[{ value: "movies", label: "Movies" }, { value: "shows", label: "Shows" }, { value: "videos", label: "Videos" }, { value: "music", label: "Music" }, { value: "photos", label: "Photos" }, { value: "clips", label: "Clips" }, { value: "audiobooks", label: "Audiobooks" }, { value: "books", label: "Books" }]}
         />
         <TextField label="Name" value={name} style={{ flex: "1 1 14rem" }} onChange={(e) => {
           setName(e.target.value);
@@ -348,6 +350,12 @@ function AddLibraryDialog(props: { open: boolean; onOpenChange: (open: boolean) 
         <>
           <p className="cn-settings__row-text"><span>EPUB books are read right in Cinemion, with everyone's place saved; PDFs open in the browser's own viewer. Details and covers come from the files.</span></p>
           <DefaultRatingSelect value={rating} onChange={setRating} type="books" />
+        </>
+      )}
+      {type === "clips" && (
+        <>
+          <p className="cn-settings__row-text"><span>Game recordings, grouped by game. The game comes from the names recorders give their files and folders (NVIDIA, AMD, Xbox Game Bar, OBS, Steam and more), with covers from Steam. Clips without a game can be given one by hand, or get a suggestion from picture recognition.</span></p>
+          <DefaultRatingSelect value={rating} onChange={setRating} type="clips" />
         </>
       )}
       {type === "photos" && (
