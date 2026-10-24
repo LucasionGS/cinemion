@@ -67,12 +67,17 @@ export interface ProfilePreferences {
    * The interface's language, like `en` or `pt-BR`. `null` = the browser's language.
    */
   language: string | null;
+  /**
+   * Keep this profile's statistics out of the server owner's view and the household's year in review.
+   */
+  privateStats: boolean;
 }
 
 export const DEFAULT_PREFERENCES: ProfilePreferences = {
   subtitles: { size: "medium", color: "white", background: "box", keepStyling: true },
   notifications: { mode: "all", libraries: {}, email: null },
   language: null,
+  privateStats: false,
 };
 
 /**
@@ -99,5 +104,6 @@ export function normalizePreferences(value: unknown): ProfilePreferences {
     },
     // Example: en, pt-BR, zh-Hant
     language: typeof language === "string" && /^[a-z]{2,3}(-[A-Za-z0-9]{2,8})*$/.test(language) ? language : null,
+    privateStats: (value as Partial<ProfilePreferences> | null)?.privateStats === true,
   };
 }

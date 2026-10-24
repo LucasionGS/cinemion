@@ -17,6 +17,7 @@ import Backups from "./backups/Backups.ts";
 import Watchlist from "./library/Watchlist.ts";
 import Https from "./https/Https.ts";
 import Notifications from "./notifications/Notifications.ts";
+import PlayLog from "./stats/PlayLog.ts";
 import { Activity } from "./models/index.ts";
 import log from "./lib/Logger.ts";
 
@@ -100,6 +101,7 @@ for (const signal of ["SIGINT", "SIGTERM"] as const) {
     clearTimeout(firstDaily);
     clearInterval(dailyTimer);
     await Https.stop();
+    await PlayLog.stop();
     await TranscodeSession.shutdown();
     WatchTogether.shutdown();
     await server.shutdown();

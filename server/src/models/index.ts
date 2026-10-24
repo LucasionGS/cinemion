@@ -16,6 +16,7 @@ import PhotoAlbum, { PhotoAlbumItem } from "./PhotoAlbum.ts";
 import ClipEmbedding from "./ClipEmbedding.ts";
 import WatchlistItem from "./WatchlistItem.ts";
 import Notification, { PushSubscription } from "./Notification.ts";
+import PlaySession from "./PlaySession.ts";
 
 //#region Associations
 User.belongsTo(Role, { as: "role", foreignKey: "roleId" });
@@ -68,10 +69,14 @@ MediaItem.hasMany(Notification, { as: "notifications", foreignKey: "itemId", onD
 Notification.belongsTo(MediaItem, { as: "item", foreignKey: "itemId" });
 User.hasMany(PushSubscription, { as: "pushSubscriptions", foreignKey: "userId", onDelete: "CASCADE" });
 PushSubscription.belongsTo(User, { as: "user", foreignKey: "userId" });
+User.hasMany(PlaySession, { as: "playSessions", foreignKey: "userId", onDelete: "CASCADE" });
+PlaySession.belongsTo(User, { as: "user", foreignKey: "userId" });
+MediaItem.hasMany(PlaySession, { as: "playSessions", foreignKey: "itemId", onDelete: "SET NULL" });
+PlaySession.belongsTo(MediaItem, { as: "item", foreignKey: "itemId" });
 //#endregion
 
 // Every user lookup needs the role for permission checks
 User.addScope("defaultScope", { include: [{ model: Role, as: "role" }] }, { override: true });
 
-export { Activity, ClipEmbedding, Notification, PushSubscription, Collection, Credit, Library, MediaFile, MediaItem, Person, PhotoAlbum, PhotoAlbumItem, Playlist, PlaylistItem, Role, Setting, User, WatchlistItem, WatchState, Webhook };
+export { Activity, ClipEmbedding, Notification, PlaySession, PushSubscription, Collection, Credit, Library, MediaFile, MediaItem, Person, PhotoAlbum, PhotoAlbumItem, Playlist, PlaylistItem, Role, Setting, User, WatchlistItem, WatchState, Webhook };
 export default sequelize;

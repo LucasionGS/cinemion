@@ -37,6 +37,7 @@ import Encryption from "./lib/Encryption.ts";
 import Certificates from "./https/Certificates.ts";
 import Der from "./https/Der.ts";
 import WebPush from "./notifications/WebPush.ts";
+import Statistics from "./stats/Statistics.ts";
 import { decodeBase64Url, encodeBase64Url } from "@std/encoding/base64url";
 
 /**
@@ -571,6 +572,15 @@ const browserAuth = new Uint8Array(16).map((_, i) => i * 7);
 const sealedPush = await WebPush.encrypt(encoded("{\"title\":\"Harbor Lights\"}"), { p256dh: encodeBase64Url(browserPublic), auth: encodeBase64Url(browserAuth) });
 check("push round trip with fresh keys", await decryptPush(sealedPush, browserKeys.privateKey, browserPublic, browserAuth), "{\"title\":\"Harbor Lights\"}");
 check("push encryption (RFC 8291)", encodeBase64Url(pushBody), "DGv6ra1nlYgDCS1FRnbzlwAAEABBBP4z9KsN6nGRTbVYI_c7VJSPQTBtkgcy27mlmlMoZIIgDll6e3vCYLocInmYWAmS6TlzAC8wEqKK6PBru3jl7A_yl95bQpu6cVPTpK4Mqgkf1CXztLVBSt2Ks3oZwbuwXPXLWyouBWLVWGNWQexSgSxsj_Qulcy4a-fN");
+//#endregion
+
+//#region Statistics
+console.log("Statistics");
+const statsToday = new Date(2026, 9, 25, 20, 0);
+check("streak up to today", Statistics.streaks(new Set(["2026-10-23", "2026-10-24", "2026-10-25", "2026-10-01"]), statsToday), { current: 3, longest: 3 });
+check("streak still alive before today's first play", Statistics.streaks(new Set(["2026-10-22", "2026-10-23", "2026-10-24"]), statsToday), { current: 3, longest: 3 });
+check("streak over month ends", Statistics.streaks(new Set(["2026-09-29", "2026-09-30", "2026-10-01", "2026-10-02", "2026-10-20"]), statsToday), { current: 0, longest: 4 });
+check("periods", [Statistics.dayOf(Statistics.periodStart("week", statsToday)!), Statistics.dayOf(Statistics.periodStart("month", statsToday)!), Statistics.dayOf(Statistics.periodStart("year", statsToday)!), Statistics.periodStart("all", statsToday)], ["2026-10-19", "2026-09-26", "2025-11-01", null]);
 //#endregion
 
 console.log(failed ? `\n${failed} failed` : "\nAll passed");

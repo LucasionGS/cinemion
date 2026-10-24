@@ -2,6 +2,7 @@ import { Hono } from "hono";
 import { Op, type Order, type WhereOptions } from "sequelize";
 import type { AlbumDetail, ArtistDetail, AudioFormat, MusicOverview, MusicPage, MusicSort, TrackInfo, TrackStream, TrackStreamRequest } from "@shared/music.ts";
 import { Library, MediaFile, MediaItem, User, WatchState } from "../models/index.ts";
+import PlayLog from "../stats/PlayLog.ts";
 import Visibility from "../library/Visibility.ts";
 import MusicSummaries from "../music/MusicSummaries.ts";
 import AudioStream from "../music/AudioStream.ts";
@@ -316,6 +317,9 @@ export namespace MusicController {
     const track = await visibleItem(user, Number(c.req.param("id")), "track");
     if (!track) return c.json({ message: "That track doesn't exist." }, 404);
     await WatchState.recordPlay(user.id, track.id);
+    // The client counts a play after half the track or 30 seconds; most plays are listened to the end
+    const file = await MediaFile.findOne({ where: { itemId: track.id }, attributes: ["duration"] });
+    await PlayLog.add(user.id, track.id, Math.min(file?.duration ?? 0, 20 * 60)).catch(() => { });
     return c.body(null, 204);
   });
 

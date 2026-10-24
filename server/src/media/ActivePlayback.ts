@@ -5,6 +5,7 @@ import { MediaItem, type MediaFile, User } from "../models/index.ts";
 import ItemLabels from "../library/ItemLabels.ts";
 import PlaybackDecider from "./PlaybackDecider.ts";
 import Events from "../integrations/Events.ts";
+import PlayLog from "../stats/PlayLog.ts";
 import Trakt from "../integrations/Trakt.ts";
 import log from "../lib/Logger.ts";
 
@@ -194,6 +195,7 @@ export namespace ActivePlayback {
     entry.meta.catch(() => { });
     _entries.set(entry.id, entry);
     emit("playback.started", entry);
+    PlayLog.tick(entry.userId, entry.itemId, true);
     return entry;
   }
 
@@ -209,6 +211,7 @@ export namespace ActivePlayback {
       entry.paused = update.paused;
       emit(update.paused ? "playback.paused" : "playback.resumed", entry);
     }
+    PlayLog.tick(entry.userId, entry.itemId, !entry.paused);
     return true;
   }
 
@@ -221,6 +224,7 @@ export namespace ActivePlayback {
     if (!entry) return;
     _entries.delete(id);
     emit("playback.stopped", entry);
+    PlayLog.tick(entry.userId, entry.itemId, false);
   }
 
   export function list() {

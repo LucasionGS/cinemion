@@ -157,6 +157,20 @@ const routes: Route[] = [
     },
   }),
   requirement({ signedIn: true }, {
+    path: /^\/stats(?:\/(everyone))?\/?$/,
+    component: async ([scope]) => {
+      const Stats = (await import("./pages/Stats/Stats.tsx")).default;
+      return <Stats key={scope ?? "me"} scope={scope ? "everyone" : "me"} />;
+    },
+  }),
+  requirement({ signedIn: true }, {
+    path: /^\/year\/(\d{4})\/?$/,
+    component: async ([year]) => {
+      const YearInReview = (await import("./pages/Stats/YearInReview.tsx")).default;
+      return <YearInReview key={year} year={Number(year)} />;
+    },
+  }),
+  requirement({ signedIn: true }, {
     path: /^\/my-list\/?$/,
     component: async () => {
       const MyList = (await import("./pages/MyList/MyList.tsx")).default;

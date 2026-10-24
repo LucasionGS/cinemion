@@ -7,14 +7,6 @@ Planned, but not part of the first version. Roughly in the order they're likely 
 - **More translations**: the interface can be translated (see `docs/translating.md`) but only English exists. Next:
   actual languages, and the server's own messages (errors, the activity feed, task names) as translatable lines too.
 
-## Statistics
-
-- **Per profile**: time spent watching, listening and reading, per week, month and year. Top shows, movies, genres,
-  artists and books, longest binge, and streaks.
-- **A year in review**: a shareable recap at the end of the year, for each profile and for the whole household.
-- **For the server owner**: the same numbers across everyone, plus which libraries and titles nobody touches.
-  A profile can keep its own statistics private.
-
 ## Library upkeep
 
 - **Missing episodes**: show which episodes of a season you don't have (from TMDB or TheTVDB), as greyed-out entries

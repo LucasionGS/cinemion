@@ -15,3 +15,4 @@ export * from "./uploads.ts";
 export * from "./watchlist.ts";
 export * from "./https.ts";
 export * from "./notifications.ts";
+export * from "./stats.ts";

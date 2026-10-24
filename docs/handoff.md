@@ -282,6 +282,7 @@ and on amd64 Intel's non-free VA driver + Quick Sync runtime), `docker/entrypoin
 | 24 | done | My list: a watchlist per profile, a home row, two-way sync with the Trakt watchlist (below) |
 | 25 | done | Built-in HTTPS: a certificate made by Cinemion, from Let's Encrypt or your own, renewed by itself (below) |
 | 26 | done | Notifications: a bell, browser push and email for new titles and arrivals from My list (below) |
+| 27 | done | Statistics: time per profile and for everyone, top titles, streaks, binges, a year in review (below) |
 
 Not planned in these rounds: **built-in remote access** (needs a relay service on ionnet.io that doesn't exist yet).
 Photos were asked for on 2026-10-21 and became milestone 20. The owner asked for each milestone to be committed and pushed, and
@@ -925,6 +926,27 @@ Asked for on 2026-10-25 (with every other item on the "what's next" list).
   `GET|PUT /email`, `POST /email/test`). Client: `lib/Notifications.ts` (the bell's controller, every minute while
   visible; `Push` helpers), the bell in the top bar (Base UI Popover), `pages/Settings/NotificationsCard.tsx` on
   Settings › Your profile (`#notifications`).
+
+### Milestone 27: Statistics
+- **The log** (migration `20261106090000-play-sessions`, `models/PlaySession.ts`): one row per sitting (user, item,
+  the item's type as `kind`, `startedAt`, `seconds`). The migration fills it from `watch_states`: one sitting per
+  finished movie, episode, video or audiobook at its `lastWatchedAt`, and play count × length for tracks.
+- **Recording** (`stats/PlayLog.ts`): `tick()` from `ActivePlayback` (start, every report, end; paused reports end the
+  stretch), from book progress saves (audiobooks; books with a 5-minute gap since the place is saved less often), and
+  `add()` for music plays (the track's length, at most 20 minutes). Time between reports counts when they're under
+  90 s apart; rows are written once a minute and at shutdown.
+- **Numbers** (`stats/Statistics.ts`): per profile (`forProfile`, periods week = last 7 days, month = 30, year = 12
+  months, all), for the server (`forServer`, `SERVER_MANAGE`: per profile, minus profiles with
+  `preferences.privateStats`, which only count in the totals; libraries' movies and shows nobody ever played), and
+  `yearInReview` (me or household). Watching = movie/episode/video, listening = track/audiobook, reading = book. Shows
+  count distinct episodes; a binge is the most episodes of one show on one local day (from 3); streaks count days with
+  a minute or more, and today's streak survives until the day is over. Days are the server's local days.
+- **API** `/api/stats/me?period=`, `/api/stats/server?period=`, `/api/stats/year/:year?scope=me|household`.
+- **Client**: `pages/Stats/` (`/stats`, `/stats/everyone`, `/year/:year`): totals, a stacked bar chart drawn with
+  divs (`--cn-stats-watching/listening/reading`), top lists, genres, streak and binge, the privacy switch; the year
+  in review as cards with a share button (Web Share, or the summary copied). "Your stats" in the profile menu.
+- **Tested**: `test.ts` (streaks across months and before today's first play, periods); a simulated playback with a
+  pause (30 s, then a new sitting of 10 s); a year of made-up sittings for screenshots.
 
 ## 6. Design decisions
 

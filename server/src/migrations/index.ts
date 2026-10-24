@@ -15,6 +15,7 @@ import * as clips from "./20261102090000-clips.ts";
 import * as uploadHashes from "./20261103090000-upload-hashes.ts";
 import * as watchlist from "./20261104090000-watchlist.ts";
 import * as notifications from "./20261105090000-notifications.ts";
+import * as playSessions from "./20261106090000-play-sessions.ts";
 
 /**
  * Every migration, oldest first. Listed by hand (not globbed) so they're included in compiled binaries.
@@ -38,4 +39,5 @@ export const migrations = [
   { name: "20261103090000-upload-hashes", ...uploadHashes },
   { name: "20261104090000-watchlist", ...watchlist },
   { name: "20261105090000-notifications", ...notifications },
+  { name: "20261106090000-play-sessions", ...playSessions },
 ];

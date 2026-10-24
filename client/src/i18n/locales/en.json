@@ -240,7 +240,8 @@
       "downloads": "Downloads",
       "switchProfile": "Switch profile",
       "signOut": "Sign out",
-      "myList": "My list"
+      "myList": "My list",
+      "stats": "Your stats"
     },
     "search": {
       "default": "Search movies and shows",
@@ -2937,6 +2938,155 @@
       "emailDescription": "Leave empty for no email. You get one email per batch of new things.",
       "emailSaved": "Notifications will be emailed too",
       "emailOff": "No more notification emails"
+    }
+  },
+  "stats": {
+    "title": "Your stats",
+    "intro": "What you watched, listened to and read, and how long for.",
+    "everyoneTitle": "Everyone's stats",
+    "everyoneIntro": "The whole household's time, the favourites, and what nobody watches.",
+    "yearLink": "Your {year} in review",
+    "whose": "Whose stats",
+    "you": "You",
+    "everyone": "Everyone",
+    "periodLabel": "Period",
+    "period": {
+      "week": "Last 7 days",
+      "month": "Last 30 days",
+      "year": "Last 12 months",
+      "all": "All time"
+    },
+    "emptyTitle": "Nothing here yet",
+    "emptyText": "Watch, listen or read something and the time shows up here.",
+    "watching": "Watching",
+    "listening": "Listening",
+    "reading": "Reading",
+    "chartLabel": "Time per day or month, split into watching, listening and reading",
+    "minutes": {
+      "one": "{count} min",
+      "other": "{count} min"
+    },
+    "hours": {
+      "one": "{count} h",
+      "other": "{count} h"
+    },
+    "counts": {
+      "movies": {
+        "one": "{count} movie",
+        "other": "{count} movies"
+      },
+      "episodes": {
+        "one": "{count} episode",
+        "other": "{count} episodes"
+      },
+      "tracks": {
+        "one": "{count} song",
+        "other": "{count} songs"
+      },
+      "books": {
+        "one": "{count} book",
+        "other": "{count} books"
+      },
+      "days": {
+        "one": "{count} day with something on",
+        "other": "{count} days with something on"
+      },
+      "plays": {
+        "one": "Played once",
+        "other": "Played {count} times"
+      },
+      "sittings": {
+        "one": "{count} sitting",
+        "other": "{count} sittings"
+      }
+    },
+    "topShows": "Top shows",
+    "topMovies": "Top movies",
+    "topArtists": "Top artists",
+    "topBooks": "Top books",
+    "genres": "Genres",
+    "streak": {
+      "current": {
+        "one": "A {count}-day streak",
+        "other": "A {count}-day streak"
+      },
+      "longest": {
+        "one": "Your longest streak is {count} day",
+        "other": "Your longest streak is {count} days"
+      },
+      "none": "No streak right now"
+    },
+    "binge": {
+      "title": {
+        "one": "{count} episode of {show} in one day",
+        "other": "{count} episodes of {show} in one day"
+      },
+      "when": "Your biggest binge, on {date}"
+    },
+    "people": "Who watched the most",
+    "privateProfiles": {
+      "one": "1 profile keeps its stats private; its time counts in the totals.",
+      "other": "{count} profiles keep their stats private; their time counts in the totals."
+    },
+    "untouched": {
+      "title": "What nobody watches",
+      "text": "Movies and shows that nobody on this server ever played.",
+      "count": "{count} of {total}",
+      "oldest": "Waiting the longest",
+      "added": "{library} · added {date}"
+    },
+    "private": {
+      "label": "Keep my stats private",
+      "description": "Leaves your name out of everyone's stats and the household's year in review. Your time still counts in the totals, without your name."
+    }
+  },
+  "review": {
+    "eyebrow": "Year in review",
+    "title": "{year} in review",
+    "whose": "Whose year",
+    "me": "You",
+    "household": "Household",
+    "emptyTitle": "A quiet year",
+    "emptyText": "Nothing was watched, heard or read in {year} yet.",
+    "youSpent": "You spent",
+    "householdSpent": "Everyone at {name} spent",
+    "watching": "{time} watching",
+    "listening": "{time} listening",
+    "reading": "{time} reading",
+    "days": {
+      "one": "On {count} day of the year",
+      "other": "On {count} days of the year"
+    },
+    "topShow": "Top show",
+    "topMovie": "Top movie",
+    "topArtist": "Top artist",
+    "topBook": "Top book",
+    "months": "Month by month",
+    "busiest": "Busiest month: {month}",
+    "records": "Records",
+    "streak": {
+      "one": "{count} day in a row",
+      "other": "{count} days in a row"
+    },
+    "binge": {
+      "one": "{count} episode of {show} on {date}",
+      "other": "{count} episodes of {show} on {date}"
+    },
+    "genres": "Your genres",
+    "first": "Where the year began",
+    "people": "Who watched the most",
+    "share": {
+      "button": "Share",
+      "copied": "Summary copied",
+      "heading": "{name}'s {year} on Cinemion",
+      "hours": "{time} of watching, listening and reading",
+      "show": "Top show: {title}",
+      "movie": "Top movie: {title}",
+      "artist": "Top artist: {title}",
+      "streak": {
+        "one": "Longest streak: {count} day",
+        "other": "Longest streak: {count} days"
+      }
     }
   }
 }

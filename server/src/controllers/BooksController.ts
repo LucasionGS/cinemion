@@ -4,6 +4,7 @@ import { Op } from "sequelize";
 import type { BookDetail, BookFilter, BookPage, BookProgressRequest, BookReading, BookSort } from "@shared/books.ts";
 import type { AudioFormat, TrackStream, TrackStreamRequest } from "@shared/music.ts";
 import { Credit, Library, MediaFile, MediaItem, User, WatchState } from "../models/index.ts";
+import PlayLog from "../stats/PlayLog.ts";
 import Visibility from "../library/Visibility.ts";
 import BookLibrary from "../books/BookLibrary.ts";
 import BookSummaries from "../books/BookSummaries.ts";
@@ -150,11 +151,13 @@ export namespace BooksController {
       // Within half a minute of the end counts as finished
       const done = finished ?? (position !== undefined && duration > 0 && position >= duration - 30 ? true : undefined);
       await WatchState.saveBookProgress(user.id, book.id, { position, duration, finished: done });
+      if (position !== undefined) PlayLog.tick(user.id, book.id, true);
     }
     else {
       const progress = typeof body.progress === "number" && Number.isFinite(body.progress) ? Math.max(0, Math.min(1, body.progress)) : undefined;
       const bookmark = typeof body.bookmark === "string" ? body.bookmark.slice(0, 500) : body.bookmark === null ? null : undefined;
       await WatchState.saveBookProgress(user.id, book.id, { position: progress, duration: 1, bookmark, finished: finished ?? (progress !== undefined && progress >= 0.995 ? true : undefined) });
+      if (progress !== undefined) PlayLog.tick(user.id, book.id, true, { book: true });
     }
     return c.body(null, 204);
   });
