@@ -296,6 +296,18 @@ export namespace User {
      */
     expiresAt: number;
     username: string | null;
+    /**
+     * When the watchlist was last brought in step with Trakt, in ms since the epoch.
+     */
+    watchlistSyncedAt?: number | null;
+    /**
+     * What Trakt said about the watchlist's last change at the last sync, to skip fetching an unchanged list.
+     */
+    watchlistChange?: string | null;
+    /**
+     * Why the last watchlist sync failed, or `null`.
+     */
+    watchlistError?: string | null;
   }
 }
 

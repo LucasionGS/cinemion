@@ -279,6 +279,7 @@ and on amd64 Intel's non-free VA driver + Quick Sync runtime), `docker/entrypoin
 | 21c | done | Update check: admins are told when a newer release is out (below) |
 | 22 | done | Translations: every line of the client in `en.json`, a language per profile, `deno task i18n` (below) |
 | 23 | done | Backups and restore: by hand, on a schedule and before updates, password protection, restore from the setup wizard or the CLI (below) |
+| 24 | done | My list: a watchlist per profile, a home row, two-way sync with the Trakt watchlist (below) |
 
 Not planned in these rounds: **built-in remote access** (needs a relay service on ionnet.io that doesn't exist yet).
 Photos were asked for on 2026-10-21 and became milestone 20. The owner asked for each milestone to be committed and pushed, and
@@ -841,6 +842,31 @@ Asked for on 2026-10-25 (with every other item on the "what's next" list).
   activity line), wrong password, junk and cut-off files leave everything alone, the wizard by API and in headless
   Chrome, a backup from a database one migration behind (made by itself before the update, restored and migrated
   up), and SQLite → MariaDB 11.8 → SQLite in a throwaway container.
+
+### Milestone 24: My list
+- **Model** (`models/WatchlistItem.ts`, migration `20261104090000-watchlist`): `watchlist_items` per profile with an
+  `itemId` (`SET NULL` when the item goes, so the entry falls back to waiting), plus a snapshot of `kind` (movie, show,
+  video), title, year and `externalIds`, `onTrakt` (on the Trakt watchlist as far as the last sync knows) and
+  `arrivedAt`. Titles are matched by keys like `movie:tmdb:603`, `show:tvdb:81189` and `imdb:tt…` (TMDB numbers movies
+  and shows separately).
+- **Logic** (`library/Watchlist.ts`): `add`/`remove` (sent to Trakt in the background for movies and shows with ids),
+  `overview` (links waiting entries first; items the profile can't see count as not here), `forHome` (here and not
+  watched, newest first). `Scanner.reportAdded` calls `arrived()` with new movies and the shows of new episodes, also
+  on a library's first scan; `onArrived(listener)` is the hook for notifications.
+- **Trakt** (`Trakt.watchlist`, `changeWatchlist`, `watchlistChangedAt` from `/sync/last_activities`): `sync()` every
+  15 minutes per linked profile, skipped when Trakt's change time is the same as last time (and nothing waits to go
+  up), but at least every 6 hours. New titles there come in (linked when they're here, without counting as an
+  arrival); entries with `onTrakt` that are gone there are deleted; entries that never made it up are sent. Right after
+  linking, the two lists are merged. The state (`watchlistSyncedAt`, `watchlistChange`, `watchlistError`) lives in
+  `users.trakt`.
+- **API** `/api/watchlist` (`GET`, `POST /sync`, `PUT|DELETE /items/:itemId`, `DELETE /entries/:id`);
+  `ItemDetail.onList`; `HomeData.myList`.
+- **Client**: a bookmark button in `ItemActions` (movies, shows, videos), a "My list" row on the home screen after
+  Continue watching, `pages/MyList/` (`/my-list`: ready to watch, then "Not here yet" tiles linking to TMDB or IMDb),
+  and My list in the profile menu.
+- **Tested** against a scratch server and a fake Trakt API (`TRAKT_API_URL`): adding and removing, the first merge
+  after linking, pushes, removals on either side, titles added on Trakt, and a movie with matching NFO ids arriving
+  in a new library.
 
 ## 6. Design decisions
 

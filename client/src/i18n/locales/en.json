@@ -239,7 +239,8 @@
       "together": "Join watch together",
       "downloads": "Downloads",
       "switchProfile": "Switch profile",
-      "signOut": "Sign out"
+      "signOut": "Sign out",
+      "myList": "My list"
     },
     "search": {
       "default": "Search movies and shows",
@@ -272,7 +273,8 @@
       "newIn": "New in {library}",
       "recentlyAddedIn": "Recently added in {library}",
       "continueBooks": "Pick up your book",
-      "becauseYouWatched": "Because you watched {title}"
+      "becauseYouWatched": "Because you watched {title}",
+      "myList": "My list"
     },
     "empty": {
       "addFolder": "Add a folder with movies or shows to get started.",
@@ -468,7 +470,11 @@
     "updateFailed": "Couldn't update",
     "refreshing": "Refreshing {title}…",
     "upToDate": "{title} is up to date",
-    "refreshFailed": "Couldn't refresh"
+    "refreshFailed": "Couldn't refresh",
+    "addToList": "Add to My list",
+    "removeFromList": "Take off My list",
+    "addedToList": "{title} is on your list",
+    "removedFromList": "{title} is off your list"
   },
   "editDetails": {
     "videoTitle": "Edit video details",
@@ -2728,6 +2734,39 @@
       "text": "A restore replaces everything on a server with what's in the backup, so it's done while nothing else is going on:",
       "wizard": "On a new or reinstalled Cinemion, pick “Restore a backup” on the first page of the setup. It finds backups in the backup folder, or you can upload one.",
       "cli": "On this server, stop Cinemion and run {command}, then start it again."
+    }
+  },
+  "myList": {
+    "title": "My list",
+    "intro": "Movies and shows you want to watch. Add them with the bookmark button on their page.",
+    "here": {
+      "one": "Ready to watch",
+      "other": "Ready to watch · {count}"
+    },
+    "waiting": {
+      "one": "Not here yet",
+      "other": "Not here yet · {count}"
+    },
+    "waitingText": "These are on your list but not in any library you can see. They move up by themselves once they're added.",
+    "notHere": "Not here yet",
+    "justArrived": "Just arrived",
+    "kind": {
+      "movie": "Movie",
+      "show": "Show",
+      "video": "Video"
+    },
+    "empty": {
+      "title": "Nothing on your list yet",
+      "text": "Found something for later? Press the bookmark button on its page and it shows up here and on the home screen."
+    },
+    "trakt": {
+      "syncNow": "Sync with Trakt",
+      "synced": "Your list is in step with Trakt",
+      "syncFailed": "Couldn't sync with Trakt",
+      "syncedAgo": "Kept in step with your Trakt watchlist, both ways. Last synced {ago}.",
+      "notYet": "Kept in step with your Trakt watchlist, both ways. The first sync happens in a few minutes.",
+      "failed": "The last sync with Trakt didn't work: {error}",
+      "notLinked": "Link Trakt in <link>Settings › Your profile</link> to keep this list in step with your Trakt watchlist."
     }
   }
 }

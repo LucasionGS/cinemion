@@ -29,6 +29,7 @@ import TraktController from "./TraktController.ts";
 import DownloadsController from "./DownloadsController.ts";
 import UploadsController from "./UploadsController.ts";
 import BackupsController from "./BackupsController.ts";
+import WatchlistController from "./WatchlistController.ts";
 import type { AppEnv } from "../lib/types.ts";
 
 /**
@@ -67,6 +68,7 @@ export namespace ApiController {
   router.route("/downloads", DownloadsController.router);
   router.route("/uploads", UploadsController.router);
   router.route("/backups", BackupsController.router);
+  router.route("/watchlist", WatchlistController.router);
 
   router.all("*", (c) => c.json({ message: `There's no API endpoint at ${c.req.method} ${c.req.path}.` }, 404));
 }

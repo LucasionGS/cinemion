@@ -1,0 +1,68 @@
+.cn-mylist {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+
+  &__header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+
+    h1 {
+      font-size: 2.5rem;
+    }
+
+    p {
+      margin-top: 0.375rem;
+      color: var(--cn-text-subtle);
+    }
+  }
+
+  &__trakt,
+  &__note {
+    color: var(--cn-text-muted);
+    font-size: 0.9rem;
+
+    a {
+      color: var(--cn-accent-text);
+    }
+  }
+
+  &__section {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    h2 {
+      font-size: 1.35rem;
+    }
+  }
+
+  &__empty {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    max-width: 40rem;
+    padding: 2rem;
+    border-radius: var(--cn-radius-xl);
+    background: var(--cn-glass);
+    border: 1px solid var(--cn-border);
+
+    p {
+      color: var(--cn-text-muted);
+      line-height: 1.55;
+    }
+  }
+
+  &__waiting .cn-poster__art {
+    opacity: 0.75;
+  }
+}
+
+// Phones hide card buttons elsewhere; here taking a title off is the point of the page
+:root[data-mode="mobile"] .cn-mylist .cn-poster__actions {
+  display: block;
+  opacity: 1;
+}

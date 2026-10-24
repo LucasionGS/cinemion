@@ -302,6 +302,74 @@ export namespace Trakt {
   }
 
   //#endregion
+
+  //#region Watchlist
+
+  /**
+   * A title on a Trakt watchlist.
+   */
+  export interface WatchlistTitle {
+    kind: "movie" | "show";
+    title: string;
+    year: number | null;
+    ids: ExternalIds;
+  }
+
+  function fromTraktIds(i: Ids): ExternalIds {
+    const result: ExternalIds = {};
+    if (i.tmdb) result.tmdb = String(i.tmdb);
+    if (i.tvdb) result.tvdb = String(i.tvdb);
+    if (i.imdb) result.imdb = i.imdb;
+    return result;
+  }
+
+  /**
+   * When `user`'s watchlist last changed on Trakt, so an unchanged list doesn't have to be fetched. `null` when it
+   * can't be told.
+   */
+  export async function watchlistChangedAt(user: User): Promise<string | null> {
+    const access = await token(user);
+    if (!access) return null;
+    const { status, data } = await request<{ watchlist?: { updated_at?: string }; movies?: { watchlisted_at?: string }; shows?: { watchlisted_at?: string } }>("/sync/last_activities", { token: access });
+    if (status !== 200 || !data) return null;
+    return [data.watchlist?.updated_at, data.movies?.watchlisted_at, data.shows?.watchlisted_at].filter(Boolean).join("|") || null;
+  }
+
+  /**
+   * The movies and shows on `user`'s Trakt watchlist.
+   * @throws When the profile isn't linked or Trakt can't be reached.
+   */
+  export async function watchlist(user: User): Promise<WatchlistTitle[]> {
+    const access = await token(user);
+    if (!access) throw new Error("This profile isn't linked to Trakt.");
+    type Entry = { movie?: { title: string; year: number | null; ids: Ids }; show?: { title: string; year: number | null; ids: Ids } };
+    const [movies, shows] = await Promise.all([
+      request<Entry[]>("/sync/watchlist/movies", { token: access }),
+      request<Entry[]>("/sync/watchlist/shows", { token: access }),
+    ]);
+    if (movies.status !== 200 || shows.status !== 200) throw new Error(`Trakt didn't send the watchlist (${movies.status === 200 ? shows.status : movies.status}).`);
+    const titles: WatchlistTitle[] = [];
+    for (const entry of movies.data ?? []) if (entry.movie) titles.push({ kind: "movie", title: entry.movie.title, year: entry.movie.year ?? null, ids: fromTraktIds(entry.movie.ids) });
+    for (const entry of shows.data ?? []) if (entry.show) titles.push({ kind: "show", title: entry.show.title, year: entry.show.year ?? null, ids: fromTraktIds(entry.show.ids) });
+    return titles;
+  }
+
+  /**
+   * Put movies and shows on `user`'s Trakt watchlist, or take them off. Titles without ids are left out.
+   * @returns Whether Trakt took the change.
+   */
+  export async function changeWatchlist(user: User, titles: { kind: "movie" | "show"; ids: ExternalIds }[], add: boolean): Promise<boolean> {
+    const movies = titles.filter((t) => t.kind === "movie").map((t) => ({ ids: ids(t.ids) })).filter((t) => Object.keys(t.ids).length);
+    const shows = titles.filter((t) => t.kind === "show").map((t) => ({ ids: ids(t.ids) })).filter((t) => Object.keys(t.ids).length);
+    if (movies.length === 0 && shows.length === 0) return false;
+    const access = await token(user);
+    if (!access) return false;
+    const { status } = await request(add ? "/sync/watchlist" : "/sync/watchlist/remove", { method: "POST", token: access, body: { movies, shows } });
+    if (status >= 400) log.warn("Trakt didn't take a watchlist change", { user: user.name, status });
+    return status < 400;
+  }
+
+  //#endregion
 }
 
 export default Trakt;

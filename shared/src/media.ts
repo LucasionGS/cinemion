@@ -248,6 +248,10 @@ export interface ItemDetail extends ItemSummary {
    * For videos and folders: whether details or the thumbnail were set by hand, so refreshing keeps them.
    */
   edited: { details: boolean; thumbnail: boolean };
+  /**
+   * Whether it's on the profile's "My list".
+   */
+  onList: boolean;
 }
 
 /**
@@ -362,6 +366,10 @@ export interface HomeData {
    * Movies and episodes started but not finished, most recent first.
    */
   continueWatching: ItemSummary[];
+  /**
+   * Titles on the profile's "My list" that are here and not watched yet.
+   */
+  myList: ItemSummary[];
   /**
    * The next episode of shows you're in the middle of.
    */

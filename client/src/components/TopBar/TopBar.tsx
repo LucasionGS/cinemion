@@ -1,5 +1,5 @@
 import { Menu } from "@base-ui/react/menu";
-import { CircleArrowUp, Download, House, LayoutDashboard, LogOut, Popcorn, Search, Settings, Users } from "lucide-react";
+import { Bookmark, CircleArrowUp, Download, House, LayoutDashboard, LogOut, Popcorn, Search, Settings, Users } from "lucide-react";
 import type { LibraryInfo } from "@shared/api.ts";
 import { Link, router } from "../../lib/Router.tsx";
 import useController from "../../lib/useController.ts";
@@ -108,6 +108,7 @@ function ProfileMenu() {
             {update && <Menu.Item className="cn-menu__item cn-menu__item--accent" onClick={() => router.navigate("/settings/about")}><CircleArrowUp /> {t("updates.isOut", { version: update.version })}</Menu.Item>}
             <Menu.Item className="cn-menu__item" onClick={() => router.navigate("/settings/profile")}><Settings /> {t("topbar.menu.settings")}</Menu.Item>
             {session.can("SERVER_MANAGE") && <Menu.Item className="cn-menu__item" onClick={() => router.navigate("/settings/dashboard")}><LayoutDashboard /> {t("topbar.menu.dashboard")}</Menu.Item>}
+            <Menu.Item className="cn-menu__item" onClick={() => router.navigate("/my-list")}><Bookmark /> {t("topbar.menu.myList")}</Menu.Item>
             <Menu.Item className="cn-menu__item" onClick={() => router.navigate("/together")}><Popcorn /> {t("topbar.menu.together")}</Menu.Item>
             {session.can("MEDIA_DOWNLOAD") && <Menu.Item className="cn-menu__item" onClick={() => router.navigate("/downloads")}><Download /> {t("topbar.menu.downloads")}</Menu.Item>}
             <Menu.Item className="cn-menu__item" onClick={() => router.navigate("/profiles")}><Users /> {t("topbar.menu.switchProfile")}</Menu.Item>

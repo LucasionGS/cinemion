@@ -50,7 +50,7 @@ export default function Home() {
   }, [spotlight?.palette?.accent]);
   useEffect(() => () => applyAmbient(null), []);
 
-  const isEmpty = home && !home.continueWatching.length && !home.nextUp.length && !home.recentlyAdded.length && !home.recentlyAddedMusic.length && !home.recentlyAddedPhotos.length && !home.continueBooks.length;
+  const isEmpty = home && !home.continueWatching.length && !home.myList.length && !home.nextUp.length && !home.recentlyAdded.length && !home.recentlyAddedMusic.length && !home.recentlyAddedPhotos.length && !home.continueBooks.length;
 
   return (
     <AppShell>
@@ -62,6 +62,12 @@ export default function Home() {
         {home && home.continueWatching.length > 0 && (
           <Row title={t("home.rows.continueWatching")} kind="wide">
             {home.continueWatching.map((item) => <WideCard key={item.id} item={item} selected={item.id === spotlight?.id} onSelect={() => setSelected(item)} />)}
+          </Row>
+        )}
+
+        {home && home.myList.length > 0 && (
+          <Row title={t("home.rows.myList")} href="/my-list" kind="poster">
+            {home.myList.map((item) => <PosterCard key={item.id} item={item} onSelect={() => setSelected(item)} />)}
           </Row>
         )}
 
@@ -189,7 +195,7 @@ function useHome() {
   useEffect(() => {
     ItemsApi.home().then(setHome).catch((e: Error) => {
       toasts.error(t("home.loadFailed"), e.message);
-      setHome({ continueWatching: [], nextUp: [], recentlyAdded: [], recentlyAddedMusic: [], recentlyAddedPhotos: [], continueBooks: [], becauseYouWatched: null });
+      setHome({ continueWatching: [], myList: [], nextUp: [], recentlyAdded: [], recentlyAddedMusic: [], recentlyAddedPhotos: [], continueBooks: [], becauseYouWatched: null });
     });
   }, []);
   return home;

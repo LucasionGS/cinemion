@@ -1,8 +1,9 @@
 import { type ReactNode, useState } from "react";
 import { Menu } from "@base-ui/react/menu";
-import { Check, EllipsisVertical, Pencil, Plus, RefreshCw, RotateCcw, Wand2 } from "lucide-react";
+import { BookmarkCheck, BookmarkPlus, Check, EllipsisVertical, Pencil, Plus, RefreshCw, RotateCcw, Wand2 } from "lucide-react";
 import { type ItemDetail, type ItemSummary, isPlayable } from "@shared/media.ts";
 import ItemsApi from "../../Api/ItemsApi.ts";
+import WatchlistApi from "../../Api/WatchlistApi.ts";
 import { session } from "../../Session.ts";
 import { toasts } from "../../lib/Toasts.ts";
 import { play, timeLeft } from "../../lib/playback.ts";
@@ -31,13 +32,19 @@ export interface ItemActionsProps {
 }
 
 /**
- * Play or Resume, Play from start, the watched toggle, Download, and (for managers) Fix match or Edit details, and
+ * Kinds of titles that can go on "My list".
+ */
+const LIST_TYPES: string[] = ["movie", "show", "video"];
+
+/**
+ * Play or Resume, Play from start, the watched toggle, My list, Download, and (for managers) Fix match or Edit details, and
  * Refresh.
  */
 export default function ItemActions(props: ItemActionsProps) {
   const { item, playTarget, onChanged, children } = props;
   const [fixing, setFixing] = useState(false);
   const [editing, setEditing] = useState(false);
+  const [onList, setOnList] = useState(item.onList);
   const target = playTarget ?? (isPlayable(item.type) ? item : null);
   const editable = item.type === "video" || item.type === "folder";
   const resumable = !!target?.userData?.position;
@@ -55,6 +62,19 @@ export default function ItemActions(props: ItemActionsProps) {
       await ItemsApi.setWatched(item.id, !watched);
       onChanged();
     } catch (error) {
+      toasts.error(t("itemActions.updateFailed"), (error as Error).message);
+    }
+  }
+
+  async function toggleList() {
+    const next = !onList;
+    setOnList(next);
+    try {
+      if (next) await WatchlistApi.add(item.id);
+      else await WatchlistApi.remove(item.id);
+      toasts.success(next ? t("itemActions.addedToList", { title: item.title }) : t("itemActions.removedFromList", { title: item.title }));
+    } catch (error) {
+      setOnList(!next);
       toasts.error(t("itemActions.updateFailed"), (error as Error).message);
     }
   }
@@ -88,6 +108,16 @@ export default function ItemActions(props: ItemActionsProps) {
           className={watched ? "cn-actions__watched cn-actions__watched--on" : "cn-actions__watched"}
           onClick={toggleWatched}
         />
+        {LIST_TYPES.includes(item.type) && (
+          <IconButton
+            label={onList ? t("itemActions.removeFromList") : t("itemActions.addToList")}
+            icon={onList ? <BookmarkCheck /> : <BookmarkPlus />}
+            size="lg"
+            className={onList ? "cn-actions__watched cn-actions__watched--on" : "cn-actions__watched"}
+            aria-pressed={onList}
+            onClick={toggleList}
+          />
+        )}
         {isPlayable(item.type) && session.can("MEDIA_DOWNLOAD") && <DownloadButton item={item} />}
         {children}
         {session.can("LIBRARY_MANAGE") && (

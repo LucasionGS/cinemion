@@ -6,6 +6,7 @@ import MetadataManager from "../metadata/MetadataManager.ts";
 import Visibility from "../library/Visibility.ts";
 import Summaries from "../library/Summaries.ts";
 import ItemLabels from "../library/ItemLabels.ts";
+import Watchlist from "../library/Watchlist.ts";
 import VideoDetails from "../library/VideoDetails.ts";
 import ClipLibrary from "../clips/ClipLibrary.ts";
 import FolderTree from "../library/FolderTree.ts";
@@ -121,6 +122,7 @@ export namespace ItemsController {
       similar: await similar(item, user),
       folders: await VideoDetails.ancestors(item),
       edited: { details: !!item.editedAt, thumbnail: item.customArtwork },
+      onList: await Watchlist.contains(user.id, item.id),
     };
     return c.json(detail);
   });

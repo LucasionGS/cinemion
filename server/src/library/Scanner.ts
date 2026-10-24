@@ -9,6 +9,7 @@ import Trickplay from "../media/Trickplay.ts";
 import Markers from "../media/Markers.ts";
 import MetadataManager from "../metadata/MetadataManager.ts";
 import ItemLabels from "./ItemLabels.ts";
+import Watchlist from "./Watchlist.ts";
 import VideoDetails from "./VideoDetails.ts";
 import MusicLibrary from "../music/MusicLibrary.ts";
 import MusicTags from "../music/MusicTags.ts";
@@ -351,6 +352,12 @@ export namespace Scanner {
     const items = await MediaItem.findAll({ where: { id: ids }, order: [["sortTitle", "ASC"], ["seasonNumber", "ASC"], ["episodeNumber", "ASC"]] });
     const shows = new Map<number, MediaItem | null>();
     for (const item of items) shows.set(item.id, item.type === "episode" ? await ItemLabels.showOf(item) : null);
+
+    // Titles on someone's list that weren't here yet, also when a whole new library brought them
+    if (library.type === "movies" || library.type === "shows") {
+      const titles = [...items.filter((i) => i.type === "movie"), ...new Map([...shows.values()].filter((s): s is MediaItem => !!s).map((s) => [s.id, s])).values()];
+      await Watchlist.arrived(titles).catch((error) => log.warn("Could not check the watchlists for new titles", { error }));
+    }
 
     if (library.type === "photos") {
       reportPhotos(library, items, firstScan);

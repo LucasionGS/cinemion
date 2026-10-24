@@ -12,3 +12,4 @@ export * from "./clips.ts";
 export * from "./trakt.ts";
 export * from "./downloads.ts";
 export * from "./uploads.ts";
+export * from "./watchlist.ts";

@@ -8,6 +8,7 @@ import Summaries from "../library/Summaries.ts";
 import MusicSummaries from "../music/MusicSummaries.ts";
 import BooksController from "./BooksController.ts";
 import PhotoSummaries from "../photos/PhotoSummaries.ts";
+import Watchlist from "../library/Watchlist.ts";
 import type { AppEnv } from "../lib/types.ts";
 
 export namespace HomeController {
@@ -158,6 +159,7 @@ export namespace HomeController {
     const next = await nextUp(user, new Set(resume.map((i) => i.id)));
     const data: HomeData = {
       continueWatching: await Summaries.build(resume, user),
+      myList: await Watchlist.forHome(user, ROW_SIZE),
       nextUp: await Summaries.build(next, user),
       recentlyAdded: await recentlyAdded(user),
       recentlyAddedMusic: await recentlyAddedMusic(user),

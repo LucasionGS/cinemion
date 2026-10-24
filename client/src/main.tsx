@@ -156,6 +156,13 @@ const routes: Route[] = [
     },
   }),
   requirement({ signedIn: true }, {
+    path: /^\/my-list\/?$/,
+    component: async () => {
+      const MyList = (await import("./pages/MyList/MyList.tsx")).default;
+      return <MyList />;
+    },
+  }),
+  requirement({ signedIn: true }, {
     path: /^\/downloads\/?$/,
     component: async () => {
       const Downloads = (await import("./pages/Downloads/Downloads.tsx")).default;

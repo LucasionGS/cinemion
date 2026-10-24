@@ -14,6 +14,7 @@ import Uploads from "./library/Uploads.ts";
 import ClipTools from "./clips/ClipTools.ts";
 import UpdateCheck from "./lib/UpdateCheck.ts";
 import Backups from "./backups/Backups.ts";
+import Watchlist from "./library/Watchlist.ts";
 import { Activity } from "./models/index.ts";
 import log from "./lib/Logger.ts";
 
@@ -68,6 +69,7 @@ await LibraryWatcher.refresh();
 ScanScheduler.start();
 UpdateCheck.start();
 Backups.start();
+Watchlist.start();
 
 // Once a day: the activity feed keeps a couple of months, missing subtitles are looked for again, and offline copies
 // nobody fetched lately are deleted
@@ -86,6 +88,7 @@ for (const signal of ["SIGINT", "SIGTERM"] as const) {
     ScanScheduler.stop();
     UpdateCheck.stop();
     Backups.stop();
+    Watchlist.stop();
     LibraryWatcher.stop();
     ActivePlayback.shutdown();
     Uploads.stop();

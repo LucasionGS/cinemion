@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import type { TraktStatus } from "@shared/trakt.ts";
 import { User } from "../models/index.ts";
+import Watchlist from "../library/Watchlist.ts";
 import Trakt from "../integrations/Trakt.ts";
 import { errorMessage } from "../lib/http.ts";
 import type { AppEnv } from "../lib/types.ts";
@@ -45,7 +46,11 @@ export namespace TraktController {
    */
   router.post("/link/poll", User.$middleware(), async (c) => {
     try {
-      return c.json(await Trakt.pollLink(c.get("user")!));
+      const user = c.get("user")!;
+      const result = await Trakt.pollLink(user);
+      // A newly linked profile's list and Trakt watchlist are merged straight away
+      if (result.status === "linked") Watchlist.sync(user, true).catch(() => { });
+      return c.json(result);
     } catch (error) {
       return c.json({ message: errorMessage(error) }, 502);
     }
