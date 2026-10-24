@@ -10,6 +10,7 @@ import { applyAmbient } from "../../lib/ambient.ts";
 import useController from "../../lib/useController.ts";
 import { toasts } from "../../lib/Toasts.ts";
 import { formatDateRange } from "../../lib/format.ts";
+import { t } from "../../i18n/I18n.ts";
 import AppShell from "../../components/AppShell/AppShell.tsx";
 import { addToPhotoAlbum } from "../../components/AddToPhotoAlbum/AddToPhotoAlbum.tsx";
 import PhotoAlbumCard, { albumCounts } from "../../components/PhotoAlbumCard/PhotoAlbumCard.tsx";
@@ -81,11 +82,11 @@ export default function PhotoAlbum(props: PhotoAlbumProps) {
     if (!selection.selected?.size) return;
     try {
       await PhotosApi.removeFromAlbum(id, [...selection.selected]);
-      toasts.success(`Took ${selection.selected.size === 1 ? "1 photo" : `${selection.selected.size} photos`} out of the album`, "The files themselves are still where they were.");
+      toasts.success(t("photos.album.tookOut", { count: selection.selected.size }), t("photos.album.tookOutDescription"));
       selection.stop();
       refresh();
     } catch (e) {
-      toasts.error("Couldn't take them out", (e as Error).message);
+      toasts.error(t("photos.album.couldntTakeOut"), (e as Error).message);
     }
   }
 
@@ -95,11 +96,11 @@ export default function PhotoAlbum(props: PhotoAlbumProps) {
     try {
       if (kind === "folder") await PhotosApi.setFolderCover(id, photoId);
       else await PhotosApi.updateAlbum(id, { coverItemId: photoId });
-      toasts.success("Album cover changed");
+      toasts.success(t("photos.cover.changed"));
       selection.stop();
       setVersion((v) => v + 1);
     } catch (e) {
-      toasts.error("Couldn't change the cover", (e as Error).message);
+      toasts.error(t("photos.cover.couldntChange"), (e as Error).message);
     }
   }
 
@@ -109,18 +110,18 @@ export default function PhotoAlbum(props: PhotoAlbumProps) {
       else await PhotosApi.updateAlbum(id, { coverItemId: null });
       setVersion((v) => v + 1);
     } catch (e) {
-      toasts.error("Couldn't change the cover", (e as Error).message);
+      toasts.error(t("photos.cover.couldntChange"), (e as Error).message);
     }
   }
 
   async function remove() {
     try {
       await PhotosApi.deleteAlbum(id);
-      toasts.success(`Deleted ${detail?.title}`, "The photos in it are still in the library.");
+      toasts.success(t("photos.album.deleted", { title: detail?.title ?? "" }), t("photos.album.deletedDescription"));
       addToPhotoAlbum.changed();
       router.navigate(detail ? `/library/${detail.libraryId}` : "/", { replace: true });
     } catch (e) {
-      toasts.error("Couldn't delete the album", (e as Error).message);
+      toasts.error(t("photos.album.couldntDelete"), (e as Error).message);
     }
   }
 
@@ -130,7 +131,7 @@ export default function PhotoAlbum(props: PhotoAlbumProps) {
         {!detail && !error && <div className="cn-library__loading"><Spinner size="2rem" /></div>}
         {error && (
           <section className="cn-library__empty">
-            <h2>This album isn't available</h2>
+            <h2>{t("photos.album.unavailable")}</h2>
             <p>{error}</p>
           </section>
         )}
@@ -139,7 +140,7 @@ export default function PhotoAlbum(props: PhotoAlbumProps) {
           <>
             <header className="cn-photos__album-head">
               <div className="cn-photos__album-text">
-                <nav className="cn-photos__path" aria-label="Folders">
+                <nav className="cn-photos__path" aria-label={t("photos.album.folders")}>
                   {library && <Link href={`/library/${library.id}`}>{library.name}</Link>}
                   {detail.folders.map((f) => (
                     <span key={f.id}>
@@ -153,25 +154,25 @@ export default function PhotoAlbum(props: PhotoAlbumProps) {
                   {[
                     detail.from && detail.to ? formatDateRange(detail.from, detail.to) : null,
                     albumCounts(detail),
-                    detail.owner ? `Made by ${detail.owner.name}` : null,
-                  ].filter(Boolean).join(" · ")}
+                    detail.owner ? t("photos.album.madeBy", { name: detail.owner.name }) : null,
+                  ].filter(Boolean).join(t("common.dotSeparator"))}
                 </p>
                 {detail.description && <p className="cn-photos__album-description">{detail.description}</p>}
               </div>
               <div className="cn-photos__album-actions">
-                <Button variant="primary" icon={<Play />} onClick={() => viewer.slideshow(false)} disabled={detail.photoCount + detail.videoCount === 0}>Slideshow</Button>
-                <IconButton label="Shuffle slideshow" icon={<Shuffle />} onClick={() => viewer.slideshow(true)} disabled={detail.photoCount + detail.videoCount === 0} />
-                <IconButton label="Select photos" icon={<ListChecks />} onClick={selection.selected ? selection.stop : selection.start} aria-pressed={!!selection.selected} disabled={!list.items?.length} />
+                <Button variant="primary" icon={<Play />} onClick={() => viewer.slideshow(false)} disabled={detail.photoCount + detail.videoCount === 0}>{t("photos.album.slideshow")}</Button>
+                <IconButton label={t("photos.album.shuffle")} icon={<Shuffle />} onClick={() => viewer.slideshow(true)} disabled={detail.photoCount + detail.videoCount === 0} />
+                <IconButton label={t("photos.album.select")} icon={<ListChecks />} onClick={selection.selected ? selection.stop : selection.start} aria-pressed={!!selection.selected} disabled={!list.items?.length} />
                 {canEdit && (
                   <Menu.Root>
-                    <Menu.Trigger className="cn-icon-button cn-icon-button--glass cn-icon-button--md" aria-label="More" title="More"><Ellipsis /></Menu.Trigger>
+                    <Menu.Trigger className="cn-icon-button cn-icon-button--glass cn-icon-button--md" aria-label={t("common.more")} title={t("common.more")}><Ellipsis /></Menu.Trigger>
                     <Menu.Portal>
                       <Menu.Positioner sideOffset={6} align="end" className="cn-menu__positioner">
                         <Menu.Popup className="cn-menu">
-                          <Menu.Item className="cn-menu__item" onClick={() => setEditing(true)}><Pencil /> {kind === "album" ? "Rename and describe" : "Edit details"}</Menu.Item>
-                          <Menu.Item className="cn-menu__item" onClick={automaticCover}><RotateCcw /> Use the automatic cover</Menu.Item>
+                          <Menu.Item className="cn-menu__item" onClick={() => setEditing(true)}><Pencil /> {kind === "album" ? t("photos.album.renameAndDescribe") : t("photos.album.editDetails")}</Menu.Item>
+                          <Menu.Item className="cn-menu__item" onClick={automaticCover}><RotateCcw /> {t("photos.album.automaticCover")}</Menu.Item>
                           {kind === "album" && <Menu.Separator className="cn-menu__separator" />}
-                          {kind === "album" && <Menu.Item className="cn-menu__item cn-menu__item--danger" onClick={() => setDeleting(true)}><Trash2 /> Delete album</Menu.Item>}
+                          {kind === "album" && <Menu.Item className="cn-menu__item cn-menu__item--danger" onClick={() => setDeleting(true)}><Trash2 /> {t("photos.album.delete")}</Menu.Item>}
                         </Menu.Popup>
                       </Menu.Positioner>
                     </Menu.Portal>
@@ -188,8 +189,8 @@ export default function PhotoAlbum(props: PhotoAlbumProps) {
 
             {list.items?.length === 0 && detail.albums.length === 0 && (
               <section className="cn-library__empty">
-                <h2>{kind === "album" ? "No photos in this album yet" : "Nothing in here this profile can see"}</h2>
-                {kind === "album" && <p>Open a photo anywhere in {library?.name ?? "the library"} and choose “Add to album” from its menu, or pick several with Select.</p>}
+                <h2>{kind === "album" ? t("photos.album.emptyAlbum") : t("photos.album.emptyFolder")}</h2>
+                {kind === "album" && <p>{library ? t("photos.album.emptyAlbumHint", { library: library.name }) : t("photos.album.emptyAlbumHintNoLibrary")}</p>}
               </section>
             )}
 
@@ -202,8 +203,8 @@ export default function PhotoAlbum(props: PhotoAlbumProps) {
 
       {detail && selection.selected && (
         <SelectionBar libraryId={detail.libraryId} selected={selection.selected} onDone={selection.stop}>
-          {canEdit && selection.selected.size === 1 && <Button size="sm" icon={<Images />} onClick={useAsCover}>Use as cover</Button>}
-          {canEdit && kind === "album" && <Button size="sm" icon={<ImageMinus />} disabled={selection.selected.size === 0} onClick={takeOut}>Take out</Button>}
+          {canEdit && selection.selected.size === 1 && <Button size="sm" icon={<Images />} onClick={useAsCover}>{t("photos.album.useAsCover")}</Button>}
+          {canEdit && kind === "album" && <Button size="sm" icon={<ImageMinus />} disabled={selection.selected.size === 0} onClick={takeOut}>{t("photos.album.takeOut")}</Button>}
         </SelectionBar>
       )}
 
@@ -226,9 +227,9 @@ export default function PhotoAlbum(props: PhotoAlbumProps) {
       <ConfirmDialog
         open={deleting}
         onOpenChange={setDeleting}
-        title={`Delete ${detail?.title}?`}
-        description="The album goes away; the photos in it stay in the library and on disk."
-        confirmLabel="Delete album"
+        title={t("photos.album.deleteTitle", { title: detail?.title ?? "" })}
+        description={t("photos.album.deleteDescription")}
+        confirmLabel={t("photos.album.delete")}
         danger
         onConfirm={remove}
       />
@@ -257,11 +258,11 @@ function EditAlbumDialog(props: { detail: PhotoAlbumDetail; open: boolean; onClo
     try {
       if (detail.kind === "folder") await ItemsApi.editDetails(detail.id, { title, releaseDate: null, overview: description || null, tags: [], contentRating: null });
       else await PhotosApi.updateAlbum(detail.id, { title, description: description || null });
-      toasts.success("Saved");
+      toasts.success(t("common.saved"));
       onSaved();
       onClose();
     } catch (e) {
-      toasts.error("Couldn't save", (e as Error).message);
+      toasts.error(t("common.couldntSave"), (e as Error).message);
     } finally {
       setSaving(false);
     }
@@ -271,17 +272,17 @@ function EditAlbumDialog(props: { detail: PhotoAlbumDetail; open: boolean; onClo
     <Dialog
       open={open}
       onOpenChange={(value) => !value && onClose()}
-      title={detail.kind === "album" ? "Rename and describe" : "Edit album details"}
-      description={detail.kind === "folder" ? "The folder on disk keeps its name; this is what Cinemion shows." : undefined}
+      title={detail.kind === "album" ? t("photos.album.edit.albumTitle") : t("photos.album.edit.folderTitle")}
+      description={detail.kind === "folder" ? t("photos.album.edit.folderDescription") : undefined}
       footer={<>
-        <Button variant="ghost" onClick={onClose}>Cancel</Button>
-        <Button variant="primary" onClick={save} loading={saving} disabled={!title.trim()}>Save</Button>
+        <Button variant="ghost" onClick={onClose}>{t("common.cancel")}</Button>
+        <Button variant="primary" onClick={save} loading={saving} disabled={!title.trim()}>{t("common.save")}</Button>
       </>}
     >
       <div className="cn-photos__edit">
-        <TextField label="Name" value={title} onChange={(e) => setTitle(e.target.value)} maxLength={128} />
+        <TextField label={t("photos.album.edit.name")} value={title} onChange={(e) => setTitle(e.target.value)} maxLength={128} />
         <div className="cn-field">
-          <label className="cn-field__label" htmlFor={descriptionId}>Description</label>
+          <label className="cn-field__label" htmlFor={descriptionId}>{t("photos.album.edit.description")}</label>
           <textarea id={descriptionId} className="cn-field__input cn-photos__textarea" value={description} onChange={(e) => setDescription(e.target.value)} rows={4} maxLength={5000} />
         </div>
       </div>

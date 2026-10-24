@@ -6,6 +6,7 @@ import { router } from "../../lib/Router.tsx";
 import { deviceMode } from "../../lib/DeviceMode.ts";
 import { formatClock } from "../../lib/playback.ts";
 import cx from "../../lib/cx.ts";
+import { t } from "../../i18n/I18n.ts";
 import IconButton from "../IconButton/IconButton.tsx";
 import Spinner from "../Spinner/Spinner.tsx";
 import { Cover } from "../MusicCard/MusicCard.tsx";
@@ -38,9 +39,9 @@ export default function MiniPlayer() {
   const { position, duration } = player.timeline();
 
   return (
-    <div className="cn-mini-player" role="region" aria-label="Music player" style={track.palette ? { "--mini-tint": track.palette.accent } as CSSProperties : undefined}>
+    <div className="cn-mini-player" role="region" aria-label={t("music.player.region")} style={track.palette ? { "--mini-tint": track.palette.accent } as CSSProperties : undefined}>
       <SeekBar compact />
-      <button type="button" className="cn-mini-player__track" onClick={() => musicPlayer.openNowPlaying()} aria-label={`Now playing: ${title}, ${artist}. Open the player.`}>
+      <button type="button" className="cn-mini-player__track" onClick={() => musicPlayer.openNowPlaying()} aria-label={t("music.miniPlayer.open", { title, artist })}>
         <Cover image={track.cover} title={track.albumTitle} width={160} className="cn-mini-player__cover" />
         <span className="cn-mini-player__text">
           <strong>{title}</strong>
@@ -49,26 +50,26 @@ export default function MiniPlayer() {
       </button>
       <div className="cn-mini-player__controls">
         {book
-          ? mode !== "mobile" && <IconButton label="Back 30 seconds" icon={<RotateCcw />} variant="ghost" onClick={() => musicPlayer.skip(-30)} />
-          : mode !== "mobile" && <IconButton label="Previous" icon={<SkipBack />} variant="ghost" onClick={() => musicPlayer.previous()} />}
+          ? mode !== "mobile" && <IconButton label={t("music.player.back30")} icon={<RotateCcw />} variant="ghost" onClick={() => musicPlayer.skip(-30)} />
+          : mode !== "mobile" && <IconButton label={t("music.player.previous")} icon={<SkipBack />} variant="ghost" onClick={() => musicPlayer.previous()} />}
         <PlayButton />
         {book
-          ? <IconButton label="Forward 30 seconds" icon={<RotateCw />} variant="ghost" onClick={() => musicPlayer.skip(30)} />
-          : <IconButton label="Next" icon={<SkipForward />} variant="ghost" onClick={() => musicPlayer.next()} />}
+          ? <IconButton label={t("music.player.forward30")} icon={<RotateCw />} variant="ghost" onClick={() => musicPlayer.skip(30)} />
+          : <IconButton label={t("music.player.next")} icon={<SkipForward />} variant="ghost" onClick={() => musicPlayer.next()} />}
       </div>
       {mode !== "mobile" && (
         <div className="cn-mini-player__extras">
-          <span className="cn-mini-player__time">{formatClock(position)} / {formatClock(duration)}</span>
+          <span className="cn-mini-player__time">{t("music.miniPlayer.time", { position: formatClock(position), duration: formatClock(duration) })}</span>
           {book
-            ? <IconButton label="Chapters" icon={<ListOrdered />} variant="ghost" onClick={() => musicPlayer.openNowPlaying("chapters")} />
+            ? <IconButton label={t("music.miniPlayer.chapters")} icon={<ListOrdered />} variant="ghost" onClick={() => musicPlayer.openNowPlaying("chapters")} />
             : (
               <>
-                <IconButton label="Lyrics" icon={<MicVocal />} variant="ghost" onClick={() => musicPlayer.openNowPlaying("lyrics")} />
-                <IconButton label="Queue" icon={<ListMusic />} variant="ghost" onClick={() => musicPlayer.openNowPlaying("queue")} />
+                <IconButton label={t("music.miniPlayer.lyrics")} icon={<MicVocal />} variant="ghost" onClick={() => musicPlayer.openNowPlaying("lyrics")} />
+                <IconButton label={t("music.miniPlayer.queue")} icon={<ListMusic />} variant="ghost" onClick={() => musicPlayer.openNowPlaying("queue")} />
               </>
             )}
           {mode === "desktop" && <VolumeControl />}
-          <IconButton label="Stop and close" icon={<X />} variant="ghost" onClick={() => musicPlayer.stop()} />
+          <IconButton label={t("music.player.stopAndClose")} icon={<X />} variant="ghost" onClick={() => musicPlayer.stop()} />
         </div>
       )}
     </div>
@@ -82,7 +83,7 @@ export function PlayButton(props: { size?: "md" | "lg" }) {
   const { size = "md" } = props;
   const { playing, loading } = useController(musicPlayer);
   return (
-    <button type="button" className={cx("cn-play-button", `cn-play-button--${size}`)} onClick={() => musicPlayer.toggle()} aria-label={playing ? "Pause" : "Play"}>
+    <button type="button" className={cx("cn-play-button", `cn-play-button--${size}`)} onClick={() => musicPlayer.toggle()} aria-label={playing ? t("music.player.pause") : t("common.play")}>
       {loading && !playing ? <Spinner size="1.25em" /> : playing ? <Pause /> : <Play />}
     </button>
   );
@@ -104,8 +105,8 @@ export function SeekBar(props: { compact?: boolean }) {
       step={0.1}
       value={Math.min(position, duration || 1)}
       onChange={(e) => musicPlayer.seekTimeline(Number(e.target.value))}
-      aria-label="Position"
-      aria-valuetext={`${formatClock(position)} of ${formatClock(duration)}`}
+      aria-label={t("music.player.position")}
+      aria-valuetext={t("music.player.positionValue", { position: formatClock(position), duration: formatClock(duration) })}
       style={{ "--progress": `${progress * 100}%` } as CSSProperties}
     />
   );
@@ -116,7 +117,7 @@ export function VolumeControl() {
   const level = muted ? 0 : volume;
   return (
     <div className="cn-mini-player__volume">
-      <IconButton label={muted ? "Unmute" : "Mute"} icon={muted || volume === 0 ? <VolumeX /> : <Volume2 />} variant="ghost" onClick={() => musicPlayer.toggleMute()} />
+      <IconButton label={muted ? t("music.player.unmute") : t("music.player.mute")} icon={muted || volume === 0 ? <VolumeX /> : <Volume2 />} variant="ghost" onClick={() => musicPlayer.toggleMute()} />
       <input
         type="range"
         className="cn-seek"
@@ -125,7 +126,7 @@ export function VolumeControl() {
         step={0.01}
         value={level}
         onChange={(e) => musicPlayer.setVolume(Number(e.target.value))}
-        aria-label="Volume"
+        aria-label={t("music.player.volume")}
         style={{ "--progress": `${level * 100}%` } as CSSProperties}
       />
     </div>

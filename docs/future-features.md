@@ -12,8 +12,8 @@ Planned, but not part of the first version. Roughly in the order they're likely 
 - **Watchlist**: a "My list" per profile. Add anything from its page, see it as a row on the home screen, and have it
   sync both ways with the profile's Trakt watchlist. Something on the list that arrives later (from Seerr, Sonarr or
   Radarr) is announced through notifications.
-- **Translations**: the whole interface in other languages, picked per profile, with dates and numbers in that
-  language's style. Strings move into translation files so others can help translate.
+- **More translations**: the interface can be translated (see `docs/translating.md`) but only English exists. Next:
+  actual languages, and the server's own messages (errors, the activity feed, task names) as translatable lines too.
 - **Built-in HTTPS**: turn on https in Settings without a reverse proxy. Either Cinemion makes its own certificate
   (with a short guide for trusting it on each device), gets a free Let's Encrypt certificate for your own domain, or
   uses a certificate you upload. This also makes offline downloads and notifications on phones work on a home network.

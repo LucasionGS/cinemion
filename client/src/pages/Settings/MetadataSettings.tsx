@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import type { MetadataSettings as Settings } from "@shared/api.ts";
 import SettingsApi from "../../Api/SettingsApi.ts";
 import { toasts } from "../../lib/Toasts.ts";
+import { t } from "../../i18n/I18n.ts";
 import MetadataForm from "../../components/MetadataForm/MetadataForm.tsx";
 import Button from "../../components/Button/Button.tsx";
 import Spinner from "../../components/Spinner/Spinner.tsx";
@@ -19,7 +20,7 @@ export default function MetadataSettings() {
     SettingsApi.getMetadata().then((s) => {
       setSaved(s);
       setValue(s);
-    }).catch((e: Error) => toasts.error("Couldn't load metadata settings", e.message));
+    }).catch((e: Error) => toasts.error(t("settings.metadata.couldntLoad"), e.message));
   }, []);
 
   const changed = JSON.stringify(saved) !== JSON.stringify(value);
@@ -31,9 +32,9 @@ export default function MetadataSettings() {
       const result = await SettingsApi.setMetadata(value);
       setSaved(result);
       setValue(result);
-      toasts.success("Metadata settings saved", "Use \"Refresh all details\" on a library to apply them to what's already there.");
+      toasts.success(t("settings.metadata.saved"), t("settings.metadata.savedDescription"));
     } catch (error) {
-      toasts.error("Couldn't save", (error as Error).message);
+      toasts.error(t("common.couldntSave"), (error as Error).message);
     } finally {
       setSaving(false);
     }
@@ -43,8 +44,8 @@ export default function MetadataSettings() {
     <>
       <header className="cn-settings__header">
         <div>
-          <h1>Metadata</h1>
-          <p>Where posters, plots and cast come from. Sources higher in the list win when they disagree.</p>
+          <h1>{t("settings.metadata.title")}</h1>
+          <p>{t("settings.metadata.intro")}</p>
         </div>
       </header>
       {!value && <Spinner size="2rem" />}
@@ -52,7 +53,7 @@ export default function MetadataSettings() {
         <section className="cn-settings__card">
           <MetadataForm value={value} onChange={setValue} />
           <div>
-            <Button variant="primary" onClick={save} loading={saving} disabled={!changed}>Save changes</Button>
+            <Button variant="primary" onClick={save} loading={saving} disabled={!changed}>{t("settings.metadata.saveChanges")}</Button>
           </div>
         </section>
       )}

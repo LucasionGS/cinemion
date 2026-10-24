@@ -10,6 +10,7 @@ import { copyText } from "../../lib/clipboard.ts";
 import { session } from "../../Session.ts";
 import { timeAgo } from "../../lib/format.ts";
 import cx from "../../lib/cx.ts";
+import { rich, t, type TranslationKey } from "../../i18n/I18n.ts";
 import Button from "../../components/Button/Button.tsx";
 import IconButton from "../../components/IconButton/IconButton.tsx";
 import TextField from "../../components/TextField/TextField.tsx";
@@ -33,7 +34,7 @@ export default function IntegrationsSettings() {
     IntegrationsApi.get().then((s) => {
       setSettings(s);
       setMappings(s.pathMappings);
-    }).catch((e: Error) => toasts.error("Couldn't load integrations", e.message));
+    }).catch((e: Error) => toasts.error(t("admin.integrations.loadFailed"), e.message));
   }, []);
 
   // Pick up the connection test while this page is open
@@ -52,8 +53,8 @@ export default function IntegrationsSettings() {
   const event = settings.lastEvent;
 
   async function copy() {
-    if (await copyText(address)) toasts.success("Address copied");
-    else toasts.error("Couldn't copy", "Select the address and copy it by hand.");
+    if (await copyText(address)) toasts.success(t("admin.integrations.arr.copied"));
+    else toasts.error(t("admin.integrations.copyFailed"), t("admin.integrations.arr.copyByHand"));
   }
 
   async function newAddress() {
@@ -61,9 +62,9 @@ export default function IntegrationsSettings() {
       const result = await IntegrationsApi.newAddress();
       setSettings(result);
       setConfirmNew(false);
-      toasts.success("New address made", "Paste it into Sonarr and Radarr again.");
+      toasts.success(t("admin.integrations.arr.newAddress.made"), t("admin.integrations.arr.newAddress.madeDescription"));
     } catch (e) {
-      toasts.error("Couldn't make a new address", (e as Error).message);
+      toasts.error(t("admin.integrations.arr.newAddress.failed"), (e as Error).message);
     }
   }
 
@@ -73,9 +74,9 @@ export default function IntegrationsSettings() {
       const result = await IntegrationsApi.setPathMappings(mappings);
       setSettings(result);
       setMappings(result.pathMappings);
-      toasts.success("Path mappings saved");
+      toasts.success(t("admin.integrations.mappings.saved"));
     } catch (e) {
-      toasts.error("Couldn't save", (e as Error).message);
+      toasts.error(t("common.couldntSave"), (e as Error).message);
     } finally {
       setSaving(false);
     }
@@ -89,65 +90,65 @@ export default function IntegrationsSettings() {
     <>
       <header className="cn-settings__header">
         <div>
-          <h1>Integrations</h1>
-          <p>Let Sonarr and Radarr tell Cinemion about new downloads, so they show up right away, connect apps like Seerr and Homepage, and let profiles keep their Trakt history up to date.</p>
+          <h1>{t("admin.integrations.title")}</h1>
+          <p>{t("admin.integrations.intro")}</p>
         </div>
-        <Button variant="primary" onClick={save} loading={saving} disabled={!changed}>Save changes</Button>
+        <Button variant="primary" onClick={save} loading={saving} disabled={!changed}>{t("admin.integrations.saveChanges")}</Button>
       </header>
 
       <section className="cn-settings__card">
-        <h2>Sonarr and Radarr</h2>
+        <h2>{t("admin.integrations.arr.title")}</h2>
         <div className="cn-integrations__address">
-          <TextField label="Webhook address" value={address} readOnly onFocus={(e) => e.target.select()} spellCheck={false} className="cn-integrations__address-field" />
-          <Button icon={<Copy />} onClick={copy}>Copy</Button>
+          <TextField label={t("admin.integrations.arr.address")} value={address} readOnly onFocus={(e) => e.target.select()} spellCheck={false} className="cn-integrations__address-field" />
+          <Button icon={<Copy />} onClick={copy}>{t("common.copy")}</Button>
         </div>
         {isLocalhost && (
           <p className="cn-integrations__hint">
-            You opened Cinemion as {location.hostname}, which Sonarr and Radarr can't reach from another computer or container.{" "}
-            Open Cinemion through its network address (like http://192.168.1.10:8600) and copy the address from there.
+            {t("admin.integrations.arr.localhostHint", { host: location.hostname, example: "http://192.168.1.10:8600" })}
           </p>
         )}
         <ol className="cn-integrations__steps">
-          <li>In Sonarr or Radarr, open <strong>Settings → Connect</strong>, click <strong>+</strong> and pick <strong>Webhook</strong>.</li>
-          <li>Paste the address above into <strong>URL</strong> and leave the method on <strong>POST</strong>.</li>
-          <li>Tick <strong>On File Import</strong>, <strong>On File Upgrade</strong>, <strong>On Rename</strong> and the <strong>Delete</strong> events.</li>
-          <li>Click <strong>Test</strong>. Cinemion shows below that it arrived.</li>
+          <li>{rich("admin.integrations.arr.steps.connect", { strong })}</li>
+          <li>{rich("admin.integrations.arr.steps.paste", { strong })}</li>
+          <li>{rich("admin.integrations.arr.steps.events", { strong })}</li>
+          <li>{rich("admin.integrations.arr.steps.test", { strong })}</li>
         </ol>
         <div className={cx("cn-integrations__status", event?.problem && "cn-integrations__status--problem")} role="status">
           {event ? (event.problem ? <CircleAlert /> : <CircleCheck />) : null}
           <span>
             {event
-              ? <><strong>{event.app} · {event.eventType}</strong>, {timeAgo(event.at)}. {event.result}</>
-              : "Nothing received yet."}
+              ? rich("admin.integrations.arr.lastEvent", {
+                event: <strong>{t("admin.integrations.arr.eventName", { app: event.app, eventType: event.eventType })}</strong>,
+                ago: timeAgo(event.at),
+                result: event.result,
+              })
+              : t("admin.integrations.arr.nothingReceived")}
           </span>
         </div>
         <div className="cn-settings__divider" />
         <div className="cn-settings__row">
           <p className="cn-settings__row-text">
-            <strong>New address</strong>
-            <span>If the address got out, make a new one. The old one stops working, so paste the new one into Sonarr and Radarr.</span>
+            <strong>{t("admin.integrations.arr.newAddress.title")}</strong>
+            <span>{t("admin.integrations.arr.newAddress.text")}</span>
           </p>
-          <Button size="sm" variant="danger" onClick={() => setConfirmNew(true)}>Make new address</Button>
+          <Button size="sm" variant="danger" onClick={() => setConfirmNew(true)}>{t("admin.integrations.arr.newAddress.button")}</Button>
         </div>
       </section>
 
       <section className="cn-settings__card">
-        <h2>Path mappings</h2>
+        <h2>{t("admin.integrations.mappings.title")}</h2>
         <p className="cn-settings__row-text">
-          <span>
-            Only needed when Sonarr or Radarr see your media in a different folder than Cinemion does, like{" "}
-            <code>/tv</code> in their container and <code>/media/shows</code> here. Folders inside a mapped folder are mapped too.
-          </span>
+          <span>{rich("admin.integrations.mappings.text", { theirs: <code>/tv</code>, ours: <code>/media/shows</code> })}</span>
         </p>
         {mappings.map((m, i) => (
           <div key={i} className="cn-integrations__mapping">
-            <TextField label="Their folder" value={m.from} placeholder="/tv" onChange={(e) => updateMapping(i, { from: e.target.value })} spellCheck={false} />
-            <TextField label="Cinemion's folder" value={m.to} placeholder="/media/shows" onChange={(e) => updateMapping(i, { to: e.target.value })} spellCheck={false} />
-            <IconButton label="Remove this mapping" icon={<Trash2 />} onClick={() => setMappings(mappings.filter((_, j) => j !== i))} />
+            <TextField label={t("admin.integrations.mappings.theirFolder")} value={m.from} placeholder="/tv" onChange={(e) => updateMapping(i, { from: e.target.value })} spellCheck={false} />
+            <TextField label={t("admin.integrations.mappings.ourFolder")} value={m.to} placeholder="/media/shows" onChange={(e) => updateMapping(i, { to: e.target.value })} spellCheck={false} />
+            <IconButton label={t("admin.integrations.mappings.remove")} icon={<Trash2 />} onClick={() => setMappings(mappings.filter((_, j) => j !== i))} />
           </div>
         ))}
         <div>
-          <Button size="sm" icon={<Plus />} onClick={() => setMappings([...mappings, { from: "", to: "" }])}>Add mapping</Button>
+          <Button size="sm" icon={<Plus />} onClick={() => setMappings([...mappings, { from: "", to: "" }])}>{t("admin.integrations.mappings.add")}</Button>
         </div>
       </section>
 
@@ -159,14 +160,18 @@ export default function IntegrationsSettings() {
       <ConfirmDialog
         open={confirmNew}
         onOpenChange={setConfirmNew}
-        title="Make a new address?"
-        description="Sonarr and Radarr can't reach Cinemion with the old address anymore until you paste the new one into them."
-        confirmLabel="Make new address"
+        title={t("admin.integrations.arr.newAddress.confirmTitle")}
+        description={t("admin.integrations.arr.newAddress.confirmDescription")}
+        confirmLabel={t("admin.integrations.arr.newAddress.button")}
         danger
         onConfirm={newAddress}
       />
     </>
   );
+}
+
+function strong(text: string) {
+  return <strong>{text}</strong>;
 }
 
 /**
@@ -191,9 +196,9 @@ function TraktAppCard() {
       const result = await TraktApi.saveApp({ clientId, ...(clientSecret ? { clientSecret } : {}) });
       setSettings(result);
       setClientSecret("");
-      toasts.success("Trakt is set up", "Profiles can link their accounts in Settings › Your profile.");
+      toasts.success(t("admin.integrations.trakt.setUp"), t("admin.integrations.trakt.setUpDescription"));
     } catch (error) {
-      toasts.error("Couldn't save", (error as Error).message);
+      toasts.error(t("common.couldntSave"), (error as Error).message);
     } finally {
       setSaving(false);
     }
@@ -202,28 +207,28 @@ function TraktAppCard() {
   const changed = !!settings && (clientId !== (settings.clientId ?? "") || !!clientSecret);
   return (
     <section className="cn-settings__card">
-      <h2>Trakt</h2>
+      <h2>{t("admin.integrations.trakt.title")}</h2>
       <p className="cn-settings__row-text">
         <span>
-          With a Trakt app, every profile can link its own Trakt account: what they watch is scrobbled, and what they mark
-          watched shows up in their Trakt history. Make the app at{" "}
-          <a href="https://trakt.tv/oauth/applications/new" target="_blank" rel="noreferrer">trakt.tv/oauth/applications</a>{" "}
-          with <code>urn:ietf:wg:oauth:2.0:oob</code> as its redirect URI, then copy its keys here.
+          {rich("admin.integrations.trakt.text", {
+            link: <a href="https://trakt.tv/oauth/applications/new" target="_blank" rel="noreferrer">trakt.tv/oauth/applications</a>,
+            redirect: <code>urn:ietf:wg:oauth:2.0:oob</code>,
+          })}
         </span>
       </p>
       <div className="cn-integrations__trakt">
-        <TextField label="Client ID" value={clientId} autoComplete="off" spellCheck={false} onChange={(e) => setClientId(e.target.value)} />
+        <TextField label={t("admin.integrations.trakt.clientId")} value={clientId} autoComplete="off" spellCheck={false} onChange={(e) => setClientId(e.target.value)} />
         <TextField
-          label="Client secret"
+          label={t("admin.integrations.trakt.clientSecret")}
           type="password"
           value={clientSecret}
           autoComplete="new-password"
-          placeholder={settings?.hasSecret ? "Saved (type to replace)" : ""}
+          placeholder={settings?.hasSecret ? t("admin.integrations.trakt.secretSaved") : ""}
           onChange={(e) => setClientSecret(e.target.value)}
         />
       </div>
       <div>
-        <Button variant="primary" size="sm" onClick={save} loading={saving} disabled={!changed}>Save Trakt app</Button>
+        <Button variant="primary" size="sm" onClick={save} loading={saving} disabled={!changed}>{t("admin.integrations.trakt.save")}</Button>
       </div>
     </section>
   );
@@ -243,9 +248,9 @@ function AppsCard() {
     IntegrationsApi.appKeys().then(setKeys).catch(() => setKeys([]));
   }, []);
 
-  async function copy(text: string, what: string) {
-    if (await copyText(text)) toasts.success(`${what} copied`);
-    else toasts.error("Couldn't copy", "Select it and copy it by hand.");
+  async function copy(text: string, copied: TranslationKey) {
+    if (await copyText(text)) toasts.success(t(copied));
+    else toasts.error(t("admin.integrations.copyFailed"), t("admin.integrations.copyItByHand"));
   }
 
   async function create() {
@@ -254,9 +259,9 @@ function AppsCard() {
       const key = await IntegrationsApi.createAppKey(app);
       setKeys([...keys ?? [], key]);
       setApp("");
-      await copy(key.token, "Key");
+      await copy(key.token, "admin.integrations.apps.keyCopied");
     } catch (error) {
-      toasts.error("Couldn't make a key", (error as Error).message);
+      toasts.error(t("admin.integrations.apps.makeFailed"), (error as Error).message);
     } finally {
       setCreating(false);
     }
@@ -267,26 +272,21 @@ function AppsCard() {
     try {
       setKeys(await IntegrationsApi.removeAppKey(removing.id));
       setRemoving(null);
-      toasts.success("Key removed", `${removing.app} can't reach Cinemion with it anymore.`);
+      toasts.success(t("admin.integrations.apps.removed"), t("admin.integrations.apps.removedDescription", { app: removing.app }));
     } catch (error) {
-      toasts.error("Couldn't remove the key", (error as Error).message);
+      toasts.error(t("admin.integrations.apps.removeFailed"), (error as Error).message);
     }
   }
 
   return (
     <section className="cn-settings__card">
-      <h2>Seerr, Homepage and other apps</h2>
+      <h2>{t("admin.integrations.apps.title")}</h2>
       <p className="cn-settings__row-text">
-        <span>
-          Apps made for other media servers can use Cinemion instead. In Seerr, pick the media server that signs in with
-          a server address, username and password, give it the address below, and sign in with your Cinemion login: it
-          sees what's in your libraries and links back here. Homepage's media server widget can show what's playing and
-          how big your libraries are with a key made below.
-        </span>
+        <span>{t("admin.integrations.apps.text")}</span>
       </p>
       <div className="cn-integrations__address">
-        <TextField label="Server address" value={location.origin} readOnly onFocus={(e) => e.target.select()} spellCheck={false} className="cn-integrations__address-field" />
-        <Button icon={<Copy />} onClick={() => copy(location.origin, "Address")}>Copy</Button>
+        <TextField label={t("admin.integrations.apps.serverAddress")} value={location.origin} readOnly onFocus={(e) => e.target.select()} spellCheck={false} className="cn-integrations__address-field" />
+        <Button icon={<Copy />} onClick={() => copy(location.origin, "admin.integrations.apps.addressCopied")}>{t("common.copy")}</Button>
       </div>
       {keys && keys.length > 0 && (
         <div className="cn-settings__list">
@@ -295,25 +295,25 @@ function AppsCard() {
               <KeyRound />
               <div className="cn-settings__item-text">
                 <strong>{k.app}</strong>
-                <span>{k.createdBy ? `Made by ${k.createdBy}, ${timeAgo(k.createdAt)}` : `Made ${timeAgo(k.createdAt)} by a profile that has been removed, so it doesn't work`}</span>
+                <span>{k.createdBy ? t("admin.integrations.apps.madeBy", { name: k.createdBy, ago: timeAgo(k.createdAt) }) : t("admin.integrations.apps.madeByRemoved", { ago: timeAgo(k.createdAt) })}</span>
               </div>
-              <IconButton label={`Copy the key for ${k.app}`} icon={<Copy />} onClick={() => copy(k.token, "Key")} />
-              <IconButton label={`Remove the key for ${k.app}`} icon={<Trash2 />} onClick={() => setRemoving(k)} />
+              <IconButton label={t("admin.integrations.apps.copyKey", { app: k.app })} icon={<Copy />} onClick={() => copy(k.token, "admin.integrations.apps.keyCopied")} />
+              <IconButton label={t("admin.integrations.apps.removeKey", { app: k.app })} icon={<Trash2 />} onClick={() => setRemoving(k)} />
             </div>
           ))}
         </div>
       )}
       <div className="cn-integrations__address">
-        <TextField label="New key for" value={app} placeholder="Homepage" maxLength={60} onChange={(e) => setApp(e.target.value)} className="cn-integrations__key-field" />
-        <Button icon={<Plus />} onClick={create} loading={creating} disabled={!app.trim()}>Make key</Button>
+        <TextField label={t("admin.integrations.apps.newKeyFor")} value={app} placeholder="Homepage" maxLength={60} onChange={(e) => setApp(e.target.value)} className="cn-integrations__key-field" />
+        <Button icon={<Plus />} onClick={create} loading={creating} disabled={!app.trim()}>{t("admin.integrations.apps.makeKey")}</Button>
       </div>
 
       <ConfirmDialog
         open={removing !== null}
         onOpenChange={(open) => !open && setRemoving(null)}
-        title={`Remove the key for ${removing?.app ?? ""}?`}
-        description="The app using it can't reach Cinemion anymore until it gets a new key."
-        confirmLabel="Remove key"
+        title={t("admin.integrations.apps.confirmTitle", { app: removing?.app ?? "" })}
+        description={t("admin.integrations.apps.confirmDescription")}
+        confirmLabel={t("admin.integrations.apps.confirm")}
         danger
         onConfirm={remove}
       />
@@ -340,23 +340,23 @@ function PodiumCard() {
     IntegrationsApi.podiumTargets().then(setData).catch(() => setData({ serverUrl: `${location.origin}/api/podium`, targets: [] }));
   }, []);
 
-  async function copy(text: string, what: string) {
-    if (await copyText(text)) toasts.success(`${what} copied`);
-    else toasts.error("Couldn't copy", "Select it and copy it by hand.");
+  async function copy(text: string, copied: TranslationKey) {
+    if (await copyText(text)) toasts.success(t(copied));
+    else toasts.error(t("admin.integrations.copyFailed"), t("admin.integrations.copyItByHand"));
   }
 
   async function create() {
     if (!library) return;
     setCreating(true);
     try {
-      const before = new Set(data?.targets.map((t) => t.id));
+      const before = new Set(data?.targets.map((target) => target.id));
       const result = await IntegrationsApi.createPodiumTarget({ name, libraryId: library.id, folder, gameFolders });
       setData(result);
       setName("");
-      const made = result.targets.find((t) => !before.has(t.id));
-      if (made) await copy(made.token, "Token");
+      const made = result.targets.find((target) => !before.has(target.id));
+      if (made) await copy(made.token, "admin.integrations.podium.tokenCopied");
     } catch (error) {
-      toasts.error("Couldn't make the target", (error as Error).message);
+      toasts.error(t("admin.integrations.podium.makeFailed"), (error as Error).message);
     } finally {
       setCreating(false);
     }
@@ -367,48 +367,44 @@ function PodiumCard() {
     try {
       setData(await IntegrationsApi.removePodiumTarget(removing.id));
       setRemoving(null);
-      toasts.success("Target removed", "Podium can't upload with its token anymore.");
+      toasts.success(t("admin.integrations.podium.removed"), t("admin.integrations.podium.removedDescription"));
     } catch (error) {
-      toasts.error("Couldn't remove the target", (error as Error).message);
+      toasts.error(t("admin.integrations.podium.removeFailed"), (error as Error).message);
     }
   }
 
-  function describe(t: PodiumTargetInfo) {
-    if (!t.libraryName) return "Its library was removed, so it doesn't work";
-    if (!t.createdBy) return "Made by a profile that has been removed, so it doesn't work";
-    const where = [t.libraryName, t.folder].filter(Boolean).join(" › ");
-    const games = t.gameFolders && libraries?.find((l) => l.id === t.libraryId)?.type === "clips" ? ", a folder per game" : "";
-    return `Into ${where}${games} · ${t.lastUsedAt ? `last used ${timeAgo(t.lastUsedAt)}` : "not used yet"}`;
+  function describe(target: PodiumTargetInfo) {
+    if (!target.libraryName) return t("admin.integrations.podium.libraryRemoved");
+    if (!target.createdBy) return t("admin.integrations.podium.creatorRemoved");
+    const where = [target.libraryName, target.folder].filter(Boolean).join(" › ");
+    const games = target.gameFolders && libraries?.find((l) => l.id === target.libraryId)?.type === "clips";
+    if (target.lastUsedAt) return t(games ? "admin.integrations.podium.intoGames" : "admin.integrations.podium.into", { where, ago: timeAgo(target.lastUsedAt) });
+    return t(games ? "admin.integrations.podium.intoGamesNotUsed" : "admin.integrations.podium.intoNotUsed", { where });
   }
 
   return (
     <section className="cn-settings__card">
-      <h2>Podium</h2>
+      <h2>{t("admin.integrations.podium.title")}</h2>
       <p className="cn-settings__row-text">
-        <span>
-          Podium can upload clips straight into a library. Make a target for each library to upload to, then add a
-          Podium-compatible server in Podium with the server URL and the target's token. Clips keep the game Podium
-          recorded, their title, when they were recorded and the names of their sound tracks. Podium uploads into any
-          library; Clips libraries make the most of what it knows.
-        </span>
+        <span>{t("admin.integrations.podium.text")}</span>
       </p>
       {data && (
         <div className="cn-integrations__address">
-          <TextField label="Server URL" value={data.serverUrl} readOnly onFocus={(e) => e.target.select()} spellCheck={false} className="cn-integrations__address-field" />
-          <Button icon={<Copy />} onClick={() => copy(data.serverUrl, "Server URL")}>Copy</Button>
+          <TextField label={t("admin.integrations.podium.serverUrl")} value={data.serverUrl} readOnly onFocus={(e) => e.target.select()} spellCheck={false} className="cn-integrations__address-field" />
+          <Button icon={<Copy />} onClick={() => copy(data.serverUrl, "admin.integrations.podium.serverUrlCopied")}>{t("common.copy")}</Button>
         </div>
       )}
       {data && data.targets.length > 0 && (
         <div className="cn-settings__list">
-          {data.targets.map((t) => (
-            <div key={t.id} className="cn-settings__item">
+          {data.targets.map((target) => (
+            <div key={target.id} className="cn-settings__item">
               <UploadCloud />
               <div className="cn-settings__item-text">
-                <strong>{t.name}</strong>
-                <span>{describe(t)}</span>
+                <strong>{target.name}</strong>
+                <span>{describe(target)}</span>
               </div>
-              <IconButton label={`Copy the token for ${t.name}`} icon={<Copy />} onClick={() => copy(t.token, "Token")} />
-              <IconButton label={`Remove ${t.name}`} icon={<Trash2 />} onClick={() => setRemoving(t)} />
+              <IconButton label={t("admin.integrations.podium.copyToken", { name: target.name })} icon={<Copy />} onClick={() => copy(target.token, "admin.integrations.podium.tokenCopied")} />
+              <IconButton label={t("admin.integrations.podium.remove", { name: target.name })} icon={<Trash2 />} onClick={() => setRemoving(target)} />
             </div>
           ))}
         </div>
@@ -417,18 +413,18 @@ function PodiumCard() {
         <>
           <div className="cn-integrations__address">
             <Select
-              label="New target for"
+              label={t("admin.integrations.podium.newTargetFor")}
               value={String(library.id)}
               onChange={(e) => setLibraryId(Number(e.target.value))}
               options={libraries.map((l) => ({ value: String(l.id), label: l.name }))}
             />
-            <TextField label="Name in Podium" value={name} placeholder={library.name} maxLength={60} onChange={(e) => setName(e.target.value)} className="cn-integrations__key-field" />
-            <TextField label="Folder" value={folder} placeholder="The library folder itself" onChange={(e) => setFolder(e.target.value)} className="cn-integrations__key-field" />
-            <Button icon={<Plus />} onClick={create} loading={creating}>Make target</Button>
+            <TextField label={t("admin.integrations.podium.nameInPodium")} value={name} placeholder={library.name} maxLength={60} onChange={(e) => setName(e.target.value)} className="cn-integrations__key-field" />
+            <TextField label={t("admin.integrations.podium.folder")} value={folder} placeholder={t("admin.integrations.podium.folderPlaceholder")} onChange={(e) => setFolder(e.target.value)} className="cn-integrations__key-field" />
+            <Button icon={<Plus />} onClick={create} loading={creating}>{t("admin.integrations.podium.makeTarget")}</Button>
           </div>
-          <p className="cn-settings__row-text"><span>Uploads go into this folder inside {library.paths[0] ?? "the library's first folder"}. Cinemion needs write access to it, like for uploads from the browser.</span></p>
+          <p className="cn-settings__row-text"><span>{library.paths[0] ? t("admin.integrations.podium.uploadsInto", { path: library.paths[0] }) : t("admin.integrations.podium.uploadsIntoFirst")}</span></p>
           {library.type === "clips" && (
-            <Switch label="A folder per game" description="Puts each clip in a folder named after its game, the way recorders do." checked={gameFolders} onChange={setGameFolders} />
+            <Switch label={t("admin.integrations.podium.gameFolders")} description={t("admin.integrations.podium.gameFoldersDescription")} checked={gameFolders} onChange={setGameFolders} />
           )}
         </>
       )}
@@ -436,9 +432,9 @@ function PodiumCard() {
       <ConfirmDialog
         open={removing !== null}
         onOpenChange={(open) => !open && setRemoving(null)}
-        title={`Remove ${removing?.name ?? ""}?`}
-        description="Podium can't upload with its token anymore. What it uploaded stays in the library."
-        confirmLabel="Remove target"
+        title={t("admin.integrations.podium.confirmTitle", { name: removing?.name ?? "" })}
+        description={t("admin.integrations.podium.confirmDescription")}
+        confirmLabel={t("admin.integrations.podium.confirm")}
         danger
         onConfirm={remove}
       />

@@ -4,6 +4,7 @@ import { formatClock } from "../../lib/playback.ts";
 import useController from "../../lib/useController.ts";
 import { deviceMode } from "../../lib/DeviceMode.ts";
 import cx from "../../lib/cx.ts";
+import { t } from "../../i18n/I18n.ts";
 import Thumbnail from "./Thumbnail.tsx";
 import type PlayerController from "./PlayerController.ts";
 
@@ -63,11 +64,11 @@ export default function Scrubber(props: ScrubberProps) {
       className="cn-scrubber"
       role="slider"
       tabIndex={0}
-      aria-label="Seek"
+      aria-label={t("player.scrubber.label")}
       aria-valuemin={0}
       aria-valuemax={Math.round(duration)}
       aria-valuenow={Math.round(shown)}
-      aria-valuetext={`${formatClock(shown)} of ${formatClock(duration)}`}
+      aria-valuetext={t("player.scrubber.value", { position: formatClock(shown), duration: formatClock(duration) })}
       data-scrubber
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}

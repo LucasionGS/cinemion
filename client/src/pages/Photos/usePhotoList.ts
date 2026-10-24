@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { PhotoPage, PhotoSummary } from "@shared/photos.ts";
 import { toasts } from "../../lib/Toasts.ts";
+import { t } from "../../i18n/I18n.ts";
 
 /**
  * Photos loaded a page at a time as `sentinel` scrolls into view, with `loadAll()` for slideshows and selecting
@@ -29,7 +30,7 @@ export default function usePhotoList(load: ((offset: number) => Promise<PhotoPag
     }).catch((error) => {
       if (generation !== state.current.generation) return;
       s.total = s.items.length;
-      toasts.error("Couldn't load the photos", (error as Error).message);
+      toasts.error(t("photos.list.couldntLoad"), (error as Error).message);
     }).finally(() => {
       if (generation !== state.current.generation) return;
       s.pending = null;

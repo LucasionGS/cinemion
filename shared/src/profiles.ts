@@ -60,10 +60,15 @@ export interface SubtitleStyle {
  */
 export interface ProfilePreferences {
   subtitles: SubtitleStyle;
+  /**
+   * The interface's language, like `en` or `pt-BR`. `null` = the browser's language.
+   */
+  language: string | null;
 }
 
 export const DEFAULT_PREFERENCES: ProfilePreferences = {
   subtitles: { size: "medium", color: "white", background: "box", keepStyling: true },
+  language: null,
 };
 
 /**
@@ -71,6 +76,7 @@ export const DEFAULT_PREFERENCES: ProfilePreferences = {
  */
 export function normalizePreferences(value: unknown): ProfilePreferences {
   const subtitles = ((value as Partial<ProfilePreferences> | null)?.subtitles ?? {}) as Partial<SubtitleStyle>;
+  const language = (value as Partial<ProfilePreferences> | null)?.language;
   const pick = <T extends string>(given: unknown, allowed: readonly T[], fallback: T): T => allowed.includes(given as T) ? given as T : fallback;
   const d = DEFAULT_PREFERENCES.subtitles;
   return {
@@ -80,5 +86,7 @@ export function normalizePreferences(value: unknown): ProfilePreferences {
       background: pick(subtitles.background, ["none", "shadow", "box"], d.background),
       keepStyling: typeof subtitles.keepStyling === "boolean" ? subtitles.keepStyling : d.keepStyling,
     },
+    // Example: en, pt-BR, zh-Hant
+    language: typeof language === "string" && /^[a-z]{2,3}(-[A-Za-z0-9]{2,8})*$/.test(language) ? language : null,
   };
 }

@@ -6,6 +6,7 @@ import PhotosApi from "../../Api/PhotosApi.ts";
 import { router } from "../../lib/Router.tsx";
 import useController from "../../lib/useController.ts";
 import { toasts } from "../../lib/Toasts.ts";
+import { t, type TranslationKey } from "../../i18n/I18n.ts";
 import { addToPhotoAlbum } from "../../components/AddToPhotoAlbum/AddToPhotoAlbum.tsx";
 import PhotoAlbumCard from "../../components/PhotoAlbumCard/PhotoAlbumCard.tsx";
 import PhotoGrid from "../../components/PhotoGrid/PhotoGrid.tsx";
@@ -25,10 +26,10 @@ import "./Photos.scss";
 
 type View = "albums" | "timeline";
 
-const SORTS: { value: PhotoAlbumSort; label: string }[] = [
-  { value: "newest", label: "Newest first" },
-  { value: "oldest", label: "Oldest first" },
-  { value: "title", label: "Name" },
+const SORTS: { value: PhotoAlbumSort; label: TranslationKey }[] = [
+  { value: "newest", label: "photos.library.sort.newest" },
+  { value: "oldest", label: "photos.library.sort.oldest" },
+  { value: "title", label: "photos.library.sort.title" },
 ];
 
 export interface PhotosLibraryProps {
@@ -57,7 +58,7 @@ export default function PhotosLibrary(props: PhotosLibraryProps) {
   const viewer = usePhotoViewer(list.items, list.total, loadEverything);
 
   useEffect(() => {
-    PhotosApi.overview(library.id, sort).then(setOverview).catch((error) => toasts.error("Couldn't load the albums", (error as Error).message));
+    PhotosApi.overview(library.id, sort).then(setOverview).catch((error) => toasts.error(t("photos.library.couldntLoadAlbums"), (error as Error).message));
   }, [library.id, sort, changes, !!library.scan]);
 
   function setView(next: View) {
@@ -74,14 +75,14 @@ export default function PhotosLibrary(props: PhotosLibraryProps) {
       <header className="cn-library__header">
         <div>
           <h1>{library.name}</h1>
-          <p>{[counts, albumCount ? `${albumCount} ${albumCount === 1 ? "album" : "albums"}` : null].filter(Boolean).join(" · ")}{library.scan && " · Scanning…"}</p>
+          <p>{[counts, albumCount ? t("photos.counts.albums", { count: albumCount }) : null, library.scan ? t("photos.library.scanning") : null].filter(Boolean).join(t("common.dotSeparator"))}</p>
         </div>
         <div className="cn-library__filters">
-          <SegmentedControl<View> label="Show" value={view} onChange={setView} options={[{ value: "albums", label: "Albums" }, { value: "timeline", label: "Timeline" }]} />
-          {view === "albums" && <Select label="Sort albums" value={sort} options={SORTS} onChange={(e) => setSort(e.target.value as PhotoAlbumSort)} className="cn-library__select" />}
-          {view === "albums" && <Button icon={<Plus />} onClick={() => setCreating(true)}>New album</Button>}
-          {!empty && <Button icon={<ListChecks />} onClick={selection.selected ? selection.stop : selection.start} aria-pressed={!!selection.selected}>Select</Button>}
-          {!empty && <Button variant="primary" icon={<Play />} onClick={() => viewer.slideshow(view !== "timeline")}>Slideshow</Button>}
+          <SegmentedControl<View> label={t("photos.library.show")} value={view} onChange={setView} options={[{ value: "albums", label: t("photos.library.albums") }, { value: "timeline", label: t("photos.library.timeline") }]} />
+          {view === "albums" && <Select label={t("photos.library.sortAlbums")} value={sort} options={SORTS.map((s) => ({ value: s.value, label: t(s.label) }))} onChange={(e) => setSort(e.target.value as PhotoAlbumSort)} className="cn-library__select" />}
+          {view === "albums" && <Button icon={<Plus />} onClick={() => setCreating(true)}>{t("photos.library.newAlbum")}</Button>}
+          {!empty && <Button icon={<ListChecks />} onClick={selection.selected ? selection.stop : selection.start} aria-pressed={!!selection.selected}>{t("common.select")}</Button>}
+          {!empty && <Button variant="primary" icon={<Play />} onClick={() => viewer.slideshow(view !== "timeline")}>{t("photos.library.slideshow")}</Button>}
         </div>
       </header>
 
@@ -89,11 +90,11 @@ export default function PhotosLibrary(props: PhotosLibraryProps) {
 
       {empty && (
         <section className="cn-library__empty">
-          <h2>Nothing in here yet</h2>
+          <h2>{t("photos.library.emptyTitle")}</h2>
           <p>
             {library.scan
-              ? "Cinemion is scanning this library right now. Photos appear as they're found."
-              : `Photos and videos from ${library.paths.join(", ")} appear here after a scan. Every folder becomes an album, and dates come from the photos themselves.`}
+              ? t("photos.library.emptyScanning")
+              : t("photos.library.emptyHint", { paths: library.paths.join(t("common.listSeparator")) })}
           </p>
         </section>
       )}
@@ -106,7 +107,7 @@ export default function PhotosLibrary(props: PhotosLibraryProps) {
 
       {view === "albums" && overview && overview.looseCount > 0 && (
         <section className="cn-photos__section" aria-labelledby="cn-photos-loose">
-          <h2 id="cn-photos-loose">{overview.albums.length ? "Photos outside albums" : "Photos"}</h2>
+          <h2 id="cn-photos-loose">{overview.albums.length ? t("photos.library.outsideAlbums") : t("photos.library.photos")}</h2>
           {list.items && <PhotoGrid items={list.items} onOpen={viewer.open} selected={selection.selected} onToggle={selection.toggle} />}
         </section>
       )}
@@ -141,9 +142,9 @@ export default function PhotosLibrary(props: PhotosLibraryProps) {
  */
 export function photoCounts(photos: number, videos: number) {
   return [
-    `${photos.toLocaleString()} ${photos === 1 ? "photo" : "photos"}`,
-    videos ? `${videos.toLocaleString()} ${videos === 1 ? "video" : "videos"}` : null,
-  ].filter(Boolean).join(" · ");
+    t("photos.counts.photos", { count: photos }),
+    videos ? t("photos.counts.videos", { count: videos }) : null,
+  ].filter(Boolean).join(t("common.dotSeparator"));
 }
 
 /**
@@ -168,7 +169,7 @@ function NewAlbumDialog(props: { libraryId: number; open: boolean; onClose: () =
       onClose();
       router.navigate(`/photos/album/${album.id}`);
     } catch (error) {
-      toasts.error("Couldn't make the album", (error as Error).message);
+      toasts.error(t("photos.newAlbum.couldntMake"), (error as Error).message);
     } finally {
       setBusy(false);
     }
@@ -178,13 +179,13 @@ function NewAlbumDialog(props: { libraryId: number; open: boolean; onClose: () =
     <Dialog
       open={open}
       onOpenChange={(value) => !value && onClose()}
-      title="New album"
-      description="Albums collect photos from anywhere in this library. The files stay where they are."
+      title={t("photos.newAlbum.title")}
+      description={t("photos.newAlbum.description")}
       size="sm"
     >
       <form className="cn-add-playlist__new" onSubmit={create}>
-        <TextField label="Name" placeholder="Best of the summer" value={name} maxLength={128} onChange={(e) => setName(e.target.value)} autoFocus />
-        <Button type="submit" variant="primary" disabled={!name.trim()} loading={busy}>Create</Button>
+        <TextField label={t("photos.newAlbum.name")} placeholder={t("photos.newAlbum.placeholder")} value={name} maxLength={128} onChange={(e) => setName(e.target.value)} autoFocus />
+        <Button type="submit" variant="primary" disabled={!name.trim()} loading={busy}>{t("photos.newAlbum.create")}</Button>
       </form>
     </Dialog>
   );

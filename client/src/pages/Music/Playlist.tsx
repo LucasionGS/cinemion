@@ -8,6 +8,7 @@ import { router } from "../../lib/Router.tsx";
 import { toasts } from "../../lib/Toasts.ts";
 import useController from "../../lib/useController.ts";
 import { formatDuration } from "../../lib/playback.ts";
+import { t } from "../../i18n/I18n.ts";
 import AppShell from "../../components/AppShell/AppShell.tsx";
 import Button from "../../components/Button/Button.tsx";
 import IconButton from "../../components/IconButton/IconButton.tsx";
@@ -42,7 +43,7 @@ export default function Playlist(props: PlaylistProps) {
     try {
       setPlaylist(await change());
     } catch (e) {
-      toasts.error("Couldn't change the playlist", (e as Error).message);
+      toasts.error(t("music.playlist.changeFailed"), (e as Error).message);
     }
   }
 
@@ -54,7 +55,7 @@ export default function Playlist(props: PlaylistProps) {
       setPlaylist({ ...playlist, name: summary.name });
       setRenaming(null);
     } catch (err) {
-      toasts.error("Couldn't rename the playlist", (err as Error).message);
+      toasts.error(t("music.playlist.renameFailed"), (err as Error).message);
     }
   }
 
@@ -62,15 +63,15 @@ export default function Playlist(props: PlaylistProps) {
     if (!playlist) return;
     try {
       await PlaylistsApi.remove(playlist.id);
-      toasts.success(`Deleted ${playlist.name}`);
+      toasts.success(t("music.playlist.deleted", { name: playlist.name }));
       router.back("/");
     } catch (e) {
-      toasts.error("Couldn't delete the playlist", (e as Error).message);
+      toasts.error(t("music.playlist.deleteFailed"), (e as Error).message);
     }
   }
 
   function move(tracks: PlaylistEntry[], from: number, to: number) {
-    const order = tracks.map((t) => t.entryId);
+    const order = tracks.map((track) => track.entryId);
     const [entry] = order.splice(from, 1);
     order.splice(to, 0, entry);
     update(() => PlaylistsApi.reorder(id, order));
@@ -79,44 +80,44 @@ export default function Playlist(props: PlaylistProps) {
   return (
     <AppShell>
       <div className="cn-music">
-        {error && <section className="cn-music__empty"><h2>Playlist not found</h2><p>{error}</p></section>}
+        {error && <section className="cn-music__empty"><h2>{t("music.playlist.notFound")}</h2><p>{error}</p></section>}
         {!playlist && !error && <div className="cn-music__loading"><Spinner size="2rem" /></div>}
         {playlist && (
           <>
             <MusicHeader
               cover={<Cover image={null} mosaic={playlist.covers} title={playlist.name} width={500} />}
-              eyebrow="Playlist"
+              eyebrow={t("music.playlist.eyebrow")}
               title={renaming === null ? playlist.name : (
                 <form className="cn-playlist-name" onSubmit={rename}>
-                  <input value={renaming} maxLength={128} autoFocus aria-label="Playlist name" onChange={(e) => setRenaming(e.target.value)} />
-                  <IconButton label="Save name" icon={<Check />} type="submit" />
-                  <IconButton label="Cancel" icon={<X />} variant="ghost" onClick={() => setRenaming(null)} />
+                  <input value={renaming} maxLength={128} autoFocus aria-label={t("music.playlist.name")} onChange={(e) => setRenaming(e.target.value)} />
+                  <IconButton label={t("music.playlist.saveName")} icon={<Check />} type="submit" />
+                  <IconButton label={t("common.cancel")} icon={<X />} variant="ghost" onClick={() => setRenaming(null)} />
                 </form>
               )}
-              meta={<span>{playlist.trackCount} {playlist.trackCount === 1 ? "track" : "tracks"}{playlist.trackCount > 0 && ` · ${formatDuration(playlist.duration)}`}</span>}
+              meta={<span>{t("music.trackCount", { count: playlist.trackCount })}{playlist.trackCount > 0 && `${t("common.dotSeparator")}${formatDuration(playlist.duration)}`}</span>}
               actions={
                 <>
-                  <Button variant="primary" icon={<Play />} disabled={playlist.tracks.length === 0} onClick={() => musicPlayer.play(playlist.tracks)} data-autofocus>Play</Button>
-                  <Button variant="secondary" icon={<Shuffle />} disabled={playlist.tracks.length === 0} onClick={() => musicPlayer.play(playlist.tracks, 0, { shuffle: true })}>Shuffle</Button>
-                  <IconButton label="Rename" icon={<Pencil />} onClick={() => setRenaming(playlist.name)} />
-                  <IconButton label="Delete playlist" icon={<Trash2 />} onClick={() => setDeleting(true)} />
+                  <Button variant="primary" icon={<Play />} disabled={playlist.tracks.length === 0} onClick={() => musicPlayer.play(playlist.tracks)} data-autofocus>{t("common.play")}</Button>
+                  <Button variant="secondary" icon={<Shuffle />} disabled={playlist.tracks.length === 0} onClick={() => musicPlayer.play(playlist.tracks, 0, { shuffle: true })}>{t("music.actions.shuffle")}</Button>
+                  <IconButton label={t("music.playlist.rename")} icon={<Pencil />} onClick={() => setRenaming(playlist.name)} />
+                  <IconButton label={t("music.playlist.delete")} icon={<Trash2 />} onClick={() => setDeleting(true)} />
                 </>
               }
             />
             {playlist.tracks.length === 0 && (
               <section className="cn-music__empty">
-                <h2>Nothing in here yet</h2>
-                <p>Add tracks from their menu with "Add to playlist", or save what's playing from the queue.</p>
+                <h2>{t("music.playlist.emptyTitle")}</h2>
+                <p>{t("music.playlist.emptyText")}</p>
               </section>
             )}
             <TrackList
               tracks={playlist.tracks}
-              label={`Tracks of ${playlist.name}`}
+              label={t("music.playlist.tracksOf", { name: playlist.name })}
               menuItems={(_track, i) => (
                 <>
-                  {i > 0 && <Menu.Item className="cn-menu__item" onClick={() => move(playlist.tracks, i, i - 1)}><ArrowUp /> Move up</Menu.Item>}
-                  {i < playlist.tracks.length - 1 && <Menu.Item className="cn-menu__item" onClick={() => move(playlist.tracks, i, i + 1)}><ArrowDown /> Move down</Menu.Item>}
-                  <Menu.Item className="cn-menu__item" onClick={() => update(() => PlaylistsApi.removeEntry(id, playlist.tracks[i].entryId))}><Trash2 /> Remove from playlist</Menu.Item>
+                  {i > 0 && <Menu.Item className="cn-menu__item" onClick={() => move(playlist.tracks, i, i - 1)}><ArrowUp /> {t("music.playlist.moveUp")}</Menu.Item>}
+                  {i < playlist.tracks.length - 1 && <Menu.Item className="cn-menu__item" onClick={() => move(playlist.tracks, i, i + 1)}><ArrowDown /> {t("music.playlist.moveDown")}</Menu.Item>}
+                  <Menu.Item className="cn-menu__item" onClick={() => update(() => PlaylistsApi.removeEntry(id, playlist.tracks[i].entryId))}><Trash2 /> {t("music.playlist.removeFromPlaylist")}</Menu.Item>
                 </>
               )}
             />
@@ -127,9 +128,9 @@ export default function Playlist(props: PlaylistProps) {
         <ConfirmDialog
           open={deleting}
           onOpenChange={setDeleting}
-          title={`Delete ${playlist.name}?`}
-          description="The playlist goes away for good. The tracks in it stay in your library."
-          confirmLabel="Delete playlist"
+          title={t("music.playlist.confirmTitle", { name: playlist.name })}
+          description={t("music.playlist.confirmDescription")}
+          confirmLabel={t("music.playlist.delete")}
           danger
           onConfirm={remove}
         />

@@ -5,6 +5,7 @@ import PlayerController from "../Player/PlayerController.ts";
 import useController from "../../lib/useController.ts";
 import { formatClock } from "../../lib/playback.ts";
 import cx from "../../lib/cx.ts";
+import { rich, t } from "../../i18n/I18n.ts";
 import IconButton from "../IconButton/IconButton.tsx";
 import "./ClipRange.scss";
 
@@ -135,7 +136,7 @@ export default function ClipRange(props: ClipRangeProps) {
     controller.play();
   }
 
-  const percent = (t: number) => `${duration ? (t / duration) * 100 : 0}%`;
+  const percent = (time: number) => `${duration ? (time / duration) * 100 : 0}%`;
 
   return (
     <div className="cn-clip-range">
@@ -143,7 +144,7 @@ export default function ClipRange(props: ClipRangeProps) {
         <video ref={video} playsInline poster={item.artwork.thumb ? `/api/images/${item.artwork.thumb}?w=1280` : undefined} />
       </div>
       <div className="cn-clip-range__controls">
-        <IconButton label={controller.playing ? "Pause" : "Play the chosen part"} icon={controller.playing ? <Pause /> : <Play />} onClick={togglePlay} />
+        <IconButton label={controller.playing ? t("clips.range.pause") : t("clips.range.play")} icon={controller.playing ? <Pause /> : <Play />} onClick={togglePlay} />
         <div
           ref={track}
           className="cn-clip-range__track"
@@ -159,7 +160,7 @@ export default function ClipRange(props: ClipRangeProps) {
               key={handle}
               role="slider"
               tabIndex={0}
-              aria-label={handle === "start" ? "Start of the part" : "End of the part"}
+              aria-label={handle === "start" ? t("clips.range.start") : t("clips.range.end")}
               aria-valuemin={0}
               aria-valuemax={Math.round(duration * 10) / 10}
               aria-valuenow={Math.round((handle === "start" ? start : end) * 10) / 10}
@@ -175,9 +176,9 @@ export default function ClipRange(props: ClipRangeProps) {
         </div>
       </div>
       <div className="cn-clip-range__times">
-        <span>From <strong>{formatPrecise(start)}</strong></span>
-        <span>Keeps <strong>{formatPrecise(end - start)}</strong></span>
-        <span>To <strong>{formatPrecise(end)}</strong></span>
+        <span>{rich("clips.range.from", { time: <strong>{formatPrecise(start)}</strong> })}</span>
+        <span>{rich("clips.range.keeps", { time: <strong>{formatPrecise(end - start)}</strong> })}</span>
+        <span>{rich("clips.range.to", { time: <strong>{formatPrecise(end)}</strong> })}</span>
       </div>
     </div>
   );

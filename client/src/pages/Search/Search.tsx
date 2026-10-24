@@ -4,6 +4,7 @@ import type { SearchResults } from "@shared/media.ts";
 import ItemsApi from "../../Api/ItemsApi.ts";
 import { router } from "../../lib/Router.tsx";
 import useController from "../../lib/useController.ts";
+import { t } from "../../i18n/I18n.ts";
 import AppShell from "../../components/AppShell/AppShell.tsx";
 import PosterCard from "../../components/PosterCard/PosterCard.tsx";
 import WideCard from "../../components/WideCard/WideCard.tsx";
@@ -53,19 +54,19 @@ export default function Search() {
       <div className="cn-search">
         <label className="cn-search__box">
           <SearchIcon aria-hidden="true" />
-          <span className="cn-visually-hidden">Search</span>
-          <input type="search" autoFocus data-autofocus placeholder="Movies, shows, videos, people and music" value={query} onChange={(e) => setQuery(e.target.value)} />
+          <span className="cn-visually-hidden">{t("common.search")}</span>
+          <input type="search" autoFocus data-autofocus placeholder={t("search.placeholder")} value={query} onChange={(e) => setQuery(e.target.value)} />
           {loading && <Spinner size="1.25rem" />}
           {query && !loading && (
-            <button type="button" className="cn-search__clear" aria-label="Clear" onClick={() => setQuery("")}><X /></button>
+            <button type="button" className="cn-search__clear" aria-label={t("search.clear")} onClick={() => setQuery("")}><X /></button>
           )}
         </label>
 
-        {empty && <p className="cn-search__none">Nothing found for "{query.trim()}".</p>}
+        {empty && <p className="cn-search__none">{t("search.nothingFound", { query: query.trim() })}</p>}
 
         {results && results.titles.length > 0 && (
           <section className="cn-search__section">
-            <h2>Movies &amp; shows</h2>
+            <h2>{t("search.titles")}</h2>
             <div className="cn-search__grid">
               {results.titles.map((item) => <PosterCard key={item.id} item={item} />)}
             </div>
@@ -74,7 +75,7 @@ export default function Search() {
 
         {results && results.collections.length > 0 && (
           <section className="cn-search__section">
-            <h2>Collections</h2>
+            <h2>{t("search.collections")}</h2>
             <div className="cn-search__grid">
               {results.collections.map((c) => <PosterCard key={c.id} item={{ ...c, type: "collection" }} />)}
             </div>
@@ -83,7 +84,7 @@ export default function Search() {
 
         {results && results.episodes.length > 0 && (
           <section className="cn-search__section">
-            <h2>Episodes</h2>
+            <h2>{t("search.episodes")}</h2>
             <div className="cn-search__episodes">
               {results.episodes.map((item) => <WideCard key={item.id} item={item} />)}
             </div>
@@ -92,7 +93,7 @@ export default function Search() {
 
         {results && results.videos.length > 0 && (
           <section className="cn-search__section">
-            <h2>Videos</h2>
+            <h2>{t("search.videos")}</h2>
             <div className="cn-search__episodes">
               {results.videos.map((item) => item.clip ? <ClipCard key={item.id} item={item} /> : <WideCard key={item.id} item={item} variant="video" />)}
             </div>
@@ -101,16 +102,16 @@ export default function Search() {
 
         {results && results.games.length > 0 && (
           <section className="cn-search__section">
-            <h2>Games</h2>
+            <h2>{t("search.games")}</h2>
             <div className="cn-search__grid">
-              {results.games.map((game) => <PosterCard key={game.id} item={game} subtitle={`${game.childCount} ${game.childCount === 1 ? "clip" : "clips"}`} />)}
+              {results.games.map((game) => <PosterCard key={game.id} item={game} subtitle={t("search.clips", { count: game.childCount })} />)}
             </div>
           </section>
         )}
 
         {results && results.photoAlbums.length > 0 && (
           <section className="cn-search__section">
-            <h2>Photo albums</h2>
+            <h2>{t("search.photoAlbums")}</h2>
             <div className="cn-search__episodes">
               {results.photoAlbums.map((album) => <PhotoAlbumCard key={`${album.kind}-${album.id}`} album={album} />)}
             </div>
@@ -119,7 +120,7 @@ export default function Search() {
 
         {results && results.artists.length > 0 && (
           <section className="cn-search__section">
-            <h2>Artists</h2>
+            <h2>{t("search.artists")}</h2>
             <div className="cn-search__grid">
               {results.artists.map((a) => <ArtistCard key={a.id} artist={a} />)}
             </div>
@@ -128,7 +129,7 @@ export default function Search() {
 
         {results && results.albums.length > 0 && (
           <section className="cn-search__section">
-            <h2>Albums</h2>
+            <h2>{t("search.albums")}</h2>
             <div className="cn-search__grid">
               {results.albums.map((a) => <AlbumCard key={a.id} album={a} />)}
             </div>
@@ -137,14 +138,14 @@ export default function Search() {
 
         {results && results.tracks.length > 0 && (
           <section className="cn-search__section">
-            <h2>Songs</h2>
-            <TrackList tracks={results.tracks} label="Songs" />
+            <h2>{t("search.songs")}</h2>
+            <TrackList tracks={results.tracks} label={t("search.songs")} />
           </section>
         )}
 
         {results && results.books.length > 0 && (
           <section className="cn-search__section">
-            <h2>Books</h2>
+            <h2>{t("search.books")}</h2>
             <div className="cn-search__grid">
               {results.books.map((b) => <BookCard key={b.id} book={b} />)}
             </div>
@@ -153,7 +154,7 @@ export default function Search() {
 
         {results && results.people.length > 0 && (
           <section className="cn-search__section">
-            <h2>People</h2>
+            <h2>{t("search.people")}</h2>
             <div className="cn-search__people">
               {results.people.map((p) => <PersonCard key={p.id} person={p} />)}
             </div>

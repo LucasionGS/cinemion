@@ -5,7 +5,7 @@ import type { LibraryInfo, LibraryType } from "@shared/api.ts";
 import LibrariesApi from "../../Api/LibrariesApi.ts";
 import { toasts } from "../../lib/Toasts.ts";
 import { timeAgo } from "../../lib/format.ts";
-import { RATINGS } from "../../lib/ratings.ts";
+import { ratingOptions } from "../../lib/ratings.ts";
 import Select from "../../components/Select/Select.tsx";
 import Button from "../../components/Button/Button.tsx";
 import TextField from "../../components/TextField/TextField.tsx";
@@ -17,6 +17,7 @@ import LibraryIcon from "../../components/LibraryIcon/LibraryIcon.tsx";
 import UploadDialog from "../../components/UploadDialog/UploadDialog.tsx";
 import { uploads } from "../../lib/Uploads.ts";
 import useController from "../../lib/useController.ts";
+import { t, type TranslationKey } from "../../i18n/I18n.ts";
 
 /**
  * Add, scan and remove libraries.
@@ -40,11 +41,11 @@ export default function LibrariesSettings() {
     setBusy(true);
     try {
       await LibrariesApi.remove(removing.id);
-      toasts.success(`${removing.name} was removed`);
+      toasts.success(t("libraries.remove.done", { name: removing.name }));
       setRemoving(null);
       reload();
     } catch (error) {
-      toasts.error("Couldn't remove the library", (error as Error).message);
+      toasts.error(t("libraries.remove.failed"), (error as Error).message);
     } finally {
       setBusy(false);
     }
@@ -55,7 +56,7 @@ export default function LibrariesSettings() {
       await LibrariesApi.scan(library.id, refresh);
       reload();
     } catch (error) {
-      toasts.error("Couldn't start the scan", (error as Error).message);
+      toasts.error(t("libraries.scanFailed"), (error as Error).message);
     }
   }
 
@@ -63,14 +64,14 @@ export default function LibrariesSettings() {
     <>
       <header className="cn-settings__header">
         <div>
-          <h1>Libraries</h1>
-          <p>The folders Cinemion looks in for movies, shows, other videos, music and books. New files are picked up by themselves.</p>
+          <h1>{t("libraries.title")}</h1>
+          <p>{t("libraries.intro")}</p>
         </div>
-        <Button variant="primary" icon={<Plus />} onClick={() => setAdding(true)}>Add library</Button>
+        <Button variant="primary" icon={<Plus />} onClick={() => setAdding(true)}>{t("libraries.addButton")}</Button>
       </header>
 
       {!libraries && <Spinner size="2rem" />}
-      {libraries?.length === 0 && <p className="cn-settings__row-text"><span>No libraries yet.</span></p>}
+      {libraries?.length === 0 && <p className="cn-settings__row-text"><span>{t("libraries.empty")}</span></p>}
       {libraries && libraries.length > 0 && (
         <div className="cn-settings__list">
           {libraries.map((l) => (
@@ -78,29 +79,29 @@ export default function LibrariesSettings() {
               <LibraryIcon type={l.type} />
               <div className="cn-settings__item-text">
                 <strong>{l.name}</strong>
-                <span>{l.paths.join(", ")}</span>
-                {l.conflict && <span className="cn-settings__conflict" role="alert">{l.conflict} Use “Edit library” to change the folders.</span>}
+                <span>{l.paths.join(t("common.listSeparator"))}</span>
+                {l.conflict && <span className="cn-settings__conflict" role="alert">{t("libraries.conflict", { conflict: l.conflict })}</span>}
                 <UploadProgress library={l} onOpen={() => setUploading(l)} />
                 {l.scan
                   ? (
                     <span className="cn-settings__scan">
                       <span className="cn-settings__scan-bar"><span style={{ width: `${Math.round((l.scan.progress ?? 0) * 100)}%` }} /></span>
-                      {l.scan.status}{l.scan.progress !== null && ` · ${Math.round(l.scan.progress * 100)}%`}
+                      {l.scan.progress !== null ? t("libraries.scanProgress", { status: l.scan.status, percent: Math.round(l.scan.progress * 100) }) : l.scan.status}
                     </span>
                   )
-                  : <span>{l.itemCount} {NOUNS[l.type][l.itemCount === 1 ? 0 : 1]} · {l.lastScannedAt ? `scanned ${timeAgo(l.lastScannedAt)}` : "not scanned yet"}{l.type !== "movies" && l.type !== "shows" && ` · rated ${l.defaultRating ?? "unrated"}`}</span>}
+                  : <span>{librarySummary(l)}</span>}
               </div>
-              <Button size="sm" icon={<RefreshCw />} onClick={() => scan(l, false)} disabled={!!l.scan}>Scan now</Button>
+              <Button size="sm" icon={<RefreshCw />} onClick={() => scan(l, false)} disabled={!!l.scan}>{t("libraries.scanNow")}</Button>
               <Menu.Root>
-                <Menu.Trigger className="cn-icon-button cn-icon-button--glass cn-icon-button--md" aria-label={`More for ${l.name}`}><EllipsisVertical /></Menu.Trigger>
+                <Menu.Trigger className="cn-icon-button cn-icon-button--glass cn-icon-button--md" aria-label={t("libraries.moreFor", { name: l.name })}><EllipsisVertical /></Menu.Trigger>
                 <Menu.Portal>
                   <Menu.Positioner sideOffset={6} align="end" className="cn-menu__positioner">
                     <Menu.Popup className="cn-menu">
-                      <Menu.Item className="cn-menu__item" onClick={() => setUploading(l)}><Upload /> Upload files</Menu.Item>
-                      <Menu.Item className="cn-menu__item" onClick={() => setEditing(l)}><Pencil /> Edit library</Menu.Item>
-                      <Menu.Item className="cn-menu__item" onClick={() => scan(l, true)}><ScanSearch /> {l.type === "videos" || l.type === "photos" ? "Refresh details and thumbnails" : l.type === "clips" ? "Refresh thumbnails and games" : l.type === "music" ? "Find covers again" : l.type === "audiobooks" || l.type === "books" ? "Read book details again" : "Refresh all details"}</Menu.Item>
+                      <Menu.Item className="cn-menu__item" onClick={() => setUploading(l)}><Upload /> {t("libraries.menu.upload")}</Menu.Item>
+                      <Menu.Item className="cn-menu__item" onClick={() => setEditing(l)}><Pencil /> {t("libraries.menu.edit")}</Menu.Item>
+                      <Menu.Item className="cn-menu__item" onClick={() => scan(l, true)}><ScanSearch /> {t(REFRESH_LABELS[l.type])}</Menu.Item>
                       <Menu.Separator className="cn-menu__separator" />
-                      <Menu.Item className="cn-menu__item" onClick={() => setRemoving(l)}><Trash2 /> Remove library</Menu.Item>
+                      <Menu.Item className="cn-menu__item" onClick={() => setRemoving(l)}><Trash2 /> {t("libraries.menu.remove")}</Menu.Item>
                     </Menu.Popup>
                   </Menu.Positioner>
                 </Menu.Portal>
@@ -116,9 +117,9 @@ export default function LibrariesSettings() {
       <ConfirmDialog
         open={!!removing}
         onOpenChange={(open) => !open && setRemoving(null)}
-        title={`Remove ${removing?.name}?`}
-        description="Cinemion forgets this library and its watch history. The files in its folders are not touched."
-        confirmLabel="Remove library"
+        title={t("libraries.remove.title", { name: removing?.name ?? "" })}
+        description={t("libraries.remove.description")}
+        confirmLabel={t("libraries.remove.confirm")}
         danger
         loading={busy}
         onConfirm={remove}
@@ -143,49 +144,116 @@ function UploadProgress(props: { library: LibraryInfo; onOpen: () => void }) {
     <button type="button" className="cn-settings__scan cn-settings__upload" onClick={onOpen}>
       {active.length > 0 && <span className="cn-settings__scan-bar"><span style={{ width: `${Math.round(fraction * 100)}%` }} /></span>}
       {active.length > 0
-        ? unpacking ? `Adding ${active.length === 1 ? "an upload" : `${active.length} uploads`} to the library` : `Uploading ${active.length} ${active.length === 1 ? "file" : "files"} · ${Math.floor(fraction * 100)}%`
-        : `${paused} ${paused === 1 ? "upload needs" : "uploads need"} a look`}
+        ? unpacking ? t("libraries.uploadProgress.adding", { count: active.length }) : t("libraries.uploadProgress.uploading", { count: active.length, percent: Math.floor(fraction * 100) })
+        : t("libraries.uploadProgress.needsALook", { count: paused })}
     </button>
   );
 }
 
-const NOUNS: Record<LibraryType, [string, string]> = { movies: ["movie", "movies"], shows: ["show", "shows"], videos: ["video", "videos"], music: ["album", "albums"], audiobooks: ["audiobook", "audiobooks"], books: ["book", "books"], photos: ["photo", "photos"], clips: ["clip", "clips"] };
-const TYPE_NAMES: Record<LibraryType, string> = { movies: "Movies", shows: "Shows", videos: "Videos", music: "Music", audiobooks: "Audiobooks", books: "Books", photos: "Photos", clips: "Clips" };
+/**
+ * The library types in the order the picker shows them.
+ */
+const TYPE_ORDER: LibraryType[] = ["movies", "shows", "videos", "music", "photos", "clips", "audiobooks", "books"];
+
+const TYPE_NAMES: Record<LibraryType, TranslationKey> = {
+  movies: "libraries.types.movies.name",
+  shows: "libraries.types.shows.name",
+  videos: "libraries.types.videos.name",
+  music: "libraries.types.music.name",
+  audiobooks: "libraries.types.audiobooks.name",
+  books: "libraries.types.books.name",
+  photos: "libraries.types.photos.name",
+  clips: "libraries.types.clips.name",
+};
+
+/**
+ * "12 movies", "1 album": how many titles a library has.
+ */
+const TYPE_COUNTS: Record<LibraryType, TranslationKey> = {
+  movies: "libraries.types.movies.count",
+  shows: "libraries.types.shows.count",
+  videos: "libraries.types.videos.count",
+  music: "libraries.types.music.count",
+  audiobooks: "libraries.types.audiobooks.count",
+  books: "libraries.types.books.count",
+  photos: "libraries.types.photos.count",
+  clips: "libraries.types.clips.count",
+};
+
+/**
+ * What a new library of each type does, for the types that need explaining.
+ */
+const TYPE_DESCRIPTIONS: Partial<Record<LibraryType, TranslationKey>> = {
+  videos: "libraries.types.videos.description",
+  music: "libraries.types.music.description",
+  audiobooks: "libraries.types.audiobooks.description",
+  books: "libraries.types.books.description",
+  clips: "libraries.types.clips.description",
+  photos: "libraries.types.photos.description",
+};
+
+/**
+ * What "refresh all details" fetches again for each type.
+ */
+const REFRESH_LABELS: Record<LibraryType, TranslationKey> = {
+  movies: "libraries.menu.refresh.all",
+  shows: "libraries.menu.refresh.all",
+  videos: "libraries.menu.refresh.detailsAndThumbnails",
+  photos: "libraries.menu.refresh.detailsAndThumbnails",
+  clips: "libraries.menu.refresh.thumbnailsAndGames",
+  music: "libraries.menu.refresh.covers",
+  audiobooks: "libraries.menu.refresh.bookDetails",
+  books: "libraries.menu.refresh.bookDetails",
+};
+
+/**
+ * The label and explanation of the rating for unrated titles. Movies and shows get their ratings online, so theirs
+ * is never shown.
+ */
+const RATING_LINES: Record<LibraryType, { label: TranslationKey; description: TranslationKey }> = {
+  movies: { label: "libraries.rating.videos.label", description: "libraries.rating.videos.description" },
+  shows: { label: "libraries.rating.videos.label", description: "libraries.rating.videos.description" },
+  videos: { label: "libraries.rating.videos.label", description: "libraries.rating.videos.description" },
+  music: { label: "libraries.rating.music.label", description: "libraries.rating.music.description" },
+  audiobooks: { label: "libraries.rating.books.label", description: "libraries.rating.books.description" },
+  books: { label: "libraries.rating.books.label", description: "libraries.rating.books.description" },
+  photos: { label: "libraries.rating.photos.label", description: "libraries.rating.photos.description" },
+  clips: { label: "libraries.rating.clips.label", description: "libraries.rating.clips.description" },
+};
+
+/**
+ * "12 movies · scanned 2 hours ago · rated PG" under a library's name.
+ */
+function librarySummary(library: LibraryInfo) {
+  const parts = [
+    t(TYPE_COUNTS[library.type], { count: library.itemCount }),
+    library.lastScannedAt ? t("libraries.row.scanned", { ago: timeAgo(library.lastScannedAt) }) : t("libraries.row.notScanned"),
+  ];
+  if (library.type !== "movies" && library.type !== "shows") {
+    parts.push(library.defaultRating ? t("libraries.row.rated", { rating: library.defaultRating }) : t("libraries.row.unrated"));
+  }
+  return parts.join(t("common.dotSeparator"));
+}
 
 /**
  * The type a new library most likely has: whatever kind isn't there yet.
  */
 function nextType(libraries: LibraryInfo[]): LibraryType {
-  return (["movies", "shows", "videos", "music", "photos", "clips", "audiobooks", "books"] as const).find((t) => !libraries.some((l) => l.type === t)) ?? "movies";
+  return TYPE_ORDER.find((type) => !libraries.some((l) => l.type === type)) ?? "movies";
 }
 
 /**
  * The rating unrated videos, music, books, photos or clips get, for the libraries that have one.
  */
-function DefaultRatingSelect(props: { value: string; onChange: (value: string) => void; type?: LibraryType }) {
-  const what = props.type === "music" ? "music" : props.type === "audiobooks" || props.type === "books" ? "books" : null;
-  if (props.type === "photos") {
-    return (
-      <Select
-        label="Rating for unrated photos"
-        description="Profiles with an age limit only see photos and videos rated within it. Pick “G / All ages” for family photos everyone may see."
-        value={props.value}
-        onChange={(e) => props.onChange(e.target.value)}
-        options={[{ value: "", label: "None: hide them from age-limited profiles" }, ...RATINGS]}
-      />
-    );
-  }
+function DefaultRatingSelect(props: { value: string; onChange: (value: string) => void; type: LibraryType }) {
+  const lines = RATING_LINES[props.type];
   return (
     <Select
-      label={what ? `Rating for these ${what === "music" ? "albums" : "books"}` : props.type === "clips" ? "Rating for unrated clips" : "Rating for unrated videos"}
-      description={what
-        ? `Profiles with an age limit only see ${what} rated within it. Pick “G / All ages” so everyone can ${what === "music" ? "listen" : "read and listen"}.`
-        : props.type === "clips"
-        ? "Profiles with an age limit only see clips rated within it. Pick one that suits the games you play, like “12”."
-        : "Profiles with an age limit only see videos rated within it. Pick “G / All ages” for family videos everyone may see."}
+      label={t(lines.label)}
+      description={t(lines.description, { rating: t(props.type === "clips" ? "ratings.age12" : "ratings.g") })}
       value={props.value}
       onChange={(e) => props.onChange(e.target.value)}
-      options={[{ value: "", label: "None: hide them from age-limited profiles" }, ...RATINGS]}
+      options={[{ value: "", label: t("libraries.rating.none") }, ...ratingOptions()]}
     />
   );
 }
@@ -209,11 +277,11 @@ function EditLibraryDialog(props: { library: LibraryInfo | null; onClose: () => 
     setSaving(true);
     try {
       await LibrariesApi.update(library.id, { name, paths, ...(library.type !== "movies" && library.type !== "shows" ? { defaultRating: rating || null } : {}) });
-      toasts.success("Library saved");
+      toasts.success(t("libraries.edit.saved"));
       onSaved();
       onClose();
     } catch (error) {
-      toasts.error("Couldn't save the library", (error as Error).message);
+      toasts.error(t("libraries.edit.failed"), (error as Error).message);
     } finally {
       setSaving(false);
     }
@@ -223,26 +291,26 @@ function EditLibraryDialog(props: { library: LibraryInfo | null; onClose: () => 
     <Dialog
       open={!!library}
       onOpenChange={(open) => !open && onClose()}
-      title={`Edit ${library?.name ?? "library"}`}
+      title={library ? t("libraries.edit.title", { name: library.name }) : t("libraries.edit.titleFallback")}
       size="lg"
       footer={<>
-        <Button variant="ghost" onClick={onClose}>Cancel</Button>
-        <Button variant="primary" onClick={save} loading={saving} disabled={!name.trim() || paths.length === 0}>Save</Button>
+        <Button variant="ghost" onClick={onClose}>{t("common.cancel")}</Button>
+        <Button variant="primary" onClick={save} loading={saving} disabled={!name.trim() || paths.length === 0}>{t("common.save")}</Button>
       </>}
     >
-      <TextField label="Name" value={name} onChange={(e) => setName(e.target.value)} maxLength={60} />
+      <TextField label={t("libraries.form.name")} value={name} onChange={(e) => setName(e.target.value)} maxLength={60} />
       {library && library.type !== "movies" && library.type !== "shows" && <DefaultRatingSelect value={rating} onChange={setRating} type={library.type} />}
       <FolderBrowser selected={paths} onSelect={(path) => setPaths([...paths, path])} />
       <div className="cn-settings__badges">
-        {paths.length === 0 && <span className="cn-settings__row-text"><span>Open a folder and choose "Use this folder".</span></span>}
+        {paths.length === 0 && <span className="cn-settings__row-text"><span>{t("libraries.form.noFolders", { button: t("folderBrowser.useFolder") })}</span></span>}
         {paths.map((p) => (
-          <button key={p} type="button" className="cn-settings__badge cn-settings__badge--accent" onClick={() => setPaths(paths.filter((x) => x !== p))} title="Remove">
+          <button key={p} type="button" className="cn-settings__badge cn-settings__badge--accent" onClick={() => setPaths(paths.filter((x) => x !== p))} title={t("common.remove")}>
             {p} ×
           </button>
         ))}
       </div>
       {library && JSON.stringify(paths) !== JSON.stringify(library.paths) && (
-        <p className="cn-settings__row-text"><span>After saving, the libraries are scanned again. Titles in folders you removed leave this library, along with their watch history here.</span></p>
+        <p className="cn-settings__row-text"><span>{t("libraries.edit.rescanNote")}</span></p>
       )}
     </Dialog>
   );
@@ -255,7 +323,7 @@ function useLiveLibraries() {
   const [libraries, setLibraries] = useState<LibraryInfo[] | null>(null);
 
   const reload = useCallback(() => {
-    LibrariesApi.list().then(setLibraries).catch((e: Error) => toasts.error("Couldn't load libraries", e.message));
+    LibrariesApi.list().then(setLibraries).catch((e: Error) => toasts.error(t("libraries.loadFailed"), e.message));
   }, []);
 
   useEffect(reload, [reload]);
@@ -278,11 +346,12 @@ function AddLibraryDialog(props: { open: boolean; onOpenChange: (open: boolean) 
   const [paths, setPaths] = useState<string[]>([]);
   const [rating, setRating] = useState("");
   const [saving, setSaving] = useState(false);
+  const description = TYPE_DESCRIPTIONS[type];
 
   useEffect(() => {
     if (!open) return;
     setType(defaultType);
-    setName(TYPE_NAMES[defaultType]);
+    setName(t(TYPE_NAMES[defaultType]));
     setNameEdited(false);
     setPaths([]);
     setRating("");
@@ -292,11 +361,11 @@ function AddLibraryDialog(props: { open: boolean; onOpenChange: (open: boolean) 
     setSaving(true);
     try {
       await LibrariesApi.create({ name, type, paths, defaultRating: type !== "movies" && type !== "shows" ? rating || null : undefined });
-      toasts.success(`${name.trim()} was added`, "Cinemion is scanning it now.");
+      toasts.success(t("libraries.add.added", { name: name.trim() }), t("libraries.add.scanning"));
       onAdded();
       onOpenChange(false);
     } catch (error) {
-      toasts.error("Couldn't add the library", (error as Error).message);
+      toasts.error(t("libraries.add.failed"), (error as Error).message);
     } finally {
       setSaving(false);
     }
@@ -306,69 +375,39 @@ function AddLibraryDialog(props: { open: boolean; onOpenChange: (open: boolean) 
     <Dialog
       open={open}
       onOpenChange={onOpenChange}
-      title="Add library"
+      title={t("libraries.add.title")}
       size="lg"
       footer={<>
-        <Button variant="ghost" onClick={() => onOpenChange(false)}>Cancel</Button>
-        <Button variant="primary" onClick={add} loading={saving} disabled={!name.trim() || paths.length === 0}>Add library</Button>
+        <Button variant="ghost" onClick={() => onOpenChange(false)}>{t("common.cancel")}</Button>
+        <Button variant="primary" onClick={add} loading={saving} disabled={!name.trim() || paths.length === 0}>{t("libraries.add.confirm")}</Button>
       </>}
     >
       <div className="cn-settings__row">
         <SegmentedControl<LibraryType>
-          label="Library type"
+          label={t("libraries.form.type")}
           value={type}
           onChange={(value) => {
             setType(value);
-            if (!nameEdited) setName(TYPE_NAMES[value]);
+            if (!nameEdited) setName(t(TYPE_NAMES[value]));
           }}
-          options={[{ value: "movies", label: "Movies" }, { value: "shows", label: "Shows" }, { value: "videos", label: "Videos" }, { value: "music", label: "Music" }, { value: "photos", label: "Photos" }, { value: "clips", label: "Clips" }, { value: "audiobooks", label: "Audiobooks" }, { value: "books", label: "Books" }]}
+          options={TYPE_ORDER.map((kind) => ({ value: kind, label: t(TYPE_NAMES[kind]) }))}
         />
-        <TextField label="Name" value={name} style={{ flex: "1 1 14rem" }} onChange={(e) => {
+        <TextField label={t("libraries.form.name")} value={name} style={{ flex: "1 1 14rem" }} onChange={(e) => {
           setName(e.target.value);
           setNameEdited(true);
         }} />
       </div>
-      {type === "videos" && (
+      {description && (
         <>
-          <p className="cn-settings__row-text"><span>For home videos, recordings and anything else that isn't a movie or show. Nothing is looked up online: titles come from the file names, and you can edit the details by hand.</span></p>
-          <DefaultRatingSelect value={rating} onChange={setRating} />
-        </>
-      )}
-      {type === "music" && (
-        <>
-          <p className="cn-settings__row-text"><span>Albums, artists and tracks, sorted by the tags in the files (or folders like Artist/Album/01 Title.mp3). Covers come from the files or a cover.jpg next to them, and lyrics from tags or .lrc files. Nothing is looked up online.</span></p>
-          <DefaultRatingSelect value={rating} onChange={setRating} type="music" />
-        </>
-      )}
-      {type === "audiobooks" && (
-        <>
-          <p className="cn-settings__row-text"><span>A folder of audio files is one book (parts in CD1, CD2… folders too), and so is a single .m4b. Chapters come from the files, details from their tags, and everyone keeps their own place.</span></p>
-          <DefaultRatingSelect value={rating} onChange={setRating} type="audiobooks" />
-        </>
-      )}
-      {type === "books" && (
-        <>
-          <p className="cn-settings__row-text"><span>EPUB books are read right in Cinemion, with everyone's place saved; PDFs open in the browser's own viewer. Details and covers come from the files.</span></p>
-          <DefaultRatingSelect value={rating} onChange={setRating} type="books" />
-        </>
-      )}
-      {type === "clips" && (
-        <>
-          <p className="cn-settings__row-text"><span>Game recordings, grouped by game. The game comes from the names recorders give their files and folders (NVIDIA, AMD, Xbox Game Bar, OBS, Steam and more), with covers from Steam. Clips without a game can be given one by hand, or get a suggestion from picture recognition.</span></p>
-          <DefaultRatingSelect value={rating} onChange={setRating} type="clips" />
-        </>
-      )}
-      {type === "photos" && (
-        <>
-          <p className="cn-settings__row-text"><span>Photos and phone videos, with every folder as an album. Dates, cameras and places come from the photos themselves (HEIC from iPhones works too), and nothing is looked up online. Everyone can also make their own albums without moving any files.</span></p>
-          <DefaultRatingSelect value={rating} onChange={setRating} type="photos" />
+          <p className="cn-settings__row-text"><span>{t(description)}</span></p>
+          <DefaultRatingSelect value={rating} onChange={setRating} type={type} />
         </>
       )}
       <FolderBrowser selected={paths} onSelect={(path) => setPaths([...paths, path])} />
       <div className="cn-settings__badges">
-        {paths.length === 0 && <span className="cn-settings__row-text"><span>Open a folder and choose "Use this folder".</span></span>}
+        {paths.length === 0 && <span className="cn-settings__row-text"><span>{t("libraries.form.noFolders", { button: t("folderBrowser.useFolder") })}</span></span>}
         {paths.map((p) => (
-          <button key={p} type="button" className="cn-settings__badge cn-settings__badge--accent" onClick={() => setPaths(paths.filter((x) => x !== p))} title="Remove">
+          <button key={p} type="button" className="cn-settings__badge cn-settings__badge--accent" onClick={() => setPaths(paths.filter((x) => x !== p))} title={t("common.remove")}>
             {p} ×
           </button>
         ))}

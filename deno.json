@@ -14,7 +14,8 @@
     "cli": "deno task -f @cinemion/server cli",
     "compile": "scripts/compile.sh",
     "check": "deno check shared/src/mod.ts server/src/index.ts server/src/cli.ts client/src/main.tsx",
-    "lint": "deno lint"
+    "lint": "deno lint",
+    "i18n": "deno run --allow-read --allow-write scripts/i18n.ts"
   },
   "lint": {
     "exclude": [

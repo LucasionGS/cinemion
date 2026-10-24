@@ -9,11 +9,22 @@ import { router } from "../../lib/Router.tsx";
 import { toasts } from "../../lib/Toasts.ts";
 import { formatBytes } from "../../lib/format.ts";
 import cx from "../../lib/cx.ts";
+import { t, type TranslationKey } from "../../i18n/I18n.ts";
 import Button from "../Button/Button.tsx";
 import IconButton from "../IconButton/IconButton.tsx";
 import Dialog from "../Dialog/Dialog.tsx";
 import Spinner from "../Spinner/Spinner.tsx";
 import "./DownloadButton.scss";
+
+/**
+ * What each size is called, by its id; the server's own labels are English.
+ */
+const QUALITY_LABELS: Record<DownloadQuality, TranslationKey> = {
+  original: "downloads.quality.original",
+  "1080p": "downloads.quality.high",
+  "720p": "downloads.quality.medium",
+  "480p": "downloads.quality.small",
+};
 
 export interface DownloadButtonProps {
   item: ItemDetail;
@@ -33,7 +44,7 @@ export default function DownloadButton(props: DownloadButtonProps) {
 
   async function openDialog() {
     if (!offline.isSupported()) {
-      toasts.error("Downloads need https", "Browsers only let sites save videos when they're opened over https (or as localhost on the server).");
+      toasts.error(t("downloads.button.needsHttps"), t("downloads.button.needsHttpsDescription"));
       return;
     }
     setOpen(true);
@@ -45,7 +56,7 @@ export default function DownloadButton(props: DownloadButtonProps) {
       setPicked(result.options.find((o) => o.quality === "720p")?.quality ?? result.options[0]?.quality ?? null);
     } catch (error) {
       setOpen(false);
-      toasts.error("Couldn't get the download sizes", (error as Error).message);
+      toasts.error(t("downloads.button.sizesFailed"), (error as Error).message);
     }
   }
 
@@ -55,9 +66,9 @@ export default function DownloadButton(props: DownloadButtonProps) {
     try {
       await offline.start(item, picked, session.user.id);
       setOpen(false);
-      toasts.success("Download started", "Follow it in Downloads, in the profile menu.");
+      toasts.success(t("downloads.button.started"), t("downloads.button.startedDescription"));
     } catch (error) {
-      toasts.error("Couldn't start the download", (error as Error).message);
+      toasts.error(t("downloads.button.startFailed"), (error as Error).message);
     } finally {
       setStarting(false);
     }
@@ -65,7 +76,7 @@ export default function DownloadButton(props: DownloadButtonProps) {
 
   if (existing) {
     const percent = existing.size ? Math.round(existing.received / existing.size * 100) : existing.preparing ? Math.round(existing.preparing * 100) : 0;
-    const label = existing.status === "ready" ? "Downloaded. Open Downloads" : existing.status === "failed" ? "Download failed. Open Downloads" : `Downloading ${percent}%. Open Downloads`;
+    const label = existing.status === "ready" ? t("downloads.button.ready") : existing.status === "failed" ? t("downloads.button.failed") : t("downloads.button.progress", { percent });
     return (
       <IconButton
         label={label}
@@ -80,27 +91,27 @@ export default function DownloadButton(props: DownloadButtonProps) {
 
   return (
     <>
-      <IconButton label="Download to watch offline" icon={<Download />} size="lg" onClick={openDialog} />
+      <IconButton label={t("downloads.button.label")} icon={<Download />} size="lg" onClick={openDialog} />
       <Dialog
         open={open}
         onOpenChange={setOpen}
-        title="Download to watch offline"
-        description={`${item.title} is kept on this device, for when there's no connection. Watching progress comes back to the server later.`}
+        title={t("downloads.button.label")}
+        description={t("downloads.button.description", { title: item.title })}
         size="sm"
         footer={
           <>
-            <Button variant="ghost" onClick={() => setOpen(false)}>Cancel</Button>
-            <Button variant="primary" icon={<Download />} onClick={start} loading={starting} disabled={!picked}>Download</Button>
+            <Button variant="ghost" onClick={() => setOpen(false)}>{t("common.cancel")}</Button>
+            <Button variant="primary" icon={<Download />} onClick={start} loading={starting} disabled={!picked}>{t("common.download")}</Button>
           </>
         }
       >
         {!options && <Spinner size="1.5rem" />}
         {options && (
-          <div className="cn-download-options" role="radiogroup" aria-label="Size">
+          <div className="cn-download-options" role="radiogroup" aria-label={t("downloads.button.size")}>
             {options.options.map((o) => (
               <button key={o.quality} type="button" role="radio" aria-checked={picked === o.quality} className={cx("cn-download-options__option", picked === o.quality && "cn-download-options__option--on")} onClick={() => setPicked(o.quality)}>
-                <strong>{o.label}</strong>
-                <span>{[o.size ? `About ${formatBytes(o.size)}` : null, o.note].filter(Boolean).join(" · ")}</span>
+                <strong>{t(QUALITY_LABELS[o.quality])}</strong>
+                <span>{[o.size ? t("downloads.button.about", { size: formatBytes(o.size) }) : null, o.quality === "original" ? t("downloads.button.asIs") : t("downloads.button.madeOnServer")].filter(Boolean).join(t("common.dotSeparator"))}</span>
               </button>
             ))}
           </div>

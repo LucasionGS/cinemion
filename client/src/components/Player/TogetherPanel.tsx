@@ -11,13 +11,18 @@ import Button from "../Button/Button.tsx";
 import IconButton from "../IconButton/IconButton.tsx";
 import Switch from "../Switch/Switch.tsx";
 import { formatClock } from "../../lib/playback.ts";
+import { t, type TranslationKey } from "../../i18n/I18n.ts";
 import type PlayerController from "./PlayerController.ts";
 
 export interface TogetherPanelProps {
   controller: PlayerController;
 }
 
-const STATUS_TEXT = { loading: "Loading", buffering: "Buffering", ready: "In sync" };
+const STATUS_TEXT: Record<"loading" | "buffering" | "ready", TranslationKey> = {
+  loading: "together.panel.status.loading",
+  buffering: "together.panel.status.buffering",
+  ready: "together.panel.status.ready",
+};
 
 type Tab = "chat" | "people";
 
@@ -27,10 +32,10 @@ type Tab = "chat" | "people";
 export default function TogetherPanel(props: TogetherPanelProps) {
   const { controller } = props;
   const c = useController(controller);
-  const t = useController(together);
+  const group = useController(together);
   const [starting, setStarting] = useState(false);
-  const connected = t.isConnected() && t.room?.itemId === c.item.id;
-  const link = t.code ? `${location.origin}/together/${t.code}` : "";
+  const connected = group.isConnected() && group.room?.itemId === c.item.id;
+  const link = group.code ? `${location.origin}/together/${group.code}` : "";
   // Alone in a session, the invite is what's needed; with company, the chat
   const [tab, setTab] = useState<Tab>(() => (together.room?.members.length ?? 0) > 1 ? "chat" : "people");
 
@@ -47,7 +52,7 @@ export default function TogetherPanel(props: TogetherPanelProps) {
       // Starting shares where this player already is
       together.sendControl(c.playing ? "play" : "pause", c.position);
     } catch (error) {
-      toasts.error("Couldn't start the session", (error as Error).message);
+      toasts.error(t("together.panel.startFailed"), (error as Error).message);
     } finally {
       setStarting(false);
     }
@@ -56,32 +61,32 @@ export default function TogetherPanel(props: TogetherPanelProps) {
   async function copy() {
     try {
       await navigator.clipboard.writeText(link);
-      toasts.success("Invite link copied");
+      toasts.success(t("together.panel.linkCopied"));
     } catch {
-      toasts.show({ title: "Share this link", description: link });
+      toasts.show({ title: t("together.panel.shareLink"), description: link });
     }
   }
 
   return (
-    <aside className="cn-track-panel cn-together-panel" aria-label="Watch together" data-focus-scope>
+    <aside className="cn-track-panel cn-together-panel" aria-label={t("together.panel.title")} data-focus-scope>
       <div className="cn-together-panel__header">
         <div>
-          <h2>Watch together</h2>
-          <span>Play, pause and seeking stay in sync for everyone.</span>
+          <h2>{t("together.panel.title")}</h2>
+          <span>{t("together.panel.intro")}</span>
         </div>
-        <IconButton label="Close" icon={<X />} variant="ghost" size="sm" onClick={() => controller.setTogetherOpen(false)} />
+        <IconButton label={t("common.close")} icon={<X />} variant="ghost" size="sm" onClick={() => controller.setTogetherOpen(false)} />
       </div>
 
       {!connected && (
         <div className="cn-together-panel__intro">
-          <p>Start a session and share the code or link. Everyone watches on their own screen, from this server, in step with you.</p>
-          {t.status === "connecting" && <p>Connecting…</p>}
-          <Button variant="primary" icon={<Users />} loading={starting} onClick={start} data-autofocus>Start a session</Button>
+          <p>{t("together.panel.pitch")}</p>
+          {group.status === "connecting" && <p>{t("together.panel.connecting")}</p>}
+          <Button variant="primary" icon={<Users />} loading={starting} onClick={start} data-autofocus>{t("together.panel.start")}</Button>
         </div>
       )}
 
-      {connected && t.room && (
-        <div role="tablist" aria-label="Watch together" className="cn-together-panel__tabs">
+      {connected && group.room && (
+        <div role="tablist" aria-label={t("together.panel.title")} className="cn-together-panel__tabs">
           {(["chat", "people"] as const).map((id) => (
             <button
               key={id}
@@ -91,43 +96,43 @@ export default function TogetherPanel(props: TogetherPanelProps) {
               className={cx("cn-track-panel__tab", tab === id && "cn-track-panel__tab--active")}
               onClick={() => setTab(id)}
             >
-              {id === "chat" ? "Chat" : `People · ${t.room!.members.length}`}
-              {id === "chat" && t.unread > 0 && <span className="cn-together-panel__unread" aria-label={`${t.unread} new`}>{t.unread}</span>}
+              {id === "chat" ? t("together.panel.tabs.chat") : t("together.panel.tabs.people", { count: group.room!.members.length })}
+              {id === "chat" && group.unread > 0 && <span className="cn-together-panel__unread" aria-label={t("together.panel.tabs.unread", { count: group.unread })}>{group.unread}</span>}
             </button>
           ))}
         </div>
       )}
 
-      {connected && t.room && tab === "chat" && <Chat />}
+      {connected && group.room && tab === "chat" && <Chat />}
 
-      {connected && t.room && tab === "people" && (
+      {connected && group.room && tab === "people" && (
         <>
           <div className="cn-together-panel__section">
-            <span className="cn-together-panel__label">Invite</span>
+            <span className="cn-together-panel__label">{t("together.panel.invite")}</span>
             <div className="cn-together-panel__invite">
-              <span className="cn-together-panel__code" aria-label={`Code ${t.room.code.split("").join(" ")}`}>{formatRoomCode(t.room.code)}</span>
-              <Button variant="primary" icon={<Copy />} onClick={copy}>Copy link</Button>
+              <span className="cn-together-panel__code" aria-label={t("together.panel.code", { code: group.room.code.split("").join(" ") })}>{formatRoomCode(group.room.code)}</span>
+              <Button variant="primary" icon={<Copy />} onClick={copy}>{t("together.panel.copyLink")}</Button>
             </div>
           </div>
-          <ul className="cn-together-panel__people" aria-label="People">
-            {t.room.members.map((m) => (
+          <ul className="cn-together-panel__people" aria-label={t("together.panel.people")}>
+            {group.room.members.map((m) => (
               <li key={m.id} className="cn-together-panel__person">
                 <Avatar profile={m.profile} size={2.5} />
                 <span className="cn-together-panel__who">
-                  <strong>{m.profile.name}{m.id === t.memberId ? " (you)" : ""}</strong>
-                  <span>{[m.isHost ? "Host" : null, m.device].filter(Boolean).join(" · ")}</span>
+                  <strong>{m.id === group.memberId ? t("together.panel.you", { name: m.profile.name }) : m.profile.name}</strong>
+                  <span>{m.isHost ? (m.device ? t("together.panel.hostOnDevice", { device: m.device }) : t("together.panel.host")) : m.device}</span>
                 </span>
                 <span className={cx("cn-together-panel__status", `cn-together-panel__status--${m.status === "ready" && !m.inSync ? "drift" : m.status}`)}>
-                  {m.status === "ready" && !m.inSync ? "Catching up" : STATUS_TEXT[m.status]}
+                  {m.status === "ready" && !m.inSync ? t("together.panel.status.catchingUp") : t(STATUS_TEXT[m.status])}
                 </span>
               </li>
             ))}
           </ul>
           <div className="cn-together-panel__footer">
-            {t.isHost() && (
-              <Switch label="Anyone can pause and seek" checked={t.room.anyoneControls} onChange={(on) => together.setAnyoneControls(on)} />
+            {group.isHost() && (
+              <Switch label={t("together.panel.anyoneControls")} checked={group.room.anyoneControls} onChange={(on) => together.setAnyoneControls(on)} />
             )}
-            {!t.isHost() && !t.room.anyoneControls && <p className="cn-together-panel__note">Only the host can pause and seek.</p>}
+            {!group.isHost() && !group.room.anyoneControls && <p className="cn-together-panel__note">{t("together.panel.onlyHostNote")}</p>}
             <div className="cn-together-panel__actions">
               <Button
                 variant="secondary"
@@ -136,9 +141,9 @@ export default function TogetherPanel(props: TogetherPanelProps) {
                   together.leave();
                 }}
               >
-                Leave
+                {t("together.panel.leave")}
               </Button>
-              {t.isHost() && <Button variant="danger" onClick={() => together.end()}>End for everyone</Button>}
+              {group.isHost() && <Button variant="danger" onClick={() => together.end()}>{t("together.panel.endForEveryone")}</Button>}
             </div>
           </div>
         </>
@@ -151,7 +156,7 @@ export default function TogetherPanel(props: TogetherPanelProps) {
  * The room's messages, quick reactions and a box to write in.
  */
 function Chat() {
-  const t = useController(together);
+  const group = useController(together);
   const [text, setText] = useState("");
   const list = useRef<HTMLOListElement>(null);
   const stuckToBottom = useRef(true);
@@ -160,7 +165,7 @@ function Chat() {
   useLayoutEffect(() => {
     const el = list.current;
     if (el && stuckToBottom.current) el.scrollTop = el.scrollHeight;
-  }, [t.messages]);
+  }, [group.messages]);
 
   function send(e: FormEvent) {
     e.preventDefault();
@@ -175,17 +180,17 @@ function Chat() {
       <ol
         ref={list}
         className="cn-together-chat__messages"
-        aria-label="Messages"
+        aria-label={t("together.chat.messages")}
         aria-live="polite"
         onScroll={(e) => {
           const el = e.currentTarget;
           stuckToBottom.current = el.scrollHeight - el.scrollTop - el.clientHeight < 40;
         }}
       >
-        {t.messages.length === 0 && <li className="cn-together-chat__empty">Say hi. Messages and reactions show for everyone in the session.</li>}
-        {t.messages.map((m, i) => <ChatLine key={m.id} message={m} previous={t.messages[i - 1]} isMine={m.profile.id === session.user?.id} />)}
+        {group.messages.length === 0 && <li className="cn-together-chat__empty">{t("together.chat.empty")}</li>}
+        {group.messages.map((m, i) => <ChatLine key={m.id} message={m} previous={group.messages[i - 1]} isMine={m.profile.id === session.user?.id} />)}
       </ol>
-      <div className="cn-together-chat__reactions" aria-label="Reactions">
+      <div className="cn-together-chat__reactions" aria-label={t("together.chat.reactions")}>
         {TOGETHER_REACTIONS.map((r) => (
           <button key={r} type="button" className="cn-together-chat__reaction" onClick={() => together.sendReaction(r)}>{r}</button>
         ))}
@@ -195,12 +200,12 @@ function Chat() {
           className="cn-field__input"
           value={text}
           maxLength={TOGETHER_CHAT_LIMIT}
-          placeholder="Write a message"
-          aria-label="Message"
+          placeholder={t("together.chat.placeholder")}
+          aria-label={t("together.chat.message")}
           enterKeyHint="send"
           onChange={(e) => setText(e.target.value)}
         />
-        <IconButton label="Send" icon={<SendHorizontal />} type="submit" disabled={!text.trim()} />
+        <IconButton label={t("together.chat.send")} icon={<SendHorizontal />} type="submit" disabled={!text.trim()} />
       </form>
     </div>
   );
@@ -216,8 +221,8 @@ function ChatLine(props: { message: TogetherChatMessage; previous?: TogetherChat
       <div className="cn-together-chat__body">
         {!continued && (
           <span className="cn-together-chat__meta">
-            <strong>{message.profile.name}{isMine ? " (you)" : ""}</strong>
-            <span>at {formatClock(message.position)}</span>
+            <strong>{isMine ? t("together.panel.you", { name: message.profile.name }) : message.profile.name}</strong>
+            <span>{t("together.chat.at", { time: formatClock(message.position) })}</span>
           </span>
         )}
         <p>{message.text}</p>

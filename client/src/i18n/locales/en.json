@@ -1,0 +1,2637 @@
+{
+  "common": {
+    "cancel": "Cancel",
+    "save": "Save",
+    "close": "Close",
+    "remove": "Remove",
+    "delete": "Delete",
+    "edit": "Edit",
+    "back": "Back",
+    "next": "Next",
+    "copy": "Copy",
+    "search": "Search",
+    "play": "Play",
+    "resume": "Resume",
+    "download": "Download",
+    "upload": "Upload",
+    "open": "Open",
+    "select": "Select",
+    "tryAgain": "Try again",
+    "loading": "Loading…",
+    "more": "More",
+    "off": "Off",
+    "none": "None",
+    "automatic": "Automatic",
+    "unknown": "Unknown",
+    "couldntSave": "Couldn't save",
+    "saved": "Saved",
+    "listSeparator": ", ",
+    "dotSeparator": " · "
+  },
+  "format": {
+    "bytes": {
+      "kb": "{value} KB",
+      "mb": "{value} MB",
+      "gb": "{value} GB",
+      "tb": "{value} TB"
+    },
+    "bitrate": {
+      "kbps": "{value} kbps",
+      "mbps": "{value} Mbps"
+    },
+    "ago": {
+      "justNow": "just now",
+      "minutes": "{count} min ago",
+      "hours": {
+        "one": "{count} hour ago",
+        "other": "{count} hours ago"
+      },
+      "days": {
+        "one": "{count} day ago",
+        "other": "{count} days ago"
+      }
+    },
+    "until": {
+      "soon": "soon",
+      "minutes": "in {count} min",
+      "hours": {
+        "one": "in {count} hour",
+        "other": "in {count} hours"
+      }
+    },
+    "span": {
+      "underAMinute": "less than a minute",
+      "minutes": {
+        "one": "{count} minute",
+        "other": "{count} minutes"
+      },
+      "hours": {
+        "one": "{count} hour",
+        "other": "{count} hours"
+      },
+      "days": {
+        "one": "{count} day",
+        "other": "{count} days"
+      }
+    },
+    "dateRange": "{from} – {to}",
+    "dateTime": "{date}, {time}"
+  },
+  "app": {
+    "boot": {
+      "loading": "Loading Cinemion",
+      "unreachable": "Can't reach the Cinemion server."
+    },
+    "toasts": {
+      "region": "Notifications",
+      "dismiss": "Dismiss"
+    },
+    "errors": {
+      "loadList": "Couldn't load the list"
+    }
+  },
+  "api": {
+    "unreachable": "Can't reach the Cinemion server. Check that it's running and that you're on the same network."
+  },
+  "setup": {
+    "steps": {
+      "navigation": "Setup steps",
+      "account": {
+        "label": "Your account",
+        "sub": "Admin user and server name"
+      },
+      "libraries": {
+        "label": "Libraries",
+        "sub": "Where your media lives"
+      },
+      "metadata": {
+        "label": "Metadata",
+        "sub": "Posters, plots and cast"
+      },
+      "done": {
+        "label": "Done",
+        "sub": "Start using Cinemion"
+      }
+    },
+    "note": "Everything here can be changed later in Settings.",
+    "progress": "Step {step} of {total}",
+    "account": {
+      "title": "Welcome to Cinemion",
+      "intro": "Let's get your server ready. First, create the admin account. You'll use it to manage libraries and add the rest of the household.",
+      "serverName": "Server name",
+      "serverNameDescription": "Shown on devices when they connect to this server.",
+      "name": "Your name",
+      "username": "Username",
+      "usernameDescription": "Used to sign in with a password.",
+      "password": "Password",
+      "confirmPassword": "Confirm password",
+      "pin": "Profile PIN <optional>(optional)</optional>",
+      "pinPlaceholder": "4 digits",
+      "pinDescription": "Used on shared screens like the TV instead of your password.",
+      "errors": {
+        "name": "Enter your name.",
+        "username": "Use 2 to 32 lowercase letters, numbers, dots, dashes or underscores.",
+        "password": "Use at least 6 characters.",
+        "confirm": "The passwords don't match.",
+        "pin": "The PIN must be exactly 4 digits.",
+        "serverName": "Give your server a name."
+      }
+    },
+    "libraries": {
+      "title": "Add your libraries",
+      "intro": "Point Cinemion at the folders that hold your movies and shows, any other videos (like home videos), game clips, your music and your books. A library can use several folders.",
+      "remove": "Remove {name}",
+      "type": "Library type",
+      "types": {
+        "movies": "Movies",
+        "shows": "Shows",
+        "videos": "Videos",
+        "music": "Music",
+        "photos": "Photos",
+        "clips": "Clips",
+        "audiobooks": "Audiobooks",
+        "books": "Books"
+      },
+      "name": "Name",
+      "noFolders": "Open a folder and choose \"Use this folder\".",
+      "removeFolder": "Remove {path}",
+      "add": "Add library"
+    },
+    "metadata": {
+      "title": "Posters, plots and cast",
+      "intro": "Cinemion looks up details for everything it finds. Sources higher in the list win when they disagree."
+    },
+    "done": {
+      "title": "You're all set",
+      "intro": "Cinemion is ready. Your libraries are saved, and the rest of the household can get their own profiles from Settings.",
+      "noLibraries": "No libraries yet. You can add them later in Settings › Libraries."
+    },
+    "actions": {
+      "finish": "Finish setup",
+      "goToCinemion": "Go to Cinemion",
+      "skip": "Skip for now",
+      "continue": "Continue"
+    },
+    "failed": "Setup didn't finish"
+  },
+  "profiles": {
+    "loading": "Loading profiles",
+    "title": "Who's watching?",
+    "pinProtected": "PIN protected",
+    "passwordProtected": "Password protected",
+    "admin": "Admin",
+    "upTo": "Up to {rating}",
+    "add": "Add profile",
+    "usePassword": "Sign in with a password instead",
+    "pin": {
+      "title": "Enter {name}'s PIN",
+      "keyboardHint": "You can also type it on your keyboard."
+    },
+    "password": {
+      "title": "Enter {name}'s password",
+      "intro": "Admin profiles without a PIN need their password.",
+      "label": "Password",
+      "signIn": "Sign in"
+    },
+    "backToProfiles": "Back to profiles",
+    "openFailed": "Couldn't open that profile",
+    "loadFailed": "Couldn't load profiles"
+  },
+  "signIn": {
+    "title": "Sign in",
+    "username": "Username",
+    "password": "Password",
+    "submit": "Sign in",
+    "backToProfiles": "Back to profiles"
+  },
+  "topbar": {
+    "home": "Home",
+    "mainNavigation": "Main",
+    "profile": "Profile: {name}",
+    "profileWithUpdate": "Profile: {name}. A new Cinemion is out",
+    "admin": "Admin",
+    "profileRole": "Profile",
+    "menu": {
+      "settings": "Profile & settings",
+      "dashboard": "Server dashboard",
+      "together": "Join watch together",
+      "downloads": "Downloads",
+      "switchProfile": "Switch profile",
+      "signOut": "Sign out"
+    },
+    "search": {
+      "default": "Search movies and shows",
+      "videos": "Search movies, shows and videos",
+      "music": "Search movies, shows and music",
+      "books": "Search movies, shows and books",
+      "albums": "Search movies, shows and albums",
+      "games": "Search movies, shows and games",
+      "everything": "Search your libraries"
+    }
+  },
+  "home": {
+    "greeting": {
+      "night": "Good night, {name}",
+      "morning": "Good morning, {name}",
+      "afternoon": "Good afternoon, {name}",
+      "evening": "Good evening, {name}"
+    },
+    "spotlight": {
+      "upNext": "Up next",
+      "seasons": {
+        "one": "{count} season",
+        "other": "{count} seasons"
+      },
+      "details": "Details"
+    },
+    "rows": {
+      "continueWatching": "Continue watching",
+      "nextUp": "Next up",
+      "newIn": "New in {library}",
+      "recentlyAddedIn": "Recently added in {library}",
+      "continueBooks": "Pick up your book",
+      "becauseYouWatched": "Because you watched {title}"
+    },
+    "empty": {
+      "addFolder": "Add a folder with movies or shows to get started.",
+      "askAdmin": "Ask the person who runs this server to add a library.",
+      "addLibrary": "Add a library",
+      "scanning": "Cinemion is scanning your libraries. Titles appear here as they're found.",
+      "nothingToWatch": "There's nothing here yet that this profile can watch."
+    },
+    "loadFailed": "Couldn't load the home screen"
+  },
+  "library": {
+    "notFound": {
+      "title": "Library not found",
+      "description": "It may have been removed, or your profile doesn't have access to it."
+    },
+    "count": {
+      "videos": {
+        "one": "{count} video",
+        "other": "{count} videos"
+      },
+      "shows": {
+        "one": "{count} show",
+        "other": "{count} shows"
+      },
+      "movies": {
+        "one": "{count} movie",
+        "other": "{count} movies"
+      }
+    },
+    "scanning": "Scanning…",
+    "filters": {
+      "show": "Show",
+      "all": "All",
+      "unwatched": "Unwatched",
+      "collections": "Collections",
+      "tag": "Tag",
+      "genre": "Genre",
+      "allTags": "All tags",
+      "allGenres": "All genres",
+      "sortBy": "Sort by"
+    },
+    "sort": {
+      "title": "Title",
+      "added": "Recently added",
+      "year": "Release year",
+      "rating": "Rating",
+      "date": "Date"
+    },
+    "noMatches": {
+      "title": "No matches",
+      "unwatched": "You've seen everything here.",
+      "unwatchedWithTag": "You've seen everything here with this tag.",
+      "unwatchedInGenre": "You've seen everything here in this genre.",
+      "tag": "Nothing with this tag.",
+      "genre": "Nothing in this genre."
+    },
+    "empty": {
+      "title": "Nothing in here yet",
+      "scanning": "Cinemion is scanning this library right now. Titles appear as they're found.",
+      "movies": "Movies from {paths} appear here after a scan.",
+      "shows": "Shows from {paths} appear here after a scan.",
+      "videos": "Videos from {paths} appear here after a scan.",
+      "music": "Music from {paths} appear here after a scan.",
+      "audiobooks": "Audiobooks from {paths} appear here after a scan.",
+      "books": "Books from {paths} appear here after a scan.",
+      "photos": "Photos from {paths} appear here after a scan.",
+      "clips": "Clips from {paths} appear here after a scan."
+    },
+    "unmatched": "Unmatched",
+    "menu": {
+      "moreFor": "More for {title}",
+      "fixMatch": "Fix match",
+      "refresh": "Refresh details"
+    },
+    "refreshing": "Refreshing {title}…",
+    "upToDate": "{title} is up to date",
+    "refreshFailed": "Couldn't refresh",
+    "loadFailed": "Couldn't load this library"
+  },
+  "search": {
+    "placeholder": "Movies, shows, videos, people and music",
+    "clear": "Clear",
+    "nothingFound": "Nothing found for \"{query}\".",
+    "titles": "Movies & shows",
+    "collections": "Collections",
+    "episodes": "Episodes",
+    "videos": "Videos",
+    "games": "Games",
+    "clips": {
+      "one": "{count} clip",
+      "other": "{count} clips"
+    },
+    "photoAlbums": "Photo albums",
+    "artists": "Artists",
+    "albums": "Albums",
+    "songs": "Songs",
+    "books": "Books",
+    "people": "People"
+  },
+  "item": {
+    "missing": {
+      "title": "This title isn't available",
+      "goHome": "Go home"
+    },
+    "meta": {
+      "seasons": {
+        "one": "{count} season",
+        "other": "{count} seasons"
+      },
+      "imdbRating": "IMDb rating",
+      "votes": {
+        "one": "{count} vote",
+        "other": "{count} votes"
+      },
+      "scoreDetail": "{name}, {detail}"
+    },
+    "collection": {
+      "partOf": "Part of",
+      "movies": {
+        "one": "{count} movie",
+        "other": "{count} movies"
+      }
+    },
+    "moreLikeThis": "More like this",
+    "details": {
+      "director": "Director",
+      "directors": "Directors",
+      "writer": "Writer",
+      "writers": "Writers",
+      "network": "Network",
+      "studio": "Studio",
+      "version": "Version",
+      "audio": "Audio",
+      "subtitles": "Subtitles",
+      "forced": "Forced",
+      "picture": "Picture",
+      "mono": "Mono",
+      "stereo": "Stereo"
+    },
+    "cast": {
+      "title": "Cast & crew",
+      "producer": "Producer",
+      "composer": "Composer",
+      "author": "Author",
+      "narrator": "Narrator"
+    },
+    "next": {
+      "continueEpisode": "Continue with {episode} · {title}",
+      "upNextEpisode": "Up next: {episode} · {title}",
+      "continue": "Continue with {title}",
+      "upNext": "Up next: {title}"
+    },
+    "seasons": "Seasons",
+    "episode": {
+      "moreFrom": "More from {season}",
+      "moreFromThisSeason": "More from this season"
+    },
+    "folders": "Folders",
+    "video": {
+      "moreIn": "More in {name}",
+      "moreInThisFolder": "More in this folder"
+    },
+    "folder": {
+      "folders": {
+        "one": "{count} folder",
+        "other": "{count} folders"
+      },
+      "videos": {
+        "one": "{count} video",
+        "other": "{count} videos"
+      },
+      "newestFrom": "Newest from {date}",
+      "inThisFolder": "In this folder",
+      "sortBy": "Sort by",
+      "sortTitle": "Title",
+      "sortDate": "Date",
+      "sortAdded": "Recently added",
+      "empty": "Nothing in here that this profile can watch."
+    }
+  },
+  "itemActions": {
+    "play": "Play",
+    "resume": "Resume",
+    "playEpisode": "Play S{season} E{episode}",
+    "resumeEpisode": "Resume S{season} E{episode}",
+    "fromStart": "From start",
+    "markUnwatched": "Mark as unwatched",
+    "markWatched": "Mark as watched",
+    "moreOptions": "More options",
+    "fixMatch": "Fix match",
+    "editDetails": "Edit details",
+    "refresh": "Refresh details",
+    "updateFailed": "Couldn't update",
+    "refreshing": "Refreshing {title}…",
+    "upToDate": "{title} is up to date",
+    "refreshFailed": "Couldn't refresh"
+  },
+  "editDetails": {
+    "videoTitle": "Edit video details",
+    "folderTitle": "Edit folder details",
+    "description": "Your changes stay, also when the library is scanned or refreshed.",
+    "thumbnail": {
+      "title": "Thumbnail",
+      "moment": "Moment in the video",
+      "time": "{time} of {duration}",
+      "useFrame": "Use this frame",
+      "byHand": "Chosen by hand.",
+      "fromVideo": "Picked from the video automatically.",
+      "fromFolder": "A picture in the folder, or its newest video's.",
+      "upload": "Upload picture",
+      "pickFrame": "Pick a frame",
+      "automatic": "Automatic",
+      "changed": "Thumbnail changed",
+      "reset": "Back to the automatic thumbnail",
+      "failed": "Couldn't change the thumbnail"
+    },
+    "titleLabel": "Title",
+    "date": "Date",
+    "dateDescription": "When it was recorded.",
+    "descriptionLabel": "Description",
+    "tags": "Tags",
+    "tagsPlaceholder": "Family, Holiday",
+    "tagsDescription": "Separate them with commas. The library can be filtered by tag.",
+    "rating": "Age rating",
+    "ratingDefault": "Library default ({rating})",
+    "ratingDefaultUnrated": "Library default (unrated)",
+    "ratingDescription": "Profiles with an age limit only see videos rated within it.",
+    "saved": "Details saved"
+  },
+  "fixMatch": {
+    "title": "Fix match",
+    "description": "Pick what \"{title}\" really is.",
+    "titleLabel": "Title",
+    "year": "Year",
+    "noResults": "No results. Try another title, or check that a TMDB or TheTVDB key is set in Settings › Metadata.",
+    "resultWithYear": "{title} ({year})",
+    "useThis": "Use this",
+    "matched": "Matched to {title}",
+    "applyFailed": "Couldn't apply the match"
+  },
+  "cards": {
+    "row": {
+      "seeAll": "See all",
+      "scrollLeft": "Scroll left",
+      "scrollRight": "Scroll right"
+    },
+    "poster": {
+      "movies": {
+        "one": "{count} movie",
+        "other": "{count} movies"
+      },
+      "seasons": {
+        "one": "{count} season",
+        "other": "{count} seasons"
+      },
+      "withYear": "{title} ({year})",
+      "watched": "Watched",
+      "unwatched": "{count} unwatched"
+    },
+    "wide": {
+      "upNext": "Up next",
+      "episodeTitle": "{number}. {title}",
+      "videos": {
+        "one": "{count} video",
+        "other": "{count} videos"
+      },
+      "episodeNumber": "E{number}",
+      "watched": "Watched"
+    }
+  },
+  "person": {
+    "titles": {
+      "one": "{count} title in your libraries",
+      "other": "{count} titles in your libraries"
+    },
+    "roles": {
+      "director": "Director",
+      "writer": "Writer",
+      "producer": "Producer",
+      "composer": "Music",
+      "author": "Author",
+      "narrator": "Narrator"
+    }
+  },
+  "collection": {
+    "movies": {
+      "one": "{count} movie",
+      "other": "{count} movies"
+    },
+    "watched": "{count} watched"
+  },
+  "player": {
+    "loading": "Loading",
+    "joining": "Joining the session",
+    "onlyPlayable": "Only movies, episodes and videos can be played.",
+    "cantPlayTitle": "This title can't play",
+    "episodeSubtitle": "{episode} · {title}",
+    "error": {
+      "title": "This video can't play right now",
+      "keepsStopping": "The stream keeps stopping. The server log may say why.",
+      "unsupported": "This device can't play the video.",
+      "stoppedLoading": "The video stopped loading. Check your connection and try again."
+    },
+    "controls": {
+      "back10": "Back 10 seconds",
+      "forward10": "Forward 10 seconds",
+      "pause": "Pause",
+      "playKey": "Play (Space)",
+      "pauseKey": "Pause (Space)",
+      "back10Key": "Back 10 seconds (←)",
+      "forward10Key": "Forward 10 seconds (→)",
+      "nextEpisode": "Next episode",
+      "muteKey": "Mute (M)",
+      "unmuteKey": "Unmute (M)",
+      "volume": "Volume",
+      "pictureInPicture": "Picture in picture",
+      "fullScreenKey": "Full screen (F)",
+      "exitFullScreenKey": "Exit full screen (F)",
+      "fullScreen": "Full screen",
+      "exitFullScreen": "Exit full screen",
+      "subtitlesAndAudio": "Subtitles & audio",
+      "panelToggle": "Subtitles, audio and quality (C)"
+    },
+    "scrubber": {
+      "label": "Seek",
+      "value": "{position} of {duration}"
+    },
+    "hints": {
+      "seek": "Seek",
+      "jumpHere": "Jump here",
+      "backKey": "Back"
+    },
+    "badge": {
+      "direct": "Direct",
+      "audioConverted": "Audio converted",
+      "auto": "Auto",
+      "converted": "Converted"
+    },
+    "skipIntro": "Skip intro",
+    "skippedIntro": "Skipped the intro",
+    "nextUp": {
+      "label": "Up next",
+      "episode": "Up next · {episode}",
+      "countdown": {
+        "one": "Starts in {count} s",
+        "other": "Starts in {count} s"
+      },
+      "playNow": "Play now",
+      "hide": "Hide"
+    },
+    "panel": {
+      "label": "Playback options",
+      "tabsLabel": "Options",
+      "tabs": {
+        "subtitles": "Subtitles",
+        "audio": "Audio",
+        "quality": "Quality"
+      },
+      "noSubtitles": "No subtitles",
+      "original": "Original",
+      "originalDetail": "As the file is",
+      "automatic": "Automatic",
+      "automaticNow": "Now {height}p · switches with your connection",
+      "automaticDetail": "Switches with your connection · converted",
+      "presetDetail": "Up to {mbps} Mbps · converted",
+      "version": "Version {number}",
+      "versionHeight": "Version {number} · {height}p",
+      "noAudio": "This file has no other audio tracks.",
+      "sectionQuality": "Quality",
+      "sectionVersion": "Version",
+      "searchOnline": "Search online",
+      "audio": "{codec} {channels}",
+      "audioConverted": "{from} → {to} {channels}",
+      "bitrate": "{mbps} Mbps",
+      "channels": {
+        "mono": "mono",
+        "stereo": "stereo",
+        "count": "{count} ch"
+      },
+      "mode": {
+        "direct": "Direct play",
+        "remux": "Repackaged",
+        "audio": "Converting audio",
+        "gpu": "Converting on the GPU",
+        "converting": "Converting"
+      }
+    },
+    "subtitles": {
+      "fallbackLabel": "Subtitles",
+      "downloaded": "Downloaded · Text",
+      "downloadedSdh": "Downloaded · SDH · Text"
+    },
+    "subtitleSearch": {
+      "title": "Find subtitles",
+      "episode": "{show} · {episode}",
+      "movieYear": "{title} ({year})",
+      "language": "Language",
+      "hearingImpaired": "Only subtitles for the hearing impaired",
+      "searching": "Searching",
+      "nothingFound": "Nothing found in {language}. Try another title or language.",
+      "matchesFile": "Matches your file",
+      "sdh": "SDH",
+      "downloads": {
+        "one": "{count} download",
+        "other": "{count} downloads"
+      },
+      "rating": "★ {rating}",
+      "inUse": "In use",
+      "use": "Use",
+      "footer": "Results from the subtitle sites set up in Settings › Subtitles. Downloads are kept with the video, so they're there next time.",
+      "added": "Subtitles added",
+      "addedDescription": "They're saved for next time too.",
+      "downloadFailed": "Couldn't download the subtitles"
+    },
+    "duration": {
+      "minutes": {
+        "one": "{count} min",
+        "other": "{count} min"
+      },
+      "hoursMinutes": "{hours}h {minutes}m",
+      "left": "{duration} left"
+    },
+    "episode": {
+      "specials": "Specials",
+      "season": "Season {number}",
+      "special": "Special {number}",
+      "short": "S{season} E{episode}"
+    }
+  },
+  "together": {
+    "ended": "Watch together ended",
+    "onlyHost": {
+      "title": "Only the host can pause and seek",
+      "description": "Ask them to turn on \"Anyone can pause and seek\"."
+    },
+    "hostPicksNext": {
+      "title": "The host picks what's next",
+      "description": "Everyone moves on when their episode ends."
+    },
+    "button": {
+      "watchTogether": "Watch together",
+      "watching": {
+        "one": "{count} watching",
+        "other": "{count} watching"
+      },
+      "unread": {
+        "one": "{count} new message",
+        "other": "{count} new messages"
+      }
+    },
+    "panel": {
+      "title": "Watch together",
+      "intro": "Play, pause and seeking stay in sync for everyone.",
+      "pitch": "Start a session and share the code or link. Everyone watches on their own screen, from this server, in step with you.",
+      "connecting": "Connecting…",
+      "start": "Start a session",
+      "startFailed": "Couldn't start the session",
+      "linkCopied": "Invite link copied",
+      "shareLink": "Share this link",
+      "tabs": {
+        "chat": "Chat",
+        "people": "People · {count}",
+        "unread": {
+          "one": "{count} new",
+          "other": "{count} new"
+        }
+      },
+      "invite": "Invite",
+      "code": "Code {code}",
+      "copyLink": "Copy link",
+      "people": "People",
+      "you": "{name} (you)",
+      "host": "Host",
+      "hostOnDevice": "Host · {device}",
+      "status": {
+        "loading": "Loading",
+        "buffering": "Buffering",
+        "ready": "In sync",
+        "catchingUp": "Catching up"
+      },
+      "anyoneControls": "Anyone can pause and seek",
+      "onlyHostNote": "Only the host can pause and seek.",
+      "leave": "Leave",
+      "endForEveryone": "End for everyone"
+    },
+    "chat": {
+      "messages": "Messages",
+      "empty": "Say hi. Messages and reactions show for everyone in the session.",
+      "at": "at {time}",
+      "reactions": "Reactions",
+      "placeholder": "Write a message",
+      "message": "Message",
+      "send": "Send"
+    },
+    "notice": {
+      "joined": "{name} joined",
+      "left": "{name} left",
+      "played": "{name} played",
+      "paused": "{name} paused at {time}",
+      "jumped": "{name} jumped to {time}",
+      "chat": "{name}: {text}"
+    },
+    "errors": {
+      "couldntJoin": "Couldn't join the session.",
+      "lostConnection": "Lost the connection to the session."
+    },
+    "device": {
+      "tv": "TV",
+      "browser": "Browser",
+      "onPhone": "{browser} on a phone",
+      "onComputer": "{browser} on a computer"
+    },
+    "page": {
+      "title": "Join a session",
+      "intro": "Type the code shown on the host's screen, or open their invite link.",
+      "codeLabel": "Session code",
+      "lookingUp": "Looking up the session",
+      "invited": "{name} invited you to watch",
+      "episode": "{episode} · {title}",
+      "playingAt": {
+        "one": "Playing at {time} · {count} watching",
+        "other": "Playing at {time} · {count} watching"
+      },
+      "pausedAt": {
+        "one": "Paused at {time} · {count} watching",
+        "other": "Paused at {time} · {count} watching"
+      },
+      "join": "Join and watch",
+      "note": "Your own progress isn't changed when you watch along. Joining as {name} (<link>switch profile</link>)."
+    }
+  },
+  "music": {
+    "trackCount": {
+      "one": "{count} track",
+      "other": "{count} tracks"
+    },
+    "albumCount": {
+      "one": "{count} album",
+      "other": "{count} albums"
+    },
+    "actions": {
+      "shuffle": "Shuffle",
+      "addToQueue": "Add to queue",
+      "addToPlaylist": "Add to playlist"
+    },
+    "library": {
+      "scanning": "Scanning…",
+      "show": "Show",
+      "tabs": {
+        "albums": "Albums",
+        "artists": "Artists",
+        "songs": "Songs",
+        "playlists": "Playlists"
+      },
+      "shuffleAll": "Shuffle all",
+      "shuffleFailed": "Couldn't shuffle",
+      "emptyTitle": "Nothing in here yet",
+      "scanningText": "Cinemion is scanning this library right now. Albums appear as they're found.",
+      "emptyText": "Music from {paths} appears here after a scan. Tags are read from the files; without them, folders like Artist/Album/01 Title.mp3 work too.",
+      "playedLately": "Played lately",
+      "allAlbums": "All albums",
+      "genre": "Genre",
+      "allGenres": "All genres",
+      "sortBy": "Sort by",
+      "sorts": {
+        "title": "Title",
+        "artist": "Artist",
+        "added": "Recently added",
+        "year": "Release year"
+      },
+      "songCount": {
+        "one": "{count} song",
+        "other": "{count} songs"
+      },
+      "songs": "Songs",
+      "yourPlaylists": "Your playlists",
+      "newPlaylist": "New playlist",
+      "newPlaylistName": "Playlist {number}",
+      "makeFailed": "Couldn't make the playlist",
+      "noPlaylists": "No playlists yet. Make one here, or pick \"Add to playlist\" in a track's menu."
+    },
+    "card": {
+      "play": "Play {title}",
+      "playAlbumFailed": "Couldn't play the album"
+    },
+    "album": {
+      "notFound": "Album not found",
+      "eyebrow": "Album",
+      "tracksOf": "Tracks of {title}",
+      "moreBy": "More by {artist}"
+    },
+    "artist": {
+      "notFound": "Artist not found",
+      "eyebrow": "Artist",
+      "appearsOnMore": {
+        "one": "on {count} more",
+        "other": "on {count} more"
+      },
+      "playFailed": "Couldn't play the artist",
+      "mostPlayedTitle": "You play these most",
+      "mostPlayed": "Most played",
+      "albums": "Albums",
+      "appearsOn": "Appears on"
+    },
+    "playlist": {
+      "notFound": "Playlist not found",
+      "eyebrow": "Playlist",
+      "name": "Playlist name",
+      "saveName": "Save name",
+      "rename": "Rename",
+      "delete": "Delete playlist",
+      "emptyTitle": "Nothing in here yet",
+      "emptyText": "Add tracks from their menu with \"Add to playlist\", or save what's playing from the queue.",
+      "tracksOf": "Tracks of {name}",
+      "moveUp": "Move up",
+      "moveDown": "Move down",
+      "removeFromPlaylist": "Remove from playlist",
+      "confirmTitle": "Delete {name}?",
+      "confirmDescription": "The playlist goes away for good. The tracks in it stay in your library.",
+      "deleted": "Deleted {name}",
+      "changeFailed": "Couldn't change the playlist",
+      "renameFailed": "Couldn't rename the playlist",
+      "deleteFailed": "Couldn't delete the playlist"
+    },
+    "trackList": {
+      "label": "Tracks",
+      "disc": "Disc {number}",
+      "play": "Play {title}",
+      "pause": "Pause {title}",
+      "more": "More for {title}",
+      "playNext": "Play next",
+      "addToQueue": "Add to queue",
+      "addToPlaylist": "Add to playlist…",
+      "goToAlbum": "Go to album",
+      "goToArtist": "Go to artist"
+    },
+    "addToPlaylist": {
+      "title": "Add to playlist",
+      "description": {
+        "one": "Add {count} track to one of your playlists, or start a new one.",
+        "other": "Add {count} tracks to one of your playlists, or start a new one."
+      },
+      "newPlaylist": "New playlist",
+      "namePlaceholder": "Name",
+      "create": "Create",
+      "added": {
+        "one": "Added {count} track to {name}",
+        "other": "Added {count} tracks to {name}"
+      },
+      "addFailed": "Couldn't add to the playlist",
+      "made": {
+        "one": "Made {name} with {count} track",
+        "other": "Made {name} with {count} tracks"
+      },
+      "makeFailed": "Couldn't make the playlist"
+    },
+    "player": {
+      "region": "Music player",
+      "cantPlay": "This track can't be played right now.",
+      "previous": "Previous",
+      "next": "Next",
+      "back30": "Back 30 seconds",
+      "forward30": "Forward 30 seconds",
+      "pause": "Pause",
+      "stopAndClose": "Stop and close",
+      "position": "Position",
+      "positionValue": "{position} of {duration}",
+      "mute": "Mute",
+      "unmute": "Unmute",
+      "volume": "Volume"
+    },
+    "miniPlayer": {
+      "open": "Now playing: {title}, {artist}. Open the player.",
+      "time": "{position} / {duration}",
+      "chapters": "Chapters",
+      "lyrics": "Lyrics",
+      "queue": "Queue"
+    },
+    "nowPlaying": {
+      "title": "Now playing",
+      "speed": "Speed {speed}×. Change speed",
+      "speedValue": "{speed}×",
+      "previousChapter": "Previous chapter",
+      "nextChapter": "Next chapter",
+      "shuffle": "Shuffle",
+      "shuffleOn": "Shuffle is on",
+      "repeat": "Repeat",
+      "repeatAll": "Repeating the queue",
+      "repeatOne": "Repeating this track",
+      "sleep": {
+        "label": "Sleep timer",
+        "labelSet": "Sleep timer: {left}",
+        "chapterEnd": "chapter end",
+        "minutes": {
+          "one": "{count} minute",
+          "other": "{count} minutes"
+        },
+        "hours": {
+          "one": "{count} hour",
+          "other": "{count} hours"
+        },
+        "endOfChapter": "End of this chapter",
+        "turnOff": "Turn off"
+      },
+      "tabs": "Show",
+      "upNext": "Up next",
+      "lyrics": "Lyrics",
+      "chapters": {
+        "label": "Chapters",
+        "count": {
+          "one": "{count} chapter",
+          "other": "{count} chapters"
+        }
+      },
+      "queue": {
+        "saveAsPlaylist": "Save as playlist",
+        "remove": "Remove {title} from the queue"
+      },
+      "lyricsPanel": {
+        "failed": "The lyrics couldn't be loaded.",
+        "none": "No lyrics for this track.",
+        "source": "Cinemion reads lyrics from the file's tags, or from an {file} file with the same name next to it."
+      }
+    }
+  },
+  "books": {
+    "audiobookCount": {
+      "one": "{count} audiobook",
+      "other": "{count} audiobooks"
+    },
+    "bookCount": {
+      "one": "{count} book",
+      "other": "{count} books"
+    },
+    "library": {
+      "scanning": "Scanning…",
+      "show": "Show",
+      "filters": {
+        "all": "All",
+        "listening": "Listening",
+        "reading": "Reading",
+        "notStarted": "Not started",
+        "unread": "Unread",
+        "finished": "Finished"
+      },
+      "genre": "Genre",
+      "allGenres": "All genres",
+      "sortBy": "Sort by",
+      "sorts": {
+        "title": "Title",
+        "author": "Author",
+        "added": "Recently added",
+        "year": "Year"
+      },
+      "emptyTitle": "Nothing in here yet",
+      "scanningText": "Cinemion is scanning this library right now. Books appear as they're found.",
+      "emptyAudiobooks": "Audiobooks from {paths} appear here after a scan: a folder of audio files is one book, and so is a single .m4b.",
+      "emptyBooks": "EPUB and PDF books from {paths} appear here after a scan.",
+      "noneListening": "Nothing being listened to right now.",
+      "noneReading": "Nothing being read right now.",
+      "noneFinished": "Nothing finished yet.",
+      "noneHere": "Nothing here."
+    },
+    "card": {
+      "audiobook": "Audiobook",
+      "finished": "Finished"
+    },
+    "book": {
+      "notFound": "Book not found",
+      "eyebrow": {
+        "audiobook": "Audiobook",
+        "book": "Book",
+        "bookPdf": "Book · PDF"
+      },
+      "readBy": "read by {narrators}",
+      "pause": "Pause",
+      "continueListening": "Continue · {left} left",
+      "listen": "Listen",
+      "continueReading": "Continue reading",
+      "read": "Read",
+      "fromStart": "From the start",
+      "markUnfinished": "Mark as not finished",
+      "markFinished": "Mark as finished",
+      "saveFailed": "Couldn't save that",
+      "done": "{percent}% done",
+      "chapters": "Chapters",
+      "moreBy": "More by {author}"
+    },
+    "reader": {
+      "chapter": "Chapter",
+      "chapterNumber": "Chapter {number}",
+      "smaller": "Smaller text",
+      "bigger": "Bigger text",
+      "themes": {
+        "light": "Light page",
+        "sepia": "Sepia page",
+        "dark": "Dark page"
+      },
+      "markFinished": "Mark as finished",
+      "markedFinished": "Marked as finished",
+      "saveFailed": "Couldn't save that",
+      "frameTitle": "Book",
+      "previous": "Previous",
+      "percent": "{percent}%",
+      "next": "Next",
+      "finished": "Finished"
+    }
+  },
+  "photos": {
+    "counts": {
+      "photos": {
+        "one": "{count} photo",
+        "other": "{count} photos"
+      },
+      "videos": {
+        "one": "{count} video",
+        "other": "{count} videos"
+      },
+      "items": {
+        "one": "{count} item",
+        "other": "{count} items"
+      },
+      "albums": {
+        "one": "{count} album",
+        "other": "{count} albums"
+      },
+      "empty": "Empty"
+    },
+    "cover": {
+      "changed": "Album cover changed",
+      "couldntChange": "Couldn't change the cover"
+    },
+    "library": {
+      "scanning": "Scanning…",
+      "show": "Show",
+      "albums": "Albums",
+      "timeline": "Timeline",
+      "sortAlbums": "Sort albums",
+      "sort": {
+        "newest": "Newest first",
+        "oldest": "Oldest first",
+        "title": "Name"
+      },
+      "newAlbum": "New album",
+      "slideshow": "Slideshow",
+      "emptyTitle": "Nothing in here yet",
+      "emptyScanning": "Cinemion is scanning this library right now. Photos appear as they're found.",
+      "emptyHint": "Photos and videos from {paths} appear here after a scan. Every folder becomes an album, and dates come from the photos themselves.",
+      "outsideAlbums": "Photos outside albums",
+      "photos": "Photos",
+      "couldntLoadAlbums": "Couldn't load the albums"
+    },
+    "newAlbum": {
+      "title": "New album",
+      "description": "Albums collect photos from anywhere in this library. The files stay where they are.",
+      "name": "Name",
+      "placeholder": "Best of the summer",
+      "create": "Create",
+      "couldntMake": "Couldn't make the album"
+    },
+    "album": {
+      "unavailable": "This album isn't available",
+      "folders": "Folders",
+      "madeBy": "Made by {name}",
+      "slideshow": "Slideshow",
+      "shuffle": "Shuffle slideshow",
+      "select": "Select photos",
+      "renameAndDescribe": "Rename and describe",
+      "editDetails": "Edit details",
+      "automaticCover": "Use the automatic cover",
+      "delete": "Delete album",
+      "emptyAlbum": "No photos in this album yet",
+      "emptyFolder": "Nothing in here this profile can see",
+      "emptyAlbumHint": "Open a photo anywhere in {library} and choose “Add to album” from its menu, or pick several with Select.",
+      "emptyAlbumHintNoLibrary": "Open a photo anywhere in the library and choose “Add to album” from its menu, or pick several with Select.",
+      "useAsCover": "Use as cover",
+      "takeOut": "Take out",
+      "tookOut": {
+        "one": "Took {count} photo out of the album",
+        "other": "Took {count} photos out of the album"
+      },
+      "tookOutDescription": "The files themselves are still where they were.",
+      "couldntTakeOut": "Couldn't take them out",
+      "deleteTitle": "Delete {title}?",
+      "deleteDescription": "The album goes away; the photos in it stay in the library and on disk.",
+      "deleted": "Deleted {title}",
+      "deletedDescription": "The photos in it are still in the library.",
+      "couldntDelete": "Couldn't delete the album",
+      "edit": {
+        "albumTitle": "Rename and describe",
+        "folderTitle": "Edit album details",
+        "folderDescription": "The folder on disk keeps its name; this is what Cinemion shows.",
+        "name": "Name",
+        "description": "Description"
+      }
+    },
+    "selection": {
+      "label": "Selected photos",
+      "stop": "Stop selecting",
+      "pick": "Pick photos",
+      "selected": "{count} selected",
+      "addToAlbum": "Add to album"
+    },
+    "list": {
+      "couldntLoad": "Couldn't load the photos"
+    },
+    "grid": {
+      "photo": "Photo, {when}",
+      "video": "Video, {when}",
+      "photoUndated": "Photo, date unknown",
+      "videoUndated": "Video, date unknown",
+      "noDate": "No date"
+    },
+    "card": {
+      "years": "{from} – {to}"
+    },
+    "addToAlbum": {
+      "title": "Add to album",
+      "description": {
+        "one": "Add {count} photo to one of your albums, or start a new one. The files stay where they are.",
+        "other": "Add {count} photos to one of your albums, or start a new one. The files stay where they are."
+      },
+      "newAlbum": "New album",
+      "name": "Name",
+      "create": "Create",
+      "alreadyIn": "Already in {album}",
+      "added": {
+        "one": "Added {count} photo to {album}",
+        "other": "Added {count} photos to {album}"
+      },
+      "couldntAdd": "Couldn't add to the album",
+      "made": {
+        "one": "Made {album} with {count} photo",
+        "other": "Made {album} with {count} photos"
+      },
+      "couldntMake": "Couldn't make the album"
+    },
+    "viewer": {
+      "label": "Photo viewer",
+      "dateUnknown": "Date unknown",
+      "photo": "Photo, {when}",
+      "video": "Video, {when}",
+      "position": "{context} · {index} of {count}",
+      "pause": "Pause",
+      "slideshow": "Slideshow",
+      "fullScreen": "Full screen",
+      "leaveFullScreen": "Leave full screen",
+      "details": "Details",
+      "download": "Download the original",
+      "addToAlbum": "Add to album…",
+      "useAsCover": "Use as album cover",
+      "takeOut": "Take out of this album",
+      "openFolder": "Open its folder",
+      "previous": "Previous",
+      "around": "Photos around this one",
+      "photoNumber": "Photo {number}",
+      "videoNumber": "Video {number}",
+      "takenOut": "Taken out of the album",
+      "takenOutDescription": "The file itself is still where it was.",
+      "couldntTakeOut": "Couldn't take it out of the album",
+      "loadingVideo": "Loading the video"
+    },
+    "info": {
+      "title": "Details",
+      "edit": "Edit details",
+      "close": "Close details",
+      "dateUnknown": "Date unknown",
+      "cameraClock": "Camera clock at UTC{offset}",
+      "length": "Length {length}",
+      "megapixels": "{value} MP",
+      "camera": "Camera",
+      "place": "{latitude}, {longitude}",
+      "north": "{value}° N",
+      "south": "{value}° S",
+      "east": "{value}° E",
+      "west": "{value}° W",
+      "openMap": "Open in a map",
+      "folder": "Folder",
+      "inAlbum": "In an album",
+      "inAlbums": "In albums",
+      "tags": "Tags",
+      "rated": "Rated {rating}",
+      "caption": "Caption",
+      "captionPlaceholder": "What's happening here?",
+      "date": "Date",
+      "dateDescription": "The time of day stays as it was.",
+      "tagsPlaceholder": "Beach, Mira",
+      "tagsDescription": "Separate them with commas.",
+      "rating": "Age rating",
+      "ratingDefault": "Library default",
+      "saved": "Details saved"
+    }
+  },
+  "clips": {
+    "counts": {
+      "clips": {
+        "one": "{count} clip",
+        "other": "{count} clips"
+      },
+      "games": {
+        "one": "{count} game",
+        "other": "{count} games"
+      }
+    },
+    "library": {
+      "scanning": "Scanning…",
+      "show": "Show",
+      "games": "Games",
+      "allClips": "All clips",
+      "sortGames": "Sort games",
+      "sort": {
+        "recent": "Newest clips",
+        "title": "Name",
+        "clips": "Most clips"
+      },
+      "emptyTitle": "Nothing in here yet",
+      "emptyScanning": "Cinemion is scanning this library right now. Clips appear as they're found.",
+      "emptyHint": "Clips from {paths} appear here after a scan, sorted into games by the names your recorder gave them.",
+      "suggestion": {
+        "one": "Cinemion has a guess for {clips} without a game, from what it shows.",
+        "other": "Cinemion has a guess for {clips} without a game, from what they show."
+      },
+      "haveALook": "Have a look",
+      "newest": "Newest clips",
+      "noGame": "No game",
+      "noGameLabel": {
+        "one": "No game, {count} clip",
+        "other": "No game, {count} clips"
+      },
+      "couldntLoad": "Couldn't load the games"
+    },
+    "browser": {
+      "label": "Clips",
+      "game": "Game",
+      "allGames": "All games",
+      "noGame": "No game",
+      "tag": "Tag",
+      "allTags": "All tags",
+      "show": "Show",
+      "all": "All",
+      "starred": "Starred",
+      "sortBy": "Sort by",
+      "sort": {
+        "newest": "Newest first",
+        "oldest": "Oldest first",
+        "longest": "Longest first"
+      },
+      "emptyStarred": "No starred clips",
+      "empty": "No clips here",
+      "emptyStarredHint": "Star a clip with the star on its picture, and it shows up here.",
+      "emptyTag": "No clips have this tag.",
+      "emptyFilters": "Nothing matches these filters.",
+      "selectionLabel": "Selected clips",
+      "stop": "Stop selecting",
+      "pick": "Pick clips",
+      "selected": "{count} selected",
+      "setGame": "Set game",
+      "star": "Star",
+      "unstar": "Unstar",
+      "didStar": {
+        "one": "Starred {count} clip",
+        "other": "Starred {count} clips"
+      },
+      "didUnstar": "Stars taken off",
+      "couldntStar": "Couldn't star the clips",
+      "inGame": {
+        "one": "{count} clip is in {game} now",
+        "other": "{count} clips are in {game} now"
+      },
+      "noGameNow": {
+        "one": "{count} clip has no game now",
+        "other": "{count} clips have no game now"
+      },
+      "setGameTitle": {
+        "one": "Set the game of {count} clip",
+        "other": "Set the game of {count} clips"
+      },
+      "setGameDescription": "Pick a game you have, search Steam, or type a name."
+    },
+    "card": {
+      "noGame": "No game",
+      "suggestion": "Looks like {game}",
+      "suggestionShort": "{game}?",
+      "watched": "Watched",
+      "unstar": "Take the star off",
+      "star": "Star this clip",
+      "starred": "Starred",
+      "starTitle": "Star",
+      "couldntStar": "Couldn't star the clip"
+    },
+    "view": {
+      "library": "Library",
+      "noGame": "No game",
+      "unstar": "Take the star off",
+      "star": "Star this clip",
+      "setGame": "Set game",
+      "cut": "Cut the clip",
+      "share": "Make a small copy to share",
+      "suggested": "Suggested game",
+      "suggestionSimilar": "Looks like {game}, from clips that look like it ({percent}% sure).",
+      "suggestionPicture": "Looks like {game}, going by the picture ({percent}% sure).",
+      "useIt": "Use it",
+      "notThis": "Not this game",
+      "found": {
+        "folder": "Game from the folder's name",
+        "file": "Game from the file's name",
+        "tags": "Game from the file's tags",
+        "steam": "Game from the Steam recording's name",
+        "upload": "Game from the app that uploaded it",
+        "manual": "Game picked by hand"
+      },
+      "moreFrom": "More from {game}",
+      "moreWithout": "More clips without a game",
+      "setGameTitle": "Set the game",
+      "setGameDescription": "Pick a game you have, search Steam, or type a name.",
+      "couldntStar": "Couldn't star the clip",
+      "inGame": "It's in {game} now",
+      "noGameNow": "It has no game now",
+      "couldntChange": "Couldn't change the game"
+    },
+    "game": {
+      "library": "Library",
+      "released": "Released {year}",
+      "notFound": "Not found online",
+      "playNewest": "Play newest",
+      "moreOptions": "More options",
+      "change": "Change game",
+      "lookUp": "Look it up again",
+      "remove": "Remove game",
+      "changeTitle": "Change game",
+      "changeDescription": "Pick the right game to get its name and artwork, or type a new name. Picking another game you have puts these clips in it.",
+      "removeTitle": "Remove {title}?",
+      "removeDescription": "Its clips stay in the library, under No game. The files aren't touched.",
+      "renamed": "It's {title} now",
+      "moved": "The clips are in {title} now",
+      "lookingUp": "Looking up {title}…",
+      "upToDate": "{title} is up to date",
+      "couldntLookUp": "Couldn't look it up",
+      "removed": "{title} was removed",
+      "removedDescription": "Its clips are under No game now.",
+      "couldntRemove": "Couldn't remove the game"
+    },
+    "range": {
+      "pause": "Pause",
+      "play": "Play the chosen part",
+      "start": "Start of the part",
+      "end": "End of the part",
+      "from": "From {time}",
+      "keeps": "Keeps {time}",
+      "to": "To {time}"
+    },
+    "setGame": {
+      "game": "Game",
+      "placeholder": "Search for a game",
+      "searching": "Searching",
+      "inLibrary": {
+        "one": "In this library · {count} clip",
+        "other": "In this library · {count} clips"
+      },
+      "typed": "Call it “{name}”",
+      "typedHint": "A game with just this name, without artwork",
+      "typeToSearch": "Type a game's name to search for it.",
+      "none": "No game",
+      "noneHint": "Like recordings of the desktop",
+      "couldntSet": "Couldn't set the game"
+    },
+    "trim": {
+      "title": "Cut the clip",
+      "description": "Drag the handles to the part you want to keep. Nothing is converted, so the quality stays the same; that's why the start goes to the nearest keyframe (the lines on the bar) before where you put it.",
+      "cutOriginal": "Cut the original",
+      "saveCut": "Save the cut",
+      "reading": "Reading the clip",
+      "where": "Where the cut goes",
+      "copy": "Save as a new clip",
+      "replace": "Replace the original",
+      "copyNote": "The cut goes next to the original file, with the same game and details. The original stays as it is.",
+      "replaceNote": "The original file is replaced by the cut. What's cut off is gone for good.",
+      "confirmTitle": "Replace the original?",
+      "confirmDescription": "The clip's file is cut down for good. What's cut off can't be brought back.",
+      "confirmLabel": "Replace it",
+      "couldntRead": "Couldn't read the clip",
+      "cut": "The clip was cut",
+      "savedNew": "The cut was saved as a new clip",
+      "couldntCut": "Couldn't cut the clip"
+    },
+    "share": {
+      "title": "Make a small copy",
+      "description": "A copy that fits a chat app's upload limit, converted so every app plays it. The clip itself stays as it is.",
+      "make": "Make the copy",
+      "copyLink": "Copy link",
+      "what": "What to copy",
+      "whole": "The whole clip",
+      "part": "A part of it",
+      "size": "Size limit",
+      "sizeOption": "{size} MB",
+      "sound": "Sound",
+      "mainTrack": "The main track",
+      "track": "Track {number}",
+      "allTracks": "All tracks together",
+      "fits": "Comes out at about {height}p, {fps} frames per second. 10 MB fits apps with the smallest limits, like Discord without Nitro.",
+      "tooBig": {
+        "one": "{count} second doesn't fit in {size} MB. Pick a bigger size, or a shorter part.",
+        "other": "{count} seconds don't fit in {size} MB. Pick a bigger size, or a shorter part."
+      },
+      "ready": "Ready: {size}, {height}p. The download link works for a day, without signing in.",
+      "couldntMake": "Couldn't make the copy",
+      "linkCopied": "Link copied",
+      "linkCopiedDescription": "It works for a day, without signing in."
+    }
+  },
+  "downloads": {
+    "title": "Downloads",
+    "intro": "Saved on this device, to watch without a connection.",
+    "introOffline": "The server can't be reached, so here's what's saved on this device.",
+    "storage": "Using {used}, with {free} free.",
+    "retryServer": "Try the server again",
+    "offline": "Offline",
+    "unsupported": {
+      "title": "This browser can't save downloads here",
+      "text": "Offline downloads need Cinemion opened over https (or as localhost on the server itself). Over a plain http address, browsers don't allow it."
+    },
+    "empty": {
+      "title": "Nothing saved yet",
+      "text": "Open a movie or episode and use its download button to keep it on this device."
+    },
+    "status": {
+      "preparing": "Getting it ready on the server…",
+      "preparingPercent": "Getting it ready on the server · {percent}%",
+      "downloading": "Downloading · {received}",
+      "downloadingOf": "Downloading · {received} of {size}",
+      "paused": "Paused · {received}",
+      "pausedOf": "Paused · {received} of {size}",
+      "failed": "The download stopped."
+    },
+    "quality": {
+      "original": "Original",
+      "high": "High (1080p)",
+      "medium": "Medium (720p)",
+      "small": "Small (480p)"
+    },
+    "pause": "Pause",
+    "carryOn": "Carry on",
+    "deleteFromDevice": "Delete from this device",
+    "delete": {
+      "title": "Delete {title}?",
+      "titleUntitled": "Delete this download?",
+      "description": "It's removed from this device only. It stays on the server."
+    },
+    "player": {
+      "missing": "This download isn't on this device. <link>See your downloads</link>.",
+      "reloadFirst": "Offline playback starts after the page has been reloaded once."
+    },
+    "button": {
+      "label": "Download to watch offline",
+      "ready": "Downloaded. Open Downloads",
+      "failed": "Download failed. Open Downloads",
+      "progress": "Downloading {percent}%. Open Downloads",
+      "description": "{title} is kept on this device, for when there's no connection. Watching progress comes back to the server later.",
+      "size": "Size",
+      "about": "About {size}",
+      "asIs": "Plays as it is, at full quality",
+      "madeOnServer": "Made on the server first",
+      "needsHttps": "Downloads need https",
+      "needsHttpsDescription": "Browsers only let sites save videos when they're opened over https (or as localhost on the server).",
+      "sizesFailed": "Couldn't get the download sizes",
+      "started": "Download started",
+      "startedDescription": "Follow it in Downloads, in the profile menu.",
+      "startFailed": "Couldn't start the download"
+    },
+    "episodeSubtitle": "{show} · {episode}",
+    "readyToast": "{title} is ready to watch offline",
+    "readyToastUntitled": "The download is ready to watch offline",
+    "errors": {
+      "copyFailed": "The server couldn't make the copy.",
+      "stopped": "The download stopped: {status}"
+    }
+  },
+  "settings": {
+    "tabs": {
+      "you": "You",
+      "server": "Server",
+      "profile": "Your profile",
+      "device": "This device",
+      "about": "About",
+      "dashboard": "Dashboard",
+      "libraries": "Libraries",
+      "users": "Users",
+      "playback": "Playback",
+      "metadata": "Metadata",
+      "subtitles": "Subtitles",
+      "integrations": "Integrations",
+      "webhooks": "Webhooks",
+      "tasks": "Tasks",
+      "logs": "Logs",
+      "navigation": "Settings",
+      "running": {
+        "one": "{count} running",
+        "other": "{count} running"
+      }
+    },
+    "about": {
+      "title": "About",
+      "intro": "Which Cinemion this is, and who helps it know what's in your libraries.",
+      "version": "Cinemion {version}",
+      "versionOn": "Cinemion {version} on {name}",
+      "pitch": "A self-hosted home for your movies, shows, videos, music and books. Free software under the GNU General Public License, version 3 or later.",
+      "sourceCode": "Source code",
+      "releases": "Releases",
+      "credits": "Credits"
+    },
+    "profile": {
+      "title": "Your profile",
+      "intro": "How you show up on the profile picker and around Cinemion.",
+      "changePicture": "Change profile picture",
+      "picture": "Profile picture",
+      "pictureShown": "Shown instead of your initial.",
+      "pictureNone": "Upload a photo, or keep your initial on your colour.",
+      "changePictureButton": "Change picture",
+      "uploadPicture": "Upload picture",
+      "name": "Name",
+      "colour": "Colour",
+      "colourWithPicture": "Colour (used when the picture can't load)",
+      "saveChanges": "Save changes",
+      "saved": "Profile saved",
+      "couldntSave": "Couldn't save your profile",
+      "signIn": "Sign-in",
+      "pin": {
+        "title": "Profile PIN",
+        "on": "Asked when you pick your profile on a shared screen.",
+        "off": "Anyone can open your profile from the profile picker.",
+        "change": "Change PIN",
+        "set": "Set a PIN",
+        "removed": "PIN removed",
+        "couldntRemove": "Couldn't remove the PIN",
+        "dialogDescription": "Four digits, asked when your profile is picked on a shared screen.",
+        "save": "Save PIN",
+        "newPin": "New PIN",
+        "saved": "PIN saved",
+        "couldntSave": "Couldn't save the PIN"
+      },
+      "password": {
+        "title": "Password",
+        "on": "Sign in as \"{username}\" on new devices.",
+        "off": "No password yet, so this profile only opens from the profile picker.",
+        "change": "Change password",
+        "set": "Set a password",
+        "save": "Save password",
+        "current": "Current password",
+        "new": "New password",
+        "newDescription": "At least 6 characters.",
+        "confirm": "Confirm new password",
+        "mismatch": "The passwords don't match.",
+        "changed": "Password changed",
+        "couldntChange": "Couldn't change the password"
+      },
+      "subtitles": {
+        "title": "Subtitles",
+        "previewLine1": "Did you hear that?",
+        "previewLine2": "Something is out there.",
+        "size": "Size",
+        "sizes": {
+          "small": "Small",
+          "medium": "Medium",
+          "large": "Large",
+          "huge": "Huge"
+        },
+        "colour": "Colour",
+        "colours": {
+          "white": "White",
+          "yellow": "Yellow",
+          "cyan": "Cyan",
+          "green": "Green"
+        },
+        "background": "Background",
+        "backgrounds": {
+          "box": "Dark box",
+          "shadow": "Outline"
+        },
+        "keepStyling": "Keep the look of styled subtitles",
+        "keepStylingDescription": "ASS subtitles, common for anime, come with their own fonts, colours and positions. Off, they use the style above like all other subtitles."
+      },
+      "trakt": {
+        "linked": "Linked",
+        "linkedAs": "Linked as {name}",
+        "linkedDescription": "What you watch is sent to your Trakt history as it plays, and so is marking things watched.",
+        "unlink": "Unlink",
+        "importTitle": "Bring your history in",
+        "importDescription": "Marks everything you watched on Trakt as watched here too, for what's in your libraries.",
+        "importButton": "Bring it in",
+        "keepUpToDate": "Keep your Trakt history up to date",
+        "linkDescription": "Link your Trakt account and what you watch here is added to it.",
+        "link": "Link Trakt",
+        "goTo": "Go to {url} and enter",
+        "waiting": "Waiting for Trakt…",
+        "isLinked": "Trakt is linked",
+        "signedInAs": "Signed in as {name}.",
+        "declined": "Trakt sign-in was declined",
+        "expired": "The code ran out",
+        "startAgain": "Start again to get a new code.",
+        "couldntLink": "Couldn't link Trakt",
+        "couldntStart": "Couldn't start linking",
+        "imported": "Marked {movies} and {episodes} as watched",
+        "movies": {
+          "one": "{count} movie",
+          "other": "{count} movies"
+        },
+        "episodes": {
+          "one": "{count} episode",
+          "other": "{count} episodes"
+        },
+        "upToDate": "Everything was up to date already",
+        "couldntImport": "Couldn't bring the history in",
+        "couldntUnlink": "Couldn't unlink Trakt"
+      }
+    },
+    "device": {
+      "title": "This device",
+      "intro": "These settings are saved in this browser only.",
+      "layout": "Layout",
+      "layoutAuto": {
+        "desktop": "Picked automatically. This device is using the Desktop layout.",
+        "mobile": "Picked automatically. This device is using the Mobile layout.",
+        "tv": "Picked automatically. This device is using the TV layout."
+      },
+      "layoutFixed": {
+        "desktop": "Always use the Desktop layout.",
+        "mobile": "Always use the Mobile layout.",
+        "tv": "Always use the TV layout."
+      },
+      "mediahub": "Running inside MediaHub.",
+      "layouts": {
+        "desktop": "Desktop",
+        "mobile": "Mobile",
+        "tv": "TV"
+      },
+      "tvHelp": "The TV layout is made for the couch: everything is bigger, and you move around with the arrow keys, a remote or a game controller. Open Cinemion with {param} at the end of the address to switch a TV straight to it.",
+      "theme": "Theme",
+      "themeSystem": {
+        "dark": "Follows this device's setting, which is dark right now.",
+        "light": "Follows this device's setting, which is light right now."
+      },
+      "themeFixed": "Videos always play on a dark screen.",
+      "themes": {
+        "dark": "Dark",
+        "light": "Light",
+        "system": "Match device"
+      },
+      "playback": "Playback",
+      "speakers": "Speakers",
+      "speakersDescription": "Surround sound that this device can't play is converted to what it can. With a receiver or soundbar, Dolby Digital is passed on untouched for it to decode.",
+      "speakerOptions": {
+        "auto": "Automatic (surround on TVs, stereo elsewhere)",
+        "stereo": "Stereo",
+        "surround51": "5.1 surround",
+        "surround71": "7.1 surround",
+        "passthrough": "Receiver or soundbar (pass Dolby Digital through)"
+      },
+      "intros": "Intros",
+      "introsDescription": "Cinemion finds the intros of shows by comparing their episodes, or from their chapters.",
+      "introOptions": {
+        "button": "Show Skip",
+        "auto": "Skip by itself"
+      }
+    },
+    "playback": {
+      "title": "Playback",
+      "intro": "How Cinemion converts videos for devices that can't play the original file.",
+      "saveChanges": "Save changes",
+      "couldntLoad": "Couldn't load playback settings",
+      "saved": "Playback settings saved",
+      "savedDescription": "They apply to videos started from now on.",
+      "hardware": "Hardware acceleration",
+      "methods": {
+        "off": "Off",
+        "noneDescription": "Convert on the CPU. Works everywhere, but 4K is slow.",
+        "vaapiDescription": "Intel and AMD graphics on Linux.",
+        "qsvDescription": "Intel graphics, often a little faster than VA-API.",
+        "nvencDescription": "NVIDIA graphics cards."
+      },
+      "alwaysAvailable": "Always available",
+      "looking": "Looking…",
+      "detected": "Detected",
+      "notDetected": "Not detected",
+      "gpu": "GPU",
+      "gpuDescription": "The render device. In Docker, pass it in with {flag}.",
+      "decodeOnGpu": "Decode these on the GPU",
+      "decodeDescription": "Turn off codecs your GPU can't decode; they're decoded on the CPU and still converted on the GPU.",
+      "runTest": "Run a test",
+      "testing": "Converting a 5 second 1080p clip…",
+      "converting": "Converting",
+      "maxConversions": "Simultaneous conversions",
+      "maxConversionsDescription": "More than this are turned away until one stops. Direct play and repackaging don't count.",
+      "preset": "Quality preset",
+      "presetDescription": "Faster presets use less CPU but look a little worse at the same bitrate.",
+      "presets": {
+        "fast": "Fast",
+        "balanced": "Balanced",
+        "quality": "Quality"
+      },
+      "remoteLimit": "Remote stream limit",
+      "remoteLimitDescription": "Per stream, for viewers outside your home network.",
+      "noLimit": "No limit",
+      "toneMapping": "Tone-map HDR to SDR",
+      "toneMappingDescription": "Keeps colours right on screens without HDR.",
+      "seekThumbnails": "Make seek thumbnails",
+      "seekThumbnailsDescription": "Small pictures above the seek bar. Made in the background after a scan, and when a video is first played.",
+      "remoteConversion": "Allow conversion for remote viewers",
+      "remoteConversionDescription": "Off means viewers outside your network only get files their device plays as they are.",
+      "cache": "Conversion cache",
+      "cacheDetails": "{folder} · {size} · cleaned up when playback stops. Seek thumbnails use {thumbnails}.",
+      "checking": "Checking…",
+      "clearNow": "Clear now",
+      "cacheCleared": "Conversion cache cleared",
+      "cacheClearedDescription": "Anyone watching a converted video has to start it again.",
+      "couldntClear": "Couldn't clear the cache"
+    },
+    "metadata": {
+      "title": "Metadata",
+      "intro": "Where posters, plots and cast come from. Sources higher in the list win when they disagree.",
+      "saveChanges": "Save changes",
+      "couldntLoad": "Couldn't load metadata settings",
+      "saved": "Metadata settings saved",
+      "savedDescription": "Use \"Refresh all details\" on a library to apply them to what's already there."
+    },
+    "subtitles": {
+      "title": "Subtitles",
+      "intro": "Search subtitles online from the player, or let Cinemion fetch them for new movies and episodes. Subtitle files next to your videos are picked up by themselves.",
+      "saveChanges": "Save changes",
+      "couldntLoad": "Couldn't load subtitle settings",
+      "saved": "Subtitle settings saved",
+      "automatic": "Automatic downloads",
+      "autoDownload": "Download subtitles by themselves",
+      "autoDownloadDescription": "Movies and episodes without subtitles in one of your languages get the best ones the sites have, preferring ones made for the exact file. What isn't found is looked for again after a day, three days, a week, and so on.",
+      "noSite": "Turn on at least one subtitle site below for this to find anything.",
+      "sites": "Subtitle sites",
+      "openSubtitlesHelp": "Create a free account on <link>opensubtitles.com</link>, then add an API consumer under your profile's API settings and paste its key here. Signing in is optional; it raises the number of downloads per day.",
+      "apiKey": "API key",
+      "username": "Username",
+      "optional": "Optional",
+      "password": "Password",
+      "passwordSaved": "Saved. Type a new one to change it.",
+      "subdlHelp": "A free site with a big catalogue. Make an account on <link>subdl.com</link> and copy the API key from your account page.",
+      "podnapisiDescription": "Search podnapisi.net too. It needs no account; its subtitles are found by title, so their timing may be a little off.",
+      "languages": "Languages",
+      "languagesDescription": "Offered first when searching, and the ones downloaded by themselves.",
+      "saveNextToVideo": "Save next to the video file",
+      "saveNextToVideoDescription": "Off, or when the media folder is read-only (as in Docker with :ro), downloads are kept in the config folder instead."
+    },
+    "games": {
+      "couldntLoad": "Couldn't load the game settings",
+      "saved": "Game settings saved",
+      "title": "Games",
+      "intro": "Clips libraries sort clips into games by their file and folder names, and look the games up for their proper names, covers and artwork.",
+      "lookups": "Look games up online",
+      "lookupsDescription": "On Steam's store, which needs no key and knows most PC games.",
+      "steamGridDbKey": "SteamGridDB API key (optional)",
+      "steamGridDbDescription": "Finds games that aren't on Steam, like VALORANT or League of Legends, and artwork Steam doesn't have. Get a free key from your <link>SteamGridDB preferences</link>.",
+      "saveKey": "Save key",
+      "recognition": {
+        "title": "Picture recognition",
+        "intro": "For clips whose names don't say the game, like OBS recordings: Cinemion looks at a few frames of every clip and suggests a game when a clip looks like ones you've already given a game (or, as a best guess, like a game it knows). Suggestions are only taken when you say so. It runs on this server's processor, a clip at a time, and nothing leaves the server.",
+        "checking": "Checking…",
+        "installed": "Installed",
+        "downloading": "Downloading… {percent}",
+        "failed": "The download didn't work",
+        "notInstalled": "Not installed",
+        "pending": {
+          "one": "{count} clip hasn't been looked at yet.",
+          "other": "{count} clips haven't been looked at yet."
+        },
+        "allDone": "Every clip has been looked at.",
+        "downloadSize": "A one-time download of {size}: an image model (CLIP) and what runs it.",
+        "runNow": "Look at clips now",
+        "autoSuggest": "Suggest games after every scan",
+        "autoSuggestDescription": "New clips without a game get a suggestion by themselves. Off, it only runs with “Look at clips now”.",
+        "removeTitle": "Remove picture recognition?",
+        "removeDescription": "The download is deleted. Suggestions already made stay, and what it saw in clips is kept for when it's downloaded again.",
+        "couldntDownload": "Couldn't download picture recognition",
+        "couldntRemove": "Couldn't remove picture recognition",
+        "started": "Looking at clips",
+        "startedDescription": "Suggestions show up on clips without a game. Tasks shows how far it is.",
+        "couldntStart": "Couldn't start"
+      }
+    }
+  },
+  "language": {
+    "title": "Language",
+    "label": "Language of the interface",
+    "automatic": "Same as this browser ({language})",
+    "description": "Only for this profile. Titles, plots and other details keep the language set in Settings › Metadata.",
+    "helpTranslate": "Missing yours? Cinemion can be translated into any language; <link>here's how</link>."
+  },
+  "colors": {
+    "sky": "sky",
+    "coral": "coral",
+    "mint": "mint",
+    "violet": "violet",
+    "amber": "amber",
+    "rose": "rose",
+    "teal": "teal",
+    "slate": "slate"
+  },
+  "avatarEditor": {
+    "title": "Profile picture",
+    "descriptionCrop": "Drag the photo to reposition it.",
+    "descriptionPick": "Choose a photo. You can crop it next.",
+    "choose": "Choose a photo",
+    "hint": "JPG, PNG or WebP, up to 10 MB",
+    "zoom": "Zoom",
+    "preview": "Preview",
+    "previews": {
+      "picker": "Profile picker",
+      "topBar": "Top bar",
+      "badges": "Badges"
+    },
+    "sizesHint": "Saved in every size Cinemion needs, from the profile picker down to the small badges in watch together.",
+    "chooseAnother": "Choose another photo",
+    "removePicture": "Remove picture and use initials",
+    "save": "Save picture",
+    "cantOpen": "This browser can't open that picture",
+    "cantOpenDescription": "Try a JPG, PNG or WebP.",
+    "couldntPrepare": "Could not prepare the picture.",
+    "saved": "Profile picture saved",
+    "couldntSave": "Couldn't save the picture",
+    "removed": "Profile picture removed",
+    "couldntRemove": "Couldn't remove the picture"
+  },
+  "pinPad": {
+    "entered": {
+      "one": "{entered} of {count} digit entered",
+      "other": "{entered} of {count} digits entered"
+    },
+    "delete": "Delete"
+  },
+  "metadataForm": {
+    "sources": "Metadata sources, in priority order",
+    "providers": {
+      "local": "Your files",
+      "localDescription": "NFO files and artwork next to your videos",
+      "tmdbDescription": "Online database for movies and shows",
+      "tvdbDescription": "Online database for shows, strong on anime and episode orders"
+    },
+    "moveUp": "Move {name} up",
+    "moveDown": "Move {name} down",
+    "tmdb": {
+      "ownKey": "Your own API key (optional)",
+      "apiKey": "API key",
+      "builtInPlaceholder": "Uses the key built into Cinemion",
+      "placeholder": "Paste your TMDB API key or read access token",
+      "builtInDescription": "TMDB works without one. Add your own key if the built-in one stops working or you'd rather use your own. <link>How to get one</link>",
+      "description": "Free with a TMDB account. <link>How to get one</link>"
+    },
+    "tvdb": {
+      "apiKey": "API key",
+      "placeholder": "Paste your TheTVDB project API key",
+      "description": "From a TheTVDB account. <link>How to get one</link>",
+      "pin": "Subscriber PIN (optional)",
+      "pinDescription": "Only for keys that come with a TheTVDB subscription."
+    },
+    "omdb": {
+      "label": "OMDb API key, for ratings (optional)",
+      "placeholder": "Paste your OMDb API key",
+      "description": "Adds IMDb, Rotten Tomatoes and Metacritic scores to movies and shows that have an IMDb id. Free keys allow 1000 lookups a day. <link>How to get one</link>"
+    },
+    "language": "Language",
+    "languages": {
+      "en": "English",
+      "nl": "Dutch",
+      "de": "German",
+      "fr": "French",
+      "es": "Spanish",
+      "it": "Italian",
+      "pt": "Portuguese",
+      "sv": "Swedish",
+      "da": "Danish",
+      "no": "Norwegian",
+      "ja": "Japanese"
+    },
+    "country": "Country (for age ratings)",
+    "countries": {
+      "us": "United States",
+      "gb": "United Kingdom",
+      "nl": "Netherlands",
+      "de": "Germany",
+      "fr": "France",
+      "es": "Spain",
+      "it": "Italy",
+      "se": "Sweden",
+      "dk": "Denmark",
+      "no": "Norway",
+      "jp": "Japan"
+    }
+  },
+  "ratings": {
+    "g": "G / All ages",
+    "pg": "PG",
+    "age12": "12",
+    "pg13": "PG-13",
+    "age16": "16",
+    "r": "R",
+    "age18": "18"
+  },
+  "admin": {
+    "dashboard": {
+      "title": "Dashboard",
+      "serverLine": "{name} · Cinemion {version} · up {uptime}",
+      "serverLineUpdate": "{name} · Cinemion {version} ({update}) · up {uptime}",
+      "updateOut": "{version} is out",
+      "scanAll": "Scan all libraries",
+      "scanStarted": "Scanning every library",
+      "scanFailed": "Couldn't start the scan",
+      "stats": {
+        "streams": "Streams",
+        "maxConversions": {
+          "one": "Up to {count} conversion at once",
+          "other": "Up to {count} conversions at once"
+        },
+        "streamKinds": "{direct} direct · {converting} converting",
+        "cpu": "CPU",
+        "cores": {
+          "one": "{count} core",
+          "other": "{count} cores"
+        },
+        "coresMemory": {
+          "one": "{count} core · {memory} memory",
+          "other": "{count} cores · {memory} memory"
+        },
+        "gpu": "GPU ({name})",
+        "hardwareConversions": {
+          "one": "{count} hardware conversion",
+          "other": "{count} hardware conversions"
+        },
+        "usageNotReported": "Usage isn't reported",
+        "noConversions": "No conversions",
+        "memory": "Memory",
+        "memoryOf": "of {total}",
+        "notReported": "Not reported",
+        "storage": "Storage",
+        "storageOnMount": "of {total} on {mount}",
+        "storageOnDrives": {
+          "one": "of {total} on {count} drive",
+          "other": "of {total} on {count} drives"
+        },
+        "drivesUnreadable": "Couldn't read the drives"
+      },
+      "nowPlaying": "Now playing",
+      "nothingPlaying": "Nothing is playing right now.",
+      "stream": {
+        "awayFromHome": "{device} · away from home",
+        "paused": "Paused"
+      },
+      "tasks": "Tasks",
+      "allTasks": "All tasks",
+      "libraryScan": "Library scan · {library}",
+      "nothingRunning": "Nothing running.",
+      "activity": "Activity",
+      "noActivity": "Nothing has happened yet."
+    },
+    "tasks": {
+      "title": "Tasks",
+      "intro": "Work Cinemion does in the background, and when it scans your libraries by itself.",
+      "startFailed": "Couldn't start that",
+      "running": "Running",
+      "nothingRunning": "Nothing is running right now.",
+      "runNow": "Run now",
+      "actions": {
+        "scan": {
+          "title": "Scan all libraries",
+          "text": "Look for new, changed and removed files in every library.",
+          "button": "Scan now",
+          "started": "Scanning every library"
+        },
+        "refresh": {
+          "title": "Refresh all details",
+          "text": "Fetch details and artwork again for every title. This takes a while on big libraries.",
+          "button": "Refresh",
+          "started": "Refreshing every title's details"
+        },
+        "thumbnails": {
+          "title": "Make missing seek thumbnails",
+          "text": "The pictures that show while you drag through a video. New videos get them by themselves.",
+          "button": "Make thumbnails",
+          "started": "Making missing seek thumbnails"
+        },
+        "markers": {
+          "title": "Find intros and credits again",
+          "text": "Compare every season's episodes and read chapters again, for Skip intro and starting the next episode early. New episodes are looked at by themselves.",
+          "button": "Find again",
+          "started": "Looking for intros and credits"
+        },
+        "subtitles": {
+          "title": "Download missing subtitles",
+          "text": "Look for subtitles in your languages for every movie and episode that has none, even ones searched lately. With automatic downloads on, this also happens once a day.",
+          "button": "Look now",
+          "started": "Looking for missing subtitles"
+        },
+        "remake": {
+          "title": "Remake all seek thumbnails",
+          "text": "Delete every seek thumbnail and make them again, one video at a time.",
+          "button": "Remake",
+          "confirmTitle": "Remake all seek thumbnails?",
+          "confirmDescription": "Every video gets new thumbnails, one after another. Until a video's turn comes, it has none.",
+          "confirm": "Remake thumbnails",
+          "started": "Remaking all seek thumbnails"
+        }
+      },
+      "schedule": "Schedule",
+      "scanEvery": "Scan libraries every",
+      "scanEveryDescription": "New files usually show up within a minute anyway. Scheduled scans catch what the folder watcher misses, like changes on network shares.",
+      "hours": {
+        "one": "{count} hour",
+        "other": "{count} hours"
+      },
+      "intervalSaved": {
+        "one": "Libraries are scanned every {count} hour",
+        "other": "Libraries are scanned every {count} hours"
+      },
+      "scanned": "Scanned {ago} · next {next}",
+      "notScanned": "Not scanned yet · next {next}",
+      "recentlyFinished": "Recently finished",
+      "nothingFinished": "Nothing has finished since the server started.",
+      "history": {
+        "failed": "Failed",
+        "done": "Done",
+        "failedAgo": "{error} · {ago}",
+        "tookAgo": "Took {duration} · {ago}",
+        "seconds": "{count} s",
+        "minutes": "{count} min"
+      }
+    },
+    "logs": {
+      "title": "Logs",
+      "intro": {
+        "one": "The last {count} line of the server log, newest first. Handy when something doesn't work.",
+        "other": "The last {count} lines of the server log, newest first. Handy when something doesn't work."
+      },
+      "show": "Show",
+      "filters": {
+        "all": "All",
+        "info": "Info",
+        "warn": "Warnings",
+        "error": "Errors"
+      },
+      "searchPlaceholder": "Words in the message",
+      "noMatch": "No lines match.",
+      "lines": "Log lines",
+      "levels": {
+        "debug": "Debug",
+        "info": "Info",
+        "warn": "Warning",
+        "error": "Error"
+      }
+    },
+    "users": {
+      "title": "Users",
+      "intro": "Everyone in the household gets their own profile, watch history and settings.",
+      "addProfile": "Add profile",
+      "you": "{name} (you)",
+      "roles": {
+        "admin": "Admin",
+        "user": "Profile"
+      },
+      "badges": {
+        "pin": "PIN",
+        "pickerOnly": "Picker only",
+        "upTo": "Up to {rating}",
+        "hidden": "Hidden from picker"
+      },
+      "edit": "Edit {name}",
+      "dialog": {
+        "addTitle": "Add profile",
+        "editTitle": "Edit {name}",
+        "addDescription": "A profile for someone in the household. They get their own watch history.",
+        "saveChanges": "Save changes",
+        "picture": "Profile picture",
+        "pictureUploaded": "Uploaded picture.",
+        "pictureInitial": "Initial on their colour.",
+        "changePicture": "Change",
+        "name": "Name",
+        "username": "Username",
+        "usernamePlaceholder": "Made from the name",
+        "colour": "Colour",
+        "role": "Role",
+        "ratingLimit": "Age rating limit",
+        "noLimit": "No limit",
+        "showOnPicker": "Show on the profile picker",
+        "showOnPickerDescription": "Hidden profiles sign in with their username and password.",
+        "newPin": "New PIN",
+        "pin": "PIN",
+        "keepIt": "Leave empty to keep it",
+        "pinPlaceholder": "Optional, 4 digits",
+        "pinInvalid": "The PIN must be exactly 4 digits.",
+        "removePin": "Remove PIN",
+        "newPassword": "New password",
+        "password": "Password",
+        "passwordPlaceholder": "Optional",
+        "passwordDescription": "Without a password, this profile can only be opened from the profile picker.",
+        "passwordInvalid": "Use at least 6 characters."
+      },
+      "added": "{name} was added",
+      "saved": "Changes saved",
+      "pinRemoved": "PIN removed",
+      "pinRemoveFailed": "Couldn't remove the PIN",
+      "removed": "{name} was removed",
+      "removeFailed": "Couldn't remove the user",
+      "remove": {
+        "title": "Remove {name}?",
+        "description": "Their profile, picture and watch history are deleted. This can't be undone."
+      }
+    },
+    "integrations": {
+      "title": "Integrations",
+      "intro": "Let Sonarr and Radarr tell Cinemion about new downloads, so they show up right away, connect apps like Seerr and Homepage, and let profiles keep their Trakt history up to date.",
+      "saveChanges": "Save changes",
+      "loadFailed": "Couldn't load integrations",
+      "copyFailed": "Couldn't copy",
+      "copyItByHand": "Select it and copy it by hand.",
+      "arr": {
+        "title": "Sonarr and Radarr",
+        "address": "Webhook address",
+        "copied": "Address copied",
+        "copyByHand": "Select the address and copy it by hand.",
+        "localhostHint": "You opened Cinemion as {host}, which Sonarr and Radarr can't reach from another computer or container. Open Cinemion through its network address (like {example}) and copy the address from there.",
+        "steps": {
+          "connect": "In Sonarr or Radarr, open <strong>Settings → Connect</strong>, click <strong>+</strong> and pick <strong>Webhook</strong>.",
+          "paste": "Paste the address above into <strong>URL</strong> and leave the method on <strong>POST</strong>.",
+          "events": "Tick <strong>On File Import</strong>, <strong>On File Upgrade</strong>, <strong>On Rename</strong> and the <strong>Delete</strong> events.",
+          "test": "Click <strong>Test</strong>. Cinemion shows below that it arrived."
+        },
+        "lastEvent": "{event}, {ago}. {result}",
+        "eventName": "{app} · {eventType}",
+        "nothingReceived": "Nothing received yet.",
+        "newAddress": {
+          "title": "New address",
+          "text": "If the address got out, make a new one. The old one stops working, so paste the new one into Sonarr and Radarr.",
+          "button": "Make new address",
+          "made": "New address made",
+          "madeDescription": "Paste it into Sonarr and Radarr again.",
+          "failed": "Couldn't make a new address",
+          "confirmTitle": "Make a new address?",
+          "confirmDescription": "Sonarr and Radarr can't reach Cinemion with the old address anymore until you paste the new one into them."
+        }
+      },
+      "mappings": {
+        "title": "Path mappings",
+        "text": "Only needed when Sonarr or Radarr see your media in a different folder than Cinemion does, like {theirs} in their container and {ours} here. Folders inside a mapped folder are mapped too.",
+        "theirFolder": "Their folder",
+        "ourFolder": "Cinemion's folder",
+        "remove": "Remove this mapping",
+        "add": "Add mapping",
+        "saved": "Path mappings saved"
+      },
+      "apps": {
+        "title": "Seerr, Homepage and other apps",
+        "text": "Apps made for other media servers can use Cinemion instead. In Seerr, pick the media server that signs in with a server address, username and password, give it the address below, and sign in with your Cinemion login: it sees what's in your libraries and links back here. Homepage's media server widget can show what's playing and how big your libraries are with a key made below.",
+        "serverAddress": "Server address",
+        "addressCopied": "Address copied",
+        "keyCopied": "Key copied",
+        "madeBy": "Made by {name}, {ago}",
+        "madeByRemoved": "Made {ago} by a profile that has been removed, so it doesn't work",
+        "copyKey": "Copy the key for {app}",
+        "removeKey": "Remove the key for {app}",
+        "newKeyFor": "New key for",
+        "makeKey": "Make key",
+        "makeFailed": "Couldn't make a key",
+        "removed": "Key removed",
+        "removedDescription": "{app} can't reach Cinemion with it anymore.",
+        "removeFailed": "Couldn't remove the key",
+        "confirmTitle": "Remove the key for {app}?",
+        "confirmDescription": "The app using it can't reach Cinemion anymore until it gets a new key.",
+        "confirm": "Remove key"
+      },
+      "podium": {
+        "title": "Podium",
+        "text": "Podium can upload clips straight into a library. Make a target for each library to upload to, then add a Podium-compatible server in Podium with the server URL and the target's token. Clips keep the game Podium recorded, their title, when they were recorded and the names of their sound tracks. Podium uploads into any library; Clips libraries make the most of what it knows.",
+        "serverUrl": "Server URL",
+        "serverUrlCopied": "Server URL copied",
+        "tokenCopied": "Token copied",
+        "libraryRemoved": "Its library was removed, so it doesn't work",
+        "creatorRemoved": "Made by a profile that has been removed, so it doesn't work",
+        "into": "Into {where} · last used {ago}",
+        "intoNotUsed": "Into {where} · not used yet",
+        "intoGames": "Into {where}, a folder per game · last used {ago}",
+        "intoGamesNotUsed": "Into {where}, a folder per game · not used yet",
+        "copyToken": "Copy the token for {name}",
+        "remove": "Remove {name}",
+        "newTargetFor": "New target for",
+        "nameInPodium": "Name in Podium",
+        "folder": "Folder",
+        "folderPlaceholder": "The library folder itself",
+        "makeTarget": "Make target",
+        "uploadsInto": "Uploads go into this folder inside {path}. Cinemion needs write access to it, like for uploads from the browser.",
+        "uploadsIntoFirst": "Uploads go into this folder inside the library's first folder. Cinemion needs write access to it, like for uploads from the browser.",
+        "gameFolders": "A folder per game",
+        "gameFoldersDescription": "Puts each clip in a folder named after its game, the way recorders do.",
+        "makeFailed": "Couldn't make the target",
+        "removed": "Target removed",
+        "removedDescription": "Podium can't upload with its token anymore.",
+        "removeFailed": "Couldn't remove the target",
+        "confirmTitle": "Remove {name}?",
+        "confirmDescription": "Podium can't upload with its token anymore. What it uploaded stays in the library.",
+        "confirm": "Remove target"
+      },
+      "trakt": {
+        "title": "Trakt",
+        "text": "With a Trakt app, every profile can link its own Trakt account: what they watch is scrobbled, and what they mark watched shows up in their Trakt history. Make the app at {link} with {redirect} as its redirect URI, then copy its keys here.",
+        "clientId": "Client ID",
+        "clientSecret": "Client secret",
+        "secretSaved": "Saved (type to replace)",
+        "save": "Save Trakt app",
+        "setUp": "Trakt is set up",
+        "setUpDescription": "Profiles can link their accounts in Settings › Your profile."
+      }
+    },
+    "webhooks": {
+      "title": "Webhooks",
+      "intro": "Send events like \"playback started\" to other apps, such as Home Assistant or a chat bot.",
+      "add": "Add webhook",
+      "loadFailed": "Couldn't load webhooks",
+      "empty": {
+        "title": "No webhooks yet",
+        "text": "A webhook is an address Cinemion sends a short JSON message to whenever something you pick happens. Dim the lights when a movie starts, or post new episodes to a chat."
+      },
+      "everyEvent": "Every event",
+      "sendTest": "Send test",
+      "more": "More for {name}",
+      "turnOff": "Turn off",
+      "turnOn": "Turn on",
+      "testArrived": "The test arrived",
+      "testAnswered": "{name} answered {status}.",
+      "testFailed": "The test didn't arrive",
+      "testSendFailed": "Couldn't send the test",
+      "toggleFailed": "Couldn't change the webhook",
+      "removed": "{name} was removed",
+      "removeFailed": "Couldn't remove the webhook",
+      "delivery": {
+        "nothingSent": "Nothing sent yet",
+        "test": "Test",
+        "delivered": "{event} delivered {ago} · {status}",
+        "failed": "{event} failed {ago}: {error}",
+        "failedRetry": "{event} failed {ago}: {error} Trying again {retry}."
+      },
+      "developers": {
+        "title": "For developers",
+        "text": "Each event is a {method} with a JSON body: {body}. The {header} header is {prefix} followed by the HMAC-SHA256 of the raw body, keyed with the webhook's secret, so the receiver can check it came from this server. Failed sends are tried again after 10 seconds, 1 minute and 5 minutes."
+      },
+      "remove": {
+        "title": "Remove {name}?",
+        "description": "Cinemion stops sending events to this address.",
+        "confirm": "Remove webhook"
+      },
+      "dialog": {
+        "addTitle": "Add webhook",
+        "editTitle": "Edit {name}",
+        "name": "Name",
+        "nameDescription": "Optional. Defaults to the address's host.",
+        "address": "Address",
+        "events": "Events",
+        "clearAll": "Clear all",
+        "pickAll": "Pick all",
+        "enabled": "On",
+        "enabledDescription": "Turned off, nothing is sent.",
+        "secret": "Secret",
+        "secretDescription": "For checking the {header} header.",
+        "secretCopied": "Secret copied",
+        "newSecret": "New",
+        "secretLater": "A secret for checking signatures is made when you add the webhook.",
+        "add": "Add webhook",
+        "saved": "Webhook saved",
+        "added": "Webhook added",
+        "addedDescription": "Use Send test to check that it arrives.",
+        "saveFailed": "Couldn't save the webhook",
+        "newSecretMade": "New secret made",
+        "newSecretDescription": "Update it in the receiving app too.",
+        "newSecretFailed": "Couldn't make a new secret",
+        "copyFailed": "Couldn't copy",
+        "copyByHand": "Select it and copy it by hand."
+      },
+      "events": {
+        "playbackStarted": "Playback started",
+        "playbackPaused": "Playback paused",
+        "playbackResumed": "Playback resumed",
+        "playbackStopped": "Playback stopped",
+        "itemWatched": "Finished watching",
+        "itemAdded": "New movie or episode",
+        "libraryScanned": "Library scanned",
+        "userSignedIn": "Someone signed in",
+        "togetherStarted": "Watch together started",
+        "subtitlesDownloaded": "Subtitles downloaded"
+      }
+    }
+  },
+  "libraries": {
+    "title": "Libraries",
+    "intro": "The folders Cinemion looks in for movies, shows, other videos, music and books. New files are picked up by themselves.",
+    "addButton": "Add library",
+    "loadFailed": "Couldn't load libraries",
+    "empty": "No libraries yet.",
+    "conflict": "{conflict} Use “Edit library” to change the folders.",
+    "uploadProgress": {
+      "adding": {
+        "one": "Adding an upload to the library",
+        "other": "Adding {count} uploads to the library"
+      },
+      "uploading": {
+        "one": "Uploading {count} file · {percent}%",
+        "other": "Uploading {count} files · {percent}%"
+      },
+      "needsALook": {
+        "one": "{count} upload needs a look",
+        "other": "{count} uploads need a look"
+      }
+    },
+    "scanProgress": "{status} · {percent}%",
+    "row": {
+      "scanned": "scanned {ago}",
+      "notScanned": "not scanned yet",
+      "rated": "rated {rating}",
+      "unrated": "rated unrated"
+    },
+    "scanNow": "Scan now",
+    "scanFailed": "Couldn't start the scan",
+    "moreFor": "More for {name}",
+    "menu": {
+      "upload": "Upload files",
+      "edit": "Edit library",
+      "refresh": {
+        "all": "Refresh all details",
+        "detailsAndThumbnails": "Refresh details and thumbnails",
+        "thumbnailsAndGames": "Refresh thumbnails and games",
+        "covers": "Find covers again",
+        "bookDetails": "Read book details again"
+      },
+      "remove": "Remove library"
+    },
+    "remove": {
+      "title": "Remove {name}?",
+      "description": "Cinemion forgets this library and its watch history. The files in its folders are not touched.",
+      "confirm": "Remove library",
+      "done": "{name} was removed",
+      "failed": "Couldn't remove the library"
+    },
+    "types": {
+      "movies": {
+        "name": "Movies",
+        "count": {
+          "one": "{count} movie",
+          "other": "{count} movies"
+        }
+      },
+      "shows": {
+        "name": "Shows",
+        "count": {
+          "one": "{count} show",
+          "other": "{count} shows"
+        }
+      },
+      "videos": {
+        "name": "Videos",
+        "description": "For home videos, recordings and anything else that isn't a movie or show. Nothing is looked up online: titles come from the file names, and you can edit the details by hand.",
+        "count": {
+          "one": "{count} video",
+          "other": "{count} videos"
+        }
+      },
+      "music": {
+        "name": "Music",
+        "description": "Albums, artists and tracks, sorted by the tags in the files (or folders like Artist/Album/01 Title.mp3). Covers come from the files or a cover.jpg next to them, and lyrics from tags or .lrc files. Nothing is looked up online.",
+        "count": {
+          "one": "{count} album",
+          "other": "{count} albums"
+        }
+      },
+      "photos": {
+        "name": "Photos",
+        "description": "Photos and phone videos, with every folder as an album. Dates, cameras and places come from the photos themselves (HEIC from iPhones works too), and nothing is looked up online. Everyone can also make their own albums without moving any files.",
+        "count": {
+          "one": "{count} photo",
+          "other": "{count} photos"
+        }
+      },
+      "clips": {
+        "name": "Clips",
+        "description": "Game recordings, grouped by game. The game comes from the names recorders give their files and folders (NVIDIA, AMD, Xbox Game Bar, OBS, Steam and more), with covers from Steam. Clips without a game can be given one by hand, or get a suggestion from picture recognition.",
+        "count": {
+          "one": "{count} clip",
+          "other": "{count} clips"
+        }
+      },
+      "audiobooks": {
+        "name": "Audiobooks",
+        "description": "A folder of audio files is one book (parts in CD1, CD2… folders too), and so is a single .m4b. Chapters come from the files, details from their tags, and everyone keeps their own place.",
+        "count": {
+          "one": "{count} audiobook",
+          "other": "{count} audiobooks"
+        }
+      },
+      "books": {
+        "name": "Books",
+        "description": "EPUB books are read right in Cinemion, with everyone's place saved; PDFs open in the browser's own viewer. Details and covers come from the files.",
+        "count": {
+          "one": "{count} book",
+          "other": "{count} books"
+        }
+      }
+    },
+    "form": {
+      "type": "Library type",
+      "name": "Name",
+      "noFolders": "Open a folder and choose \"{button}\"."
+    },
+    "rating": {
+      "videos": {
+        "label": "Rating for unrated videos",
+        "description": "Profiles with an age limit only see videos rated within it. Pick “{rating}” for family videos everyone may see."
+      },
+      "music": {
+        "label": "Rating for these albums",
+        "description": "Profiles with an age limit only see music rated within it. Pick “{rating}” so everyone can listen."
+      },
+      "photos": {
+        "label": "Rating for unrated photos",
+        "description": "Profiles with an age limit only see photos and videos rated within it. Pick “{rating}” for family photos everyone may see."
+      },
+      "clips": {
+        "label": "Rating for unrated clips",
+        "description": "Profiles with an age limit only see clips rated within it. Pick one that suits the games you play, like “{rating}”."
+      },
+      "books": {
+        "label": "Rating for these books",
+        "description": "Profiles with an age limit only see books rated within it. Pick “{rating}” so everyone can read and listen."
+      },
+      "none": "None: hide them from age-limited profiles"
+    },
+    "edit": {
+      "title": "Edit {name}",
+      "titleFallback": "Edit library",
+      "rescanNote": "After saving, the libraries are scanned again. Titles in folders you removed leave this library, along with their watch history here.",
+      "saved": "Library saved",
+      "failed": "Couldn't save the library"
+    },
+    "add": {
+      "title": "Add library",
+      "confirm": "Add library",
+      "added": "{name} was added",
+      "scanning": "Cinemion is scanning it now.",
+      "failed": "Couldn't add the library"
+    }
+  },
+  "folderBrowser": {
+    "path": "Folder path",
+    "drives": "Drives",
+    "top": "Top",
+    "typePath": "Type a path",
+    "useFolder": "Use this folder",
+    "selected": "Selected",
+    "empty": "No folders in here.",
+    "stopTyping": "Stop typing"
+  },
+  "uploads": {
+    "dialog": {
+      "title": "Upload to {name}",
+      "description": "Files go into the folder you pick. Zip files are unpacked there, keeping the folders inside them. Uploads keep going when you close this.",
+      "newFolder": "New folder inside it (optional)",
+      "newFolderDescription": "Use / for a folder inside a folder. It's made when the upload starts.",
+      "goesTo": "Goes to {destination}",
+      "openFolder": "Open the folder to upload into.",
+      "drop": "Drop files, folders or zip files here",
+      "maxSize": "Up to {size} each.",
+      "chooseFiles": "Choose files",
+      "chooseFolder": "Choose a folder",
+      "picked": "Picked files",
+      "leftOut": "Left out: {reason}",
+      "replace": "Replace files that are already there",
+      "replaceDescription": "Otherwise a file that's already in the folder isn't uploaded, and zip files leave those files out.",
+      "uploads": "Uploads",
+      "clearFinished": "Clear finished",
+      "cantCarryOn": "Can't carry on with that file",
+      "uploadButton": {
+        "one": "Upload {count} file · {size}",
+        "other": "Upload {count} files · {size}"
+      }
+    },
+    "accepts": {
+      "video": "Video files, subtitles, NFO files and pictures, or zip files with them.",
+      "music": "Audio files, lyrics and covers, or zip files with them.",
+      "audiobooks": "Audio files, cue sheets, descriptions and covers, or zip files with them.",
+      "books": "EPUB and PDF files and covers, or zip files with them.",
+      "photos": "Photos (JPG, HEIC, PNG and more) and videos, or zip files with them.",
+      "clips": "Video files, subtitles and pictures, or zip files with them."
+    },
+    "folderExample": {
+      "movies": "Glass Harbor (2021)",
+      "shows": "Saltwater Kings/Season 1",
+      "videos": "Holiday 2025",
+      "music": "Artist/Album",
+      "audiobooks": "Author/Book title",
+      "books": "Author",
+      "photos": "Holiday 2025/Day 1",
+      "clips": "Counter-Strike 2"
+    },
+    "skip": {
+      "notUsed": "Not a file this library uses",
+      "empty": "Empty",
+      "tooBig": "Bigger than the server takes ({size})"
+    },
+    "folderErrors": {
+      "outside": "The new folder has to be inside the folder above.",
+      "hidden": "Folder names starting with a dot are hidden, so the library would never show them."
+    },
+    "status": {
+      "waitingResumed": "Waiting · {percent}% sent before",
+      "waiting": "Waiting · {size}",
+      "percent": "{percent}%",
+      "sentOf": "{sent} of {size}",
+      "speed": "{speed}/s",
+      "retrying": "Trying again…",
+      "paused": "Stopped at {percent}%. Pick the file again to carry on.",
+      "adding": "Adding to the library",
+      "processingProgress": "{status} · {percent}%",
+      "added": "Added",
+      "stopped": "The upload stopped."
+    },
+    "timeLeft": {
+      "underAMinute": "under a minute left",
+      "minutes": {
+        "one": "about {count} min left",
+        "other": "about {count} min left"
+      },
+      "hours": "about {hours} h {minutes} min left"
+    },
+    "row": {
+      "leftOut": {
+        "one": "{count} left out",
+        "other": "{count} left out"
+      },
+      "pickFile": "Pick the file",
+      "replace": "Replace it",
+      "clear": "Clear",
+      "cancel": "Cancel upload"
+    },
+    "errors": {
+      "tooLarge": "The piece was too large for the server or a proxy in front of it.",
+      "status": "The server answered {status} {statusText}.",
+      "connectionLost": "Lost the connection to the server.",
+      "differentFile": {
+        "one": "That's a different file. Pick \"{name}\" ({count} byte) to carry on.",
+        "other": "That's a different file. Pick \"{name}\" ({count} bytes) to carry on."
+      },
+      "differentContents": "That file has different contents from the one being uploaded.",
+      "retrying": "{error} Trying again…"
+    },
+    "toasts": {
+      "uploadFailed": "Couldn't upload {name}",
+      "added": "{name} was added",
+      "addFailed": "Couldn't add {name}"
+    }
+  },
+  "updates": {
+    "title": "Updates",
+    "isOut": "Cinemion {version} is out",
+    "versions": "This server has {current}. The new one came out {date}.",
+    "whatsNew": "What's new",
+    "how": {
+      "docker": "To update, get the new image and start the container again, for example with {command}. Your libraries and settings stay as they are.",
+      "aur": "To update, upgrade the {package} package (for example with {upgrade}), then restart Cinemion with {restart}.",
+      "binary": "To update, download the new version from the release page, put it in place of this one and start Cinemion again. Your libraries and settings stay as they are.",
+      "source": "To update, get the new version with {command} and start Cinemion again."
+    },
+    "upToDate": "You have the newest Cinemion",
+    "notChecked": "Not checked yet",
+    "lastCheckFailed": "The last check didn't work: {error}",
+    "checked": "Checked {ago}.",
+    "checksSoon": "Cinemion checks a minute after it starts.",
+    "checkNow": "Check now",
+    "checkFailed": "Couldn't check for updates",
+    "switch": "Check for updates",
+    "switchDescription": "Looks at Cinemion's releases on GitHub twice a day and tells admins when there's a new one. Nothing about your server or libraries is sent, and nothing is installed by itself.",
+    "disabledByEnv": "Turned off for this server with {setting}."
+  },
+  "credits": {
+    "tmdb": "This product uses TMDB and the TMDB APIs but is not endorsed, certified, or otherwise approved by TMDB."
+  }
+}

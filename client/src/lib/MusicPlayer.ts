@@ -6,6 +6,7 @@ import MusicApi from "../Api/MusicApi.ts";
 import BooksApi from "../Api/BooksApi.ts";
 import ItemsApi from "../Api/ItemsApi.ts";
 import { router } from "./Router.tsx";
+import { t } from "../i18n/I18n.ts";
 
 export type RepeatMode = "off" | "all" | "one";
 
@@ -236,9 +237,9 @@ export class MusicPlayerController extends Controller {
    * @param play Start playing too, like when a track repeats.
    */
   public seek(time: number, play = false) {
-    const t = Math.max(0, Math.min(time, this.duration || time));
-    this.position = t;
-    if (this._audio?.src) this._audio.currentTime = t;
+    const at = Math.max(0, Math.min(time, this.duration || time));
+    this.position = at;
+    if (this._audio?.src) this._audio.currentTime = at;
     if (play) this.resume();
     this._updatePositionState();
     this.notify();
@@ -283,7 +284,7 @@ export class MusicPlayerController extends Controller {
     }
     else if (!on && this.shuffle && this._unshuffled) {
       this.queue = this._unshuffled;
-      this.index = Math.max(0, this.queue.findIndex((t) => t.id === current?.id));
+      this.index = Math.max(0, this.queue.findIndex((track) => track.id === current?.id));
       this._unshuffled = null;
     }
     this.shuffle = on;
@@ -432,7 +433,7 @@ export class MusicPlayerController extends Controller {
     audio.addEventListener("ended", () => this.next(true));
     audio.addEventListener("error", () => {
       if (!audio.src || !audio.error) return;
-      this._fail(new Error("This track can't be played right now."));
+      this._fail(new Error(t("music.player.cantPlay")));
     });
     this._audio = audio;
     this._setUpMediaSession();
@@ -487,7 +488,7 @@ export class MusicPlayerController extends Controller {
     if ((error as Error)?.name === "AbortError") return;
     this.loading = false;
     this.playing = false;
-    this.error = (error as Error)?.message ?? "This track can't be played right now.";
+    this.error = (error as Error)?.message ?? t("music.player.cantPlay");
     this.notify();
   }
 
@@ -523,7 +524,7 @@ export class MusicPlayerController extends Controller {
       // Long queues keep the part around the current track
       const start = Math.max(0, this.index - 100);
       const saved: Saved = {
-        ids: this.queue.slice(start, start + 500).map((t) => t.id),
+        ids: this.queue.slice(start, start + 500).map((track) => track.id),
         index: this.index - start,
         position: this.position,
         shuffle: this.shuffle,
@@ -551,12 +552,12 @@ export class MusicPlayerController extends Controller {
    */
   public seekTimeline(time: number) {
     if (!this.book) return this.seek(time);
-    const t = Math.max(0, Math.min(time, this.book.duration - 0.5));
-    const index = this._partAt(t);
+    const at = Math.max(0, Math.min(time, this.book.duration - 0.5));
+    const index = this._partAt(at);
     const part = this.book.parts[index];
-    if (index === this.index && this._audio?.src) return this.seek(t - part.offset);
+    if (index === this.index && this._audio?.src) return this.seek(at - part.offset);
     this.index = index;
-    this._load(this.playing, t - part.offset);
+    this._load(this.playing, at - part.offset);
   }
 
   /**
@@ -635,7 +636,7 @@ export class MusicPlayerController extends Controller {
       albumId: null,
       albumTitle: detail.title,
       artistId: null,
-      artistName: detail.authors.join(", ") || detail.title,
+      artistName: detail.authors.join(t("common.listSeparator")) || detail.title,
       trackArtist: null,
       disc: null,
       number: i + 1,

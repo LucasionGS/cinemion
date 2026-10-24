@@ -4,42 +4,62 @@ import IconButton from "../IconButton/IconButton.tsx";
 import TextField from "../TextField/TextField.tsx";
 import Select from "../Select/Select.tsx";
 import { session } from "../../Session.ts";
+import { rich, t, type TranslationKey } from "../../i18n/I18n.ts";
 import TmdbCredit from "../TmdbCredit/TmdbCredit.tsx";
 import "./MetadataForm.scss";
 
-const PROVIDERS: Record<string, { name: string; description: string }> = {
-  local: { name: "Your files", description: "NFO files and artwork next to your videos" },
-  tmdb: { name: "TMDB", description: "Online database for movies and shows" },
-  tvdb: { name: "TheTVDB", description: "Online database for shows, strong on anime and episode orders" },
+/**
+ * Each source's name and what it is. Online services go by their own `brand` name.
+ */
+const PROVIDERS: Record<string, { name?: TranslationKey; brand?: string; description: TranslationKey }> = {
+  local: { name: "metadataForm.providers.local", description: "metadataForm.providers.localDescription" },
+  tmdb: { brand: "TMDB", description: "metadataForm.providers.tmdbDescription" },
+  tvdb: { brand: "TheTVDB", description: "metadataForm.providers.tvdbDescription" },
 };
 
-const LANGUAGES = [
-  { value: "en", label: "English" },
-  { value: "nl", label: "Dutch" },
-  { value: "de", label: "German" },
-  { value: "fr", label: "French" },
-  { value: "es", label: "Spanish" },
-  { value: "it", label: "Italian" },
-  { value: "pt", label: "Portuguese" },
-  { value: "sv", label: "Swedish" },
-  { value: "da", label: "Danish" },
-  { value: "no", label: "Norwegian" },
-  { value: "ja", label: "Japanese" },
+const LANGUAGES: { value: string; label: TranslationKey }[] = [
+  { value: "en", label: "metadataForm.languages.en" },
+  { value: "nl", label: "metadataForm.languages.nl" },
+  { value: "de", label: "metadataForm.languages.de" },
+  { value: "fr", label: "metadataForm.languages.fr" },
+  { value: "es", label: "metadataForm.languages.es" },
+  { value: "it", label: "metadataForm.languages.it" },
+  { value: "pt", label: "metadataForm.languages.pt" },
+  { value: "sv", label: "metadataForm.languages.sv" },
+  { value: "da", label: "metadataForm.languages.da" },
+  { value: "no", label: "metadataForm.languages.no" },
+  { value: "ja", label: "metadataForm.languages.ja" },
 ];
 
-export const COUNTRIES = [
-  { value: "US", label: "United States" },
-  { value: "GB", label: "United Kingdom" },
-  { value: "NL", label: "Netherlands" },
-  { value: "DE", label: "Germany" },
-  { value: "FR", label: "France" },
-  { value: "ES", label: "Spain" },
-  { value: "IT", label: "Italy" },
-  { value: "SE", label: "Sweden" },
-  { value: "DK", label: "Denmark" },
-  { value: "NO", label: "Norway" },
-  { value: "JP", label: "Japan" },
+export const COUNTRIES: { value: string; label: TranslationKey }[] = [
+  { value: "US", label: "metadataForm.countries.us" },
+  { value: "GB", label: "metadataForm.countries.gb" },
+  { value: "NL", label: "metadataForm.countries.nl" },
+  { value: "DE", label: "metadataForm.countries.de" },
+  { value: "FR", label: "metadataForm.countries.fr" },
+  { value: "ES", label: "metadataForm.countries.es" },
+  { value: "IT", label: "metadataForm.countries.it" },
+  { value: "SE", label: "metadataForm.countries.se" },
+  { value: "DK", label: "metadataForm.countries.dk" },
+  { value: "NO", label: "metadataForm.countries.no" },
+  { value: "JP", label: "metadataForm.countries.jp" },
 ];
+
+/**
+ * A source's name to show, or its id when Cinemion doesn't know it.
+ */
+function providerName(id: string) {
+  const provider = PROVIDERS[id];
+  if (!provider) return id;
+  return provider.name ? t(provider.name) : provider.brand ?? id;
+}
+
+/**
+ * A "How to get one" link to where a service hands out keys.
+ */
+function keyLink(href: string) {
+  return (text: string) => <a href={href} target="_blank" rel="noreferrer">{text}</a>;
+}
 
 export interface MetadataFormProps {
   value: MetadataSettings;
@@ -63,50 +83,50 @@ export default function MetadataForm(props: MetadataFormProps) {
 
   return (
     <div className="cn-metadata-form">
-      <ol className="cn-metadata-form__providers" aria-label="Metadata sources, in priority order">
+      <ol className="cn-metadata-form__providers" aria-label={t("metadataForm.sources")}>
         {value.providers.map((id, i) => (
           <li key={id} className="cn-metadata-form__provider">
             <div className="cn-metadata-form__provider-row">
               <span className="cn-metadata-form__rank">{i + 1}</span>
               <div className="cn-metadata-form__provider-text">
-                <strong>{PROVIDERS[id]?.name ?? id}</strong>
-                <span>{PROVIDERS[id]?.description}</span>
+                <strong>{providerName(id)}</strong>
+                <span>{PROVIDERS[id] && t(PROVIDERS[id].description)}</span>
               </div>
-              <IconButton label={`Move ${PROVIDERS[id]?.name} up`} icon={<ArrowUp />} size="sm" variant="ghost" disabled={i === 0} onClick={() => moveProvider(i, -1)} />
-              <IconButton label={`Move ${PROVIDERS[id]?.name} down`} icon={<ArrowDown />} size="sm" variant="ghost" disabled={i === value.providers.length - 1} onClick={() => moveProvider(i, 1)} />
+              <IconButton label={t("metadataForm.moveUp", { name: providerName(id) })} icon={<ArrowUp />} size="sm" variant="ghost" disabled={i === 0} onClick={() => moveProvider(i, -1)} />
+              <IconButton label={t("metadataForm.moveDown", { name: providerName(id) })} icon={<ArrowDown />} size="sm" variant="ghost" disabled={i === value.providers.length - 1} onClick={() => moveProvider(i, 1)} />
             </div>
             {id === "tmdb" && (
               <TextField
-                label={builtIn ? "Your own API key (optional)" : "API key"}
+                label={builtIn ? t("metadataForm.tmdb.ownKey") : t("metadataForm.tmdb.apiKey")}
                 className="cn-metadata-form__field"
-                placeholder={builtIn ? "Uses the key built into Cinemion" : "Paste your TMDB API key or read access token"}
+                placeholder={builtIn ? t("metadataForm.tmdb.builtInPlaceholder") : t("metadataForm.tmdb.placeholder")}
                 autoComplete="off"
                 value={value.tmdbApiKey ?? ""}
                 onChange={(e) => onChange({ ...value, tmdbApiKey: e.target.value })}
                 description={builtIn
-                  ? <>TMDB works without one. Add your own key if the built-in one stops working or you'd rather use your own. <a href="https://www.themoviedb.org/settings/api" target="_blank" rel="noreferrer">How to get one</a></>
-                  : <>Free with a TMDB account. <a href="https://www.themoviedb.org/settings/api" target="_blank" rel="noreferrer">How to get one</a></>}
+                  ? rich("metadataForm.tmdb.builtInDescription", { link: keyLink("https://www.themoviedb.org/settings/api") })
+                  : rich("metadataForm.tmdb.description", { link: keyLink("https://www.themoviedb.org/settings/api") })}
               />
             )}
             {id === "tmdb" && <div className="cn-metadata-form__field"><TmdbCredit compact /></div>}
             {id === "tvdb" && (
               <div className="cn-metadata-form__keys">
                 <TextField
-                  label="API key"
+                  label={t("metadataForm.tvdb.apiKey")}
                   className="cn-metadata-form__field"
-                  placeholder="Paste your TheTVDB project API key"
+                  placeholder={t("metadataForm.tvdb.placeholder")}
                   autoComplete="off"
                   value={value.tvdbApiKey ?? ""}
                   onChange={(e) => onChange({ ...value, tvdbApiKey: e.target.value })}
-                  description={<>From a TheTVDB account. <a href="https://thetvdb.com/api-information" target="_blank" rel="noreferrer">How to get one</a></>}
+                  description={rich("metadataForm.tvdb.description", { link: keyLink("https://thetvdb.com/api-information") })}
                 />
                 <TextField
-                  label="Subscriber PIN (optional)"
+                  label={t("metadataForm.tvdb.pin")}
                   className="cn-metadata-form__field"
                   autoComplete="off"
                   value={value.tvdbPin ?? ""}
                   onChange={(e) => onChange({ ...value, tvdbPin: e.target.value })}
-                  description="Only for keys that come with a TheTVDB subscription."
+                  description={t("metadataForm.tvdb.pinDescription")}
                 />
               </div>
             )}
@@ -114,16 +134,16 @@ export default function MetadataForm(props: MetadataFormProps) {
         ))}
       </ol>
       <TextField
-        label="OMDb API key, for ratings (optional)"
-        placeholder="Paste your OMDb API key"
+        label={t("metadataForm.omdb.label")}
+        placeholder={t("metadataForm.omdb.placeholder")}
         autoComplete="off"
         value={value.omdbApiKey ?? ""}
         onChange={(e) => onChange({ ...value, omdbApiKey: e.target.value })}
-        description={<>Adds IMDb, Rotten Tomatoes and Metacritic scores to movies and shows that have an IMDb id. Free keys allow 1000 lookups a day. <a href="https://www.omdbapi.com/apikey.aspx" target="_blank" rel="noreferrer">How to get one</a></>}
+        description={rich("metadataForm.omdb.description", { link: keyLink("https://www.omdbapi.com/apikey.aspx") })}
       />
       <div className="cn-metadata-form__row">
-        <Select label="Language" value={value.language} options={LANGUAGES} onChange={(e) => onChange({ ...value, language: e.target.value })} />
-        <Select label="Country (for age ratings)" value={value.country} options={COUNTRIES} onChange={(e) => onChange({ ...value, country: e.target.value })} />
+        <Select label={t("metadataForm.language")} value={value.language} options={LANGUAGES.map((l) => ({ value: l.value, label: t(l.label) }))} onChange={(e) => onChange({ ...value, language: e.target.value })} />
+        <Select label={t("metadataForm.country")} value={value.country} options={COUNTRIES.map((c) => ({ value: c.value, label: t(c.label) }))} onChange={(e) => onChange({ ...value, country: e.target.value })} />
       </div>
     </div>
   );

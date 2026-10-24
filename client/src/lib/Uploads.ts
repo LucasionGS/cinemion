@@ -2,6 +2,7 @@ import type { UploadInfo, UploadRules } from "@shared/uploads.ts";
 import Controller from "./Controller.ts";
 import UploadsApi from "../Api/UploadsApi.ts";
 import { toasts } from "./Toasts.ts";
+import { t } from "../i18n/I18n.ts";
 
 // Pieces start this big and halve when a reverse proxy refuses them (nginx allows 1 MB by default)
 const START_CHUNK = 32 * 1024 * 1024;
@@ -160,9 +161,9 @@ export class UploadController extends Controller {
     const entry = this._entry(key);
     if (!entry?.server) return;
     if (file.size !== entry.size || (entry.server.lastModified && file.lastModified !== entry.server.lastModified)) {
-      throw new Error(`That's a different file. Pick "${entry.path.split("/").pop()}" (${entry.size} bytes) to carry on.`);
+      throw new Error(t("uploads.errors.differentFile", { name: entry.path.split("/").pop() ?? "", count: entry.size }));
     }
-    if (await fingerprint(file) !== entry.server.fingerprint) throw new Error("That file has different contents from the one being uploaded.");
+    if (await fingerprint(file) !== entry.server.fingerprint) throw new Error(t("uploads.errors.differentContents"));
     entry.file = file;
     entry.state = "waiting";
     entry.error = null;
@@ -303,7 +304,7 @@ export class UploadController extends Controller {
           const temporary = error.status === 0 || error.status === 502 || error.status === 503 || error.status === 504;
           if (!temporary || ++attempts > MAX_ATTEMPTS) throw error;
           entry.state = "retrying";
-          entry.error = `${error.message} Trying again…`;
+          entry.error = t("uploads.errors.retrying", { error: error.message });
           entry.speed = null;
           this.notify();
           await wait(RETRY_DELAYS[Math.min(attempts - 1, RETRY_DELAYS.length - 1)] * 1000, abort.signal);
@@ -327,7 +328,7 @@ export class UploadController extends Controller {
       entry.state = "failed";
       entry.speed = null;
       entry.error = (error as Error).message;
-      toasts.error(`Couldn't upload ${entry.path.split("/").pop()}`, entry.error);
+      toasts.error(t("uploads.toasts.uploadFailed", { name: entry.path.split("/").pop() ?? "" }), entry.error);
     } finally {
       this._aborts.delete(entry.key);
       this.notify();
@@ -355,8 +356,8 @@ export class UploadController extends Controller {
         if (info.status === "done" || info.status === "failed") {
           entry.state = info.status;
           entry.error = info.status === "failed" ? info.message : null;
-          if (info.status === "done") toasts.success(`${entry.path.split("/").pop()} was added`, info.isZip ? info.message ?? undefined : undefined);
-          else toasts.error(`Couldn't add ${entry.path.split("/").pop()}`, info.message ?? undefined);
+          if (info.status === "done") toasts.success(t("uploads.toasts.added", { name: entry.path.split("/").pop() ?? "" }), info.isZip ? info.message ?? undefined : undefined);
+          else toasts.error(t("uploads.toasts.addFailed", { name: entry.path.split("/").pop() ?? "" }), info.message ?? undefined);
           break;
         }
         this.notify();

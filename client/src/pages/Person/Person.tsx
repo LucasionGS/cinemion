@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import type { PersonDetail } from "@shared/media.ts";
 import ItemsApi from "../../Api/ItemsApi.ts";
+import { t, type TranslationKey } from "../../i18n/I18n.ts";
 import AppShell from "../../components/AppShell/AppShell.tsx";
 import PosterCard, { fallbackColor } from "../../components/PosterCard/PosterCard.tsx";
 import Spinner from "../../components/Spinner/Spinner.tsx";
@@ -10,13 +11,13 @@ export interface PersonProps {
   id: number;
 }
 
-const KIND_LABELS: Record<string, string> = {
-  director: "Director",
-  writer: "Writer",
-  producer: "Producer",
-  composer: "Music",
-  author: "Author",
-  narrator: "Narrator",
+const KIND_LABELS: Record<string, TranslationKey> = {
+  director: "person.roles.director",
+  writer: "person.roles.writer",
+  producer: "person.roles.producer",
+  composer: "person.roles.composer",
+  author: "person.roles.author",
+  narrator: "person.roles.narrator",
 };
 
 /**
@@ -45,12 +46,12 @@ export default function Person(props: PersonProps) {
             </span>
             <div>
               <h1>{person.name}</h1>
-              <p>{person.credits.length} {person.credits.length === 1 ? "title" : "titles"} in your libraries</p>
+              <p>{t("person.titles", { count: person.credits.length })}</p>
             </div>
           </header>
           <div className="cn-person-page__grid">
             {person.credits.map(({ item, kind, character }) => (
-              <PosterCard key={item.id} item={item} subtitle={kind === "cast" ? character ?? (item.year ? String(item.year) : "") : KIND_LABELS[kind] ?? kind} />
+              <PosterCard key={item.id} item={item} subtitle={kind === "cast" ? character ?? (item.year ? String(item.year) : "") : KIND_LABELS[kind] ? t(KIND_LABELS[kind]) : kind} />
             ))}
           </div>
         </div>

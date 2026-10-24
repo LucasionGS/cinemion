@@ -1,6 +1,7 @@
 import { Star } from "lucide-react";
 import type { ItemDetail, MediaFileInfo } from "@shared/media.ts";
 import { formatDuration } from "../../lib/playback.ts";
+import { t } from "../../i18n/I18n.ts";
 import "./ItemMeta.scss";
 
 /**
@@ -36,16 +37,16 @@ export default function ItemMeta(props: ItemMetaProps) {
   const { item } = props;
   const year = item.type === "show" && item.year ? `${item.year}` : item.releaseDate?.slice(0, 4) ?? (item.year ? String(item.year) : null);
   const length = item.type === "show"
-    ? `${item.childCount} ${item.childCount === 1 ? "season" : "seasons"}`
+    ? t("item.meta.seasons", { count: item.childCount })
     : item.runtime ? formatDuration(item.runtime * 60) : null;
 
   return (
     <div className="cn-meta">
       {year && <span>{year}</span>}
       {length && <span>{length}</span>}
-      {item.genres.length > 0 && <span>{item.genres.slice(0, 3).join(", ")}</span>}
+      {item.genres.length > 0 && <span>{item.genres.slice(0, 3).join(t("common.listSeparator"))}</span>}
       {item.rating !== null && item.ratings?.imdb == null && <span className="cn-meta__rating"><Star aria-hidden="true" />{item.rating.toFixed(1)}</span>}
-      {item.ratings?.imdb != null && <Score label="IMDb" name="IMDb rating" value={item.ratings.imdb.toFixed(1)} detail={item.ratings.imdbVotes ? `${item.ratings.imdbVotes.toLocaleString()} votes` : null} />}
+      {item.ratings?.imdb != null && <Score label="IMDb" name={t("item.meta.imdbRating")} value={item.ratings.imdb.toFixed(1)} detail={item.ratings.imdbVotes ? t("item.meta.votes", { count: item.ratings.imdbVotes }) : null} />}
       {item.ratings?.rottenTomatoes != null && <Score label="RT" name="Rotten Tomatoes" value={`${item.ratings.rottenTomatoes}%`} />}
       {item.ratings?.metacritic != null && <Score label="MC" name="Metacritic" value={String(item.ratings.metacritic)} />}
       {item.contentRating && <span className="cn-meta__badge cn-meta__badge--outline">{item.contentRating}</span>}
@@ -57,7 +58,7 @@ export default function ItemMeta(props: ItemMetaProps) {
 function Score(props: { label: string; name: string; value: string; detail?: string | null }) {
   const { label, name, value, detail } = props;
   return (
-    <span className="cn-meta__score" title={detail ? `${name}, ${detail}` : name}>
+    <span className="cn-meta__score" title={detail ? t("item.meta.scoreDetail", { name, detail }) : name}>
       <b aria-label={name}>{label}</b> {value}
     </span>
   );

@@ -4,6 +4,7 @@ import { ImagePlus, Trash2, ZoomIn, ZoomOut } from "lucide-react";
 import type { UserInfo } from "@shared/api.ts";
 import UsersApi from "../../Api/UsersApi.ts";
 import { toasts } from "../../lib/Toasts.ts";
+import { t, type TranslationKey } from "../../i18n/I18n.ts";
 import Dialog from "../Dialog/Dialog.tsx";
 import Button from "../Button/Button.tsx";
 import Avatar from "../Avatar/Avatar.tsx";
@@ -22,6 +23,12 @@ const MARGIN_REM = 2;
 // Edge length of the square sent to the server, which scales it down to every stored size
 const EXPORT_SIZE = 768;
 const MAX_ZOOM = 4;
+// Where the picture shows up, in rem
+const PREVIEWS: { size: number; label: TranslationKey }[] = [
+  { size: 7.5, label: "avatarEditor.previews.picker" },
+  { size: 3, label: "avatarEditor.previews.topBar" },
+  { size: 1.75, label: "avatarEditor.previews.badges" },
+];
 
 interface LoadedImage {
   element: HTMLImageElement;
@@ -85,7 +92,7 @@ export default function AvatarEditor(props: AvatarEditorProps) {
     };
     element.onerror = () => {
       URL.revokeObjectURL(url);
-      toasts.error("This browser can't open that picture", "Try a JPG, PNG or WebP.");
+      toasts.error(t("avatarEditor.cantOpen"), t("avatarEditor.cantOpenDescription"));
     };
     element.src = url;
   }
@@ -120,12 +127,12 @@ export default function AvatarEditor(props: AvatarEditorProps) {
       const side = frame / scale;
       canvas.getContext("2d")!.drawImage(image.element, center.x - side / 2, center.y - side / 2, side, side, 0, 0, EXPORT_SIZE, EXPORT_SIZE);
       const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/png"));
-      if (!blob) throw new Error("Could not prepare the picture.");
+      if (!blob) throw new Error(t("avatarEditor.couldntPrepare"));
       onSaved(await UsersApi.uploadAvatar(user.id, blob));
-      toasts.success("Profile picture saved");
+      toasts.success(t("avatarEditor.saved"));
       onOpenChange(false);
     } catch (error) {
-      toasts.error("Couldn't save the picture", (error as Error).message);
+      toasts.error(t("avatarEditor.couldntSave"), (error as Error).message);
     } finally {
       setSaving(false);
     }
@@ -135,10 +142,10 @@ export default function AvatarEditor(props: AvatarEditorProps) {
     setRemoving(true);
     try {
       onSaved(await UsersApi.removeAvatar(user.id));
-      toasts.success("Profile picture removed");
+      toasts.success(t("avatarEditor.removed"));
       onOpenChange(false);
     } catch (error) {
-      toasts.error("Couldn't remove the picture", (error as Error).message);
+      toasts.error(t("avatarEditor.couldntRemove"), (error as Error).message);
     } finally {
       setRemoving(false);
     }
@@ -167,14 +174,14 @@ export default function AvatarEditor(props: AvatarEditorProps) {
 
   const footer = (
     <>
-      {user.avatar && !image && <Button variant="danger" icon={<Trash2 />} onClick={removePicture} loading={removing}>Remove picture and use initials</Button>}
-      <Button variant="ghost" onClick={() => onOpenChange(false)}>Cancel</Button>
-      {image && <Button variant="primary" onClick={save} loading={saving}>Save picture</Button>}
+      {user.avatar && !image && <Button variant="danger" icon={<Trash2 />} onClick={removePicture} loading={removing}>{t("avatarEditor.removePicture")}</Button>}
+      <Button variant="ghost" onClick={() => onOpenChange(false)}>{t("common.cancel")}</Button>
+      {image && <Button variant="primary" onClick={save} loading={saving}>{t("avatarEditor.save")}</Button>}
     </>
   );
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange} title="Profile picture" description={image ? "Drag the photo to reposition it." : "Choose a photo. You can crop it next."} size="lg" footer={footer}>
+    <Dialog open={open} onOpenChange={onOpenChange} title={t("avatarEditor.title")} description={image ? t("avatarEditor.descriptionCrop") : t("avatarEditor.descriptionPick")} size="lg" footer={footer}>
       <input
         ref={fileInput}
         type="file"
@@ -190,8 +197,8 @@ export default function AvatarEditor(props: AvatarEditorProps) {
       {!image && (
         <div className="cn-avatar-editor__empty">
           <Avatar profile={user} size={7.5} />
-          <Button variant="primary" size="lg" icon={<ImagePlus />} onClick={() => fileInput.current?.click()} data-autofocus>Choose a photo</Button>
-          <span className="cn-avatar-editor__hint">JPG, PNG or WebP, up to 10 MB</span>
+          <Button variant="primary" size="lg" icon={<ImagePlus />} onClick={() => fileInput.current?.click()} data-autofocus>{t("avatarEditor.choose")}</Button>
+          <span className="cn-avatar-editor__hint">{t("avatarEditor.hint")}</span>
         </div>
       )}
 
@@ -216,7 +223,7 @@ export default function AvatarEditor(props: AvatarEditorProps) {
                 <Slider.Control className="cn-slider__control">
                   <Slider.Track className="cn-slider__track">
                     <Slider.Indicator className="cn-slider__indicator" />
-                    <Slider.Thumb className="cn-slider__thumb" aria-label="Zoom" />
+                    <Slider.Thumb className="cn-slider__thumb" aria-label={t("avatarEditor.zoom")} />
                   </Slider.Track>
                 </Slider.Control>
               </Slider.Root>
@@ -225,17 +232,17 @@ export default function AvatarEditor(props: AvatarEditorProps) {
           </div>
 
           <div className="cn-avatar-editor__side">
-            <span className="cn-avatar-editor__label">Preview</span>
+            <span className="cn-avatar-editor__label">{t("avatarEditor.preview")}</span>
             <div className="cn-avatar-editor__previews">
-              {[{ size: 7.5, label: "Profile picker" }, { size: 3, label: "Top bar" }, { size: 1.75, label: "Badges" }].map((p) => (
+              {PREVIEWS.map((p) => (
                 <div key={p.label} className="cn-avatar-editor__preview">
                   <span className="cn-avatar-editor__preview-image" style={{ width: `${p.size}rem`, height: `${p.size}rem`, ...previewStyle(p.size) }} />
-                  <span>{p.label}</span>
+                  <span>{t(p.label)}</span>
                 </div>
               ))}
             </div>
-            <p className="cn-avatar-editor__hint">Saved in every size Cinemion needs, from the profile picker down to the small badges in watch together.</p>
-            <Button variant="secondary" onClick={() => fileInput.current?.click()}>Choose another photo</Button>
+            <p className="cn-avatar-editor__hint">{t("avatarEditor.sizesHint")}</p>
+            <Button variant="secondary" onClick={() => fileInput.current?.click()}>{t("avatarEditor.chooseAnother")}</Button>
           </div>
         </div>
       )}

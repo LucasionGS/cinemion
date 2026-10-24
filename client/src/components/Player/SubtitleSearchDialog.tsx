@@ -6,6 +6,8 @@ import SubtitlesApi from "../../Api/SubtitlesApi.ts";
 import useController from "../../lib/useController.ts";
 import { toasts } from "../../lib/Toasts.ts";
 import cx from "../../lib/cx.ts";
+import { displayLanguage } from "../../lib/playback.ts";
+import { t } from "../../i18n/I18n.ts";
 import Dialog from "../Dialog/Dialog.tsx";
 import Button from "../Button/Button.tsx";
 import Select from "../Select/Select.tsx";
@@ -86,20 +88,22 @@ export default function SubtitleSearchDialog(props: SubtitleSearchDialogProps) {
       const track = await SubtitlesApi.download({ fileId, provider: result.provider, id: result.id, language: result.language, isHearingImpaired: result.isHearingImpaired });
       setUsed((u) => [...u, result.id]);
       controller.addSubtitle(track);
-      toasts.success("Subtitles added", "They're saved for next time too.");
+      toasts.success(t("player.subtitleSearch.added"), t("player.subtitleSearch.addedDescription"));
       onOpenChange(false);
     } catch (e) {
-      toasts.error("Couldn't download the subtitles", (e as Error).message);
+      toasts.error(t("player.subtitleSearch.downloadFailed"), (e as Error).message);
     } finally {
       setDownloading(null);
     }
   }
 
   const fileName = item.files.find((f) => f.id === fileId)?.path.split(/[\\/]/).pop();
-  const title = item.type === "episode" ? `${item.showTitle ?? ""} · ${item.title}` : `${item.title}${item.year ? ` (${item.year})` : ""}`;
+  const title = item.type === "episode"
+    ? t("player.subtitleSearch.episode", { show: item.showTitle ?? "", episode: item.title })
+    : item.year ? t("player.subtitleSearch.movieYear", { title: item.title, year: String(item.year) }) : item.title;
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange} title="Find subtitles" description={[title, fileName].filter(Boolean).join(" · ")} size="lg" container={container}>
+    <Dialog open={open} onOpenChange={onOpenChange} title={t("player.subtitleSearch.title")} description={[title, fileName].filter(Boolean).join(t("common.dotSeparator"))} size="lg" container={container}>
       <div className="cn-subtitle-search">
         <form
           className="cn-subtitle-search__form"
@@ -108,37 +112,37 @@ export default function SubtitleSearchDialog(props: SubtitleSearchDialogProps) {
             search();
           }}
         >
-          <Select label="Language" value={language} onChange={(e) => setLanguage(e.target.value)} options={LANGUAGES.map((l) => ({ value: l.code, label: l.name }))} />
-          <TextField label="Search" type="search" placeholder={item.type === "episode" ? item.showTitle ?? item.title : item.title} value={query} onChange={(e) => setQuery(e.target.value)} />
-          <Button type="submit" variant="secondary" icon={<Search />} loading={loading}>Search</Button>
+          <Select label={t("player.subtitleSearch.language")} value={language} onChange={(e) => setLanguage(e.target.value)} options={LANGUAGES.map((l) => ({ value: l.code, label: displayLanguage(l.code) ?? l.name }))} />
+          <TextField label={t("common.search")} type="search" placeholder={item.type === "episode" ? item.showTitle ?? item.title : item.title} value={query} onChange={(e) => setQuery(e.target.value)} />
+          <Button type="submit" variant="secondary" icon={<Search />} loading={loading}>{t("common.search")}</Button>
         </form>
-        <Switch label="Only subtitles for the hearing impaired" checked={hearingImpaired} onChange={setHearingImpaired} />
+        <Switch label={t("player.subtitleSearch.hearingImpaired")} checked={hearingImpaired} onChange={setHearingImpaired} />
 
         <div className="cn-subtitle-search__results" aria-busy={loading}>
-          {loading && !results && <Spinner size="2rem" label="Searching" />}
+          {loading && !results && <Spinner size="2rem" label={t("player.subtitleSearch.searching")} />}
           {error && <p className="cn-subtitle-search__message cn-subtitle-search__message--error">{error}</p>}
-          {results?.length === 0 && !loading && <p className="cn-subtitle-search__message">Nothing found in {findLanguage(language)?.name}. Try another title or language.</p>}
+          {results?.length === 0 && !loading && <p className="cn-subtitle-search__message">{t("player.subtitleSearch.nothingFound", { language: displayLanguage(language) ?? "" })}</p>}
           {results?.map((r) => (
             <div key={`${r.provider}-${r.id}`} className="cn-subtitle-search__row">
               <div className="cn-subtitle-search__text">
                 <strong>{r.name}</strong>
                 <span className="cn-subtitle-search__meta">
-                  {r.matchesFile && <span className="cn-subtitle-search__tag cn-subtitle-search__tag--match">Matches your file</span>}
-                  {r.isHearingImpaired && <span className="cn-subtitle-search__tag">SDH</span>}
-                  <span>{[SITE_NAMES[r.provider] ?? r.provider, r.downloads ? `${r.downloads.toLocaleString()} downloads` : null, r.rating ? `★ ${r.rating}` : null, ...r.notes].filter(Boolean).join(" · ")}</span>
+                  {r.matchesFile && <span className="cn-subtitle-search__tag cn-subtitle-search__tag--match">{t("player.subtitleSearch.matchesFile")}</span>}
+                  {r.isHearingImpaired && <span className="cn-subtitle-search__tag">{t("player.subtitleSearch.sdh")}</span>}
+                  <span>{[SITE_NAMES[r.provider] ?? r.provider, r.downloads ? t("player.subtitleSearch.downloads", { count: r.downloads }) : null, r.rating ? t("player.subtitleSearch.rating", { rating: r.rating }) : null, ...r.notes].filter(Boolean).join(t("common.dotSeparator"))}</span>
                 </span>
               </div>
               {used.includes(r.id)
-                ? <span className="cn-subtitle-search__used"><Check /> In use</span>
+                ? <span className="cn-subtitle-search__used"><Check /> {t("player.subtitleSearch.inUse")}</span>
                 : (
                   <Button size="sm" variant={r.matchesFile ? "primary" : "secondary"} loading={downloading === r.id} disabled={downloading !== null && downloading !== r.id} onClick={() => use(r)}>
-                    Use
+                    {t("player.subtitleSearch.use")}
                   </Button>
                 )}
             </div>
           ))}
         </div>
-        <p className={cx("cn-subtitle-search__footer")}>Results from the subtitle sites set up in Settings › Subtitles. Downloads are kept with the video, so they're there next time.</p>
+        <p className={cx("cn-subtitle-search__footer")}>{t("player.subtitleSearch.footer")}</p>
       </div>
     </Dialog>
   );

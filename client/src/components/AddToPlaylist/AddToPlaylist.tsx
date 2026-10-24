@@ -5,6 +5,7 @@ import PlaylistsApi from "../../Api/PlaylistsApi.ts";
 import Controller from "../../lib/Controller.ts";
 import useController from "../../lib/useController.ts";
 import { toasts } from "../../lib/Toasts.ts";
+import { t } from "../../i18n/I18n.ts";
 import Dialog from "../Dialog/Dialog.tsx";
 import Button from "../Button/Button.tsx";
 import TextField from "../TextField/TextField.tsx";
@@ -50,7 +51,7 @@ export default function AddToPlaylist() {
   const [playlists, setPlaylists] = useState<PlaylistSummary[] | null>(null);
   const [name, setName] = useState("");
   const [busy, setBusy] = useState(false);
-  const count = trackIds.length === 1 ? "1 track" : `${trackIds.length} tracks`;
+  const count = trackIds.length;
 
   useEffect(() => {
     if (!open) return;
@@ -63,11 +64,11 @@ export default function AddToPlaylist() {
     setBusy(true);
     try {
       await PlaylistsApi.addTracks(playlist.id, trackIds);
-      toasts.success(`Added ${count} to ${playlist.name}`);
+      toasts.success(t("music.addToPlaylist.added", { count, name: playlist.name }));
       addToPlaylist.changed();
       addToPlaylist.close();
     } catch (error) {
-      toasts.error("Couldn't add to the playlist", (error as Error).message);
+      toasts.error(t("music.addToPlaylist.addFailed"), (error as Error).message);
     } finally {
       setBusy(false);
     }
@@ -79,21 +80,21 @@ export default function AddToPlaylist() {
     setBusy(true);
     try {
       const playlist = await PlaylistsApi.create(name, trackIds);
-      toasts.success(`Made ${playlist.name} with ${count}`);
+      toasts.success(t("music.addToPlaylist.made", { count, name: playlist.name }));
       addToPlaylist.changed();
       addToPlaylist.close();
     } catch (error) {
-      toasts.error("Couldn't make the playlist", (error as Error).message);
+      toasts.error(t("music.addToPlaylist.makeFailed"), (error as Error).message);
     } finally {
       setBusy(false);
     }
   }
 
   return (
-    <Dialog open={open} onOpenChange={(value) => !value && addToPlaylist.close()} title="Add to playlist" description={`Add ${count} to one of your playlists, or start a new one.`} size="sm">
+    <Dialog open={open} onOpenChange={(value) => !value && addToPlaylist.close()} title={t("music.addToPlaylist.title")} description={t("music.addToPlaylist.description", { count })} size="sm">
       <form className="cn-add-playlist__new" onSubmit={create}>
-        <TextField label="New playlist" placeholder="Name" value={name} maxLength={128} onChange={(e) => setName(e.target.value)} />
-        <Button type="submit" variant="primary" icon={<Plus />} disabled={!name.trim()} loading={busy && !!name.trim()}>Create</Button>
+        <TextField label={t("music.addToPlaylist.newPlaylist")} placeholder={t("music.addToPlaylist.namePlaceholder")} value={name} maxLength={128} onChange={(e) => setName(e.target.value)} />
+        <Button type="submit" variant="primary" icon={<Plus />} disabled={!name.trim()} loading={busy && !!name.trim()}>{t("music.addToPlaylist.create")}</Button>
       </form>
       {playlists && playlists.length > 0 && (
         <ul className="cn-add-playlist__list">
@@ -103,7 +104,7 @@ export default function AddToPlaylist() {
                 <Cover image={null} mosaic={p.covers} title={p.name} width={96} className="cn-add-playlist__cover" />
                 <span>
                   <strong>{p.name}</strong>
-                  <span>{p.trackCount} {p.trackCount === 1 ? "track" : "tracks"}</span>
+                  <span>{t("music.trackCount", { count: p.trackCount })}</span>
                 </span>
                 <ListPlus aria-hidden="true" />
               </button>

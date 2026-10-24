@@ -1,4 +1,5 @@
 import cx from "../../lib/cx.ts";
+import { t } from "../../i18n/I18n.ts";
 import "./TmdbCredit.scss";
 
 export interface TmdbCreditProps {
@@ -19,7 +20,7 @@ export default function TmdbCredit(props: TmdbCreditProps) {
       <a href="https://www.themoviedb.org" target="_blank" rel="noreferrer" className="cn-tmdb-credit__logo">
         <img src="/credits/tmdb.svg" alt="TMDB" />
       </a>
-      <p>This product uses TMDB and the TMDB APIs but is not endorsed, certified, or otherwise approved by TMDB.</p>
+      <p>{t("credits.tmdb")}</p>
     </div>
   );
 }

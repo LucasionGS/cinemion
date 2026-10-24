@@ -8,6 +8,7 @@ import { Link, router } from "../../lib/Router.tsx";
 import { applyAmbient } from "../../lib/ambient.ts";
 import { toasts } from "../../lib/Toasts.ts";
 import useController from "../../lib/useController.ts";
+import { t } from "../../i18n/I18n.ts";
 import Logo from "../../components/Logo/Logo.tsx";
 import Avatar from "../../components/Avatar/Avatar.tsx";
 import PinPad from "../../components/PinPad/PinPad.tsx";
@@ -49,7 +50,7 @@ export default function Profiles() {
       session.signIn(await AuthApi.profileLogin(profile.id));
       router.navigate("/", { replace: true });
     } catch (error) {
-      toasts.error("Couldn't open that profile", (error as Error).message);
+      toasts.error(t("profiles.openFailed"), (error as Error).message);
     }
   }
 
@@ -58,30 +59,30 @@ export default function Profiles() {
       <div className="cn-ambient-glow cn-profiles__glow" aria-hidden="true" />
       <header className="cn-profiles__header"><Logo /></header>
 
-      {!profiles && <div className="cn-profiles__center"><Spinner size="2rem" label="Loading profiles" /></div>}
+      {!profiles && <div className="cn-profiles__center"><Spinner size="2rem" label={t("profiles.loading")} /></div>}
 
       {profiles && !selected && (
         <div className="cn-profiles__center">
-          <h1 className="cn-profiles__title">Who's watching?</h1>
+          <h1 className="cn-profiles__title">{t("profiles.title")}</h1>
           <div className="cn-profiles__grid">
             {profiles.map((profile, i) => (
               <button key={profile.id} type="button" className="cn-profiles__tile" onClick={() => pick(profile)} data-autofocus={i === 0 || undefined}>
                 <Avatar profile={profile} size={10.5} className="cn-profiles__avatar" />
                 <span className="cn-profiles__name">
                   {profile.name}
-                  {(profile.hasPin || profile.isAdmin) && <Lock aria-label={profile.hasPin ? "PIN protected" : "Password protected"} />}
+                  {(profile.hasPin || profile.isAdmin) && <Lock aria-label={profile.hasPin ? t("profiles.pinProtected") : t("profiles.passwordProtected")} />}
                 </span>
-                {(profile.isAdmin || profile.maxRating) && <span className="cn-profiles__tag">{profile.isAdmin ? "Admin" : `Up to ${profile.maxRating}`}</span>}
+                {(profile.isAdmin || profile.maxRating) && <span className="cn-profiles__tag">{profile.isAdmin ? t("profiles.admin") : t("profiles.upTo", { rating: profile.maxRating ?? "" })}</span>}
               </button>
             ))}
             {session.can("USERS_MANAGE") && user && (
               <Link href="/settings/users?new=1" className="cn-profiles__tile cn-profiles__tile--add">
                 <span className="cn-profiles__add"><Plus /></span>
-                <span className="cn-profiles__name">Add profile</span>
+                <span className="cn-profiles__name">{t("profiles.add")}</span>
               </Link>
             )}
           </div>
-          <Link href="/sign-in" className="cn-profiles__alt">Sign in with a password instead</Link>
+          <Link href="/sign-in" className="cn-profiles__alt">{t("profiles.usePassword")}</Link>
         </div>
       )}
 
@@ -139,11 +140,11 @@ function PinEntry(props: { profile: ProfileSummary; onBack: () => void }) {
     <div className="cn-profiles__center cn-profiles__entry">
       <Avatar profile={profile} size={7.5} />
       <div className="cn-profiles__entry-text">
-        <h1>Enter {profile.name}'s PIN</h1>
-        <p className={error ? "cn-profiles__error" : undefined} role={error ? "alert" : undefined}>{error ?? "You can also type it on your keyboard."}</p>
+        <h1>{t("profiles.pin.title", { name: profile.name })}</h1>
+        <p className={error ? "cn-profiles__error" : undefined} role={error ? "alert" : undefined}>{error ?? t("profiles.pin.keyboardHint")}</p>
       </div>
       <PinPad value={pin} onDigit={addDigit} onDelete={() => setPin(pin.slice(0, -1))} error={shake} disabled={busy} />
-      <Button variant="ghost" onClick={onBack}>Back to profiles</Button>
+      <Button variant="ghost" onClick={onBack}>{t("profiles.backToProfiles")}</Button>
     </div>
   );
 }
@@ -171,14 +172,14 @@ function PasswordEntry(props: { profile: ProfileSummary; onBack: () => void }) {
     <form className="cn-profiles__center cn-profiles__entry" onSubmit={submit}>
       <Avatar profile={profile} size={7.5} />
       <div className="cn-profiles__entry-text">
-        <h1>Enter {profile.name}'s password</h1>
-        <p>Admin profiles without a PIN need their password.</p>
+        <h1>{t("profiles.password.title", { name: profile.name })}</h1>
+        <p>{t("profiles.password.intro")}</p>
       </div>
       <div className="cn-profiles__password">
-        <TextField label="Password" type="password" autoComplete="current-password" autoFocus value={password} onChange={(e) => setPassword(e.target.value)} error={error} />
-        <Button type="submit" variant="primary" size="lg" block loading={busy} disabled={!password}>Sign in</Button>
+        <TextField label={t("profiles.password.label")} type="password" autoComplete="current-password" autoFocus value={password} onChange={(e) => setPassword(e.target.value)} error={error} />
+        <Button type="submit" variant="primary" size="lg" block loading={busy} disabled={!password}>{t("profiles.password.signIn")}</Button>
       </div>
-      <Button variant="ghost" onClick={onBack}>Back to profiles</Button>
+      <Button variant="ghost" onClick={onBack}>{t("profiles.backToProfiles")}</Button>
     </form>
   );
 }
@@ -187,7 +188,7 @@ function useProfiles() {
   const [profiles, setProfiles] = useState<ProfileSummary[] | null>(null);
   useEffect(() => {
     AuthApi.getProfiles().then(setProfiles).catch((e: Error) => {
-      toasts.error("Couldn't load profiles", e.message);
+      toasts.error(t("profiles.loadFailed"), e.message);
       setProfiles([]);
     });
   }, []);

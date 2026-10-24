@@ -6,6 +6,7 @@ import { session } from "../../Session.ts";
 import { usePoll } from "../../lib/usePoll.ts";
 import { toasts } from "../../lib/Toasts.ts";
 import { formatBytes, formatPercent } from "../../lib/format.ts";
+import { rich, t } from "../../i18n/I18n.ts";
 import Button from "../../components/Button/Button.tsx";
 import Switch from "../../components/Switch/Switch.tsx";
 import TextField from "../../components/TextField/TextField.tsx";
@@ -31,7 +32,7 @@ export default function GamesSettings() {
     ClipsApi.settings().then((s) => {
       setSaved(s);
       setValue(s);
-    }).catch((e: Error) => toasts.error("Couldn't load the game settings", e.message));
+    }).catch((e: Error) => toasts.error(t("settings.games.couldntLoad"), e.message));
   }, []);
 
   useEffect(() => setDownloading(status?.state === "downloading"), [status?.state]);
@@ -42,9 +43,9 @@ export default function GamesSettings() {
       const result = await ClipsApi.setSettings(next);
       setSaved(result);
       setValue(result);
-      toasts.success("Game settings saved");
+      toasts.success(t("settings.games.saved"));
     } catch (error) {
-      toasts.error("Couldn't save", (error as Error).message);
+      toasts.error(t("common.couldntSave"), (error as Error).message);
     } finally {
       setSaving(false);
     }
@@ -56,7 +57,7 @@ export default function GamesSettings() {
       setDownloading(true);
       recognition.reload();
     } catch (error) {
-      toasts.error("Couldn't download picture recognition", (error as Error).message);
+      toasts.error(t("settings.games.recognition.couldntDownload"), (error as Error).message);
     }
   }
 
@@ -66,16 +67,16 @@ export default function GamesSettings() {
       setRemoving(false);
       recognition.reload();
     } catch (error) {
-      toasts.error("Couldn't remove picture recognition", (error as Error).message);
+      toasts.error(t("settings.games.recognition.couldntRemove"), (error as Error).message);
     }
   }
 
   async function runNow() {
     try {
       await ClipsApi.runRecognition();
-      toasts.success("Looking at clips", "Suggestions show up on clips without a game. Tasks shows how far it is.");
+      toasts.success(t("settings.games.recognition.started"), t("settings.games.recognition.startedDescription"));
     } catch (error) {
-      toasts.error("Couldn't start", (error as Error).message);
+      toasts.error(t("settings.games.recognition.couldntStart"), (error as Error).message);
     }
   }
 
@@ -85,64 +86,60 @@ export default function GamesSettings() {
   return (
     <>
       <section className="cn-settings__card" aria-labelledby="cn-games-heading">
-        <h2 id="cn-games-heading">Games</h2>
-        <p className="cn-settings__row-text"><span>Clips libraries sort clips into games by their file and folder names, and look the games up for their proper names, covers and artwork.</span></p>
+        <h2 id="cn-games-heading">{t("settings.games.title")}</h2>
+        <p className="cn-settings__row-text"><span>{t("settings.games.intro")}</span></p>
         <Switch
-          label="Look games up online"
-          description="On Steam's store, which needs no key and knows most PC games."
+          label={t("settings.games.lookups")}
+          description={t("settings.games.lookupsDescription")}
           checked={value.lookups}
           disabled={saving}
           onChange={(lookups) => save({ lookups })}
         />
         <div className="cn-settings__row">
           <TextField
-            label="SteamGridDB API key (optional)"
-            description={<>Finds games that aren't on Steam, like VALORANT or League of Legends, and artwork Steam doesn't have. Get a free key from your <a href="https://www.steamgriddb.com/profile/preferences/api" target="_blank" rel="noreferrer">SteamGridDB preferences</a>.</>}
+            label={t("settings.games.steamGridDbKey")}
+            description={rich("settings.games.steamGridDbDescription", { link: (text) => <a href="https://www.steamgriddb.com/profile/preferences/api" target="_blank" rel="noreferrer">{text}</a> })}
             value={value.steamGridDbKey ?? ""}
             type="password"
             autoComplete="off"
             onChange={(e) => setValue({ ...value, steamGridDbKey: e.target.value || null })}
             style={{ flex: "1 1 20rem" }}
           />
-          <Button variant="primary" onClick={() => save({ steamGridDbKey: value.steamGridDbKey })} loading={saving} disabled={!keyChanged}>Save key</Button>
+          <Button variant="primary" onClick={() => save({ steamGridDbKey: value.steamGridDbKey })} loading={saving} disabled={!keyChanged}>{t("settings.games.saveKey")}</Button>
         </div>
       </section>
 
       <section className="cn-settings__card" aria-labelledby="cn-recognition-heading">
-        <h2 id="cn-recognition-heading">Picture recognition</h2>
+        <h2 id="cn-recognition-heading">{t("settings.games.recognition.title")}</h2>
         <p className="cn-settings__row-text">
-          <span>
-            For clips whose names don't say the game, like OBS recordings: Cinemion looks at a few frames of every clip and suggests a game when a clip looks
-            like ones you've already given a game (or, as a best guess, like a game it knows). Suggestions are only taken when you say so. It runs on this
-            server's processor, a clip at a time, and nothing leaves the server.
-          </span>
+          <span>{t("settings.games.recognition.intro")}</span>
         </p>
         <div className="cn-settings__row">
           <div className="cn-settings__row-text">
             <strong>
-              {!status ? "Checking…"
-                : status.state === "ready" ? "Installed"
-                : status.state === "downloading" ? `Downloading… ${formatPercent(status.progress ?? 0)}`
-                : status.state === "failed" ? "The download didn't work"
-                : "Not installed"}
+              {!status ? t("settings.games.recognition.checking")
+                : status.state === "ready" ? t("settings.games.recognition.installed")
+                : status.state === "downloading" ? t("settings.games.recognition.downloading", { percent: formatPercent(status.progress ?? 0) })
+                : status.state === "failed" ? t("settings.games.recognition.failed")
+                : t("settings.games.recognition.notInstalled")}
             </strong>
             <span>
               {!status ? ""
-                : status.state === "ready" ? status.pending ? `${status.pending.toLocaleString()} ${status.pending === 1 ? "clip hasn't" : "clips haven't"} been looked at yet.` : "Every clip has been looked at."
+                : status.state === "ready" ? status.pending ? t("settings.games.recognition.pending", { count: status.pending }) : t("settings.games.recognition.allDone")
                 : status.state === "failed" ? status.error
-                : `A one-time download of ${formatBytes(status.downloadSize)}: an image model (CLIP) and what runs it.`}
+                : t("settings.games.recognition.downloadSize", { size: formatBytes(status.downloadSize) })}
             </span>
           </div>
-          {status && (status.state === "missing" || status.state === "failed") && <Button variant="primary" icon={<Download />} onClick={install}>Download</Button>}
-          {status?.state === "ready" && session.can("LIBRARY_MANAGE") && <Button icon={<ScanEye />} onClick={runNow}>Look at clips now</Button>}
-          {status?.state === "ready" && <Button variant="ghost" icon={<Trash2 />} onClick={() => setRemoving(true)}>Remove</Button>}
+          {status && (status.state === "missing" || status.state === "failed") && <Button variant="primary" icon={<Download />} onClick={install}>{t("common.download")}</Button>}
+          {status?.state === "ready" && session.can("LIBRARY_MANAGE") && <Button icon={<ScanEye />} onClick={runNow}>{t("settings.games.recognition.runNow")}</Button>}
+          {status?.state === "ready" && <Button variant="ghost" icon={<Trash2 />} onClick={() => setRemoving(true)}>{t("common.remove")}</Button>}
         </div>
         {status?.state === "downloading" && (
           <div className="cn-settings__scan-bar" style={{ flex: "none", width: "100%" }}><span style={{ width: formatPercent(status.progress ?? 0) }} /></div>
         )}
         <Switch
-          label="Suggest games after every scan"
-          description="New clips without a game get a suggestion by themselves. Off, it only runs with “Look at clips now”."
+          label={t("settings.games.recognition.autoSuggest")}
+          description={t("settings.games.recognition.autoSuggestDescription")}
           checked={value.autoSuggest}
           disabled={saving}
           onChange={(autoSuggest) => save({ autoSuggest })}
@@ -152,9 +149,9 @@ export default function GamesSettings() {
       <ConfirmDialog
         open={removing}
         onOpenChange={setRemoving}
-        title="Remove picture recognition?"
-        description="The download is deleted. Suggestions already made stay, and what it saw in clips is kept for when it's downloaded again."
-        confirmLabel="Remove"
+        title={t("settings.games.recognition.removeTitle")}
+        description={t("settings.games.recognition.removeDescription")}
+        confirmLabel={t("common.remove")}
         danger
         onConfirm={remove}
       />

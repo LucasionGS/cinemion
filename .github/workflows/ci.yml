@@ -23,6 +23,8 @@ jobs:
         run: deno task check
       - name: Lint
         run: deno lint
+      - name: Translations match English
+        run: deno task i18n
       - name: Scratch checks
         run: deno run -A server/src/test.ts
       - name: Build the web client

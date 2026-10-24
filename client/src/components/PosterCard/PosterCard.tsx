@@ -5,6 +5,7 @@ import { PROFILE_COLORS } from "@shared/profiles.ts";
 import ItemsApi from "../../Api/ItemsApi.ts";
 import { router } from "../../lib/Router.tsx";
 import cx from "../../lib/cx.ts";
+import { t } from "../../i18n/I18n.ts";
 import "./PosterCard.scss";
 
 const FALLBACK_COLORS = Object.values(PROFILE_COLORS).map((c) => c.bg);
@@ -61,8 +62,8 @@ export default function PosterCard(props: PosterCardProps) {
 
   let sub = subtitle;
   if (sub === undefined) {
-    if (isCollection) sub = `${item.itemCount} movies`;
-    else if (item.type === "show") sub = `${item.childCount} ${item.childCount === 1 ? "season" : "seasons"}`;
+    if (isCollection) sub = t("cards.poster.movies", { count: item.itemCount });
+    else if (item.type === "show") sub = t("cards.poster.seasons", { count: item.childCount });
     else sub = item.year ? String(item.year) : "";
   }
 
@@ -70,14 +71,14 @@ export default function PosterCard(props: PosterCardProps) {
 
   return (
     <div className={cx("cn-poster", className)}>
-      <button type="button" className="cn-poster__button" onClick={open} onMouseEnter={onSelect} onFocus={onSelect} aria-label={`${title}${!isCollection && item.year ? ` (${item.year})` : ""}`}>
+      <button type="button" className="cn-poster__button" onClick={open} onMouseEnter={onSelect} onFocus={onSelect} aria-label={!isCollection && item.year ? t("cards.poster.withYear", { title, year: String(item.year) }) : title}>
         <span className="cn-poster__art cn-dark-theme" style={poster ? undefined : { background: `linear-gradient(160deg, ${tint} 0%, ${item.palette?.base ?? "#0B0D12"} 110%)` }}>
           {poster
             ? <img src={ItemsApi.imageUrl(poster, 342)} srcSet={`${ItemsApi.imageUrl(poster, 342)} 342w, ${ItemsApi.imageUrl(poster, 500)} 500w, ${ItemsApi.imageUrl(poster, 780)} 780w`} sizes="(min-width: 1600px) 15vw, 11rem" alt="" loading="lazy" onError={() => setBroken(true)} />
             : <span className="cn-poster__fallback">{title}</span>}
           {badge && <span className="cn-poster__badge">{badge}</span>}
-          {userData?.watched && <span className="cn-poster__corner" aria-label="Watched"><Check /></span>}
-          {remaining !== null && <span className="cn-poster__corner cn-poster__corner--count" aria-label={`${remaining} unwatched`}>{remaining}</span>}
+          {userData?.watched && <span className="cn-poster__corner" aria-label={t("cards.poster.watched")}><Check /></span>}
+          {remaining !== null && <span className="cn-poster__corner cn-poster__corner--count" aria-label={t("cards.poster.unwatched", { count: remaining })}>{remaining}</span>}
           {!!userData?.progress && !userData.watched && userData.unwatchedCount === null && (
             <span className="cn-poster__progress"><span style={{ width: `${Math.round(userData.progress * 100)}%` }} /></span>
           )}

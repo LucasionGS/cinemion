@@ -3,6 +3,7 @@ import { Dialog as BaseDialog } from "@base-ui/react/dialog";
 import { AlertDialog } from "@base-ui/react/alert-dialog";
 import { X } from "lucide-react";
 import cx from "../../lib/cx.ts";
+import { t } from "../../i18n/I18n.ts";
 import Button from "../Button/Button.tsx";
 import IconButton from "../IconButton/IconButton.tsx";
 import "./Dialog.scss";
@@ -36,7 +37,7 @@ export default function Dialog(props: DialogProps) {
               <BaseDialog.Title className="cn-dialog__title">{title}</BaseDialog.Title>
               {description && <BaseDialog.Description className="cn-dialog__description">{description}</BaseDialog.Description>}
             </div>
-            <BaseDialog.Close render={<IconButton label="Close" icon={<X />} size="sm" />} />
+            <BaseDialog.Close render={<IconButton label={t("common.close")} icon={<X />} size="sm" />} />
           </div>
           {children && <div className="cn-dialog__body">{children}</div>}
           {footer && <div className="cn-dialog__footer">{footer}</div>}
@@ -77,7 +78,7 @@ export function ConfirmDialog(props: ConfirmDialogProps) {
             </div>
           </div>
           <div className="cn-dialog__footer">
-            <AlertDialog.Close render={<Button variant="ghost">Cancel</Button>} />
+            <AlertDialog.Close render={<Button variant="ghost">{t("common.cancel")}</Button>} />
             <Button variant={danger ? "danger" : "primary"} loading={loading} onClick={() => onConfirm()}>{confirmLabel}</Button>
           </div>
         </AlertDialog.Popup>

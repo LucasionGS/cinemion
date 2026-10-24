@@ -6,6 +6,7 @@ import { applyAmbient } from "../../lib/ambient.ts";
 import useController from "../../lib/useController.ts";
 import { together } from "../../lib/Together.ts";
 import { musicPlayer } from "../../lib/MusicPlayer.ts";
+import { t } from "../../i18n/I18n.ts";
 import PlayerController from "../../components/Player/PlayerController.ts";
 import PlayerView from "../../components/Player/PlayerView.tsx";
 import Spinner from "../../components/Spinner/Spinner.tsx";
@@ -34,7 +35,7 @@ export default function Player(props: PlayerProps) {
 
   useEffect(() => {
     ItemsApi.get(id).then((detail) => {
-      if (!isPlayable(detail.type)) throw new Error("Only movies, episodes and videos can be played.");
+      if (!isPlayable(detail.type)) throw new Error(t("player.onlyPlayable"));
       setItem(detail);
     }).catch((e: Error) => setError(e.message));
   }, [id]);
@@ -74,14 +75,14 @@ export default function Player(props: PlayerProps) {
   if (error) {
     return (
       <div className="cn-player-page cn-player-page--message cn-dark-theme">
-        <h1>This title can't play</h1>
+        <h1>{t("player.cantPlayTitle")}</h1>
         <p>{error}</p>
-        <Button variant="primary" onClick={() => router.back("/")} data-autofocus>Back</Button>
+        <Button variant="primary" onClick={() => router.back("/")} data-autofocus>{t("common.back")}</Button>
       </div>
     );
   }
   if (!item || !controller || !joined) {
-    return <div className="cn-player-page cn-dark-theme"><Spinner size="3rem" label={joined ? "Loading" : "Joining the session"} /></div>;
+    return <div className="cn-player-page cn-dark-theme"><Spinner size="3rem" label={joined ? t("player.loading") : t("player.joining")} /></div>;
   }
 
   const inSession = together.isConnected() && together.room?.itemId === item.id;

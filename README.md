@@ -38,6 +38,7 @@ Your movies, shows, music, books and photos, beautifully served from your own ma
 - **Webhooks for everything else**: tell Home Assistant, a chat bot or your own script when playback starts, pauses or stops, a new episode arrives or someone signs in. Every message is signed, failed ones are retried, and there's a test button.
 - **Tasks and logs at hand**: start scans and thumbnail jobs, choose how often libraries are scanned, and read the server log with filters, all in Settings. No terminal needed when something acts up.
 - **Knows when there's a new version**: twice a day Cinemion looks at its releases on GitHub, and when there's a newer one, admins (and only admins) get a dot on their profile picture and a note on how to update. Rather it didn't? It's one switch in Settings › About, or `UPDATE_CHECK=false`.
+- **Speaks your language (soon)**: every line of the interface lives in one translation file, so adding a language is filling in a copy of the English one. English is the only one so far; [here's how to add yours](docs/translating.md).
 - **One container, nothing else**: the Docker image includes everything. No database server, no extra services. There's also a single-file binary if you'd rather skip Docker.
 - **Plays nice with MediaHub**: open it in MediaHub and it starts straight in the TV layout, controller included.
 
@@ -185,6 +186,8 @@ Other tasks:
 `scripts/make-sample-media.sh` fills `data/media` with a small fake library (short ffmpeg clips with tidy and messy names, NFO files, artwork, extras and samples, and game clips named the way recorders name them) for trying things out. Online matching through TMDB works out of the box with the built-in key.
 
 `deno run -A server/src/test.ts` runs the scratch checks: file names, playback decisions, Sonarr/Radarr payloads, webhook signatures and more.
+
+Every line of the interface is in `client/src/i18n/locales/en.json`; use `t("some.key")` from `client/src/i18n/I18n.ts` instead of writing English in components. `deno task i18n` checks that every language matches English and lists lines nothing uses any more. Adding a language is in [docs/translating.md](docs/translating.md).
 
 ### Layout
 

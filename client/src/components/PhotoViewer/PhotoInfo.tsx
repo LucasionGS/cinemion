@@ -6,7 +6,8 @@ import { router } from "../../lib/Router.tsx";
 import { toasts } from "../../lib/Toasts.ts";
 import { formatBytes, formatDateTime } from "../../lib/format.ts";
 import { formatClock } from "../../lib/playback.ts";
-import { RATINGS } from "../../lib/ratings.ts";
+import { ratingOptions } from "../../lib/ratings.ts";
+import { t, type TranslationKey } from "../../i18n/I18n.ts";
 import IconButton from "../IconButton/IconButton.tsx";
 import Button from "../Button/Button.tsx";
 import TextField from "../TextField/TextField.tsx";
@@ -37,9 +38,9 @@ export default function PhotoInfo(props: PhotoInfoProps) {
   return (
     <div className="cn-photo-info">
       <div className="cn-photo-info__head">
-        <h2>Details</h2>
-        {canEdit && detail && !editing && <IconButton label="Edit details" icon={<Pencil />} variant="ghost" size="sm" onClick={() => setEditing(true)} />}
-        <IconButton label="Close details" icon={<X />} variant="ghost" size="sm" onClick={onClose} />
+        <h2>{t("photos.info.title")}</h2>
+        {canEdit && detail && !editing && <IconButton label={t("photos.info.edit")} icon={<Pencil />} variant="ghost" size="sm" onClick={() => setEditing(true)} />}
+        <IconButton label={t("photos.info.close")} icon={<X />} variant="ghost" size="sm" onClick={onClose} />
       </div>
       {!detail && <div className="cn-photo-info__loading"><Spinner size="1.5rem" /></div>}
       {detail && editing && <EditForm detail={detail} onDone={(updated) => {
@@ -60,31 +61,31 @@ function Facts(props: { detail: PhotoDetail }) {
     meta?.exposureTime ? meta.exposureTime >= 1 ? `${meta.exposureTime} s` : `1/${Math.round(1 / meta.exposureTime)} s` : null,
     meta?.iso ? `ISO ${meta.iso}` : null,
     meta?.focalLength ? `${meta.focalLength} mm` : null,
-  ].filter(Boolean).join(" · ");
+  ].filter(Boolean).join(t("common.dotSeparator"));
   const hasPlace = meta?.latitude != null && meta.longitude != null;
 
   return (
     <>
       {detail.caption && <p className="cn-photo-info__caption">{detail.caption}</p>}
       <dl className="cn-photo-info__facts">
-        <Fact icon={<Calendar />} title={detail.takenAt ? formatDateTime(detail.takenAt) : "Date unknown"}>
-          {meta?.offset ? `Camera clock at UTC${meta.offset}` : detail.type === "video" && detail.duration ? `Length ${formatClock(detail.duration)}` : null}
+        <Fact icon={<Calendar />} title={detail.takenAt ? formatDateTime(detail.takenAt) : t("photos.info.dateUnknown")}>
+          {meta?.offset ? t("photos.info.cameraClock", { offset: meta.offset }) : detail.type === "video" && detail.duration ? t("photos.info.length", { length: formatClock(detail.duration) }) : null}
         </Fact>
         <Fact icon={<ImageIcon />} title={detail.fileName}>
-          {[meta?.width && meta.height ? `${meta.width} × ${meta.height}` : null, megapixels && detail.type === "photo" ? `${megapixels} MP` : null, formatBytes(detail.size)].filter(Boolean).join(" · ")}
+          {[meta?.width && meta.height ? `${meta.width} × ${meta.height}` : null, megapixels && detail.type === "photo" ? t("photos.info.megapixels", { value: megapixels }) : null, formatBytes(detail.size)].filter(Boolean).join(t("common.dotSeparator"))}
         </Fact>
         {(meta?.camera || exposure) && (
-          <Fact icon={<Camera />} title={meta?.camera ?? "Camera"}>
-            {[exposure, meta?.lens].filter(Boolean).join(" · ") || null}
+          <Fact icon={<Camera />} title={meta?.camera ?? t("photos.info.camera")}>
+            {[exposure, meta?.lens].filter(Boolean).join(t("common.dotSeparator")) || null}
           </Fact>
         )}
         {hasPlace && (
-          <Fact icon={<MapPin />} title={`${formatCoordinate(meta!.latitude!, "N", "S")}, ${formatCoordinate(meta!.longitude!, "E", "W")}`}>
-            <a href={`https://www.openstreetmap.org/?mlat=${meta!.latitude}&mlon=${meta!.longitude}#map=15/${meta!.latitude}/${meta!.longitude}`} target="_blank" rel="noreferrer noopener">Open in a map</a>
+          <Fact icon={<MapPin />} title={t("photos.info.place", { latitude: formatCoordinate(meta!.latitude!, "photos.info.north", "photos.info.south"), longitude: formatCoordinate(meta!.longitude!, "photos.info.east", "photos.info.west") })}>
+            <a href={`https://www.openstreetmap.org/?mlat=${meta!.latitude}&mlon=${meta!.longitude}#map=15/${meta!.latitude}/${meta!.longitude}`} target="_blank" rel="noreferrer noopener">{t("photos.info.openMap")}</a>
           </Fact>
         )}
         {detail.folders.length > 0 && (
-          <Fact icon={<FolderOpen />} title="Folder">
+          <Fact icon={<FolderOpen />} title={t("photos.info.folder")}>
             {detail.folders.map((f, i) => (
               <span key={f.id}>
                 {i > 0 && " › "}
@@ -97,10 +98,10 @@ function Facts(props: { detail: PhotoDetail }) {
           </Fact>
         )}
         {detail.albums.length > 0 && (
-          <Fact icon={<Images />} title={detail.albums.length === 1 ? "In an album" : "In albums"}>
+          <Fact icon={<Images />} title={detail.albums.length === 1 ? t("photos.info.inAlbum") : t("photos.info.inAlbums")}>
             {detail.albums.map((a, i) => (
               <span key={a.id}>
-                {i > 0 && ", "}
+                {i > 0 && t("common.listSeparator")}
                 <a href={`/photos/album/${a.id}`} onClick={(e) => {
                   e.preventDefault();
                   router.navigate(`/photos/album/${a.id}`);
@@ -110,10 +111,10 @@ function Facts(props: { detail: PhotoDetail }) {
           </Fact>
         )}
         {(detail.tags.length > 0 || detail.contentRating) && (
-          <Fact icon={<Tag />} title="Tags">
+          <Fact icon={<Tag />} title={t("photos.info.tags")}>
             <span className="cn-photo-info__tags">
-              {detail.tags.map((t) => <span key={t} className="cn-photo-info__tag">{t}</span>)}
-              {detail.contentRating && <span className="cn-photo-info__tag">Rated {detail.contentRating}</span>}
+              {detail.tags.map((tag) => <span key={tag} className="cn-photo-info__tag">{tag}</span>)}
+              {detail.contentRating && <span className="cn-photo-info__tag">{t("photos.info.rated", { rating: detail.contentRating })}</span>}
             </span>
           </Fact>
         )}
@@ -154,13 +155,13 @@ function EditForm(props: { detail: PhotoDetail; onDone: (updated: PhotoDetail | 
         title: detail.title,
         releaseDate: date || null,
         overview: caption.trim() || null,
-        tags: tags.split(",").map((t) => t.trim()).filter(Boolean),
+        tags: tags.split(",").map((tag) => tag.trim()).filter(Boolean),
         contentRating: rating || null,
       });
       onDone(await PhotosApi.get(detail.id));
-      toasts.success("Details saved");
+      toasts.success(t("photos.info.saved"));
     } catch (error) {
-      toasts.error("Couldn't save", (error as Error).message);
+      toasts.error(t("common.couldntSave"), (error as Error).message);
     } finally {
       setSaving(false);
     }
@@ -169,21 +170,21 @@ function EditForm(props: { detail: PhotoDetail; onDone: (updated: PhotoDetail | 
   return (
     <div className="cn-photo-info__form">
       <div className="cn-field">
-        <label className="cn-field__label" htmlFor={captionId}>Caption</label>
-        <textarea id={captionId} className="cn-field__input cn-photo-info__textarea" value={caption} onChange={(e) => setCaption(e.target.value)} rows={3} maxLength={5000} placeholder="What's happening here?" autoFocus />
+        <label className="cn-field__label" htmlFor={captionId}>{t("photos.info.caption")}</label>
+        <textarea id={captionId} className="cn-field__input cn-photo-info__textarea" value={caption} onChange={(e) => setCaption(e.target.value)} rows={3} maxLength={5000} placeholder={t("photos.info.captionPlaceholder")} autoFocus />
       </div>
-      <TextField label="Date" type="date" value={date} onChange={(e) => setDate(e.target.value)} description="The time of day stays as it was." />
-      <TextField label="Tags" value={tags} onChange={(e) => setTags(e.target.value)} placeholder="Beach, Mira" description="Separate them with commas." />
-      <Select label="Age rating" value={rating} onChange={(e) => setRating(e.target.value)} options={[{ value: "", label: "Library default" }, ...RATINGS]} />
+      <TextField label={t("photos.info.date")} type="date" value={date} onChange={(e) => setDate(e.target.value)} description={t("photos.info.dateDescription")} />
+      <TextField label={t("photos.info.tags")} value={tags} onChange={(e) => setTags(e.target.value)} placeholder={t("photos.info.tagsPlaceholder")} description={t("photos.info.tagsDescription")} />
+      <Select label={t("photos.info.rating")} value={rating} onChange={(e) => setRating(e.target.value)} options={[{ value: "", label: t("photos.info.ratingDefault") }, ...ratingOptions()]} />
       <div className="cn-photo-info__actions">
-        <Button variant="ghost" onClick={() => onDone(null)}>Cancel</Button>
-        <Button variant="primary" onClick={save} loading={saving}>Save</Button>
+        <Button variant="ghost" onClick={() => onDone(null)}>{t("common.cancel")}</Button>
+        <Button variant="primary" onClick={save} loading={saving}>{t("common.save")}</Button>
       </div>
     </div>
   );
 }
 
 // Example: 37.0896 -> "37.0896° N"
-function formatCoordinate(value: number, positive: string, negative: string) {
-  return `${Math.abs(value).toFixed(4)}° ${value < 0 ? negative : positive}`;
+function formatCoordinate(value: number, positive: TranslationKey, negative: TranslationKey) {
+  return t(value < 0 ? negative : positive, { value: Math.abs(value).toFixed(4) });
 }

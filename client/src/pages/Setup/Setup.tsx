@@ -6,6 +6,7 @@ import { session } from "../../Session.ts";
 import { router } from "../../lib/Router.tsx";
 import { toasts } from "../../lib/Toasts.ts";
 import cx from "../../lib/cx.ts";
+import { rich, t, type TranslationKey } from "../../i18n/I18n.ts";
 import Logo from "../../components/Logo/Logo.tsx";
 import Button from "../../components/Button/Button.tsx";
 import IconButton from "../../components/IconButton/IconButton.tsx";
@@ -16,11 +17,11 @@ import MetadataForm, { COUNTRIES } from "../../components/MetadataForm/MetadataF
 import LibraryIcon from "../../components/LibraryIcon/LibraryIcon.tsx";
 import "./Setup.scss";
 
-const STEPS = [
-  { label: "Your account", sub: "Admin user and server name" },
-  { label: "Libraries", sub: "Where your media lives" },
-  { label: "Metadata", sub: "Posters, plots and cast" },
-  { label: "Done", sub: "Start using Cinemion" },
+const STEPS: { label: TranslationKey; sub: TranslationKey }[] = [
+  { label: "setup.steps.account.label", sub: "setup.steps.account.sub" },
+  { label: "setup.steps.libraries.label", sub: "setup.steps.libraries.sub" },
+  { label: "setup.steps.metadata.label", sub: "setup.steps.metadata.sub" },
+  { label: "setup.steps.done.label", sub: "setup.steps.done.sub" },
 ];
 
 function usernameFrom(name: string) {
@@ -51,12 +52,12 @@ export default function Setup() {
   const [metadata, setMetadata] = useState<MetadataSettings>({ tmdbApiKey: null, tvdbApiKey: null, tvdbPin: null, omdbApiKey: null, language: "en", country: guessCountry(), providers: ["local", "tmdb", "tvdb"] });
 
   const accountErrors = {
-    name: !name.trim() ? "Enter your name." : null,
-    username: !/^[a-z0-9._-]{2,32}$/.test(username) ? "Use 2 to 32 lowercase letters, numbers, dots, dashes or underscores." : null,
-    password: password.length < 6 ? "Use at least 6 characters." : null,
-    confirm: confirm !== password ? "The passwords don't match." : null,
-    pin: pin && !/^\d{4}$/.test(pin) ? "The PIN must be exactly 4 digits." : null,
-    serverName: !serverName.trim() ? "Give your server a name." : null,
+    name: !name.trim() ? t("setup.account.errors.name") : null,
+    username: !/^[a-z0-9._-]{2,32}$/.test(username) ? t("setup.account.errors.username") : null,
+    password: password.length < 6 ? t("setup.account.errors.password") : null,
+    confirm: confirm !== password ? t("setup.account.errors.confirm") : null,
+    pin: pin && !/^\d{4}$/.test(pin) ? t("setup.account.errors.pin") : null,
+    serverName: !serverName.trim() ? t("setup.account.errors.serverName") : null,
   };
   const accountValid = Object.values(accountErrors).every((e) => e === null);
 
@@ -72,7 +73,7 @@ export default function Setup() {
       session.signIn(response);
       setStep(3);
     } catch (error) {
-      toasts.error("Setup didn't finish", (error as Error).message);
+      toasts.error(t("setup.failed"), (error as Error).message);
     } finally {
       setSubmitting(false);
     }
@@ -99,7 +100,7 @@ export default function Setup() {
       <div className="cn-ambient-glow cn-setup__glow" aria-hidden="true" />
       <aside className="cn-setup__aside">
         <Logo size={1.9} />
-        <nav className="cn-setup__steps" aria-label="Setup steps">
+        <nav className="cn-setup__steps" aria-label={t("setup.steps.navigation")}>
           {STEPS.map((s, i) => (
             <button
               key={s.label}
@@ -111,27 +112,27 @@ export default function Setup() {
             >
               <span className="cn-setup__step-mark">{i < step ? <Check /> : i + 1}</span>
               <span className="cn-setup__step-text">
-                <strong>{s.label}</strong>
-                <span>{s.sub}</span>
+                <strong>{t(s.label)}</strong>
+                <span>{t(s.sub)}</span>
               </span>
             </button>
           ))}
         </nav>
-        <p className="cn-setup__note">Everything here can be changed later in Settings.</p>
+        <p className="cn-setup__note">{t("setup.note")}</p>
       </aside>
 
       <main className="cn-setup__main">
-        <span className="cn-setup__progress">Step {step + 1} of {STEPS.length}</span>
+        <span className="cn-setup__progress">{t("setup.progress", { step: step + 1, total: STEPS.length })}</span>
 
         {step === 0 && (
           <section className="cn-setup__section cn-setup__section--narrow">
             <header className="cn-setup__header">
-              <h1>Welcome to Cinemion</h1>
-              <p>Let's get your server ready. First, create the admin account. You'll use it to manage libraries and add the rest of the household.</p>
+              <h1>{t("setup.account.title")}</h1>
+              <p>{t("setup.account.intro")}</p>
             </header>
-            <TextField label="Server name" value={serverName} onChange={(e) => setServerName(e.target.value)} description="Shown on devices when they connect to this server." error={showErrors ? accountErrors.serverName : null} />
+            <TextField label={t("setup.account.serverName")} value={serverName} onChange={(e) => setServerName(e.target.value)} description={t("setup.account.serverNameDescription")} error={showErrors ? accountErrors.serverName : null} />
             <TextField
-              label="Your name"
+              label={t("setup.account.name")}
               value={name}
               autoFocus
               onChange={(e) => {
@@ -141,29 +142,29 @@ export default function Setup() {
               error={showErrors ? accountErrors.name : null}
             />
             <TextField
-              label="Username"
+              label={t("setup.account.username")}
               value={username}
               autoComplete="username"
               onChange={(e) => {
                 setUsername(e.target.value.toLowerCase());
                 setUsernameEdited(true);
               }}
-              description="Used to sign in with a password."
+              description={t("setup.account.usernameDescription")}
               error={showErrors ? accountErrors.username : null}
             />
             <div className="cn-setup__row">
-              <TextField label="Password" type="password" autoComplete="new-password" value={password} onChange={(e) => setPassword(e.target.value)} error={showErrors ? accountErrors.password : null} />
-              <TextField label="Confirm password" type="password" autoComplete="new-password" value={confirm} onChange={(e) => setConfirm(e.target.value)} error={showErrors ? accountErrors.confirm : null} />
+              <TextField label={t("setup.account.password")} type="password" autoComplete="new-password" value={password} onChange={(e) => setPassword(e.target.value)} error={showErrors ? accountErrors.password : null} />
+              <TextField label={t("setup.account.confirmPassword")} type="password" autoComplete="new-password" value={confirm} onChange={(e) => setConfirm(e.target.value)} error={showErrors ? accountErrors.confirm : null} />
             </div>
             <TextField
-              label={<>Profile PIN <span className="cn-setup__optional">(optional)</span></>}
+              label={rich("setup.account.pin", { optional: (text) => <span className="cn-setup__optional">{text}</span> })}
               className="cn-setup__pin"
               inputMode="numeric"
               maxLength={4}
-              placeholder="4 digits"
+              placeholder={t("setup.account.pinPlaceholder")}
               value={pin}
               onChange={(e) => setPin(e.target.value.replace(/\D/g, ""))}
-              description="Used on shared screens like the TV instead of your password."
+              description={t("setup.account.pinDescription")}
               error={showErrors ? accountErrors.pin : null}
             />
           </section>
@@ -176,17 +177,17 @@ export default function Setup() {
         {step === 3 && (
           <section className="cn-setup__section cn-setup__section--narrow">
             <header className="cn-setup__header">
-              <h1>You're all set</h1>
-              <p>Cinemion is ready. Your libraries are saved, and the rest of the household can get their own profiles from Settings.</p>
+              <h1>{t("setup.done.title")}</h1>
+              <p>{t("setup.done.intro")}</p>
             </header>
             <div className="cn-setup__summary">
-              {libraries.length === 0 && <p className="cn-setup__muted">No libraries yet. You can add them later in Settings › Libraries.</p>}
+              {libraries.length === 0 && <p className="cn-setup__muted">{t("setup.done.noLibraries")}</p>}
               {libraries.map((l) => (
                 <div key={l.name} className="cn-setup__card">
                   <LibraryIcon type={l.type} />
                   <div>
                     <strong>{l.name}</strong>
-                    <span>{l.paths.join(", ")}</span>
+                    <span>{l.paths.join(t("common.listSeparator"))}</span>
                   </div>
                 </div>
               ))}
@@ -195,9 +196,9 @@ export default function Setup() {
         )}
 
         <div className="cn-setup__actions">
-          {step > 0 && step < 3 && <Button variant="secondary" size="lg" onClick={() => setStep(step - 1)}>Back</Button>}
+          {step > 0 && step < 3 && <Button variant="secondary" size="lg" onClick={() => setStep(step - 1)}>{t("common.back")}</Button>}
           <Button variant="primary" size="lg" className="cn-setup__next" loading={submitting} onClick={next}>
-            {step === 2 ? "Finish setup" : step === 3 ? "Go to Cinemion" : step === 1 && libraries.length === 0 ? "Skip for now" : "Continue"}
+            {step === 2 ? t("setup.actions.finish") : step === 3 ? t("setup.actions.goToCinemion") : step === 1 && libraries.length === 0 ? t("setup.actions.skip") : t("setup.actions.continue")}
           </Button>
         </div>
       </main>
@@ -210,25 +211,39 @@ function guessCountry() {
   return COUNTRIES.some((c) => c.value === region) ? region! : "US";
 }
 
-const TYPE_NAMES: Record<LibraryType, string> = { movies: "Movies", shows: "Shows", videos: "Videos", music: "Music", audiobooks: "Audiobooks", books: "Books", photos: "Photos", clips: "Clips" };
+const TYPE_NAMES: Record<LibraryType, TranslationKey> = {
+  movies: "setup.libraries.types.movies",
+  shows: "setup.libraries.types.shows",
+  videos: "setup.libraries.types.videos",
+  music: "setup.libraries.types.music",
+  audiobooks: "setup.libraries.types.audiobooks",
+  books: "setup.libraries.types.books",
+  photos: "setup.libraries.types.photos",
+  clips: "setup.libraries.types.clips",
+};
+
+/**
+ * The library types in the order the picker shows them.
+ */
+const TYPE_ORDER: LibraryType[] = ["movies", "shows", "videos", "music", "photos", "clips", "audiobooks", "books"];
 
 /**
  * The kind of library not added yet, in the usual order.
  */
 function nextType(libraries: CreateLibraryRequest[]): LibraryType {
-  return (["movies", "shows", "videos", "music", "photos", "clips", "audiobooks", "books"] as const).find((t) => !libraries.some((l) => l.type === t)) ?? "movies";
+  return TYPE_ORDER.find((kind) => !libraries.some((l) => l.type === kind)) ?? "movies";
 }
 
 function LibrariesStep(props: { libraries: CreateLibraryRequest[]; onChange: (libraries: CreateLibraryRequest[]) => void }) {
   const { libraries, onChange } = props;
   const [type, setType] = useState<LibraryType>(nextType(libraries));
-  const [name, setName] = useState(TYPE_NAMES[type]);
+  const [name, setName] = useState(() => t(TYPE_NAMES[type]));
   const [nameEdited, setNameEdited] = useState(false);
   const [paths, setPaths] = useState<string[]>([]);
 
   function changeType(value: LibraryType) {
     setType(value);
-    if (!nameEdited) setName(TYPE_NAMES[value]);
+    if (!nameEdited) setName(t(TYPE_NAMES[value]));
   }
 
   function add() {
@@ -238,14 +253,14 @@ function LibrariesStep(props: { libraries: CreateLibraryRequest[]; onChange: (li
     setPaths([]);
     setNameEdited(false);
     setType(nextType(added));
-    setName(TYPE_NAMES[nextType(added)]);
+    setName(t(TYPE_NAMES[nextType(added)]));
   }
 
   return (
     <section className="cn-setup__section">
       <header className="cn-setup__header">
-        <h1>Add your libraries</h1>
-        <p>Point Cinemion at the folders that hold your movies and shows, any other videos (like home videos), game clips, your music and your books. A library can use several folders.</p>
+        <h1>{t("setup.libraries.title")}</h1>
+        <p>{t("setup.libraries.intro")}</p>
       </header>
 
       {libraries.length > 0 && (
@@ -255,9 +270,9 @@ function LibrariesStep(props: { libraries: CreateLibraryRequest[]; onChange: (li
               <LibraryIcon type={l.type} />
               <div>
                 <strong>{l.name}</strong>
-                <span>{l.paths.join(", ")}</span>
+                <span>{l.paths.join(t("common.listSeparator"))}</span>
               </div>
-              <IconButton label={`Remove ${l.name}`} icon={<Trash2 />} variant="ghost" size="sm" onClick={() => onChange(libraries.filter((_, j) => j !== i))} />
+              <IconButton label={t("setup.libraries.remove", { name: l.name })} icon={<Trash2 />} variant="ghost" size="sm" onClick={() => onChange(libraries.filter((_, j) => j !== i))} />
             </div>
           ))}
         </div>
@@ -265,9 +280,9 @@ function LibrariesStep(props: { libraries: CreateLibraryRequest[]; onChange: (li
 
       <div className="cn-setup__library">
         <div className="cn-setup__library-head">
-          <SegmentedControl<LibraryType> label="Library type" value={type} onChange={changeType} options={[{ value: "movies", label: "Movies" }, { value: "shows", label: "Shows" }, { value: "videos", label: "Videos" }, { value: "music", label: "Music" }, { value: "photos", label: "Photos" }, { value: "clips", label: "Clips" }, { value: "audiobooks", label: "Audiobooks" }, { value: "books", label: "Books" }]} />
+          <SegmentedControl<LibraryType> label={t("setup.libraries.type")} value={type} onChange={changeType} options={TYPE_ORDER.map((kind) => ({ value: kind, label: t(TYPE_NAMES[kind]) }))} />
           <TextField
-            label="Name"
+            label={t("setup.libraries.name")}
             value={name}
             onChange={(e) => {
               setName(e.target.value);
@@ -278,15 +293,15 @@ function LibrariesStep(props: { libraries: CreateLibraryRequest[]; onChange: (li
         <FolderBrowser key={libraries.length} selected={paths} onSelect={(path) => setPaths([...paths, path])} />
         <div className="cn-setup__library-foot">
           <div className="cn-setup__chips">
-            {paths.length === 0 && <span className="cn-setup__muted">Open a folder and choose "Use this folder".</span>}
+            {paths.length === 0 && <span className="cn-setup__muted">{t("setup.libraries.noFolders")}</span>}
             {paths.map((p) => (
               <span key={p} className="cn-setup__chip">
                 {p}
-                <button type="button" aria-label={`Remove ${p}`} onClick={() => setPaths(paths.filter((x) => x !== p))}>×</button>
+                <button type="button" aria-label={t("setup.libraries.removeFolder", { path: p })} onClick={() => setPaths(paths.filter((x) => x !== p))}>×</button>
               </span>
             ))}
           </div>
-          <Button variant="primary" onClick={add} disabled={!name.trim() || paths.length === 0}>Add library</Button>
+          <Button variant="primary" onClick={add} disabled={!name.trim() || paths.length === 0}>{t("setup.libraries.add")}</Button>
         </div>
       </div>
     </section>
@@ -298,8 +313,8 @@ function MetadataStep(props: { metadata: MetadataSettings; onChange: (metadata: 
   return (
     <section className="cn-setup__section cn-setup__section--narrow">
       <header className="cn-setup__header">
-        <h1>Posters, plots and cast</h1>
-        <p>Cinemion looks up details for everything it finds. Sources higher in the list win when they disagree.</p>
+        <h1>{t("setup.metadata.title")}</h1>
+        <p>{t("setup.metadata.intro")}</p>
       </header>
       <MetadataForm value={metadata} onChange={onChange} />
     </section>

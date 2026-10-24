@@ -13,6 +13,7 @@ import { toasts } from "../../lib/Toasts.ts";
 import { formatDateTime } from "../../lib/format.ts";
 import useController from "../../lib/useController.ts";
 import cx from "../../lib/cx.ts";
+import { t } from "../../i18n/I18n.ts";
 import IconButton from "../IconButton/IconButton.tsx";
 import Button from "../Button/Button.tsx";
 import { addToPhotoAlbum } from "../AddToPhotoAlbum/AddToPhotoAlbum.tsx";
@@ -247,10 +248,10 @@ export default function PhotoViewer(props: PhotoViewerProps) {
     try {
       if (album.kind === "folder") await PhotosApi.setFolderCover(album.id, photo.id);
       else await PhotosApi.updateAlbum(album.id, { coverItemId: photo.id });
-      toasts.success("Album cover changed");
+      toasts.success(t("photos.cover.changed"));
       onChanged?.();
     } catch (error) {
-      toasts.error("Couldn't change the cover", (error as Error).message);
+      toasts.error(t("photos.cover.couldntChange"), (error as Error).message);
     }
   }
 
@@ -258,10 +259,10 @@ export default function PhotoViewer(props: PhotoViewerProps) {
     if (!album || !photo) return;
     try {
       await PhotosApi.removeFromAlbum(album.id, [photo.id]);
-      toasts.success("Taken out of the album", "The file itself is still where it was.");
+      toasts.success(t("photos.viewer.takenOut"), t("photos.viewer.takenOutDescription"));
       onChanged?.();
     } catch (error) {
-      toasts.error("Couldn't take it out of the album", (error as Error).message);
+      toasts.error(t("photos.viewer.couldntTakeOut"), (error as Error).message);
     }
   }
 
@@ -272,7 +273,7 @@ export default function PhotoViewer(props: PhotoViewerProps) {
 
   if (!photo) return null;
   const thumbnail = photo.image ? ItemsApi.imageUrl(photo.image, 1920) : null;
-  const when = photo.takenAt ? formatDateTime(photo.takenAt, mode === "mobile") : "Date unknown";
+  const when = photo.takenAt ? formatDateTime(photo.takenAt, mode === "mobile") : t("photos.viewer.dateUnknown");
   const canEditAlbum = !!album?.canEdit;
 
   return createPortal(
@@ -281,7 +282,7 @@ export default function PhotoViewer(props: PhotoViewerProps) {
       className={cx("cn-photo-viewer cn-dark-theme", !controlsShown && "cn-photo-viewer--idle", infoOpen && "cn-photo-viewer--info", playing && "cn-photo-viewer--playing")}
       role="dialog"
       aria-modal="true"
-      aria-label="Photo viewer"
+      aria-label={t("photos.viewer.label")}
       data-focus-scope
       onMouseMove={poke}
     >
@@ -289,7 +290,7 @@ export default function PhotoViewer(props: PhotoViewerProps) {
         <div
           className={cx("cn-photo-viewer__stage", zoomed && "cn-photo-viewer__stage--zoomed")}
           tabIndex={0}
-          aria-label={`${photo.type === "video" ? "Video" : "Photo"}, ${when}`}
+          aria-label={photo.type === "video" ? t("photos.viewer.video", { when }) : t("photos.viewer.photo", { when })}
           onPointerDown={onPointerDown}
           onPointerUp={onPointerUp}
           onDoubleClick={toggleZoom}
@@ -300,31 +301,31 @@ export default function PhotoViewer(props: PhotoViewerProps) {
         </div>
 
         <header className="cn-photo-viewer__bar" data-viewer-controls>
-          <IconButton label="Close" icon={<ArrowLeft />} variant="ghost" onClick={onClose} />
+          <IconButton label={t("common.close")} icon={<ArrowLeft />} variant="ghost" onClick={onClose} />
           <div className="cn-photo-viewer__title">
             <strong>{when}</strong>
-            <span>{contextTitle} · {(index + 1).toLocaleString()} of {count.toLocaleString()}</span>
+            <span>{t("photos.viewer.position", { context: contextTitle, index: index + 1, count })}</span>
           </div>
           <Button size="sm" icon={playing ? <Pause /> : <Play />} onClick={() => setPlaying((p) => !p)} className="cn-photo-viewer__play">
-            {playing ? "Pause" : "Slideshow"}
+            {playing ? t("photos.viewer.pause") : t("photos.viewer.slideshow")}
           </Button>
-          {mode === "desktop" && <IconButton label={fullscreen ? "Leave full screen" : "Full screen"} icon={fullscreen ? <Minimize /> : <Maximize />} variant="ghost" onClick={toggleFullscreen} />}
-          <IconButton label="Details" icon={<Info />} variant="ghost" onClick={toggleInfo} aria-pressed={infoOpen} />
+          {mode === "desktop" && <IconButton label={fullscreen ? t("photos.viewer.leaveFullScreen") : t("photos.viewer.fullScreen")} icon={fullscreen ? <Minimize /> : <Maximize />} variant="ghost" onClick={toggleFullscreen} />}
+          <IconButton label={t("photos.viewer.details")} icon={<Info />} variant="ghost" onClick={toggleInfo} aria-pressed={infoOpen} />
           {detail && mode !== "tv" && (
-            <a className="cn-icon-button cn-icon-button--ghost cn-icon-button--md" href={detail.downloadUrl} download={detail.fileName} aria-label="Download the original" title="Download the original">
+            <a className="cn-icon-button cn-icon-button--ghost cn-icon-button--md" href={detail.downloadUrl} download={detail.fileName} aria-label={t("photos.viewer.download")} title={t("photos.viewer.download")}>
               <Download />
             </a>
           )}
           <Menu.Root>
-            <Menu.Trigger className="cn-icon-button cn-icon-button--ghost cn-icon-button--md" aria-label="More" title="More"><Ellipsis /></Menu.Trigger>
+            <Menu.Trigger className="cn-icon-button cn-icon-button--ghost cn-icon-button--md" aria-label={t("common.more")} title={t("common.more")}><Ellipsis /></Menu.Trigger>
             <Menu.Portal>
               <Menu.Positioner sideOffset={6} align="end" className="cn-menu__positioner">
                 <Menu.Popup className="cn-menu">
-                  <Menu.Item className="cn-menu__item" onClick={() => addToPhotoAlbum.show(photo.libraryId, [photo.id])}><ImagePlus /> Add to album…</Menu.Item>
-                  {canEditAlbum && <Menu.Item className="cn-menu__item" onClick={useAsCover}><Images /> Use as album cover</Menu.Item>}
-                  {canEditAlbum && album?.kind === "album" && <Menu.Item className="cn-menu__item" onClick={removeFromAlbum}><ImageMinus /> Take out of this album</Menu.Item>}
+                  <Menu.Item className="cn-menu__item" onClick={() => addToPhotoAlbum.show(photo.libraryId, [photo.id])}><ImagePlus /> {t("photos.viewer.addToAlbum")}</Menu.Item>
+                  {canEditAlbum && <Menu.Item className="cn-menu__item" onClick={useAsCover}><Images /> {t("photos.viewer.useAsCover")}</Menu.Item>}
+                  {canEditAlbum && album?.kind === "album" && <Menu.Item className="cn-menu__item" onClick={removeFromAlbum}><ImageMinus /> {t("photos.viewer.takeOut")}</Menu.Item>}
                   {photo.folderId && !(album?.kind === "folder" && album.id === photo.folderId) && (
-                    <Menu.Item className="cn-menu__item" onClick={() => router.navigate(`/photos/folder/${photo.folderId}?photo=${photo.id}`)}><FolderOpen /> Open its folder</Menu.Item>
+                    <Menu.Item className="cn-menu__item" onClick={() => router.navigate(`/photos/folder/${photo.folderId}?photo=${photo.id}`)}><FolderOpen /> {t("photos.viewer.openFolder")}</Menu.Item>
                   )}
                 </Menu.Popup>
               </Menu.Positioner>
@@ -332,18 +333,18 @@ export default function PhotoViewer(props: PhotoViewerProps) {
           </Menu.Root>
         </header>
 
-        {index > 0 && <IconButton className="cn-photo-viewer__nav cn-photo-viewer__nav--prev" label="Previous" icon={<ChevronLeft />} onClick={() => go(-1)} data-viewer-controls />}
-        {index < items.length - 1 && <IconButton className="cn-photo-viewer__nav cn-photo-viewer__nav--next" label="Next" icon={<ChevronRight />} onClick={() => go(1)} data-viewer-controls />}
+        {index > 0 && <IconButton className="cn-photo-viewer__nav cn-photo-viewer__nav--prev" label={t("photos.viewer.previous")} icon={<ChevronLeft />} onClick={() => go(-1)} data-viewer-controls />}
+        {index < items.length - 1 && <IconButton className="cn-photo-viewer__nav cn-photo-viewer__nav--next" label={t("common.next")} icon={<ChevronRight />} onClick={() => go(1)} data-viewer-controls />}
 
         {mode === "desktop" && items.length > 1 && (
-          <div className="cn-photo-viewer__strip" aria-label="Photos around this one" data-viewer-controls>
+          <div className="cn-photo-viewer__strip" aria-label={t("photos.viewer.around")} data-viewer-controls>
             {strip.map(({ photo: p, index: i }) => (
               <button
                 key={p.id}
                 type="button"
                 className={cx("cn-photo-viewer__thumb", i === index && "cn-photo-viewer__thumb--current")}
                 onClick={() => onIndexChange(i)}
-                aria-label={`${p.type === "video" ? "Video" : "Photo"} ${i + 1}`}
+                aria-label={p.type === "video" ? t("photos.viewer.videoNumber", { number: i + 1 }) : t("photos.viewer.photoNumber", { number: i + 1 })}
                 aria-current={i === index || undefined}
                 tabIndex={-1}
               >
@@ -355,7 +356,7 @@ export default function PhotoViewer(props: PhotoViewerProps) {
       </div>
 
       {infoOpen && (
-        <aside className="cn-photo-viewer__panel" aria-label="Details" data-viewer-controls>
+        <aside className="cn-photo-viewer__panel" aria-label={t("photos.viewer.details")} data-viewer-controls>
           <PhotoInfo
             detail={detail}
             canEdit={canManage}

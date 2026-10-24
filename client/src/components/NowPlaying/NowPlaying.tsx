@@ -10,6 +10,7 @@ import { Link, router } from "../../lib/Router.tsx";
 import { deviceMode } from "../../lib/DeviceMode.ts";
 import { formatClock } from "../../lib/playback.ts";
 import cx from "../../lib/cx.ts";
+import { rich, t, type TranslationKey } from "../../i18n/I18n.ts";
 import IconButton from "../IconButton/IconButton.tsx";
 import Button from "../Button/Button.tsx";
 import { Cover } from "../MusicCard/MusicCard.tsx";
@@ -63,15 +64,15 @@ export default function NowPlaying() {
       className="cn-now-playing cn-dark-theme"
       role="dialog"
       aria-modal="true"
-      aria-label="Now playing"
+      aria-label={t("music.nowPlaying.title")}
       data-focus-scope
       style={{ "--np-tint": track.palette?.accent ?? "var(--cn-accent)", "--np-base": track.palette?.base ?? "#08090B" } as CSSProperties}
     >
       <div className="cn-now-playing__glow" aria-hidden="true" />
       <header className="cn-now-playing__top">
-        <IconButton label="Close" icon={<ChevronDown />} variant="ghost" onClick={() => musicPlayer.closeNowPlaying()} data-autofocus />
-        <span>Now playing</span>
-        <IconButton label="Stop and close" icon={<X />} variant="ghost" onClick={() => musicPlayer.stop()} />
+        <IconButton label={t("common.close")} icon={<ChevronDown />} variant="ghost" onClick={() => musicPlayer.closeNowPlaying()} data-autofocus />
+        <span>{t("music.nowPlaying.title")}</span>
+        <IconButton label={t("music.player.stopAndClose")} icon={<X />} variant="ghost" onClick={() => musicPlayer.stop()} />
       </header>
 
       <div className="cn-now-playing__body">
@@ -80,11 +81,11 @@ export default function NowPlaying() {
           <div className="cn-now-playing__info">
             <h2>{book ? player.currentChapter()?.title ?? book.title : track.title}</h2>
             {book
-              ? <p><Link href={`/book/${book.id}`}>{book.title}</Link>{book.authors.length > 0 && ` · ${book.authors.join(", ")}`}</p>
+              ? <p><Link href={`/book/${book.id}`}>{book.title}</Link>{book.authors.length > 0 && `${t("common.dotSeparator")}${book.authors.join(t("common.listSeparator"))}`}</p>
               : (
                 <p>
                   {track.artistId ? <Link href={`/artist/${track.artistId}`}>{artist}</Link> : artist}
-                  {" · "}
+                  {t("common.dotSeparator")}
                   {track.albumId ? <Link href={`/album/${track.albumId}`}>{track.albumTitle}</Link> : track.albumTitle}
                 </p>
               )}
@@ -99,24 +100,24 @@ export default function NowPlaying() {
           </div>
           {book && (
             <div className="cn-now-playing__controls">
-              <button type="button" className="cn-now-playing__speed" onClick={() => musicPlayer.setSpeed(nextSpeed(player.speed))} aria-label={`Speed ${player.speed}×. Change speed`}>
-                {player.speed}×
+              <button type="button" className="cn-now-playing__speed" onClick={() => musicPlayer.setSpeed(nextSpeed(player.speed))} aria-label={t("music.nowPlaying.speed", { speed: player.speed })}>
+                {t("music.nowPlaying.speedValue", { speed: player.speed })}
               </button>
-              <IconButton label="Previous chapter" icon={<SkipBack />} variant="ghost" onClick={() => musicPlayer.previousChapter()} />
-              <IconButton label="Back 30 seconds" icon={<RotateCcw />} variant="ghost" size="lg" onClick={() => musicPlayer.skip(-30)} />
+              <IconButton label={t("music.nowPlaying.previousChapter")} icon={<SkipBack />} variant="ghost" onClick={() => musicPlayer.previousChapter()} />
+              <IconButton label={t("music.player.back30")} icon={<RotateCcw />} variant="ghost" size="lg" onClick={() => musicPlayer.skip(-30)} />
               <PlayButton size="lg" />
-              <IconButton label="Forward 30 seconds" icon={<RotateCw />} variant="ghost" size="lg" onClick={() => musicPlayer.skip(30)} />
-              <IconButton label="Next chapter" icon={<SkipForward />} variant="ghost" onClick={() => musicPlayer.nextChapter()} />
+              <IconButton label={t("music.player.forward30")} icon={<RotateCw />} variant="ghost" size="lg" onClick={() => musicPlayer.skip(30)} />
+              <IconButton label={t("music.nowPlaying.nextChapter")} icon={<SkipForward />} variant="ghost" onClick={() => musicPlayer.nextChapter()} />
               <SleepMenu />
             </div>
           )}
           {!book && <div className="cn-now-playing__controls">
-            <IconButton label={player.shuffle ? "Shuffle is on" : "Shuffle"} icon={<Shuffle />} variant="ghost" className={cx(player.shuffle && "cn-now-playing__toggle--on")} aria-pressed={player.shuffle} onClick={() => musicPlayer.setShuffle(!player.shuffle)} />
-            <IconButton label="Previous" icon={<SkipBack />} variant="ghost" size="lg" onClick={() => musicPlayer.previous()} />
+            <IconButton label={player.shuffle ? t("music.nowPlaying.shuffleOn") : t("music.nowPlaying.shuffle")} icon={<Shuffle />} variant="ghost" className={cx(player.shuffle && "cn-now-playing__toggle--on")} aria-pressed={player.shuffle} onClick={() => musicPlayer.setShuffle(!player.shuffle)} />
+            <IconButton label={t("music.player.previous")} icon={<SkipBack />} variant="ghost" size="lg" onClick={() => musicPlayer.previous()} />
             <PlayButton size="lg" />
-            <IconButton label="Next" icon={<SkipForward />} variant="ghost" size="lg" onClick={() => musicPlayer.next()} />
+            <IconButton label={t("music.player.next")} icon={<SkipForward />} variant="ghost" size="lg" onClick={() => musicPlayer.next()} />
             <IconButton
-              label={player.repeat === "off" ? "Repeat" : player.repeat === "all" ? "Repeating the queue" : "Repeating this track"}
+              label={player.repeat === "off" ? t("music.nowPlaying.repeat") : player.repeat === "all" ? t("music.nowPlaying.repeatAll") : t("music.nowPlaying.repeatOne")}
               icon={player.repeat === "one" ? <Repeat1 /> : <Repeat />}
               variant="ghost"
               className={cx(player.repeat !== "off" && "cn-now-playing__toggle--on")}
@@ -129,7 +130,7 @@ export default function NowPlaying() {
 
         <section className="cn-now-playing__side">
           {book && <Chapters />}
-          {!book && <div role="tablist" aria-label="Show" className="cn-now-playing__tabs">
+          {!book && <div role="tablist" aria-label={t("music.nowPlaying.tabs")} className="cn-now-playing__tabs">
             {(["queue", "lyrics"] as const).map((tab) => (
               <button
                 key={tab}
@@ -139,7 +140,7 @@ export default function NowPlaying() {
                 className={cx("cn-now-playing__tab", player.nowPlayingTab === tab && "cn-now-playing__tab--active")}
                 onClick={() => musicPlayer.setNowPlayingTab(tab)}
               >
-                {tab === "queue" ? "Up next" : "Lyrics"}
+                {tab === "queue" ? t("music.nowPlaying.upNext") : t("music.nowPlaying.lyrics")}
               </button>
             ))}
           </div>}
@@ -155,12 +156,12 @@ function nextSpeed(speed: number) {
   return PLAYBACK_SPEEDS[(i + 1) % PLAYBACK_SPEEDS.length];
 }
 
-const SLEEP_CHOICES: { value: SleepTimer; label: string }[] = [
-  { value: 15, label: "15 minutes" },
-  { value: 30, label: "30 minutes" },
-  { value: 45, label: "45 minutes" },
-  { value: 60, label: "1 hour" },
-  { value: "chapter", label: "End of this chapter" },
+const SLEEP_CHOICES: { value: SleepTimer; key: TranslationKey; count?: number }[] = [
+  { value: 15, key: "music.nowPlaying.sleep.minutes", count: 15 },
+  { value: 30, key: "music.nowPlaying.sleep.minutes", count: 30 },
+  { value: 45, key: "music.nowPlaying.sleep.minutes", count: 45 },
+  { value: 60, key: "music.nowPlaying.sleep.hours", count: 1 },
+  { value: "chapter", key: "music.nowPlaying.sleep.endOfChapter" },
 ];
 
 /**
@@ -173,14 +174,14 @@ function SleepMenu() {
   // The minutes left count down while the menu shows them
   useEffect(() => {
     if (sleep?.mode === "chapter" || !sleep) return;
-    const timer = setInterval(() => setTick((t) => t + 1), 1000);
+    const timer = setInterval(() => setTick((tick) => tick + 1), 1000);
     return () => clearInterval(timer);
   }, [sleep]);
 
-  const left = !sleep ? null : sleep.mode === "chapter" ? "chapter end" : formatClock(Math.max(0, (sleep.at - Date.now()) / 1000));
+  const left = !sleep ? null : sleep.mode === "chapter" ? t("music.nowPlaying.sleep.chapterEnd") : formatClock(Math.max(0, (sleep.at - Date.now()) / 1000));
   return (
     <Menu.Root>
-      <Menu.Trigger className={cx("cn-now-playing__sleep", sleep && "cn-now-playing__toggle--on")} aria-label={sleep ? `Sleep timer: ${left}` : "Sleep timer"}>
+      <Menu.Trigger className={cx("cn-now-playing__sleep", sleep && "cn-now-playing__toggle--on")} aria-label={sleep ? t("music.nowPlaying.sleep.labelSet", { left: left ?? "" }) : t("music.nowPlaying.sleep.label")}>
         <Moon />
         {left && <span>{left}</span>}
       </Menu.Trigger>
@@ -189,11 +190,11 @@ function SleepMenu() {
           <Menu.Popup className="cn-menu">
             {SLEEP_CHOICES.map((choice) => (
               <Menu.Item key={choice.value} className="cn-menu__item" onClick={() => musicPlayer.setSleep(choice.value)}>
-                {sleep?.mode === choice.value ? <Check /> : <span className="cn-menu__spacer" />} {choice.label}
+                {sleep?.mode === choice.value ? <Check /> : <span className="cn-menu__spacer" />} {t(choice.key, choice.count === undefined ? undefined : { count: choice.count })}
               </Menu.Item>
             ))}
             {sleep && <Menu.Separator className="cn-menu__separator" />}
-            {sleep && <Menu.Item className="cn-menu__item" onClick={() => musicPlayer.setSleep(null)}><X /> Turn off</Menu.Item>}
+            {sleep && <Menu.Item className="cn-menu__item" onClick={() => musicPlayer.setSleep(null)}><X /> {t("music.nowPlaying.sleep.turnOff")}</Menu.Item>}
           </Menu.Popup>
         </Menu.Positioner>
       </Menu.Portal>
@@ -216,9 +217,9 @@ function Chapters() {
   }, [current]);
 
   return (
-    <div className="cn-queue" role="region" aria-label="Chapters">
+    <div className="cn-queue" role="region" aria-label={t("music.nowPlaying.chapters.label")}>
       <div className="cn-queue__actions">
-        <span>{player.book?.chapters.length} chapters</span>
+        <span>{t("music.nowPlaying.chapters.count", { count: player.book?.chapters.length ?? 0 })}</span>
       </div>
       <ol ref={list} className="cn-queue__list">
         {player.book?.chapters.map((chapter, i) => (
@@ -251,8 +252,8 @@ function Queue() {
   return (
     <div className="cn-queue" role="tabpanel">
       <div className="cn-queue__actions">
-        <span>{player.queue.length} {player.queue.length === 1 ? "track" : "tracks"}</span>
-        <Button variant="ghost" size="sm" icon={<ListPlus />} onClick={() => addToPlaylist.show(player.queue.map((t) => t.id))}>Save as playlist</Button>
+        <span>{t("music.trackCount", { count: player.queue.length })}</span>
+        <Button variant="ghost" size="sm" icon={<ListPlus />} onClick={() => addToPlaylist.show(player.queue.map((track) => track.id))}>{t("music.nowPlaying.queue.saveAsPlaylist")}</Button>
       </div>
       <ol ref={list} className="cn-queue__list">
         {player.queue.map((track, i) => (
@@ -268,7 +269,7 @@ function Queue() {
               </span>
               <span className="cn-queue__time">{formatClock(track.duration)}</span>
             </button>
-            <IconButton label={`Remove ${track.title} from the queue`} icon={<Trash2 />} variant="ghost" size="sm" className="cn-queue__remove" onClick={() => musicPlayer.removeAt(i)} />
+            <IconButton label={t("music.nowPlaying.queue.remove", { title: track.title })} icon={<Trash2 />} variant="ghost" size="sm" className="cn-queue__remove" onClick={() => musicPlayer.removeAt(i)} />
           </li>
         ))}
       </ol>
@@ -302,13 +303,13 @@ function Lyrics(props: { trackId: number }) {
     if (el && line) scrollInside(el, line, "smooth");
   }, [active]);
 
-  if (failed) return <p className="cn-lyrics__empty" role="tabpanel">The lyrics couldn't be loaded.</p>;
-  if (!lyrics) return <p className="cn-lyrics__empty" role="tabpanel">Loading…</p>;
+  if (failed) return <p className="cn-lyrics__empty" role="tabpanel">{t("music.nowPlaying.lyricsPanel.failed")}</p>;
+  if (!lyrics) return <p className="cn-lyrics__empty" role="tabpanel">{t("common.loading")}</p>;
   if (!lyrics.synced && !lyrics.plain) {
     return (
       <div className="cn-lyrics__empty" role="tabpanel">
-        <p>No lyrics for this track.</p>
-        <p>Cinemion reads lyrics from the file's tags, or from an <code>.lrc</code> file with the same name next to it.</p>
+        <p>{t("music.nowPlaying.lyricsPanel.none")}</p>
+        <p>{rich("music.nowPlaying.lyricsPanel.source", { file: <code>.lrc</code> })}</p>
       </div>
     );
   }

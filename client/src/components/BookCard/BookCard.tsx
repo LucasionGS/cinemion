@@ -2,6 +2,7 @@ import { Check, Headphones } from "lucide-react";
 import type { BookSummary } from "@shared/books.ts";
 import { router } from "../../lib/Router.tsx";
 import cx from "../../lib/cx.ts";
+import { t } from "../../i18n/I18n.ts";
 import MusicCard, { Cover } from "../MusicCard/MusicCard.tsx";
 import "./BookCard.scss";
 
@@ -23,13 +24,13 @@ export default function BookCard(props: BookCardProps) {
     <MusicCard
       className={cx("cn-book-card", !audio && "cn-book-card--portrait")}
       title={book.title}
-      subtitle={subtitle ?? (book.authors.join(", ") || (book.year ? String(book.year) : ""))}
+      subtitle={subtitle ?? (book.authors.join(t("common.listSeparator")) || (book.year ? String(book.year) : ""))}
       cover={
         <span className="cn-book-card__art">
           <Cover image={book.cover} title={book.title} className={cx(!audio && "cn-cover--portrait")} />
-          {audio && <span className="cn-book-card__badge" aria-label="Audiobook"><Headphones /></span>}
+          {audio && <span className="cn-book-card__badge" aria-label={t("books.card.audiobook")}><Headphones /></span>}
           {book.format === "pdf" && <span className="cn-book-card__badge">PDF</span>}
-          {book.finished && <span className="cn-book-card__done" aria-label="Finished"><Check /></span>}
+          {book.finished && <span className="cn-book-card__done" aria-label={t("books.card.finished")}><Check /></span>}
           {book.progress !== null && <span className="cn-book-card__progress"><span style={{ width: `${Math.round(book.progress * 100)}%` }} /></span>}
         </span>
       }

@@ -45,7 +45,7 @@ export function detectCapabilities(): DeviceCapabilities {
   if (_cached) return _cached;
   const ms = mediaSource();
   const video = document.createElement("video");
-  const supported = (types: string[]) => types.some((t) => ms ? ms.isTypeSupported(t) : video.canPlayType(t) !== "");
+  const supported = (types: string[]) => types.some((type) => ms ? ms.isTypeSupported(type) : video.canPlayType(type) !== "");
 
   const speakers = devicePrefs.speakers;
   const audioCodecs = Object.keys(AUDIO).filter((codec) => supported(AUDIO[codec]));

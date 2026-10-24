@@ -3,6 +3,7 @@ import { ImagePlus, X } from "lucide-react";
 import { addToPhotoAlbum } from "../../components/AddToPhotoAlbum/AddToPhotoAlbum.tsx";
 import Button from "../../components/Button/Button.tsx";
 import IconButton from "../../components/IconButton/IconButton.tsx";
+import { t } from "../../i18n/I18n.ts";
 
 export interface SelectionBarProps {
   libraryId: number;
@@ -21,10 +22,10 @@ export default function SelectionBar(props: SelectionBarProps) {
   const { libraryId, selected, onDone, children } = props;
   const count = selected.size;
   return (
-    <div className="cn-photo-selection" role="toolbar" aria-label="Selected photos">
-      <IconButton label="Stop selecting" icon={<X />} variant="ghost" size="sm" onClick={onDone} />
-      <span className="cn-photo-selection__count">{count === 0 ? "Pick photos" : `${count.toLocaleString()} selected`}</span>
-      <Button size="sm" variant="primary" icon={<ImagePlus />} disabled={count === 0} onClick={() => addToPhotoAlbum.show(libraryId, [...selected])}>Add to album</Button>
+    <div className="cn-photo-selection" role="toolbar" aria-label={t("photos.selection.label")}>
+      <IconButton label={t("photos.selection.stop")} icon={<X />} variant="ghost" size="sm" onClick={onDone} />
+      <span className="cn-photo-selection__count">{count === 0 ? t("photos.selection.pick") : t("photos.selection.selected", { count })}</span>
+      <Button size="sm" variant="primary" icon={<ImagePlus />} disabled={count === 0} onClick={() => addToPhotoAlbum.show(libraryId, [...selected])}>{t("photos.selection.addToAlbum")}</Button>
       {children}
     </div>
   );

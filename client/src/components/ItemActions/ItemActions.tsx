@@ -6,6 +6,7 @@ import ItemsApi from "../../Api/ItemsApi.ts";
 import { session } from "../../Session.ts";
 import { toasts } from "../../lib/Toasts.ts";
 import { play, timeLeft } from "../../lib/playback.ts";
+import { t } from "../../i18n/I18n.ts";
 import Button from "../Button/Button.tsx";
 import IconButton from "../IconButton/IconButton.tsx";
 import FixMatchDialog from "../FixMatchDialog/FixMatchDialog.tsx";
@@ -44,28 +45,30 @@ export default function ItemActions(props: ItemActionsProps) {
   const left = target ? timeLeft(target) : null;
 
   // "Resume S1 E3" on shows, so it's clear which episode starts
-  const episodeTag = target && target.type === "episode" && item.type !== "episode" ? ` S${target.seasonNumber} E${target.episodeNumber}` : "";
-  const playLabel = resumable ? `Resume${episodeTag}` : `Play${episodeTag}`;
+  const episode = target && target.type === "episode" && item.type !== "episode" ? { season: String(target.seasonNumber), episode: String(target.episodeNumber) } : null;
+  const playLabel = episode
+    ? t(resumable ? "itemActions.resumeEpisode" : "itemActions.playEpisode", episode)
+    : t(resumable ? "itemActions.resume" : "itemActions.play");
 
   async function toggleWatched() {
     try {
       await ItemsApi.setWatched(item.id, !watched);
       onChanged();
     } catch (error) {
-      toasts.error("Couldn't update", (error as Error).message);
+      toasts.error(t("itemActions.updateFailed"), (error as Error).message);
     }
   }
 
   async function refresh() {
-    const id = toasts.show({ title: `Refreshing ${item.title}…` });
+    const id = toasts.show({ title: t("itemActions.refreshing", { title: item.title }) });
     try {
       await ItemsApi.refresh(item.id);
       toasts.dismiss(id);
-      toasts.success(`${item.title} is up to date`);
+      toasts.success(t("itemActions.upToDate", { title: item.title }));
       onChanged();
     } catch (error) {
       toasts.dismiss(id);
-      toasts.error("Couldn't refresh", (error as Error).message);
+      toasts.error(t("itemActions.refreshFailed"), (error as Error).message);
     }
   }
 
@@ -77,9 +80,9 @@ export default function ItemActions(props: ItemActionsProps) {
             {playLabel}
           </Button>
         )}
-        {target && resumable && <Button variant="secondary" size="lg" icon={<RotateCcw />} onClick={() => play(target, { fromStart: true })}>From start</Button>}
+        {target && resumable && <Button variant="secondary" size="lg" icon={<RotateCcw />} onClick={() => play(target, { fromStart: true })}>{t("itemActions.fromStart")}</Button>}
         <IconButton
-          label={watched ? "Mark as unwatched" : "Mark as watched"}
+          label={watched ? t("itemActions.markUnwatched") : t("itemActions.markWatched")}
           icon={watched ? <Check /> : <Plus />}
           size="lg"
           className={watched ? "cn-actions__watched cn-actions__watched--on" : "cn-actions__watched"}
@@ -89,13 +92,13 @@ export default function ItemActions(props: ItemActionsProps) {
         {children}
         {session.can("LIBRARY_MANAGE") && (
           <Menu.Root>
-            <Menu.Trigger className="cn-icon-button cn-icon-button--glass cn-icon-button--lg" aria-label="More options"><EllipsisVertical /></Menu.Trigger>
+            <Menu.Trigger className="cn-icon-button cn-icon-button--glass cn-icon-button--lg" aria-label={t("itemActions.moreOptions")}><EllipsisVertical /></Menu.Trigger>
             <Menu.Portal>
               <Menu.Positioner sideOffset={8} align="start" className="cn-menu__positioner">
                 <Menu.Popup className="cn-menu">
-                  {(item.type === "movie" || item.type === "show") && <Menu.Item className="cn-menu__item" onClick={() => setFixing(true)}><Wand2 /> Fix match</Menu.Item>}
-                  {editable && <Menu.Item className="cn-menu__item" onClick={() => setEditing(true)}><Pencil /> Edit details</Menu.Item>}
-                  <Menu.Item className="cn-menu__item" onClick={refresh}><RefreshCw /> Refresh details</Menu.Item>
+                  {(item.type === "movie" || item.type === "show") && <Menu.Item className="cn-menu__item" onClick={() => setFixing(true)}><Wand2 /> {t("itemActions.fixMatch")}</Menu.Item>}
+                  {editable && <Menu.Item className="cn-menu__item" onClick={() => setEditing(true)}><Pencil /> {t("itemActions.editDetails")}</Menu.Item>}
+                  <Menu.Item className="cn-menu__item" onClick={refresh}><RefreshCw /> {t("itemActions.refresh")}</Menu.Item>
                 </Menu.Popup>
               </Menu.Positioner>
             </Menu.Portal>

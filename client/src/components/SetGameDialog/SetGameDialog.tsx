@@ -4,6 +4,7 @@ import type { GameCandidate, GameChoice } from "@shared/clips.ts";
 import ClipsApi from "../../Api/ClipsApi.ts";
 import ItemsApi from "../../Api/ItemsApi.ts";
 import { toasts } from "../../lib/Toasts.ts";
+import { t } from "../../i18n/I18n.ts";
 import Dialog from "../Dialog/Dialog.tsx";
 import TextField from "../TextField/TextField.tsx";
 import Spinner from "../Spinner/Spinner.tsx";
@@ -71,7 +72,7 @@ export default function SetGameDialog(props: SetGameDialogProps) {
       await onPick(choice);
       onClose();
     } catch (error) {
-      toasts.error("Couldn't set the game", (error as Error).message);
+      toasts.error(t("clips.setGame.couldntSet"), (error as Error).message);
     } finally {
       setBusy(null);
     }
@@ -83,14 +84,14 @@ export default function SetGameDialog(props: SetGameDialogProps) {
   return (
     <Dialog open={open} onOpenChange={(value) => !value && onClose()} title={title} description={description} size="md">
       <div className="cn-set-game">
-        <TextField label="Game" placeholder="Search for a game" value={query} onChange={(e) => setQuery(e.target.value)} autoFocus />
+        <TextField label={t("clips.setGame.game")} placeholder={t("clips.setGame.placeholder")} value={query} onChange={(e) => setQuery(e.target.value)} autoFocus />
         {message && <p className="cn-set-game__message">{message}</p>}
         <div className="cn-set-game__list" role="list">
-          {!results && <div className="cn-set-game__loading"><Spinner size="1.5rem" label="Searching" /></div>}
+          {!results && <div className="cn-set-game__loading"><Spinner size="1.5rem" label={t("clips.setGame.searching")} /></div>}
           {results?.map((r) => {
             const key = r.gameId ? `game:${r.gameId}` : `${r.provider}:${r.id}`;
             const cover = r.cover ? (r.gameId ? ItemsApi.imageUrl(r.cover, 160) : r.cover) : null;
-            const where = r.gameId ? `In this library · ${r.clipCount} ${r.clipCount === 1 ? "clip" : "clips"}` : r.provider === "steamgriddb" ? "SteamGridDB" : "Steam";
+            const where = r.gameId ? t("clips.setGame.inLibrary", { count: r.clipCount }) : r.provider === "steamgriddb" ? "SteamGridDB" : "Steam";
             return (
               <button
                 key={key}
@@ -105,7 +106,7 @@ export default function SetGameDialog(props: SetGameDialogProps) {
                 </span>
                 <span className="cn-set-game__text">
                   <strong>{r.title}</strong>
-                  <span>{[where, r.year].filter(Boolean).join(" · ")}</span>
+                  <span>{[where, r.year].filter(Boolean).join(t("common.dotSeparator"))}</span>
                 </span>
                 {busy === key && <Spinner size="1.1rem" />}
               </button>
@@ -115,19 +116,19 @@ export default function SetGameDialog(props: SetGameDialogProps) {
             <button type="button" role="listitem" className="cn-set-game__option" disabled={!!busy} onClick={() => pick("typed", { title: typed })}>
               <span className="cn-set-game__cover cn-set-game__cover--icon"><Plus aria-hidden="true" /></span>
               <span className="cn-set-game__text">
-                <strong>Call it “{typed}”</strong>
-                <span>A game with just this name, without artwork</span>
+                <strong>{t("clips.setGame.typed", { name: typed })}</strong>
+                <span>{t("clips.setGame.typedHint")}</span>
               </span>
               {busy === "typed" && <Spinner size="1.1rem" />}
             </button>
           )}
-          {results && results.length === 0 && !typed && <p className="cn-set-game__message">Type a game's name to search for it.</p>}
+          {results && results.length === 0 && !typed && <p className="cn-set-game__message">{t("clips.setGame.typeToSearch")}</p>}
           {allowNone && (
             <button type="button" role="listitem" className="cn-set-game__option" disabled={!!busy} onClick={() => pick("none", null)}>
               <span className="cn-set-game__cover cn-set-game__cover--icon"><Ban aria-hidden="true" /></span>
               <span className="cn-set-game__text">
-                <strong>No game</strong>
-                <span>Like recordings of the desktop</span>
+                <strong>{t("clips.setGame.none")}</strong>
+                <span>{t("clips.setGame.noneHint")}</span>
               </span>
               {busy === "none" && <Spinner size="1.1rem" />}
             </button>

@@ -1,19 +1,35 @@
-import { deviceMode, type ModeSetting } from "../../lib/DeviceMode.ts";
+import { deviceMode, type Mode, type ModeSetting } from "../../lib/DeviceMode.ts";
 import { devicePrefs, type SkipIntros, type Speakers } from "../../lib/DevicePrefs.ts";
-import { themes, type ThemeSetting } from "../../lib/Theme.ts";
+import { type Theme, themes, type ThemeSetting } from "../../lib/Theme.ts";
 import useController from "../../lib/useController.ts";
+import { rich, t, type TranslationKey } from "../../i18n/I18n.ts";
 import SegmentedControl from "../../components/SegmentedControl/SegmentedControl.tsx";
 import Select from "../../components/Select/Select.tsx";
 
-const SPEAKERS: { value: Speakers; label: string }[] = [
-  { value: "auto", label: "Automatic (surround on TVs, stereo elsewhere)" },
-  { value: "stereo", label: "Stereo" },
-  { value: "surround51", label: "5.1 surround" },
-  { value: "surround71", label: "7.1 surround" },
-  { value: "passthrough", label: "Receiver or soundbar (pass Dolby Digital through)" },
+const SPEAKERS: { value: Speakers; label: TranslationKey }[] = [
+  { value: "auto", label: "settings.device.speakerOptions.auto" },
+  { value: "stereo", label: "settings.device.speakerOptions.stereo" },
+  { value: "surround51", label: "settings.device.speakerOptions.surround51" },
+  { value: "surround71", label: "settings.device.speakerOptions.surround71" },
+  { value: "passthrough", label: "settings.device.speakerOptions.passthrough" },
 ];
 
-const MODE_NAMES = { desktop: "Desktop", mobile: "Mobile", tv: "TV" };
+const LAYOUT_AUTO: Record<Mode, TranslationKey> = {
+  desktop: "settings.device.layoutAuto.desktop",
+  mobile: "settings.device.layoutAuto.mobile",
+  tv: "settings.device.layoutAuto.tv",
+};
+
+const LAYOUT_FIXED: Record<Mode, TranslationKey> = {
+  desktop: "settings.device.layoutFixed.desktop",
+  mobile: "settings.device.layoutFixed.mobile",
+  tv: "settings.device.layoutFixed.tv",
+};
+
+const THEME_SYSTEM: Record<Theme, TranslationKey> = {
+  dark: "settings.device.themeSystem.dark",
+  light: "settings.device.themeSystem.light",
+};
 
 /**
  * Settings that only apply to this browser, like the layout.
@@ -27,70 +43,78 @@ export default function DeviceSettings() {
     <>
       <header className="cn-settings__header">
         <div>
-          <h1>This device</h1>
-          <p>These settings are saved in this browser only.</p>
+          <h1>{t("settings.device.title")}</h1>
+          <p>{t("settings.device.intro")}</p>
         </div>
       </header>
 
       <section className="cn-settings__card">
         <div className="cn-settings__row">
           <div className="cn-settings__row-text">
-            <strong>Layout</strong>
+            <strong>{t("settings.device.layout")}</strong>
             <span>
-              {setting === "auto" ? `Picked automatically. This device is using the ${MODE_NAMES[mode]} layout.` : `Always use the ${MODE_NAMES[mode]} layout.`}
-              {host === "mediahub" && " Running inside MediaHub."}
+              {setting === "auto" ? t(LAYOUT_AUTO[mode]) : t(LAYOUT_FIXED[mode])}
+              {host === "mediahub" && ` ${t("settings.device.mediahub")}`}
             </span>
           </div>
         </div>
         <SegmentedControl<ModeSetting>
-          label="Layout"
+          label={t("settings.device.layout")}
           value={setting}
           onChange={(value) => deviceMode.setSetting(value)}
           options={[
-            { value: "auto", label: "Automatic" },
-            { value: "desktop", label: "Desktop" },
-            { value: "mobile", label: "Mobile" },
-            { value: "tv", label: "TV" },
+            { value: "auto", label: t("common.automatic") },
+            { value: "desktop", label: t("settings.device.layouts.desktop") },
+            { value: "mobile", label: t("settings.device.layouts.mobile") },
+            { value: "tv", label: t("settings.device.layouts.tv") },
           ]}
         />
-        <p className="cn-settings__row-text"><span>The TV layout is made for the couch: everything is bigger, and you move around with the arrow keys, a remote or a game controller. Open Cinemion with <code>?mode=tv</code> at the end of the address to switch a TV straight to it.</span></p>
+        <p className="cn-settings__row-text"><span>{rich("settings.device.tvHelp", { param: <code>?mode=tv</code> })}</span></p>
         <div className="cn-settings__divider" />
         <div className="cn-settings__row">
           <p className="cn-settings__row-text">
-            <strong>Theme</strong>
+            <strong>{t("settings.device.theme")}</strong>
             <span>
-              {theme.setting === "system" ? `Follows this device's setting, which is ${theme.theme} right now.` : "Videos always play on a dark screen."}
+              {theme.setting === "system" ? t(THEME_SYSTEM[theme.theme]) : t("settings.device.themeFixed")}
             </span>
           </p>
           <SegmentedControl<ThemeSetting>
-            label="Theme"
+            label={t("settings.device.theme")}
             value={theme.setting}
             onChange={(value) => themes.setSetting(value)}
-            options={[{ value: "dark", label: "Dark" }, { value: "light", label: "Light" }, { value: "system", label: "Match device" }]}
+            options={[
+              { value: "dark", label: t("settings.device.themes.dark") },
+              { value: "light", label: t("settings.device.themes.light") },
+              { value: "system", label: t("settings.device.themes.system") },
+            ]}
           />
         </div>
       </section>
 
       <section className="cn-settings__card">
-        <h2>Playback</h2>
+        <h2>{t("settings.device.playback")}</h2>
         <Select
-          label="Speakers"
-          description="Surround sound that this device can't play is converted to what it can. With a receiver or soundbar, Dolby Digital is passed on untouched for it to decode."
+          label={t("settings.device.speakers")}
+          description={t("settings.device.speakersDescription")}
           value={prefs.speakers}
           onChange={(e) => devicePrefs.set({ speakers: e.target.value as Speakers })}
-          options={SPEAKERS}
+          options={SPEAKERS.map((s) => ({ value: s.value, label: t(s.label) }))}
         />
         <div className="cn-settings__divider" />
         <div className="cn-settings__row">
           <p className="cn-settings__row-text">
-            <strong>Intros</strong>
-            <span>Cinemion finds the intros of shows by comparing their episodes, or from their chapters.</span>
+            <strong>{t("settings.device.intros")}</strong>
+            <span>{t("settings.device.introsDescription")}</span>
           </p>
           <SegmentedControl<SkipIntros>
-            label="Intros"
+            label={t("settings.device.intros")}
             value={prefs.skipIntros}
             onChange={(skipIntros) => devicePrefs.set({ skipIntros })}
-            options={[{ value: "button", label: "Show Skip" }, { value: "auto", label: "Skip by itself" }, { value: "off", label: "Off" }]}
+            options={[
+              { value: "button", label: t("settings.device.introOptions.button") },
+              { value: "auto", label: t("settings.device.introOptions.auto") },
+              { value: "off", label: t("common.off") },
+            ]}
           />
         </div>
       </section>

@@ -3,6 +3,7 @@ import { Download } from "lucide-react";
 import type { LogEntry, LogLevel } from "@shared/admin.ts";
 import AdminApi from "../../Api/AdminApi.ts";
 import cx from "../../lib/cx.ts";
+import { i18n, t, type TranslationKey } from "../../i18n/I18n.ts";
 import Button from "../../components/Button/Button.tsx";
 import TextField from "../../components/TextField/TextField.tsx";
 import SegmentedControl from "../../components/SegmentedControl/SegmentedControl.tsx";
@@ -12,7 +13,7 @@ import "./Admin.scss";
 type Filter = "all" | "info" | "warn" | "error";
 
 const RANK: Record<LogLevel, number> = { debug: 0, info: 1, warn: 2, error: 3 };
-const LEVEL_LABELS: Record<LogLevel, string> = { debug: "Debug", info: "Info", warn: "Warning", error: "Error" };
+const LEVEL_LABELS: Record<LogLevel, TranslationKey> = { debug: "admin.logs.levels.debug", info: "admin.logs.levels.info", warn: "admin.logs.levels.warn", error: "admin.logs.levels.error" };
 const KEEP = 1000;
 
 /**
@@ -43,31 +44,31 @@ export default function LogsSettings() {
     <>
       <header className="cn-settings__header">
         <div>
-          <h1>Logs</h1>
-          <p>The last {KEEP} lines of the server log, newest first. Handy when something doesn't work.</p>
+          <h1>{t("admin.logs.title")}</h1>
+          <p>{t("admin.logs.intro", { count: KEEP })}</p>
         </div>
-        <Button icon={<Download />} onClick={download} disabled={entries.length === 0}>Download</Button>
+        <Button icon={<Download />} onClick={download} disabled={entries.length === 0}>{t("common.download")}</Button>
       </header>
 
       <div className="cn-logs__toolbar">
         <SegmentedControl<Filter>
-          label="Show"
+          label={t("admin.logs.show")}
           value={filter}
           onChange={setFilter}
-          options={[{ value: "all", label: "All" }, { value: "info", label: "Info" }, { value: "warn", label: "Warnings" }, { value: "error", label: "Errors" }]}
+          options={[{ value: "all", label: t("admin.logs.filters.all") }, { value: "info", label: t("admin.logs.filters.info") }, { value: "warn", label: t("admin.logs.filters.warn") }, { value: "error", label: t("admin.logs.filters.error") }]}
         />
-        <TextField label="Search" type="search" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Words in the message" className="cn-logs__search" />
+        <TextField label={t("common.search")} type="search" value={search} onChange={(e) => setSearch(e.target.value)} placeholder={t("admin.logs.searchPlaceholder")} className="cn-logs__search" />
       </div>
 
       {error && <p className="cn-settings__row-text"><span>{error}</span></p>}
       {!error && entries.length === 0 && <Spinner size="2rem" />}
-      {entries.length > 0 && shown.length === 0 && <p className="cn-settings__row-text"><span>No lines match.</span></p>}
+      {entries.length > 0 && shown.length === 0 && <p className="cn-settings__row-text"><span>{t("admin.logs.noMatch")}</span></p>}
       {shown.length > 0 && (
-        <ol className="cn-logs" aria-label="Log lines">
+        <ol className="cn-logs" aria-label={t("admin.logs.lines")}>
           {shown.map((e) => (
             <li key={e.id} className={cx("cn-logs__line", `cn-logs__line--${e.level}`)}>
-              <time className="cn-logs__time" dateTime={e.time} title={new Date(e.time).toLocaleString()}>{new Date(e.time).toLocaleTimeString(undefined, { hour12: false })}</time>
-              <span className="cn-logs__level">{LEVEL_LABELS[e.level]}</span>
+              <time className="cn-logs__time" dateTime={e.time} title={new Date(e.time).toLocaleString(i18n.locale)}>{new Date(e.time).toLocaleTimeString(i18n.locale, { hour12: false })}</time>
+              <span className="cn-logs__level">{t(LEVEL_LABELS[e.level])}</span>
               <span className="cn-logs__message">
                 {e.message}
                 {e.data && <span className="cn-logs__data">{e.data}</span>}

@@ -7,6 +7,7 @@ import { musicPlayer } from "../../lib/MusicPlayer.ts";
 import { router } from "../../lib/Router.tsx";
 import { toasts } from "../../lib/Toasts.ts";
 import cx from "../../lib/cx.ts";
+import { t } from "../../i18n/I18n.ts";
 import { fallbackColor } from "../PosterCard/PosterCard.tsx";
 import "./MusicCard.scss";
 
@@ -81,7 +82,7 @@ export default function MusicCard(props: MusicCardProps) {
         {cover}
       </button>
       {onPlay && (
-        <button type="button" className="cn-music-card__play" onClick={play} aria-label={`Play ${title}`} tabIndex={-1}>
+        <button type="button" className="cn-music-card__play" onClick={play} aria-label={t("music.card.play", { title })} tabIndex={-1}>
           <Play />
         </button>
       )}
@@ -101,7 +102,7 @@ export async function playAlbum(albumId: number, opts?: { shuffle?: boolean }) {
     const album = await MusicApi.album(albumId);
     musicPlayer.play(album.tracks, 0, opts);
   } catch (error) {
-    toasts.error("Couldn't play the album", (error as Error).message);
+    toasts.error(t("music.card.playAlbumFailed"), (error as Error).message);
   }
 }
 
@@ -110,7 +111,7 @@ export function AlbumCard(props: { album: AlbumSummary; subtitle?: string }) {
   return (
     <MusicCard
       title={album.title}
-      subtitle={subtitle ?? [album.artistName, album.year].filter(Boolean).join(" · ")}
+      subtitle={subtitle ?? [album.artistName, album.year].filter(Boolean).join(t("common.dotSeparator"))}
       cover={<Cover image={album.cover} title={album.title} />}
       onClick={() => router.navigate(`/album/${album.id}`)}
       onPlay={() => playAlbum(album.id)}
@@ -124,7 +125,7 @@ export function ArtistCard(props: { artist: ArtistSummary }) {
     <MusicCard
       round
       title={artist.name}
-      subtitle={`${artist.albumCount} ${artist.albumCount === 1 ? "album" : "albums"}`}
+      subtitle={t("music.albumCount", { count: artist.albumCount })}
       cover={<Cover image={artist.image} title={artist.name} round />}
       onClick={() => router.navigate(`/artist/${artist.id}`)}
     />
@@ -136,7 +137,7 @@ export function PlaylistCard(props: { playlist: PlaylistSummary }) {
   return (
     <MusicCard
       title={playlist.name}
-      subtitle={`${playlist.trackCount} ${playlist.trackCount === 1 ? "track" : "tracks"}`}
+      subtitle={t("music.trackCount", { count: playlist.trackCount })}
       cover={<Cover image={null} mosaic={playlist.covers} title={playlist.name} />}
       onClick={() => router.navigate(`/playlist/${playlist.id}`)}
     />

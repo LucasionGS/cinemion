@@ -8,6 +8,7 @@ import { formatClock } from "../../lib/playback.ts";
 import { formatDate, formatDateTime } from "../../lib/format.ts";
 import { toasts } from "../../lib/Toasts.ts";
 import cx from "../../lib/cx.ts";
+import { t } from "../../i18n/I18n.ts";
 import { fallbackColor } from "../PosterCard/PosterCard.tsx";
 import "../WideCard/WideCard.scss";
 import "./ClipCard.scss";
@@ -40,7 +41,7 @@ export default function ClipCard(props: ClipCardProps) {
   const picking = selected !== null;
   const progress = item.userData?.progress && !item.userData.watched ? item.userData.progress : null;
   const when = clip?.takenAt ? formatDateTime(clip.takenAt, true) : item.releaseDate ? formatDate(item.releaseDate, true) : null;
-  const gameName = clip?.game?.title ?? "No game";
+  const gameName = clip?.game?.title ?? t("clips.card.noGame");
 
   useEffect(() => setFavorite(item.userData?.favorite ?? false), [item.userData?.favorite]);
 
@@ -49,7 +50,7 @@ export default function ClipCard(props: ClipCardProps) {
   let line2: string | null;
   if (clip?.titled) {
     line1 = item.title;
-    line2 = showGame ? [gameName, when].filter(Boolean).join(" · ") : when;
+    line2 = showGame ? [gameName, when].filter(Boolean).join(t("common.dotSeparator")) : when;
   }
   else if (showGame) {
     line1 = gameName;
@@ -67,7 +68,7 @@ export default function ClipCard(props: ClipCardProps) {
       await ClipsApi.setFavorite([item.id], next);
     } catch (error) {
       setFavorite(!next);
-      toasts.error("Couldn't star the clip", (error as Error).message);
+      toasts.error(t("clips.card.couldntStar"), (error as Error).message);
     }
   }
 
@@ -80,19 +81,19 @@ export default function ClipCard(props: ClipCardProps) {
         onMouseEnter={onSelect}
         onFocus={onSelect}
         aria-pressed={picking ? !!selected : undefined}
-        aria-label={[line1, line2].filter(Boolean).join(", ")}
+        aria-label={[line1, line2].filter(Boolean).join(t("common.listSeparator"))}
       >
         <span className="cn-wide__art cn-dark-theme" style={image && !broken ? undefined : { background: `linear-gradient(160deg, ${item.palette?.accent ?? fallbackColor(gameName)} 0%, ${item.palette?.base ?? "#0B0D12"} 110%)` }}>
           {image && !broken && <img src={ItemsApi.imageUrl(image, 500)} srcSet={`${ItemsApi.imageUrl(image, 500)} 500w, ${ItemsApi.imageUrl(image, 780)} 780w`} sizes="22rem" alt="" loading="lazy" onError={() => setBroken(true)} />}
           <span className="cn-wide__shade" />
           {clip?.seconds ? <span className="cn-wide__length">{formatClock(clip.seconds)}</span> : null}
           {clip?.suggestion && !clip.game && (
-            <span className="cn-clip__suggestion" title={`Looks like ${clip.suggestion.title}`}>
-              <Sparkles aria-hidden="true" />{clip.suggestion.title}?
+            <span className="cn-clip__suggestion" title={t("clips.card.suggestion", { game: clip.suggestion.title })}>
+              <Sparkles aria-hidden="true" />{t("clips.card.suggestionShort", { game: clip.suggestion.title })}
             </span>
           )}
           {picking && <span className="cn-clip__check" aria-hidden="true">{selected && <Check />}</span>}
-          {item.userData?.watched && !picking && <span className="cn-wide__watched" aria-label="Watched"><Check /></span>}
+          {item.userData?.watched && !picking && <span className="cn-wide__watched" aria-label={t("clips.card.watched")}><Check /></span>}
           {progress !== null && <span className="cn-wide__progress"><span style={{ width: `${Math.round(progress * 100)}%` }} /></span>}
         </span>
         <span className="cn-wide__meta">
@@ -104,9 +105,9 @@ export default function ClipCard(props: ClipCardProps) {
         <button
           type="button"
           className={cx("cn-clip__star", favorite && "cn-clip__star--on")}
-          aria-label={favorite ? "Take the star off" : "Star this clip"}
+          aria-label={favorite ? t("clips.card.unstar") : t("clips.card.star")}
           aria-pressed={favorite}
-          title={favorite ? "Starred" : "Star"}
+          title={favorite ? t("clips.card.starred") : t("clips.card.starTitle")}
           onClick={toggleFavorite}
         >
           <Star />

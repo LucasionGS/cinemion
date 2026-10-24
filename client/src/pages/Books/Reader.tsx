@@ -6,6 +6,7 @@ import { router } from "../../lib/Router.tsx";
 import { themes } from "../../lib/Theme.ts";
 import { toasts } from "../../lib/Toasts.ts";
 import cx from "../../lib/cx.ts";
+import { t, type TranslationKey } from "../../i18n/I18n.ts";
 import Button from "../../components/Button/Button.tsx";
 import IconButton from "../../components/IconButton/IconButton.tsx";
 import Select from "../../components/Select/Select.tsx";
@@ -26,10 +27,10 @@ interface ReaderPrefs {
 }
 
 // Reading colours: ground, text, links and lines
-const THEMES: Record<ReaderTheme, { bg: string; fg: string; link: string; line: string; label: string }> = {
-  light: { bg: "#FBFAF7", fg: "#1D1D1F", link: "#1D5FC4", line: "rgba(0, 0, 0, 0.1)", label: "Light" },
-  sepia: { bg: "#F4ECD8", fg: "#4E3B2A", link: "#8A4B14", line: "rgba(78, 59, 42, 0.18)", label: "Sepia" },
-  dark: { bg: "#121316", fg: "#D8D8DA", link: "#A9CBFF", line: "rgba(255, 255, 255, 0.1)", label: "Dark" },
+const THEMES: Record<ReaderTheme, { bg: string; fg: string; link: string; line: string; label: TranslationKey }> = {
+  light: { bg: "#FBFAF7", fg: "#1D1D1F", link: "#1D5FC4", line: "rgba(0, 0, 0, 0.1)", label: "books.reader.themes.light" },
+  sepia: { bg: "#F4ECD8", fg: "#4E3B2A", link: "#8A4B14", line: "rgba(78, 59, 42, 0.18)", label: "books.reader.themes.sepia" },
+  dark: { bg: "#121316", fg: "#D8D8DA", link: "#A9CBFF", line: "rgba(255, 255, 255, 0.1)", label: "books.reader.themes.dark" },
 };
 const PREFS_KEY = "cn-reader";
 const SIZES = [80, 90, 100, 110, 125, 140, 160, 180];
@@ -201,10 +202,10 @@ export default function Reader(props: ReaderProps) {
   async function finish() {
     try {
       await BooksApi.progress(id, { finished: true });
-      toasts.success("Marked as finished");
+      toasts.success(t("books.reader.markedFinished"));
       router.back(`/book/${id}`);
     } catch (e) {
-      toasts.error("Couldn't save that", (e as Error).message);
+      toasts.error(t("books.reader.saveFailed"), (e as Error).message);
     }
   }
 
@@ -213,50 +214,50 @@ export default function Reader(props: ReaderProps) {
   return (
     <div className={cx("cn-reader", themeName === "dark" ? "cn-dark-theme" : "cn-light-theme")} style={style} data-focus-scope>
       <header className="cn-reader__bar">
-        <IconButton label="Back" icon={<ArrowLeft />} variant="ghost" onClick={() => router.back(`/book/${id}`)} data-autofocus />
+        <IconButton label={t("common.back")} icon={<ArrowLeft />} variant="ghost" onClick={() => router.back(`/book/${id}`)} data-autofocus />
         <div className="cn-reader__title">
-          <strong>{book?.title ?? "Loading…"}</strong>
+          <strong>{book?.title ?? t("common.loading")}</strong>
           {chapters[chapter]?.title && <span>{chapters[chapter].title}</span>}
         </div>
         {reading?.format === "epub" && (
           <div className="cn-reader__tools">
             {chapters.length > 1 && (
               <Select
-                label="Chapter"
+                label={t("books.reader.chapter")}
                 className="cn-reader__select"
                 value={String(chapter)}
-                options={chapters.map((c, i) => ({ value: String(i), label: c.title ?? `Chapter ${i + 1}` }))}
+                options={chapters.map((c, i) => ({ value: String(i), label: c.title ?? t("books.reader.chapterNumber", { number: i + 1 }) }))}
                 onChange={(e) => goTo(Number(e.target.value))}
               />
             )}
-            <IconButton label="Smaller text" icon={<Minus />} variant="ghost" disabled={prefs.size <= SIZES[0]} onClick={() => setPrefs({ ...prefs, size: SIZES[Math.max(0, SIZES.indexOf(prefs.size) - 1)] ?? 100 })} />
-            <IconButton label="Bigger text" icon={<Plus />} variant="ghost" disabled={prefs.size >= SIZES[SIZES.length - 1]} onClick={() => setPrefs({ ...prefs, size: SIZES[Math.min(SIZES.length - 1, SIZES.indexOf(prefs.size) + 1)] ?? 100 })} />
+            <IconButton label={t("books.reader.smaller")} icon={<Minus />} variant="ghost" disabled={prefs.size <= SIZES[0]} onClick={() => setPrefs({ ...prefs, size: SIZES[Math.max(0, SIZES.indexOf(prefs.size) - 1)] ?? 100 })} />
+            <IconButton label={t("books.reader.bigger")} icon={<Plus />} variant="ghost" disabled={prefs.size >= SIZES[SIZES.length - 1]} onClick={() => setPrefs({ ...prefs, size: SIZES[Math.min(SIZES.length - 1, SIZES.indexOf(prefs.size) + 1)] ?? 100 })} />
             {(Object.keys(THEMES) as ReaderTheme[]).map((key) => (
               <button
                 key={key}
                 type="button"
                 className={cx("cn-reader__theme", themeName === key && "cn-reader__theme--active")}
                 style={{ background: THEMES[key].bg }}
-                aria-label={`${THEMES[key].label} page`}
+                aria-label={t(THEMES[key].label)}
                 aria-pressed={prefs.theme === key}
                 onClick={() => setPrefs({ ...prefs, theme: key })}
               />
             ))}
           </div>
         )}
-        {reading?.format === "pdf" && <Button variant="secondary" icon={<Check />} onClick={finish}>Mark as finished</Button>}
+        {reading?.format === "pdf" && <Button variant="secondary" icon={<Check />} onClick={finish}>{t("books.reader.markFinished")}</Button>}
       </header>
 
       {error && <p className="cn-reader__message">{error}</p>}
       {!error && !reading && <div className="cn-reader__message"><Spinner size="2rem" /></div>}
-      {reading?.format === "pdf" && <iframe className="cn-reader__frame" src={reading.url} title={book?.title ?? "Book"} />}
+      {reading?.format === "pdf" && <iframe className="cn-reader__frame" src={reading.url} title={book?.title ?? t("books.reader.frameTitle")} />}
       {reading?.format === "epub" && chapters[chapter] && (
         <iframe
           key={chapter}
           ref={frame}
           className="cn-reader__frame"
           src={reading.base + chapters[chapter].href}
-          title={book?.title ?? "Book"}
+          title={book?.title ?? t("books.reader.frameTitle")}
           // Books may carry scripts; without allow-scripts they never run, while this page can still dress the text
           sandbox="allow-same-origin"
           onLoad={onFrameLoad}
@@ -265,11 +266,11 @@ export default function Reader(props: ReaderProps) {
 
       {reading?.format === "epub" && (
         <footer className="cn-reader__bar cn-reader__bar--bottom">
-          <Button variant="ghost" icon={<ChevronLeft />} disabled={chapter === 0} onClick={() => goTo(chapter - 1, "bottom")}>Previous</Button>
-          <span className="cn-reader__percent">{Math.round(progress * 100)}%</span>
+          <Button variant="ghost" icon={<ChevronLeft />} disabled={chapter === 0} onClick={() => goTo(chapter - 1, "bottom")}>{t("books.reader.previous")}</Button>
+          <span className="cn-reader__percent">{t("books.reader.percent", { percent: Math.round(progress * 100) })}</span>
           {chapter < chapters.length - 1
-            ? <Button variant="ghost" onClick={() => goTo(chapter + 1)}>Next <ChevronRight /></Button>
-            : <Button variant="ghost" icon={<Check />} onClick={finish}>Finished</Button>}
+            ? <Button variant="ghost" onClick={() => goTo(chapter + 1)}>{t("books.reader.next")} <ChevronRight /></Button>
+            : <Button variant="ghost" icon={<Check />} onClick={finish}>{t("books.reader.finished")}</Button>}
         </footer>
       )}
     </div>

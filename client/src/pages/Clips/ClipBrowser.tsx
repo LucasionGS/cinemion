@@ -6,6 +6,7 @@ import ClipsApi from "../../Api/ClipsApi.ts";
 import { session } from "../../Session.ts";
 import usePaged from "../../lib/usePaged.ts";
 import { toasts } from "../../lib/Toasts.ts";
+import { i18n, t, type TranslationKey } from "../../i18n/I18n.ts";
 import ClipCard from "../../components/ClipCard/ClipCard.tsx";
 import SetGameDialog from "../../components/SetGameDialog/SetGameDialog.tsx";
 import SegmentedControl from "../../components/SegmentedControl/SegmentedControl.tsx";
@@ -17,10 +18,10 @@ import "../Library/Library.scss";
 import "../Photos/Photos.scss";
 import "./Clips.scss";
 
-const SORTS: { value: ClipSort; label: string }[] = [
-  { value: "newest", label: "Newest first" },
-  { value: "oldest", label: "Oldest first" },
-  { value: "longest", label: "Longest first" },
+const SORTS: { value: ClipSort; label: TranslationKey }[] = [
+  { value: "newest", label: "clips.browser.sort.newest" },
+  { value: "oldest", label: "clips.browser.sort.oldest" },
+  { value: "longest", label: "clips.browser.sort.longest" },
 ];
 
 export interface ClipBrowserProps {
@@ -93,10 +94,10 @@ export default function ClipBrowser(props: ClipBrowserProps) {
     if (!selected?.size) return;
     try {
       await ClipsApi.setFavorite([...selected], favorite);
-      toasts.success(favorite ? `Starred ${selected.size} ${selected.size === 1 ? "clip" : "clips"}` : "Stars taken off");
+      toasts.success(favorite ? t("clips.browser.didStar", { count: selected.size }) : t("clips.browser.didUnstar"));
       reload();
     } catch (error) {
-      toasts.error("Couldn't star the clips", (error as Error).message);
+      toasts.error(t("clips.browser.couldntStar"), (error as Error).message);
     }
   }
 
@@ -104,43 +105,43 @@ export default function ClipBrowser(props: ClipBrowserProps) {
     if (!selected?.size) return;
     const result = await ClipsApi.setGame(libraryId, [...selected], choice);
     const count = selected.size;
-    toasts.success(result.game ? `${count} ${count === 1 ? "clip is" : "clips are"} in ${result.game.title} now` : `${count} ${count === 1 ? "clip has" : "clips have"} no game now`);
+    toasts.success(result.game ? t("clips.browser.inGame", { count, game: result.game.title }) : t("clips.browser.noGameNow", { count }));
     reload();
   }
 
   const empty = list.items && list.items.length === 0 && !list.loading;
 
   return (
-    <section className="cn-clips__browser" aria-label="Clips">
+    <section className="cn-clips__browser" aria-label={t("clips.browser.label")}>
       <div className="cn-library__filters cn-clips__filters">
         {fixedGame === undefined && games && (
           <Select
-            label="Game"
+            label={t("clips.browser.game")}
             value={gameFilter === null ? "" : String(gameFilter)}
             onChange={(e) => setGameFilter(e.target.value === "" ? null : e.target.value === "none" ? "none" : Number(e.target.value))}
-            options={[{ value: "", label: "All games" }, { value: "none", label: "No game" }, ...games.map((g) => ({ value: String(g.id), label: g.title }))]}
+            options={[{ value: "", label: t("clips.browser.allGames") }, { value: "none", label: t("clips.browser.noGame") }, ...games.map((g) => ({ value: String(g.id), label: g.title }))]}
             className="cn-library__select"
           />
         )}
         {tags.length > 0 && (
-          <Select label="Tag" value={tag ?? ""} onChange={(e) => setTag(e.target.value || null)} options={[{ value: "", label: "All tags" }, ...tags.map((t) => ({ value: t, label: t }))]} className="cn-library__select" />
+          <Select label={t("clips.browser.tag")} value={tag ?? ""} onChange={(e) => setTag(e.target.value || null)} options={[{ value: "", label: t("clips.browser.allTags") }, ...tags.map((name) => ({ value: name, label: name }))]} className="cn-library__select" />
         )}
-        <SegmentedControl<"all" | "starred"> label="Show" value={starred ? "starred" : "all"} onChange={(v) => setStarred(v === "starred")} options={[{ value: "all", label: "All" }, { value: "starred", label: "Starred" }]} />
-        <Select label="Sort by" value={sort} options={SORTS} onChange={(e) => setSort(e.target.value as ClipSort)} className="cn-library__select" />
-        {!empty && <Button icon={<ListChecks />} onClick={() => setSelected(selected ? null : new Set())} aria-pressed={!!selected}>Select</Button>}
+        <SegmentedControl<"all" | "starred"> label={t("clips.browser.show")} value={starred ? "starred" : "all"} onChange={(v) => setStarred(v === "starred")} options={[{ value: "all", label: t("clips.browser.all") }, { value: "starred", label: t("clips.browser.starred") }]} />
+        <Select label={t("clips.browser.sortBy")} value={sort} options={SORTS.map((s) => ({ value: s.value, label: t(s.label) }))} onChange={(e) => setSort(e.target.value as ClipSort)} className="cn-library__select" />
+        {!empty && <Button icon={<ListChecks />} onClick={() => setSelected(selected ? null : new Set())} aria-pressed={!!selected}>{t("common.select")}</Button>}
       </div>
 
       {!list.items && <div className="cn-library__loading"><Spinner size="2rem" /></div>}
       {empty && (
         <section className="cn-library__empty">
-          <h2>{starred ? "No starred clips" : "No clips here"}</h2>
-          <p>{starred ? "Star a clip with the star on its picture, and it shows up here." : tag ? "No clips have this tag." : "Nothing matches these filters."}</p>
+          <h2>{starred ? t("clips.browser.emptyStarred") : t("clips.browser.empty")}</h2>
+          <p>{starred ? t("clips.browser.emptyStarredHint") : tag ? t("clips.browser.emptyTag") : t("clips.browser.emptyFilters")}</p>
         </section>
       )}
 
       <div className="cn-clip-grid">
         {groups.map((group) => (
-          <section key={group.month ?? "all"} className="cn-clip-grid__month" aria-label={group.month ? monthLabel(group.month) : "Clips"}>
+          <section key={group.month ?? "all"} className="cn-clip-grid__month" aria-label={group.month ? monthLabel(group.month) : t("clips.browser.label")}>
             {group.month && <h2>{monthLabel(group.month)}</h2>}
             <div className="cn-library__grid cn-library__grid--wide">
               {group.items.map((clip) => (
@@ -154,20 +155,20 @@ export default function ClipBrowser(props: ClipBrowserProps) {
       {list.loading && list.items && <div className="cn-library__loading"><Spinner size="2rem" /></div>}
 
       {selected && (
-        <div className="cn-photo-selection" role="toolbar" aria-label="Selected clips">
-          <IconButton label="Stop selecting" icon={<X />} variant="ghost" size="sm" onClick={() => setSelected(null)} />
-          <span className="cn-photo-selection__count">{selected.size === 0 ? "Pick clips" : `${selected.size.toLocaleString()} selected`}</span>
-          {canManage && <Button size="sm" variant="primary" icon={<Gamepad2 />} disabled={selected.size === 0} onClick={() => setSettingGame(true)}>Set game</Button>}
-          <Button size="sm" icon={<Star />} disabled={selected.size === 0} onClick={() => star(true)}>Star</Button>
-          <Button size="sm" icon={<StarOff />} disabled={selected.size === 0} onClick={() => star(false)}>Unstar</Button>
+        <div className="cn-photo-selection" role="toolbar" aria-label={t("clips.browser.selectionLabel")}>
+          <IconButton label={t("clips.browser.stop")} icon={<X />} variant="ghost" size="sm" onClick={() => setSelected(null)} />
+          <span className="cn-photo-selection__count">{selected.size === 0 ? t("clips.browser.pick") : t("clips.browser.selected", { count: selected.size })}</span>
+          {canManage && <Button size="sm" variant="primary" icon={<Gamepad2 />} disabled={selected.size === 0} onClick={() => setSettingGame(true)}>{t("clips.browser.setGame")}</Button>}
+          <Button size="sm" icon={<Star />} disabled={selected.size === 0} onClick={() => star(true)}>{t("clips.browser.star")}</Button>
+          <Button size="sm" icon={<StarOff />} disabled={selected.size === 0} onClick={() => star(false)}>{t("clips.browser.unstar")}</Button>
         </div>
       )}
 
       <SetGameDialog
         open={settingGame}
         libraryId={libraryId}
-        title={`Set the game of ${selected?.size ?? 0} ${selected?.size === 1 ? "clip" : "clips"}`}
-        description="Pick a game you have, search Steam, or type a name."
+        title={t("clips.browser.setGameTitle", { count: selected?.size ?? 0 })}
+        description={t("clips.browser.setGameDescription")}
         allowNone
         onPick={setGame}
         onClose={() => setSettingGame(false)}
@@ -195,5 +196,5 @@ function byMonth(items: ItemSummary[]) {
  */
 function monthLabel(month: string) {
   const [y, m] = month.split("-").map(Number);
-  return new Date(y, (m || 1) - 1, 1).toLocaleDateString(undefined, { month: "long", year: "numeric" });
+  return new Date(y, (m || 1) - 1, 1).toLocaleDateString(i18n.locale, { month: "long", year: "numeric" });
 }

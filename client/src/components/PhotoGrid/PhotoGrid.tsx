@@ -8,6 +8,7 @@ import { formatDateTime } from "../../lib/format.ts";
 import { deviceMode } from "../../lib/DeviceMode.ts";
 import useController from "../../lib/useController.ts";
 import cx from "../../lib/cx.ts";
+import { i18n, t } from "../../i18n/I18n.ts";
 import "./PhotoGrid.scss";
 
 export interface PhotoGridProps {
@@ -86,8 +87,10 @@ export default function PhotoGrid(props: PhotoGridProps) {
 function Tile(props: { photo: PhotoSummary; style: CSSProperties; sizes: string; selected: boolean | null; onClick: () => void }) {
   const { photo, style, sizes, selected, onClick } = props;
   const [broken, setBroken] = useState(false);
-  const when = photo.takenAt ? formatDateTime(photo.takenAt) : "date unknown";
-  const label = `${photo.type === "video" ? "Video" : "Photo"}, ${when}`;
+  const when = photo.takenAt ? formatDateTime(photo.takenAt) : null;
+  const label = photo.type === "video"
+    ? when ? t("photos.grid.video", { when }) : t("photos.grid.videoUndated")
+    : when ? t("photos.grid.photo", { when }) : t("photos.grid.photoUndated");
   const image = photo.image && !broken ? photo.image : null;
   return (
     <button
@@ -134,10 +137,10 @@ function group(items: PhotoSummary[], by: PhotoGridProps["groupBy"]): Section[] 
       const [y, m, d] = day.split("-").map(Number);
       const date = day === "unknown" ? null : new Date(y, m - 1, d);
       const month = day.slice(0, 7);
-      const monthTitle = date ? date.toLocaleDateString(undefined, { month: "long", year: "numeric" }) : "No date";
+      const monthTitle = date ? date.toLocaleDateString(i18n.locale, { month: "long", year: "numeric" }) : t("photos.grid.noDate");
       // Under a month heading the year is already there; on their own, days in other years say which
       const withYear = by === "day" && date && y !== thisYear;
-      const dayTitle = date ? date.toLocaleDateString(undefined, { weekday: "long", day: "numeric", month: "long", ...(withYear ? { year: "numeric" } : {}) }) : "No date";
+      const dayTitle = date ? date.toLocaleDateString(i18n.locale, { weekday: "long", day: "numeric", month: "long", ...(withYear ? { year: "numeric" } : {}) }) : t("photos.grid.noDate");
       section = { key: day, month: by === "month" && month !== lastMonth ? monthTitle : null, day: by === "month" && !date ? null : dayTitle, items: [] };
       lastMonth = month;
       sections.push(section);

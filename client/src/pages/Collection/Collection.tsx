@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import type { CollectionDetail } from "@shared/media.ts";
 import ItemsApi from "../../Api/ItemsApi.ts";
 import { applyAmbient } from "../../lib/ambient.ts";
+import { t } from "../../i18n/I18n.ts";
 import AppShell from "../../components/AppShell/AppShell.tsx";
 import ItemHero from "../../components/ItemHero/ItemHero.tsx";
 import PosterCard from "../../components/PosterCard/PosterCard.tsx";
@@ -40,8 +41,8 @@ export default function Collection(props: CollectionProps) {
         <div className="cn-item">
           <ItemHero title={collection.name} artwork={collection.artwork} palette={collection.palette}>
             <div className="cn-meta">
-              <span>{collection.itemCount} movies</span>
-              {watched > 0 && <span>{watched} watched</span>}
+              <span>{t("collection.movies", { count: collection.itemCount })}</span>
+              {watched > 0 && <span>{t("collection.watched", { count: watched })}</span>}
             </div>
             {collection.overview && <p className="cn-item__overview">{collection.overview}</p>}
           </ItemHero>

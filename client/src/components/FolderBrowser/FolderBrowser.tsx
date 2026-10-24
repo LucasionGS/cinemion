@@ -2,6 +2,7 @@ import { Fragment, type KeyboardEvent, useEffect, useId, useRef, useState } from
 import { ChevronRight, CornerDownLeft, Folder, FolderCheck, HardDrive, Pencil, X } from "lucide-react";
 import type { FsListing } from "@shared/api.ts";
 import ServerApi from "../../Api/ServerApi.ts";
+import { t } from "../../i18n/I18n.ts";
 import Button from "../Button/Button.tsx";
 import IconButton from "../IconButton/IconButton.tsx";
 import Spinner from "../Spinner/Spinner.tsx";
@@ -91,12 +92,12 @@ export default function FolderBrowser(props: FolderBrowserProps) {
         <nav
           ref={crumbsRef}
           className="cn-folders__crumbs"
-          aria-label="Folder path"
+          aria-label={t("folderBrowser.path")}
           onClick={(e) => {
             if (e.target === e.currentTarget && !roots) setTyping(true);
           }}
         >
-          <button type="button" className="cn-folders__crumb" aria-label={roots ? "Top" : "Drives"} onClick={() => setPath(roots?.length === 1 ? roots[0] : null)}><HardDrive /></button>
+          <button type="button" className="cn-folders__crumb" aria-label={roots ? t("folderBrowser.top") : t("folderBrowser.drives")} onClick={() => setPath(roots?.length === 1 ? roots[0] : null)}><HardDrive /></button>
           {crumbs.map((crumb, i) => (
             <Fragment key={crumb.path}>
               <ChevronRight className="cn-folders__sep" aria-hidden="true" />
@@ -106,10 +107,10 @@ export default function FolderBrowser(props: FolderBrowserProps) {
             </Fragment>
           ))}
         </nav>
-        {!roots && <IconButton label="Type a path" icon={<Pencil />} size="sm" onClick={() => setTyping(true)} />}
+        {!roots && <IconButton label={t("folderBrowser.typePath")} icon={<Pencil />} size="sm" onClick={() => setTyping(true)} />}
         {onSelect && path && !error && (
           <Button size="sm" variant="primary" icon={<FolderCheck />} onClick={() => onSelect(path)} disabled={selected.includes(path)}>
-            {selected.includes(path) ? "Selected" : "Use this folder"}
+            {selected.includes(path) ? t("folderBrowser.selected") : t("folderBrowser.useFolder")}
           </Button>
         )}
       </div>
@@ -125,7 +126,7 @@ function FolderList(props: { loading: boolean; error: string | null; listing: Fs
     <div className="cn-folders__list">
       {loading && <div className="cn-folders__empty"><Spinner /></div>}
       {!loading && error && <div className="cn-folders__empty cn-folders__empty--error">{error}</div>}
-      {!loading && !error && listing?.entries.length === 0 && <div className="cn-folders__empty">No folders in here.</div>}
+      {!loading && !error && listing?.entries.length === 0 && <div className="cn-folders__empty">{t("folderBrowser.empty")}</div>}
       {!loading && !error && listing?.entries.map((entry) => (
         <button key={entry.path} type="button" className="cn-folders__entry" onClick={() => onOpen(entry.path)}>
           {selected.includes(entry.path) ? <FolderCheck className="cn-folders__icon cn-folders__icon--selected" /> : <Folder className="cn-folders__icon" />}
@@ -238,7 +239,7 @@ function PathInput(props: { initial: string; onOpen: (path: string) => void; onC
         <HardDrive className="cn-folders__bar-icon" aria-hidden="true" />
         <input
           className="cn-folders__input"
-          aria-label="Folder path"
+          aria-label={t("folderBrowser.path")}
           value={typed}
           list={listId}
           autoFocus
@@ -254,8 +255,8 @@ function PathInput(props: { initial: string; onOpen: (path: string) => void; onC
         <datalist id={listId}>
           {suggestions.slice(0, 50).map((s) => <option key={s} value={s} />)}
         </datalist>
-        <Button size="sm" variant="primary" icon={<CornerDownLeft />} onClick={open} loading={opening}>Open</Button>
-        <IconButton label="Stop typing" icon={<X />} size="sm" onClick={onCancel} />
+        <Button size="sm" variant="primary" icon={<CornerDownLeft />} onClick={open} loading={opening}>{t("common.open")}</Button>
+        <IconButton label={t("folderBrowser.stopTyping")} icon={<X />} size="sm" onClick={onCancel} />
       </div>
       {problem && <p className="cn-folders__problem" role="alert">{problem}</p>}
     </div>

@@ -4,6 +4,7 @@ import type { PhotoAlbumSummary } from "@shared/photos.ts";
 import ItemsApi from "../../Api/ItemsApi.ts";
 import { router } from "../../lib/Router.tsx";
 import cx from "../../lib/cx.ts";
+import { i18n, t } from "../../i18n/I18n.ts";
 import { fallbackColor } from "../PosterCard/PosterCard.tsx";
 import "../WideCard/WideCard.scss";
 import "./PhotoAlbumCard.scss";
@@ -27,7 +28,7 @@ export default function PhotoAlbumCard(props: PhotoAlbumCardProps) {
     <button type="button" className={cx("cn-wide cn-wide--video cn-wide--folder cn-photo-album", className)} onClick={() => router.navigate(href)}>
       <span className="cn-wide__art cn-dark-theme" style={cover ? undefined : { background: `linear-gradient(160deg, ${album.palette?.accent ?? fallbackColor(album.title)} 0%, ${album.palette?.base ?? "#0B0D12"} 110%)` }}>
         {cover && <img src={ItemsApi.imageUrl(cover, 500)} srcSet={`${ItemsApi.imageUrl(cover, 500)} 500w, ${ItemsApi.imageUrl(cover, 780)} 780w`} sizes="26rem" alt="" loading="lazy" onError={() => setBroken(true)} />}
-        <span className="cn-wide__number cn-wide__folder"><Images aria-hidden="true" />{(album.photoCount + album.videoCount).toLocaleString()}</span>
+        <span className="cn-wide__number cn-wide__folder"><Images aria-hidden="true" />{(album.photoCount + album.videoCount).toLocaleString(i18n.locale)}</span>
       </span>
       <span className="cn-wide__meta">
         <span className="cn-wide__line1">{album.title}</span>
@@ -42,8 +43,8 @@ export default function PhotoAlbumCard(props: PhotoAlbumCardProps) {
  */
 export function albumCounts(album: Pick<PhotoAlbumSummary, "photoCount" | "videoCount">) {
   const { photoCount: p, videoCount: v } = album;
-  if (p + v === 0) return "Empty";
-  return [p ? `${p.toLocaleString()} ${p === 1 ? "photo" : "photos"}` : null, v ? `${v.toLocaleString()} ${v === 1 ? "video" : "videos"}` : null].filter(Boolean).join(" · ");
+  if (p + v === 0) return t("photos.counts.empty");
+  return [p ? t("photos.counts.photos", { count: p }) : null, v ? t("photos.counts.videos", { count: v }) : null].filter(Boolean).join(t("common.dotSeparator"));
 }
 
 /**
@@ -51,10 +52,10 @@ export function albumCounts(album: Pick<PhotoAlbumSummary, "photoCount" | "video
  */
 function albumLine(album: PhotoAlbumSummary) {
   const total = album.photoCount + album.videoCount;
-  const what = total === 0 ? "Empty" : album.videoCount === 0 ? `${total.toLocaleString()} ${total === 1 ? "photo" : "photos"}` : album.photoCount === 0 ? `${total.toLocaleString()} ${total === 1 ? "video" : "videos"}` : `${total.toLocaleString()} items`;
+  const what = total === 0 ? t("photos.counts.empty") : album.videoCount === 0 ? t("photos.counts.photos", { count: total }) : album.photoCount === 0 ? t("photos.counts.videos", { count: total }) : t("photos.counts.items", { count: total });
   if (!album.from || !album.to) return what;
   const [fy, fm] = album.from.split("-").map(Number);
   const [ty, tm] = album.to.split("-").map(Number);
-  const when = fy !== ty ? `${fy} – ${ty}` : new Date(ty, tm - 1, 1).toLocaleDateString(undefined, { month: fm === tm ? "long" : undefined, year: "numeric" });
-  return `${what} · ${when}`;
+  const when = fy !== ty ? t("photos.card.years", { from: String(fy), to: String(ty) }) : new Date(ty, tm - 1, 1).toLocaleDateString(i18n.locale, { month: fm === tm ? "long" : undefined, year: "numeric" });
+  return [what, when].join(t("common.dotSeparator"));
 }

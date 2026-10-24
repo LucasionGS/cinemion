@@ -7,6 +7,7 @@ import useController from "../../lib/useController.ts";
 import { formatBytes } from "../../lib/format.ts";
 import { toasts } from "../../lib/Toasts.ts";
 import cx from "../../lib/cx.ts";
+import { rich, t, type TranslationKey } from "../../i18n/I18n.ts";
 import Dialog from "../Dialog/Dialog.tsx";
 import Button from "../Button/Button.tsx";
 import IconButton from "../IconButton/IconButton.tsx";
@@ -38,26 +39,26 @@ interface Picked {
   skip: string | null;
 }
 
-const KINDS: Record<LibraryType, string> = {
-  movies: "Video files, subtitles, NFO files and pictures",
-  shows: "Video files, subtitles, NFO files and pictures",
-  videos: "Video files, subtitles, NFO files and pictures",
-  music: "Audio files, lyrics and covers",
-  audiobooks: "Audio files, cue sheets, descriptions and covers",
-  books: "EPUB and PDF files and covers",
-  photos: "Photos (JPG, HEIC, PNG and more) and videos",
-  clips: "Video files, subtitles and pictures",
+const KINDS: Record<LibraryType, TranslationKey> = {
+  movies: "uploads.accepts.video",
+  shows: "uploads.accepts.video",
+  videos: "uploads.accepts.video",
+  music: "uploads.accepts.music",
+  audiobooks: "uploads.accepts.audiobooks",
+  books: "uploads.accepts.books",
+  photos: "uploads.accepts.photos",
+  clips: "uploads.accepts.clips",
 };
 
-const FOLDER_EXAMPLES: Record<LibraryType, string> = {
-  movies: "Glass Harbor (2021)",
-  shows: "Saltwater Kings/Season 1",
-  videos: "Holiday 2025",
-  music: "Artist/Album",
-  audiobooks: "Author/Book title",
-  books: "Author",
-  photos: "Holiday 2025/Day 1",
-  clips: "Counter-Strike 2",
+const FOLDER_EXAMPLES: Record<LibraryType, TranslationKey> = {
+  movies: "uploads.folderExample.movies",
+  shows: "uploads.folderExample.shows",
+  videos: "uploads.folderExample.videos",
+  music: "uploads.folderExample.music",
+  audiobooks: "uploads.folderExample.audiobooks",
+  books: "uploads.folderExample.books",
+  photos: "uploads.folderExample.photos",
+  clips: "uploads.folderExample.clips",
 };
 
 /**
@@ -119,9 +120,9 @@ export default function UploadDialog(props: UploadDialogProps) {
       if (path.split("/").some((part) => part.startsWith("."))) continue;
       const ext = path.includes(".") ? path.slice(path.lastIndexOf(".")).toLowerCase() : "";
       let skip: string | null = null;
-      if (rules && !accepted.includes(ext)) skip = "Not a file this library uses";
-      else if (file.size === 0) skip = "Empty";
-      else if (rules?.maxSize && file.size > rules.maxSize) skip = `Bigger than the server takes (${formatBytes(rules.maxSize)})`;
+      if (rules && !accepted.includes(ext)) skip = t("uploads.skip.notUsed");
+      else if (file.size === 0) skip = t("uploads.skip.empty");
+      else if (rules?.maxSize && file.size > rules.maxSize) skip = t("uploads.skip.tooBig", { size: formatBytes(rules.maxSize) });
       added.push({ file, path, skip });
     }
     setPicked((current) => [...current.filter((p) => !added.some((a) => a.path === p.path)), ...added]);
@@ -152,28 +153,28 @@ export default function UploadDialog(props: UploadDialogProps) {
     <Dialog
       open
       onOpenChange={(open) => !open && onClose()}
-      title={`Upload to ${library.name}`}
-      description="Files go into the folder you pick. Zip files are unpacked there, keeping the folders inside them. Uploads keep going when you close this."
+      title={t("uploads.dialog.title", { name: library.name })}
+      description={t("uploads.dialog.description")}
       size="lg"
       footer={<>
-        <Button variant="ghost" onClick={onClose}>Close</Button>
+        <Button variant="ghost" onClick={onClose}>{t("common.close")}</Button>
         <Button variant="primary" icon={<Upload />} onClick={start} disabled={!canStart}>
-          {sending.length > 0 ? `Upload ${sending.length} ${sending.length === 1 ? "file" : "files"} · ${formatBytes(total)}` : "Upload"}
+          {sending.length > 0 ? t("uploads.dialog.uploadButton", { count: sending.length, size: formatBytes(total) }) : t("common.upload")}
         </Button>
       </>}
     >
       <div className="cn-upload">
         <FolderBrowser roots={library.paths} onNavigate={setFolder} />
         <TextField
-          label="New folder inside it (optional)"
-          placeholder={FOLDER_EXAMPLES[library.type]}
+          label={t("uploads.dialog.newFolder")}
+          placeholder={t(FOLDER_EXAMPLES[library.type])}
           value={newFolder}
           onChange={(e) => setNewFolder(e.target.value)}
           error={subfolder.error}
-          description="Use / for a folder inside a folder. It's made when the upload starts."
+          description={t("uploads.dialog.newFolderDescription")}
         />
         <p className="cn-upload__destination">
-          {destination ? <>Goes to <code>{destination}</code></> : "Open the folder to upload into."}
+          {destination ? rich("uploads.dialog.goesTo", { destination: <code>{destination}</code> }) : t("uploads.dialog.openFolder")}
         </p>
         {folderProblem && <p className="cn-upload__error" role="alert">{folderProblem}</p>}
 
@@ -190,11 +191,11 @@ export default function UploadDialog(props: UploadDialogProps) {
           onDrop={onDrop}
         >
           <Upload className="cn-upload__drop-icon" aria-hidden="true" />
-          <strong>Drop files, folders or zip files here</strong>
-          <span>{KINDS[library.type]}, or zip files with them.{rules?.maxSize ? ` Up to ${formatBytes(rules.maxSize)} each.` : ""}</span>
+          <strong>{t("uploads.dialog.drop")}</strong>
+          <span>{t(KINDS[library.type])}{rules?.maxSize ? ` ${t("uploads.dialog.maxSize", { size: formatBytes(rules.maxSize) })}` : ""}</span>
           <div className="cn-upload__drop-buttons">
-            <Button size="sm" icon={<FileIcon />} onClick={() => filesInput.current?.click()}>Choose files</Button>
-            <Button size="sm" icon={<FolderUp />} onClick={() => folderInput.current?.click()}>Choose a folder</Button>
+            <Button size="sm" icon={<FileIcon />} onClick={() => filesInput.current?.click()}>{t("uploads.dialog.chooseFiles")}</Button>
+            <Button size="sm" icon={<FolderUp />} onClick={() => folderInput.current?.click()}>{t("uploads.dialog.chooseFolder")}</Button>
           </div>
           <input
             ref={filesInput}
@@ -221,21 +222,21 @@ export default function UploadDialog(props: UploadDialogProps) {
 
         {picked.length > 0 && (
           <>
-            <ul className="cn-upload__list" aria-label="Picked files">
+            <ul className="cn-upload__list" aria-label={t("uploads.dialog.picked")}>
               {picked.map((p) => (
                 <li key={p.path} className={cx("cn-upload__row", p.skip && "cn-upload__row--skipped")}>
                   {isZip(p.path) ? <FileArchive className="cn-upload__icon" /> : <FileIcon className="cn-upload__icon" />}
                   <div className="cn-upload__text">
                     <strong title={p.path}>{p.path}</strong>
-                    <span>{p.skip ? `Left out: ${p.skip}` : formatBytes(p.file.size)}</span>
+                    <span>{p.skip ? t("uploads.dialog.leftOut", { reason: p.skip }) : formatBytes(p.file.size)}</span>
                   </div>
-                  <IconButton label="Remove" icon={<X />} size="sm" variant="ghost" onClick={() => setPicked(picked.filter((x) => x !== p))} />
+                  <IconButton label={t("common.remove")} icon={<X />} size="sm" variant="ghost" onClick={() => setPicked(picked.filter((x) => x !== p))} />
                 </li>
               ))}
             </ul>
             <Switch
-              label="Replace files that are already there"
-              description="Otherwise a file that's already in the folder isn't uploaded, and zip files leave those files out."
+              label={t("uploads.dialog.replace")}
+              description={t("uploads.dialog.replaceDescription")}
               checked={replace}
               onChange={setReplace}
             />
@@ -245,8 +246,8 @@ export default function UploadDialog(props: UploadDialogProps) {
         {entries.length > 0 && (
           <section className="cn-upload__section">
             <header className="cn-upload__section-header">
-              <h3>Uploads</h3>
-              {entries.some((e) => e.state === "done") && <Button size="sm" variant="ghost" onClick={() => uploads.clearFinished(library.id)}>Clear finished</Button>}
+              <h3>{t("uploads.dialog.uploads")}</h3>
+              {entries.some((e) => e.state === "done") && <Button size="sm" variant="ghost" onClick={() => uploads.clearFinished(library.id)}>{t("uploads.dialog.clearFinished")}</Button>}
             </header>
             <ul className="cn-upload__list">
               {entries.map((entry) => (
@@ -267,7 +268,7 @@ export default function UploadDialog(props: UploadDialogProps) {
               onChange={(e) => {
                 const file = e.target.files?.[0];
                 e.target.value = "";
-                if (file && resumeKey.current) uploads.resumeWith(resumeKey.current, file).catch((error: Error) => toasts.error("Can't carry on with that file", error.message));
+                if (file && resumeKey.current) uploads.resumeWith(resumeKey.current, file).catch((error: Error) => toasts.error(t("uploads.dialog.cantCarryOn"), error.message));
               }}
             />
           </section>
@@ -280,37 +281,43 @@ export default function UploadDialog(props: UploadDialogProps) {
 function UploadRow(props: { entry: UploadEntry; onPickFile: () => void }) {
   const { entry, onPickFile } = props;
   const fraction = entry.size ? entry.sent / entry.size : 0;
-  const percent = `${Math.floor(fraction * 100)}%`;
+  const percent = Math.floor(fraction * 100);
   const server = entry.server;
 
   let status: string;
   let bar: number | null = null;
   switch (entry.state) {
     case "waiting":
-      status = entry.sent > 0 ? `Waiting · ${percent} sent before` : `Waiting · ${formatBytes(entry.size)}`;
+      status = entry.sent > 0 ? t("uploads.status.waitingResumed", { percent }) : t("uploads.status.waiting", { size: formatBytes(entry.size) });
       bar = fraction;
       break;
     case "uploading":
-      status = [percent, `${formatBytes(entry.sent)} of ${formatBytes(entry.size)}`, entry.speed ? `${formatBytes(entry.speed)}/s` : null, entry.speed ? timeLeft((entry.size - entry.sent) / entry.speed) : null].filter(Boolean).join(" · ");
+      status = [
+        t("uploads.status.percent", { percent }),
+        t("uploads.status.sentOf", { sent: formatBytes(entry.sent), size: formatBytes(entry.size) }),
+        entry.speed ? t("uploads.status.speed", { speed: formatBytes(entry.speed) }) : null,
+        entry.speed ? timeLeft((entry.size - entry.sent) / entry.speed) : null,
+      ].filter(Boolean).join(t("common.dotSeparator"));
       bar = fraction;
       break;
     case "retrying":
-      status = entry.error ?? "Trying again…";
+      status = entry.error ?? t("uploads.status.retrying");
       bar = fraction;
       break;
     case "paused":
-      status = `Stopped at ${percent}. Pick the file again to carry on.`;
+      status = t("uploads.status.paused", { percent });
       bar = fraction;
       break;
     case "processing":
-      status = `${server?.message ?? "Adding to the library"}${server?.progress ? ` · ${Math.floor(server.progress * 100)}%` : ""}`;
+      status = server?.message ?? t("uploads.status.adding");
+      if (server?.progress) status = t("uploads.status.processingProgress", { status, percent: Math.floor(server.progress * 100) });
       bar = server?.progress ?? 0;
       break;
     case "done":
-      status = server?.message ?? "Added";
+      status = server?.message ?? t("uploads.status.added");
       break;
     case "failed":
-      status = entry.error ?? "The upload stopped.";
+      status = entry.error ?? t("uploads.status.stopped");
       break;
   }
   const skipped = entry.state === "done" ? server?.skipped ?? [] : [];
@@ -324,20 +331,20 @@ function UploadRow(props: { entry: UploadEntry; onPickFile: () => void }) {
         {bar !== null && <span className="cn-upload__bar"><span style={{ width: `${Math.min(1, bar) * 100}%` }} /></span>}
         {skipped.length > 0 && (
           <details className="cn-upload__skipped">
-            <summary>{skipped.length} left out</summary>
+            <summary>{t("uploads.row.leftOut", { count: skipped.length })}</summary>
             <ul>
-              {skipped.map((s) => <li key={s.path}><code>{s.path}</code> · {s.reason}</li>)}
+              {skipped.map((s) => <li key={s.path}><code>{s.path}</code>{t("common.dotSeparator")}{s.reason}</li>)}
             </ul>
           </details>
         )}
       </div>
       <div className="cn-upload__actions">
-        {entry.state === "paused" && <Button size="sm" icon={<FolderOpen />} onClick={onPickFile}>Pick the file</Button>}
-        {entry.state === "failed" && !entry.replace && /already/i.test(entry.error ?? "") && <Button size="sm" onClick={() => uploads.retry(entry.key, true)}>Replace it</Button>}
-        {entry.state === "failed" && <IconButton label="Try again" icon={<RotateCcw />} size="sm" onClick={() => uploads.retry(entry.key)} />}
+        {entry.state === "paused" && <Button size="sm" icon={<FolderOpen />} onClick={onPickFile}>{t("uploads.row.pickFile")}</Button>}
+        {entry.state === "failed" && !entry.replace && /already/i.test(entry.error ?? "") && <Button size="sm" onClick={() => uploads.retry(entry.key, true)}>{t("uploads.row.replace")}</Button>}
+        {entry.state === "failed" && <IconButton label={t("common.tryAgain")} icon={<RotateCcw />} size="sm" onClick={() => uploads.retry(entry.key)} />}
         {entry.state !== "processing" && (
           <IconButton
-            label={entry.state === "done" ? "Clear" : entry.state === "failed" ? "Remove" : "Cancel upload"}
+            label={entry.state === "done" ? t("uploads.row.clear") : entry.state === "failed" ? t("common.remove") : t("uploads.row.cancel")}
             icon={<X />}
             size="sm"
             variant="ghost"
@@ -358,8 +365,8 @@ function isZip(path: string) {
  */
 function cleanFolder(typed: string): { path: string; error: string | null } {
   const parts = typed.split(/[\\/]+/).map((p) => p.trim()).filter((p) => p !== "" && p !== ".");
-  if (parts.some((p) => p === "..")) return { path: "", error: "The new folder has to be inside the folder above." };
-  if (parts.some((p) => p.startsWith("."))) return { path: "", error: "Folder names starting with a dot are hidden, so the library would never show them." };
+  if (parts.some((p) => p === "..")) return { path: "", error: t("uploads.folderErrors.outside") };
+  if (parts.some((p) => p.startsWith("."))) return { path: "", error: t("uploads.folderErrors.hidden") };
   return { path: parts.join("/"), error: null };
 }
 
@@ -368,10 +375,10 @@ function cleanFolder(typed: string): { path: string; error: string | null } {
  */
 function timeLeft(seconds: number) {
   if (!isFinite(seconds)) return null;
-  if (seconds < 60) return "under a minute left";
+  if (seconds < 60) return t("uploads.timeLeft.underAMinute");
   const minutes = Math.round(seconds / 60);
-  if (minutes < 60) return `about ${minutes} min left`;
-  return `about ${Math.floor(minutes / 60)} h ${minutes % 60} min left`;
+  if (minutes < 60) return t("uploads.timeLeft.minutes", { count: minutes });
+  return t("uploads.timeLeft.hours", { hours: Math.floor(minutes / 60), minutes: minutes % 60 });
 }
 
 /**

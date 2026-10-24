@@ -1,4 +1,5 @@
 import { deviceMode } from "../lib/DeviceMode.ts";
+import { t } from "../i18n/I18n.ts";
 
 /**
  * Thin wrapper around `fetch` for the Cinemion API. Holds the login token.
@@ -56,7 +57,7 @@ export namespace BaseApi {
         body: isForm ? body as FormData : body === undefined ? undefined : JSON.stringify(body),
       });
     } catch {
-      throw new Error("Can't reach the Cinemion server. Check that it's running and that you're on the same network.");
+      throw new Error(t("api.unreachable"));
     }
 
     // Sign-in calls answer 401 for a wrong PIN or password; only other calls mean the session ended

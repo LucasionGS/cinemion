@@ -10,6 +10,7 @@ import { useUpdates } from "../../lib/Updates.ts";
 import { formatClock } from "../../lib/playback.ts";
 import { formatBitrate, formatBytes, formatPercent, formatSpan, timeAgo, timeUntil } from "../../lib/format.ts";
 import cx from "../../lib/cx.ts";
+import { i18n, rich, t } from "../../i18n/I18n.ts";
 import Avatar from "../../components/Avatar/Avatar.tsx";
 import Button from "../../components/Button/Button.tsx";
 import Spinner from "../../components/Spinner/Spinner.tsx";
@@ -28,10 +29,10 @@ export default function Dashboard() {
     setScanning(true);
     try {
       await AdminApi.scanAll();
-      toasts.success("Scanning every library");
+      toasts.success(t("admin.dashboard.scanStarted"));
       reload();
     } catch (e) {
-      toasts.error("Couldn't start the scan", (e as Error).message);
+      toasts.error(t("admin.dashboard.scanFailed"), (e as Error).message);
     } finally {
       setScanning(false);
     }
@@ -44,61 +45,67 @@ export default function Dashboard() {
     <>
       <header className="cn-settings__header">
         <div>
-          <h1>Dashboard</h1>
+          <h1>{t("admin.dashboard.title")}</h1>
           <p>
-            {server.name} · Cinemion {server.version}
-            {update && <> (<Link href="/settings/about" className="cn-dashboard__update">{update.version} is out</Link>)</>} · up {formatSpan(server.startedAt)}
+            {update
+              ? rich("admin.dashboard.serverLineUpdate", {
+                name: server.name,
+                version: server.version,
+                update: <Link href="/settings/about" className="cn-dashboard__update">{t("admin.dashboard.updateOut", { version: update.version })}</Link>,
+                uptime: formatSpan(server.startedAt),
+              })
+              : t("admin.dashboard.serverLine", { name: server.name, version: server.version, uptime: formatSpan(server.startedAt) })}
           </p>
         </div>
-        <Button icon={<RefreshCw />} onClick={scanAll} loading={scanning}>Scan all libraries</Button>
+        <Button icon={<RefreshCw />} onClick={scanAll} loading={scanning}>{t("admin.dashboard.scanAll")}</Button>
       </header>
 
       <Stats data={data} />
 
       <div className="cn-dashboard__columns">
         <section className="cn-dashboard__section cn-dashboard__section--main" aria-labelledby="cn-now-playing">
-          <h2 id="cn-now-playing">Now playing</h2>
-          {streams.length === 0 && <p className="cn-dashboard__empty">Nothing is playing right now.</p>}
+          <h2 id="cn-now-playing">{t("admin.dashboard.nowPlaying")}</h2>
+          {streams.length === 0 && <p className="cn-dashboard__empty">{t("admin.dashboard.nothingPlaying")}</p>}
           {streams.map((s) => <StreamCard key={s.id} stream={s} />)}
         </section>
 
         <div className="cn-dashboard__side">
           <section className="cn-dashboard__section" aria-labelledby="cn-dashboard-tasks">
             <div className="cn-dashboard__section-head">
-              <h2 id="cn-dashboard-tasks">Tasks</h2>
-              <Link href="/settings/tasks">All tasks</Link>
+              <h2 id="cn-dashboard-tasks">{t("admin.dashboard.tasks")}</h2>
+              <Link href="/settings/tasks">{t("admin.dashboard.allTasks")}</Link>
             </div>
             <div className="cn-dashboard__panel">
-              {data.tasks.map((t) => (
-                <div key={t.id} className="cn-dashboard__task">
+              {data.tasks.map((task) => (
+                <div key={task.id} className="cn-dashboard__task">
                   <div className="cn-dashboard__task-head">
-                    <span>{t.label}</span>
-                    <span>{t.progress !== null ? formatPercent(t.progress) : t.status}</span>
+                    <span>{task.label}</span>
+                    <span>{task.progress !== null ? formatPercent(task.progress) : task.status}</span>
                   </div>
-                  <Meter value={t.progress} />
+                  <Meter value={task.progress} />
                 </div>
               ))}
               {data.nextScan && (
                 <div className="cn-dashboard__task">
                   <div className="cn-dashboard__task-head">
-                    <span>Library scan · {data.nextScan.libraryName}</span>
+                    <span>{t("admin.dashboard.libraryScan", { library: data.nextScan.libraryName })}</span>
                     <span>{timeUntil(data.nextScan.nextAt)}</span>
                   </div>
                 </div>
               )}
-              {data.tasks.length === 0 && !data.nextScan && <p className="cn-dashboard__empty">Nothing running.</p>}
+              {data.tasks.length === 0 && !data.nextScan && <p className="cn-dashboard__empty">{t("admin.dashboard.nothingRunning")}</p>}
             </div>
           </section>
 
           <section className="cn-dashboard__section" aria-labelledby="cn-dashboard-activity">
-            <h2 id="cn-dashboard-activity">Activity</h2>
-            {data.activity.length === 0 && <p className="cn-dashboard__empty">Nothing has happened yet.</p>}
+            <h2 id="cn-dashboard-activity">{t("admin.dashboard.activity")}</h2>
+            {data.activity.length === 0 && <p className="cn-dashboard__empty">{t("admin.dashboard.noActivity")}</p>}
             <ul className="cn-activity">
               {data.activity.map((a) => (
                 <li key={a.id} className="cn-activity__item">
                   <span className={cx("cn-activity__dot", `cn-activity__dot--${dotFor(a.kind)}`)} aria-hidden="true" />
                   <span className="cn-activity__text">{a.message}</span>
-                  <time className="cn-activity__time" dateTime={a.createdAt} title={new Date(a.createdAt).toLocaleString()}>{timeAgo(a.createdAt)}</time>
+                  <time className="cn-activity__time" dateTime={a.createdAt} title={new Date(a.createdAt).toLocaleString(i18n.locale)}>{timeAgo(a.createdAt)}</time>
                 </li>
               ))}
             </ul>
@@ -158,42 +165,50 @@ function Stats(props: { data: DashboardInfo }) {
   return (
     <div className="cn-dashboard__stats">
       <Tile
-        label="Streams"
+        label={t("admin.dashboard.stats.streams")}
         value={String(streams.length)}
         meter={converting / maxConversions}
-        sub={streams.length === 0 ? `Up to ${maxConversions} conversions at once` : `${streams.length - converting} direct · ${converting} converting`}
+        sub={streams.length === 0 ? t("admin.dashboard.stats.maxConversions", { count: maxConversions }) : t("admin.dashboard.stats.streamKinds", { direct: streams.length - converting, converting })}
       />
       <Tile
-        label="CPU"
+        label={t("admin.dashboard.stats.cpu")}
         value={cpu.usage !== null ? formatPercent(cpu.usage) : "—"}
         meter={cpu.usage}
-        sub={`${cpu.cores} cores${memory ? ` · ${formatPercent(memory.used / memory.total)} memory` : ""}`}
+        sub={memory ? t("admin.dashboard.stats.coresMemory", { count: cpu.cores, memory: formatPercent(memory.used / memory.total) }) : t("admin.dashboard.stats.cores", { count: cpu.cores })}
       />
       {gpu
         ? (
           <Tile
-            label={`GPU (${gpu.name})`}
+            label={t("admin.dashboard.stats.gpu", { name: gpu.name })}
             value={gpu.usage !== null ? formatPercent(gpu.usage) : "—"}
             meter={gpu.usage}
-            sub={gpu.conversions > 0 ? `${gpu.conversions} hardware ${gpu.conversions === 1 ? "conversion" : "conversions"}` : gpu.usage === null ? "Usage isn't reported" : "No conversions"}
+            sub={gpu.conversions > 0 ? t("admin.dashboard.stats.hardwareConversions", { count: gpu.conversions }) : gpu.usage === null ? t("admin.dashboard.stats.usageNotReported") : t("admin.dashboard.stats.noConversions")}
           />
         )
         : (
           <Tile
-            label="Memory"
+            label={t("admin.dashboard.stats.memory")}
             value={memory ? formatBytes(memory.used) : "—"}
             meter={memory ? memory.used / memory.total : null}
-            sub={memory ? `of ${formatBytes(memory.total)}` : "Not reported"}
+            sub={memory ? t("admin.dashboard.stats.memoryOf", { total: formatBytes(memory.total) }) : t("admin.dashboard.stats.notReported")}
           />
         )}
       <Tile
-        label="Storage"
+        label={t("admin.dashboard.stats.storage")}
         value={storage ? formatBytes(storage.used) : "—"}
         meter={storage ? storage.used / storage.total : null}
-        sub={storage ? `of ${formatBytes(storage.total)} on ${storage.mounts.length === 1 ? storage.mounts[0] : `${storage.mounts.length} drives`}` : "Couldn't read the drives"}
+        sub={storage ? storageText(storage.total, storage.mounts) : t("admin.dashboard.stats.drivesUnreadable")}
       />
     </div>
   );
+}
+
+/**
+ * What's under the storage tile: the total size and the drive, or how many drives.
+ */
+function storageText(total: number, mounts: string[]) {
+  if (mounts.length === 1) return t("admin.dashboard.stats.storageOnMount", { total: formatBytes(total), mount: mounts[0] });
+  return t("admin.dashboard.stats.storageOnDrives", { total: formatBytes(total), count: mounts.length });
 }
 
 function StreamCard(props: { stream: NowPlaying }) {
@@ -210,14 +225,14 @@ function StreamCard(props: { stream: NowPlaying }) {
         <div className="cn-stream__head">
           <Avatar profile={user} size={1.5} />
           <strong>{user.name}</strong>
-          <span className="cn-stream__device">{stream.device}{stream.isRemote && " · away from home"}</span>
+          <span className="cn-stream__device">{stream.isRemote ? t("admin.dashboard.stream.awayFromHome", { device: stream.device }) : stream.device}</span>
           <span className={cx("cn-stream__badge", `cn-stream__badge--${stream.kind}`)}>{stream.label}</span>
         </div>
         <Link href={`/item/${item.id}`} className="cn-stream__title">{item.title}</Link>
         <span className="cn-stream__detail">{stream.detail}</span>
         {stream.reason && <span className="cn-stream__reason">{stream.reason}</span>}
         <div className="cn-stream__progress">
-          {stream.paused && <Pause className="cn-stream__paused" aria-label="Paused" />}
+          {stream.paused && <Pause className="cn-stream__paused" aria-label={t("admin.dashboard.stream.paused")} />}
           <span className="cn-stream__bar"><span style={{ width: `${Math.round(progress * 100)}%` }} /></span>
           <span className="cn-stream__time">
             {formatClock(stream.position)} / {formatClock(stream.duration)}{stream.bitrate ? ` · ${formatBitrate(stream.bitrate)}` : ""}

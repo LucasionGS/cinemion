@@ -7,6 +7,7 @@ import { toasts } from "../../lib/Toasts.ts";
 import { copyText } from "../../lib/clipboard.ts";
 import { timeAgo, timeUntil } from "../../lib/format.ts";
 import cx from "../../lib/cx.ts";
+import { rich, t, type TranslationKey } from "../../i18n/I18n.ts";
 import Button from "../../components/Button/Button.tsx";
 import TextField from "../../components/TextField/TextField.tsx";
 import Switch from "../../components/Switch/Switch.tsx";
@@ -15,6 +16,19 @@ import Dialog, { ConfirmDialog } from "../../components/Dialog/Dialog.tsx";
 import "./Admin.scss";
 
 const ALL_EVENTS = Object.keys(WEBHOOK_EVENTS) as WebhookEvent[];
+
+const EVENT_LABELS: Record<WebhookEvent, TranslationKey> = {
+  "playback.started": "admin.webhooks.events.playbackStarted",
+  "playback.paused": "admin.webhooks.events.playbackPaused",
+  "playback.resumed": "admin.webhooks.events.playbackResumed",
+  "playback.stopped": "admin.webhooks.events.playbackStopped",
+  "item.watched": "admin.webhooks.events.itemWatched",
+  "item.added": "admin.webhooks.events.itemAdded",
+  "library.scanned": "admin.webhooks.events.libraryScanned",
+  "user.signedIn": "admin.webhooks.events.userSignedIn",
+  "together.started": "admin.webhooks.events.togetherStarted",
+  "subtitles.downloaded": "admin.webhooks.events.subtitlesDownloaded",
+};
 
 /**
  * Outgoing webhooks: addresses that get signed JSON when things happen, for home automation and chat bots.
@@ -30,10 +44,10 @@ export default function WebhooksSettings() {
     try {
       const result = await WebhooksApi.test(hook.id);
       replace(result);
-      if (result.lastDelivery?.ok) toasts.success("The test arrived", `${hook.name} answered ${result.lastDelivery.status}.`);
-      else toasts.error("The test didn't arrive", result.lastDelivery?.error ?? undefined);
+      if (result.lastDelivery?.ok) toasts.success(t("admin.webhooks.testArrived"), t("admin.webhooks.testAnswered", { name: hook.name, status: String(result.lastDelivery.status) }));
+      else toasts.error(t("admin.webhooks.testFailed"), result.lastDelivery?.error ?? undefined);
     } catch (e) {
-      toasts.error("Couldn't send the test", (e as Error).message);
+      toasts.error(t("admin.webhooks.testSendFailed"), (e as Error).message);
     } finally {
       setTesting(null);
     }
@@ -43,7 +57,7 @@ export default function WebhooksSettings() {
     try {
       replace(await WebhooksApi.update(hook.id, { enabled: !hook.enabled }));
     } catch (e) {
-      toasts.error("Couldn't change the webhook", (e as Error).message);
+      toasts.error(t("admin.webhooks.toggleFailed"), (e as Error).message);
     }
   }
 
@@ -51,11 +65,11 @@ export default function WebhooksSettings() {
     if (!removing) return;
     try {
       await WebhooksApi.remove(removing.id);
-      toasts.success(`${removing.name} was removed`);
+      toasts.success(t("admin.webhooks.removed", { name: removing.name }));
       setRemoving(null);
       reload();
     } catch (e) {
-      toasts.error("Couldn't remove the webhook", (e as Error).message);
+      toasts.error(t("admin.webhooks.removeFailed"), (e as Error).message);
     }
   }
 
@@ -63,18 +77,18 @@ export default function WebhooksSettings() {
     <>
       <header className="cn-settings__header">
         <div>
-          <h1>Webhooks</h1>
-          <p>Send events like "playback started" to other apps, such as Home Assistant or a chat bot.</p>
+          <h1>{t("admin.webhooks.title")}</h1>
+          <p>{t("admin.webhooks.intro")}</p>
         </div>
-        <Button variant="primary" icon={<Plus />} onClick={() => setEditing("new")}>Add webhook</Button>
+        <Button variant="primary" icon={<Plus />} onClick={() => setEditing("new")}>{t("admin.webhooks.add")}</Button>
       </header>
 
       {!hooks && <Spinner size="2rem" />}
       {hooks?.length === 0 && (
         <section className="cn-settings__card">
           <p className="cn-settings__row-text">
-            <strong>No webhooks yet</strong>
-            <span>A webhook is an address Cinemion sends a short JSON message to whenever something you pick happens. Dim the lights when a movie starts, or post new episodes to a chat.</span>
+            <strong>{t("admin.webhooks.empty.title")}</strong>
+            <span>{t("admin.webhooks.empty.text")}</span>
           </p>
         </section>
       )}
@@ -84,21 +98,21 @@ export default function WebhooksSettings() {
             <div key={h.id} className={cx("cn-settings__item", "cn-webhooks__item", !h.enabled && "cn-webhooks__item--off")}>
               <WebhookIcon />
               <div className="cn-settings__item-text">
-                <strong>{h.name}{!h.enabled && <span className="cn-settings__badge cn-webhooks__off">Off</span>}</strong>
+                <strong>{h.name}{!h.enabled && <span className="cn-settings__badge cn-webhooks__off">{t("common.off")}</span>}</strong>
                 <span>{h.url}</span>
-                <span>{h.events.length === ALL_EVENTS.length ? "Every event" : h.events.map((e) => WEBHOOK_EVENTS[e]).join(", ")}</span>
+                <span>{h.events.length === ALL_EVENTS.length ? t("admin.webhooks.everyEvent") : h.events.map((e) => t(EVENT_LABELS[e])).join(t("common.listSeparator"))}</span>
                 <DeliveryStatus delivery={h.lastDelivery} />
               </div>
-              <Button size="sm" icon={<Send />} onClick={() => test(h)} loading={testing === h.id}>Send test</Button>
+              <Button size="sm" icon={<Send />} onClick={() => test(h)} loading={testing === h.id}>{t("admin.webhooks.sendTest")}</Button>
               <Menu.Root>
-                <Menu.Trigger className="cn-icon-button cn-icon-button--glass cn-icon-button--md" aria-label={`More for ${h.name}`}><EllipsisVertical /></Menu.Trigger>
+                <Menu.Trigger className="cn-icon-button cn-icon-button--glass cn-icon-button--md" aria-label={t("admin.webhooks.more", { name: h.name })}><EllipsisVertical /></Menu.Trigger>
                 <Menu.Portal>
                   <Menu.Positioner sideOffset={6} align="end" className="cn-menu__positioner">
                     <Menu.Popup className="cn-menu">
-                      <Menu.Item className="cn-menu__item" onClick={() => setEditing(h)}><Pencil /> Edit</Menu.Item>
-                      <Menu.Item className="cn-menu__item" onClick={() => toggle(h)}><Power /> {h.enabled ? "Turn off" : "Turn on"}</Menu.Item>
+                      <Menu.Item className="cn-menu__item" onClick={() => setEditing(h)}><Pencil /> {t("common.edit")}</Menu.Item>
+                      <Menu.Item className="cn-menu__item" onClick={() => toggle(h)}><Power /> {h.enabled ? t("admin.webhooks.turnOff") : t("admin.webhooks.turnOn")}</Menu.Item>
                       <Menu.Separator className="cn-menu__separator" />
-                      <Menu.Item className="cn-menu__item" onClick={() => setRemoving(h)}><Trash2 /> Remove</Menu.Item>
+                      <Menu.Item className="cn-menu__item" onClick={() => setRemoving(h)}><Trash2 /> {t("common.remove")}</Menu.Item>
                     </Menu.Popup>
                   </Menu.Positioner>
                 </Menu.Portal>
@@ -109,13 +123,15 @@ export default function WebhooksSettings() {
       )}
 
       <section className="cn-settings__card">
-        <h2>For developers</h2>
+        <h2>{t("admin.webhooks.developers.title")}</h2>
         <p className="cn-settings__row-text">
           <span>
-            Each event is a <code>POST</code> with a JSON body: <code>{"{ event, id, sentAt, server, data }"}</code>. The{" "}
-            <code>X-Cinemion-Signature</code> header is <code>sha256=</code> followed by the HMAC-SHA256 of the raw body,
-            keyed with the webhook's secret, so the receiver can check it came from this server. Failed sends are tried
-            again after 10 seconds, 1 minute and 5 minutes.
+            {rich("admin.webhooks.developers.text", {
+              method: <code>POST</code>,
+              body: <code>{"{ event, id, sentAt, server, data }"}</code>,
+              header: <code>X-Cinemion-Signature</code>,
+              prefix: <code>sha256=</code>,
+            })}
           </span>
         </p>
       </section>
@@ -132,9 +148,9 @@ export default function WebhooksSettings() {
       <ConfirmDialog
         open={!!removing}
         onOpenChange={(open) => !open && setRemoving(null)}
-        title={`Remove ${removing?.name}?`}
-        description="Cinemion stops sending events to this address."
-        confirmLabel="Remove webhook"
+        title={t("admin.webhooks.remove.title", { name: removing?.name ?? "" })}
+        description={t("admin.webhooks.remove.description")}
+        confirmLabel={t("admin.webhooks.remove.confirm")}
         danger
         onConfirm={remove}
       />
@@ -144,12 +160,14 @@ export default function WebhooksSettings() {
 
 function DeliveryStatus(props: { delivery: WebhookDelivery | null }) {
   const { delivery } = props;
-  if (!delivery) return <span>Nothing sent yet</span>;
-  const event = delivery.event === "test" ? "Test" : WEBHOOK_EVENTS[delivery.event];
-  if (delivery.ok) return <span className="cn-webhooks__status cn-webhooks__status--ok">{event} delivered {timeAgo(delivery.at)} · {delivery.status}</span>;
+  if (!delivery) return <span>{t("admin.webhooks.delivery.nothingSent")}</span>;
+  const event = t(delivery.event === "test" ? "admin.webhooks.delivery.test" : EVENT_LABELS[delivery.event]);
+  const ago = timeAgo(delivery.at);
+  if (delivery.ok) return <span className="cn-webhooks__status cn-webhooks__status--ok">{t("admin.webhooks.delivery.delivered", { event, ago, status: String(delivery.status) })}</span>;
+  const error = delivery.error ?? "";
   return (
     <span className="cn-webhooks__status cn-webhooks__status--failed">
-      {event} failed {timeAgo(delivery.at)}: {delivery.error}{delivery.retryAt && ` Trying again ${timeUntil(delivery.retryAt)}.`}
+      {delivery.retryAt ? t("admin.webhooks.delivery.failedRetry", { event, ago, error, retry: timeUntil(delivery.retryAt) }) : t("admin.webhooks.delivery.failed", { event, ago, error })}
     </span>
   );
 }
@@ -181,10 +199,10 @@ function WebhookDialog(props: { hook: WebhookInfo | null; open: boolean; onOpenC
     try {
       const data = { name, url, events, enabled };
       const saved = hook ? await WebhooksApi.update(hook.id, data) : await WebhooksApi.create(data);
-      toasts.success(hook ? "Webhook saved" : "Webhook added", hook ? undefined : "Use Send test to check that it arrives.");
+      toasts.success(hook ? t("admin.webhooks.dialog.saved") : t("admin.webhooks.dialog.added"), hook ? undefined : t("admin.webhooks.dialog.addedDescription"));
       onSaved(saved);
     } catch (e) {
-      toasts.error("Couldn't save the webhook", (e as Error).message);
+      toasts.error(t("admin.webhooks.dialog.saveFailed"), (e as Error).message);
     } finally {
       setSaving(false);
     }
@@ -195,9 +213,9 @@ function WebhookDialog(props: { hook: WebhookInfo | null; open: boolean; onOpenC
     try {
       const updated = await WebhooksApi.newSecret(hook.id);
       setSecret(updated.secret);
-      toasts.success("New secret made", "Update it in the receiving app too.");
+      toasts.success(t("admin.webhooks.dialog.newSecretMade"), t("admin.webhooks.dialog.newSecretDescription"));
     } catch (e) {
-      toasts.error("Couldn't make a new secret", (e as Error).message);
+      toasts.error(t("admin.webhooks.dialog.newSecretFailed"), (e as Error).message);
     }
   }
 
@@ -205,22 +223,22 @@ function WebhookDialog(props: { hook: WebhookInfo | null; open: boolean; onOpenC
     <Dialog
       open={open}
       onOpenChange={onOpenChange}
-      title={hook ? `Edit ${hook.name}` : "Add webhook"}
+      title={hook ? t("admin.webhooks.dialog.editTitle", { name: hook.name }) : t("admin.webhooks.dialog.addTitle")}
       size="lg"
       footer={<>
-        <Button variant="ghost" onClick={() => onOpenChange(false)}>Cancel</Button>
-        <Button variant="primary" onClick={save} loading={saving} disabled={!url.trim() || events.length === 0}>{hook ? "Save" : "Add webhook"}</Button>
+        <Button variant="ghost" onClick={() => onOpenChange(false)}>{t("common.cancel")}</Button>
+        <Button variant="primary" onClick={save} loading={saving} disabled={!url.trim() || events.length === 0}>{hook ? t("common.save") : t("admin.webhooks.dialog.add")}</Button>
       </>}
     >
       <div className="cn-playback__fields">
-        <TextField label="Name" description="Optional. Defaults to the address's host." value={name} onChange={(e) => setName(e.target.value)} placeholder="Home Assistant" />
-        <TextField label="Address" value={url} onChange={(e) => setUrl(e.target.value)} placeholder="http://homeassistant.local:8123/api/webhook/…" spellCheck={false} />
+        <TextField label={t("admin.webhooks.dialog.name")} description={t("admin.webhooks.dialog.nameDescription")} value={name} onChange={(e) => setName(e.target.value)} placeholder="Home Assistant" />
+        <TextField label={t("admin.webhooks.dialog.address")} value={url} onChange={(e) => setUrl(e.target.value)} placeholder="http://homeassistant.local:8123/api/webhook/…" spellCheck={false} />
       </div>
       <div className="cn-webhooks__events">
         <div className="cn-webhooks__events-head">
-          <span className="cn-field__label">Events</span>
+          <span className="cn-field__label">{t("admin.webhooks.dialog.events")}</span>
           <button type="button" className="cn-webhooks__all" onClick={() => setEvents(events.length === ALL_EVENTS.length ? [] : ALL_EVENTS)}>
-            {events.length === ALL_EVENTS.length ? "Clear all" : "Pick all"}
+            {events.length === ALL_EVENTS.length ? t("admin.webhooks.dialog.clearAll") : t("admin.webhooks.dialog.pickAll")}
           </button>
         </div>
         <div className="cn-playback__chips">
@@ -228,22 +246,22 @@ function WebhookDialog(props: { hook: WebhookInfo | null; open: boolean; onOpenC
             const on = events.includes(e);
             return (
               <button key={e} type="button" aria-pressed={on} className={cx("cn-playback__chip", on && "cn-playback__chip--on")} onClick={() => toggleEvent(e)}>
-                {WEBHOOK_EVENTS[e]}
+                {t(EVENT_LABELS[e])}
               </button>
             );
           })}
         </div>
       </div>
-      <Switch label="On" description="Turned off, nothing is sent." checked={enabled} onChange={setEnabled} />
+      <Switch label={t("admin.webhooks.dialog.enabled")} description={t("admin.webhooks.dialog.enabledDescription")} checked={enabled} onChange={setEnabled} />
       {secret
         ? (
           <div className="cn-integrations__address">
-            <TextField label="Secret" description="For checking the X-Cinemion-Signature header." value={secret} readOnly onFocus={(e) => e.target.select()} spellCheck={false} className="cn-integrations__address-field" />
-            <Button icon={<Copy />} onClick={async () => (await copyText(secret)) ? toasts.success("Secret copied") : toasts.error("Couldn't copy", "Select it and copy it by hand.")}>Copy</Button>
-            <Button icon={<RefreshCw />} onClick={newSecret}>New</Button>
+            <TextField label={t("admin.webhooks.dialog.secret")} description={t("admin.webhooks.dialog.secretDescription", { header: "X-Cinemion-Signature" })} value={secret} readOnly onFocus={(e) => e.target.select()} spellCheck={false} className="cn-integrations__address-field" />
+            <Button icon={<Copy />} onClick={async () => (await copyText(secret)) ? toasts.success(t("admin.webhooks.dialog.secretCopied")) : toasts.error(t("admin.webhooks.dialog.copyFailed"), t("admin.webhooks.dialog.copyByHand"))}>{t("common.copy")}</Button>
+            <Button icon={<RefreshCw />} onClick={newSecret}>{t("admin.webhooks.dialog.newSecret")}</Button>
           </div>
         )
-        : <p className="cn-settings__row-text"><span>A secret for checking signatures is made when you add the webhook.</span></p>}
+        : <p className="cn-settings__row-text"><span>{t("admin.webhooks.dialog.secretLater")}</span></p>}
     </Dialog>
   );
 }
@@ -255,7 +273,7 @@ function useWebhooks() {
   const [hooks, setHooks] = useState<WebhookInfo[] | null>(null);
 
   const reload = useCallback(() => {
-    WebhooksApi.list().then(setHooks).catch((e: Error) => toasts.error("Couldn't load webhooks", e.message));
+    WebhooksApi.list().then(setHooks).catch((e: Error) => toasts.error(t("admin.webhooks.loadFailed"), e.message));
   }, []);
 
   useEffect(() => {

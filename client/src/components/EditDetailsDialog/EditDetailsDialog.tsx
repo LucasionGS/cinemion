@@ -5,7 +5,8 @@ import ItemsApi from "../../Api/ItemsApi.ts";
 import LibrariesApi from "../../Api/LibrariesApi.ts";
 import { toasts } from "../../lib/Toasts.ts";
 import { formatClock } from "../../lib/playback.ts";
-import { RATINGS } from "../../lib/ratings.ts";
+import { ratingOptions } from "../../lib/ratings.ts";
+import { t } from "../../i18n/I18n.ts";
 import Button from "../Button/Button.tsx";
 import Dialog from "../Dialog/Dialog.tsx";
 import Select from "../Select/Select.tsx";
@@ -58,51 +59,51 @@ export default function EditDetailsDialog(props: EditDetailsDialogProps) {
         title,
         releaseDate: date || null,
         overview: overview || null,
-        tags: tags.split(",").map((t) => t.trim()).filter(Boolean),
+        tags: tags.split(",").map((tag) => tag.trim()).filter(Boolean),
         contentRating: rating || null,
       });
-      toasts.success("Details saved");
+      toasts.success(t("editDetails.saved"));
       onSaved();
       onClose();
     } catch (error) {
-      toasts.error("Couldn't save", (error as Error).message);
+      toasts.error(t("common.couldntSave"), (error as Error).message);
     } finally {
       setSaving(false);
     }
   }
 
-  const defaultLabel = library?.defaultRating ? `Library default (${library.defaultRating})` : "Library default (unrated)";
+  const defaultLabel = library?.defaultRating ? t("editDetails.ratingDefault", { rating: library.defaultRating }) : t("editDetails.ratingDefaultUnrated");
 
   return (
     <Dialog
       open={!!item}
       onOpenChange={(open) => !open && onClose()}
-      title={isVideo ? "Edit video details" : "Edit folder details"}
-      description="Your changes stay, also when the library is scanned or refreshed."
+      title={isVideo ? t("editDetails.videoTitle") : t("editDetails.folderTitle")}
+      description={t("editDetails.description")}
       size="lg"
       footer={<>
-        <Button variant="ghost" onClick={onClose}>Cancel</Button>
-        <Button variant="primary" onClick={save} loading={saving} disabled={!title.trim()}>Save</Button>
+        <Button variant="ghost" onClick={onClose}>{t("common.cancel")}</Button>
+        <Button variant="primary" onClick={save} loading={saving} disabled={!title.trim()}>{t("common.save")}</Button>
       </>}
     >
       {item && <ThumbnailPicker item={item} onChanged={onSaved} />}
       <div className="cn-details__fields">
-        <TextField label="Title" value={title} onChange={(e) => setTitle(e.target.value)} maxLength={200} />
-        {isVideo && <TextField label="Date" type="date" value={date} onChange={(e) => setDate(e.target.value)} description="When it was recorded." />}
+        <TextField label={t("editDetails.titleLabel")} value={title} onChange={(e) => setTitle(e.target.value)} maxLength={200} />
+        {isVideo && <TextField label={t("editDetails.date")} type="date" value={date} onChange={(e) => setDate(e.target.value)} description={t("editDetails.dateDescription")} />}
       </div>
       <div className="cn-field">
-        <label className="cn-field__label" htmlFor={descriptionId}>Description</label>
+        <label className="cn-field__label" htmlFor={descriptionId}>{t("editDetails.descriptionLabel")}</label>
         <textarea id={descriptionId} className="cn-field__input cn-details__description" value={overview} onChange={(e) => setOverview(e.target.value)} rows={4} maxLength={5000} />
       </div>
       {isVideo && (
         <div className="cn-details__fields">
-          <TextField label="Tags" value={tags} onChange={(e) => setTags(e.target.value)} placeholder="Family, Holiday" description="Separate them with commas. The library can be filtered by tag." />
+          <TextField label={t("editDetails.tags")} value={tags} onChange={(e) => setTags(e.target.value)} placeholder={t("editDetails.tagsPlaceholder")} description={t("editDetails.tagsDescription")} />
           <Select
-            label="Age rating"
+            label={t("editDetails.rating")}
             value={rating}
             onChange={(e) => setRating(e.target.value)}
-            options={[{ value: "", label: defaultLabel }, ...RATINGS]}
-            description="Profiles with an age limit only see videos rated within it."
+            options={[{ value: "", label: defaultLabel }, ...ratingOptions()]}
+            description={t("editDetails.ratingDescription")}
           />
         </div>
       )}
@@ -154,7 +155,7 @@ function ThumbnailPicker(props: { item: ItemDetail; onChanged: () => void }) {
       setPreview(null);
       onChanged();
     } catch (error) {
-      toasts.error("Couldn't change the thumbnail", (error as Error).message);
+      toasts.error(t("editDetails.thumbnail.failed"), (error as Error).message);
     } finally {
       setBusy(false);
     }
@@ -173,7 +174,7 @@ function ThumbnailPicker(props: { item: ItemDetail; onChanged: () => void }) {
         {shown && <img src={shown} alt="" />}
       </span>
       <div className="cn-details__thumb-controls">
-        <strong>Thumbnail</strong>
+        <strong>{t("editDetails.thumbnail.title")}</strong>
         {picking
           ? (
             <>
@@ -185,24 +186,24 @@ function ThumbnailPicker(props: { item: ItemDetail; onChanged: () => void }) {
                 step={0.5}
                 value={time}
                 onChange={(e) => setTime(Number(e.target.value))}
-                aria-label="Moment in the video"
+                aria-label={t("editDetails.thumbnail.moment")}
               />
-              <span className="cn-details__time">{formatClock(time)} of {formatClock(duration)}</span>
+              <span className="cn-details__time">{t("editDetails.thumbnail.time", { time: formatClock(time), duration: formatClock(duration) })}</span>
               <div className="cn-details__buttons">
-                <Button size="sm" variant="primary" loading={busy} onClick={() => run(() => ItemsApi.setThumbnailFrame(item.id, time), "Thumbnail changed")}>Use this frame</Button>
-                <Button size="sm" variant="ghost" onClick={() => setPicking(false)}>Cancel</Button>
+                <Button size="sm" variant="primary" loading={busy} onClick={() => run(() => ItemsApi.setThumbnailFrame(item.id, time), t("editDetails.thumbnail.changed"))}>{t("editDetails.thumbnail.useFrame")}</Button>
+                <Button size="sm" variant="ghost" onClick={() => setPicking(false)}>{t("common.cancel")}</Button>
               </div>
             </>
           )
           : (
             <>
               <span className="cn-details__hint">
-                {item.edited.thumbnail ? "Chosen by hand." : item.type === "video" ? "Picked from the video automatically." : "A picture in the folder, or its newest video's."}
+                {item.edited.thumbnail ? t("editDetails.thumbnail.byHand") : item.type === "video" ? t("editDetails.thumbnail.fromVideo") : t("editDetails.thumbnail.fromFolder")}
               </span>
               <div className="cn-details__buttons">
-                <Button size="sm" icon={<ImageUp />} onClick={() => fileInput.current?.click()} loading={busy}>Upload picture</Button>
-                {item.type === "video" && duration > 0 && <Button size="sm" icon={<Film />} onClick={startPicking}>Pick a frame</Button>}
-                {item.edited.thumbnail && <Button size="sm" variant="ghost" icon={<RotateCcw />} onClick={() => run(() => ItemsApi.resetThumbnail(item.id), "Back to the automatic thumbnail")}>Automatic</Button>}
+                <Button size="sm" icon={<ImageUp />} onClick={() => fileInput.current?.click()} loading={busy}>{t("editDetails.thumbnail.upload")}</Button>
+                {item.type === "video" && duration > 0 && <Button size="sm" icon={<Film />} onClick={startPicking}>{t("editDetails.thumbnail.pickFrame")}</Button>}
+                {item.edited.thumbnail && <Button size="sm" variant="ghost" icon={<RotateCcw />} onClick={() => run(() => ItemsApi.resetThumbnail(item.id), t("editDetails.thumbnail.reset"))}>{t("editDetails.thumbnail.automatic")}</Button>}
               </div>
             </>
           )}
@@ -214,7 +215,7 @@ function ThumbnailPicker(props: { item: ItemDetail; onChanged: () => void }) {
           onChange={(e) => {
             const file = e.target.files?.[0];
             e.target.value = "";
-            if (file) run(() => ItemsApi.uploadThumbnail(item.id, file), "Thumbnail changed");
+            if (file) run(() => ItemsApi.uploadThumbnail(item.id, file), t("editDetails.thumbnail.changed"));
           }}
         />
       </div>

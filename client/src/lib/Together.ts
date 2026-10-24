@@ -5,6 +5,7 @@ import BaseApi from "../Api/BaseApi.ts";
 import { deviceMode } from "./DeviceMode.ts";
 import { session } from "../Session.ts";
 import { formatClock } from "./playback.ts";
+import { t } from "../i18n/I18n.ts";
 
 /**
  * Something another member did, for the short notice at the top of the player.
@@ -145,7 +146,7 @@ export class TogetherSession extends Controller {
       // Reloading the page leaves the room, that's all
     }
     const welcomed = new Promise<void>((resolve, reject) => {
-      this._welcomeWaiters.push((ok) => ok ? resolve() : reject(new Error(this.endedReason ?? "Couldn't join the session.")));
+      this._welcomeWaiters.push((ok) => ok ? resolve() : reject(new Error(this.endedReason ?? t("together.errors.couldntJoin"))));
     });
     this._connect();
     return welcomed;
@@ -194,7 +195,7 @@ export class TogetherSession extends Controller {
         setTimeout(() => this.code === code && this._connect(), Math.min(1000 * this._retries, 5000));
       }
       else {
-        this._finish("Lost the connection to the session.");
+        this._finish(t("together.errors.lostConnection"));
       }
     };
   }
@@ -215,10 +216,10 @@ export class TogetherSession extends Controller {
         const before = new Set(this.room?.members.map((m) => m.id));
         const after = new Set(message.room.members.map((m) => m.id));
         for (const m of message.room.members) {
-          if (!before.has(m.id) && m.id !== this.memberId && this.room) this._showNotice(`${m.profile.name} joined`, m.profile);
+          if (!before.has(m.id) && m.id !== this.memberId && this.room) this._showNotice(t("together.notice.joined", { name: m.profile.name }), m.profile);
         }
         for (const m of this.room?.members ?? []) {
-          if (!after.has(m.id) && m.id !== this.memberId) this._showNotice(`${m.profile.name} left`, m.profile);
+          if (!after.has(m.id) && m.id !== this.memberId) this._showNotice(t("together.notice.left", { name: m.profile.name }), m.profile);
         }
         this.room = message.room;
         break;
@@ -228,9 +229,10 @@ export class TogetherSession extends Controller {
         this.room = { ...this.room, state: message.state };
         const byMe = message.by.memberId === this.memberId;
         if (!byMe) {
-          const verb = message.action === "play" ? "played" : message.action === "pause" ? "paused" : "jumped to";
+          const values = { name: message.by.name, time: formatClock(message.state.position) };
+          const text = message.action === "play" ? t("together.notice.played", values) : message.action === "pause" ? t("together.notice.paused", values) : t("together.notice.jumped", values);
           const profile = this.room.members.find((m) => m.id === message.by.memberId)?.profile ?? null;
-          this._showNotice(`${message.by.name} ${verb}${message.action === "play" ? "" : ` at ${formatClock(message.state.position)}`}`, profile);
+          this._showNotice(text, profile);
         }
         this._controlListeners.forEach((l) => l(message.state, byMe));
         break;
@@ -244,7 +246,7 @@ export class TogetherSession extends Controller {
         const fromOther = message.message.memberId !== this.memberId;
         if (fromOther && !this._chatVisible) {
           this.unread++;
-          this._showNotice(`${message.message.profile.name}: ${message.message.text}`, message.message.profile);
+          this._showNotice(t("together.notice.chat", { name: message.message.profile.name, text: message.message.text }), message.message.profile);
         }
         break;
       }
@@ -406,9 +408,9 @@ export class TogetherSession extends Controller {
 function deviceLabel() {
   if (deviceMode.host === "mediahub") return "MediaHub";
   const ua = navigator.userAgent;
-  const browser = /Edg\//.test(ua) ? "Edge" : /Firefox\//.test(ua) ? "Firefox" : /Chrome\//.test(ua) ? "Chrome" : /Safari\//.test(ua) ? "Safari" : "Browser";
-  if (deviceMode.mode === "tv") return "TV";
-  return `${browser} on ${deviceMode.mode === "mobile" ? "a phone" : "a computer"}`;
+  const browser = /Edg\//.test(ua) ? "Edge" : /Firefox\//.test(ua) ? "Firefox" : /Chrome\//.test(ua) ? "Chrome" : /Safari\//.test(ua) ? "Safari" : t("together.device.browser");
+  if (deviceMode.mode === "tv") return t("together.device.tv");
+  return t(deviceMode.mode === "mobile" ? "together.device.onPhone" : "together.device.onComputer", { browser });
 }
 
 export const together = new TogetherSession();

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Menu } from "@base-ui/react/menu";
 import { EllipsisVertical, RefreshCw, Wand2 } from "lucide-react";
-import type { LibraryInfo } from "@shared/api.ts";
+import type { LibraryInfo, LibraryType } from "@shared/api.ts";
 import type { CollectionSummary, ItemSummary, SortOrder } from "@shared/media.ts";
 import LibrariesApi from "../../Api/LibrariesApi.ts";
 import ItemsApi from "../../Api/ItemsApi.ts";
@@ -9,6 +9,7 @@ import { session } from "../../Session.ts";
 import { router } from "../../lib/Router.tsx";
 import useController from "../../lib/useController.ts";
 import { toasts } from "../../lib/Toasts.ts";
+import { t, type TranslationKey } from "../../i18n/I18n.ts";
 import AppShell from "../../components/AppShell/AppShell.tsx";
 import PosterCard from "../../components/PosterCard/PosterCard.tsx";
 import WideCard from "../../components/WideCard/WideCard.tsx";
@@ -24,19 +25,33 @@ import "./Library.scss";
 
 const PAGE_SIZE = 60;
 
-const SORTS: { value: SortOrder; label: string }[] = [
-  { value: "title", label: "Title" },
-  { value: "added", label: "Recently added" },
-  { value: "year", label: "Release year" },
-  { value: "rating", label: "Rating" },
+const SORTS: { value: SortOrder; label: TranslationKey }[] = [
+  { value: "title", label: "library.sort.title" },
+  { value: "added", label: "library.sort.added" },
+  { value: "year", label: "library.sort.year" },
+  { value: "rating", label: "library.sort.rating" },
 ];
 
 // Videos have a recording date instead of a release year, and no ratings
-const VIDEO_SORTS: { value: SortOrder; label: string }[] = [
-  { value: "title", label: "Title" },
-  { value: "added", label: "Recently added" },
-  { value: "year", label: "Date" },
+const VIDEO_SORTS: { value: SortOrder; label: TranslationKey }[] = [
+  { value: "title", label: "library.sort.title" },
+  { value: "added", label: "library.sort.added" },
+  { value: "year", label: "library.sort.date" },
 ];
+
+/**
+ * What an empty library says it's waiting for, by its type.
+ */
+const EMPTY_LINES: Record<LibraryType, TranslationKey> = {
+  movies: "library.empty.movies",
+  shows: "library.empty.shows",
+  videos: "library.empty.videos",
+  music: "library.empty.music",
+  audiobooks: "library.empty.audiobooks",
+  books: "library.empty.books",
+  photos: "library.empty.photos",
+  clips: "library.empty.clips",
+};
 
 export interface LibraryProps {
   id: number;
@@ -89,14 +104,14 @@ function TitleLibrary(props: LibraryProps & { libraries: LibraryInfo[] }) {
   }, [loadMore]);
 
   async function refresh(item: ItemSummary) {
-    const id = toasts.show({ title: `Refreshing ${item.title}…` });
+    const id = toasts.show({ title: t("library.refreshing", { title: item.title }) });
     try {
       replace(await ItemsApi.refresh(item.id));
       toasts.dismiss(id);
-      toasts.success(`${item.title} is up to date`);
+      toasts.success(t("library.upToDate", { title: item.title }));
     } catch (error) {
       toasts.dismiss(id);
-      toasts.error("Couldn't refresh", (error as Error).message);
+      toasts.error(t("library.refreshFailed"), (error as Error).message);
     }
   }
 
@@ -105,8 +120,8 @@ function TitleLibrary(props: LibraryProps & { libraries: LibraryInfo[] }) {
       <div className="cn-library">
         {!library && (
           <section className="cn-library__empty">
-            <h2>Library not found</h2>
-            <p>It may have been removed, or your profile doesn't have access to it.</p>
+            <h2>{t("library.notFound.title")}</h2>
+            <p>{t("library.notFound.description")}</p>
           </section>
         )}
 
@@ -115,29 +130,29 @@ function TitleLibrary(props: LibraryProps & { libraries: LibraryInfo[] }) {
             <header className="cn-library__header">
               <div>
                 <h1>{library.name}</h1>
-                <p>{countLabel(library, total)}{library.scan && " · Scanning…"}</p>
+                <p>{[countLabel(library, total), library.scan && t("library.scanning")].filter(Boolean).join(t("common.dotSeparator"))}</p>
               </div>
               <div className="cn-library__filters">
                 <SegmentedControl<"all" | "unwatched" | "collections">
-                  label="Show"
+                  label={t("library.filters.show")}
                   value={show}
                   onChange={setShow}
                   options={[
-                    { value: "all", label: "All" },
-                    { value: "unwatched", label: "Unwatched" },
-                    ...(collections && collections.length > 0 ? [{ value: "collections" as const, label: "Collections" }] : []),
+                    { value: "all", label: t("library.filters.all") },
+                    { value: "unwatched", label: t("library.filters.unwatched") },
+                    ...(collections && collections.length > 0 ? [{ value: "collections" as const, label: t("library.filters.collections") }] : []),
                   ]}
                 />
                 {show !== "collections" && genres && genres.length > 0 && (
                   <Select
-                    label={isVideos ? "Tag" : "Genre"}
+                    label={isVideos ? t("library.filters.tag") : t("library.filters.genre")}
                     value={genre ?? ""}
-                    options={[{ value: "", label: isVideos ? "All tags" : "All genres" }, ...genres.map((g) => ({ value: g, label: g }))]}
+                    options={[{ value: "", label: isVideos ? t("library.filters.allTags") : t("library.filters.allGenres") }, ...genres.map((g) => ({ value: g, label: g }))]}
                     onChange={(e) => setGenre(e.target.value || null)}
                     className="cn-library__select"
                   />
                 )}
-                {show !== "collections" && <Select label="Sort by" value={sorts.some((s) => s.value === sort) ? sort : "title"} options={sorts} onChange={(e) => setSort(e.target.value as SortOrder)} className="cn-library__select" />}
+                {show !== "collections" && <Select label={t("library.filters.sortBy")} value={sorts.some((s) => s.value === sort) ? sort : "title"} options={sorts.map((s) => ({ value: s.value, label: t(s.label) }))} onChange={(e) => setSort(e.target.value as SortOrder)} className="cn-library__select" />}
               </div>
             </header>
 
@@ -149,15 +164,15 @@ function TitleLibrary(props: LibraryProps & { libraries: LibraryInfo[] }) {
 
             {show !== "collections" && items && items.length === 0 && !loading && (genre || show === "unwatched") && (
               <section className="cn-library__empty">
-                <h2>No matches</h2>
-                <p>{show === "unwatched" ? "You've seen everything here" : isVideos ? "Nothing with this tag" : "Nothing in this genre"}{genre && show === "unwatched" ? (isVideos ? " with this tag" : " in this genre") : ""}.</p>
+                <h2>{t("library.noMatches.title")}</h2>
+                <p>{t(noMatchesLine(show === "unwatched", !!genre, isVideos))}</p>
               </section>
             )}
 
             {show !== "collections" && items && items.length === 0 && !loading && !genre && show !== "unwatched" && (
               <section className="cn-library__empty">
-                <h2>Nothing in here yet</h2>
-                <p>{library.scan ? "Cinemion is scanning this library right now. Titles appear as they're found." : `${{ movies: "Movies", shows: "Shows", videos: "Videos", music: "Music", audiobooks: "Audiobooks", books: "Books", photos: "Photos", clips: "Clips" }[library.type]} from ${library.paths.join(", ")} appear here after a scan.`}</p>
+                <h2>{t("library.empty.title")}</h2>
+                <p>{library.scan ? t("library.empty.scanning") : t(EMPTY_LINES[library.type], { paths: library.paths.join(t("common.listSeparator")) })}</p>
               </section>
             )}
 
@@ -172,7 +187,7 @@ function TitleLibrary(props: LibraryProps & { libraries: LibraryInfo[] }) {
                 <PosterCard
                   key={item.id}
                   item={item}
-                  badge={canManage && item.matchStatus === "unmatched" ? "Unmatched" : undefined}
+                  badge={canManage && item.matchStatus === "unmatched" ? t("library.unmatched") : undefined}
                   actions={canManage && <ItemMenu item={item} onFix={() => setFixing(item)} onRefresh={() => refresh(item)} />}
                 />
               ))}
@@ -190,21 +205,30 @@ function TitleLibrary(props: LibraryProps & { libraries: LibraryInfo[] }) {
 function countLabel(library: LibraryInfo, total: number | null) {
   // A Videos library lists folders too; its count is always its videos
   const count = library.type === "videos" ? library.itemCount : total ?? library.itemCount;
-  if (library.type === "videos") return `${count} ${count === 1 ? "video" : "videos"}`;
-  if (library.type === "shows") return `${count} ${count === 1 ? "show" : "shows"}`;
-  return `${count} ${count === 1 ? "movie" : "movies"}`;
+  if (library.type === "videos") return t("library.count.videos", { count });
+  if (library.type === "shows") return t("library.count.shows", { count });
+  return t("library.count.movies", { count });
+}
+
+/**
+ * Why a filtered grid is empty: nothing unwatched, nothing with the tag or genre, or both.
+ */
+function noMatchesLine(unwatched: boolean, filtered: boolean, isVideos: boolean): TranslationKey {
+  if (unwatched && filtered) return isVideos ? "library.noMatches.unwatchedWithTag" : "library.noMatches.unwatchedInGenre";
+  if (unwatched) return "library.noMatches.unwatched";
+  return isVideos ? "library.noMatches.tag" : "library.noMatches.genre";
 }
 
 function ItemMenu(props: { item: ItemSummary; onFix: () => void; onRefresh: () => void }) {
   const { item, onFix, onRefresh } = props;
   return (
     <Menu.Root>
-      <Menu.Trigger className="cn-library__menu-button" aria-label={`More for ${item.title}`}><EllipsisVertical /></Menu.Trigger>
+      <Menu.Trigger className="cn-library__menu-button" aria-label={t("library.menu.moreFor", { title: item.title })}><EllipsisVertical /></Menu.Trigger>
       <Menu.Portal>
         <Menu.Positioner sideOffset={6} align="end" className="cn-menu__positioner">
           <Menu.Popup className="cn-menu">
-            <Menu.Item className="cn-menu__item" onClick={onFix}><Wand2 /> Fix match</Menu.Item>
-            <Menu.Item className="cn-menu__item" onClick={onRefresh}><RefreshCw /> Refresh details</Menu.Item>
+            <Menu.Item className="cn-menu__item" onClick={onFix}><Wand2 /> {t("library.menu.fixMatch")}</Menu.Item>
+            <Menu.Item className="cn-menu__item" onClick={onRefresh}><RefreshCw /> {t("library.menu.refresh")}</Menu.Item>
           </Menu.Popup>
         </Menu.Positioner>
       </Menu.Portal>
@@ -258,7 +282,7 @@ function useLibraryItems(libraryId: number, sort: SortOrder, genre: string | nul
       setTotal(page.total);
       s.done = offset + page.items.length >= page.total;
     } catch (error) {
-      toasts.error("Couldn't load this library", (error as Error).message);
+      toasts.error(t("library.loadFailed"), (error as Error).message);
       s.done = true;
     } finally {
       s.loading = false;

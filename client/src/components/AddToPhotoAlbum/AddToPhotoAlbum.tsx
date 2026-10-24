@@ -6,6 +6,7 @@ import ItemsApi from "../../Api/ItemsApi.ts";
 import Controller from "../../lib/Controller.ts";
 import useController from "../../lib/useController.ts";
 import { toasts } from "../../lib/Toasts.ts";
+import { t } from "../../i18n/I18n.ts";
 import Dialog from "../Dialog/Dialog.tsx";
 import Button from "../Button/Button.tsx";
 import TextField from "../TextField/TextField.tsx";
@@ -55,7 +56,7 @@ export default function AddToPhotoAlbum() {
   const [albums, setAlbums] = useState<PhotoAlbumSummary[] | null>(null);
   const [name, setName] = useState("");
   const [busy, setBusy] = useState(false);
-  const count = itemIds.length === 1 ? "1 photo" : `${itemIds.length} photos`;
+  const count = itemIds.length;
 
   useEffect(() => {
     if (!open) return;
@@ -68,11 +69,11 @@ export default function AddToPhotoAlbum() {
     setBusy(true);
     try {
       const result = await PhotosApi.addToAlbum(album.id, itemIds);
-      toasts.success(result.added === 0 ? `Already in ${album.title}` : `Added ${result.added === 1 ? "1 photo" : `${result.added} photos`} to ${album.title}`);
+      toasts.success(result.added === 0 ? t("photos.addToAlbum.alreadyIn", { album: album.title }) : t("photos.addToAlbum.added", { count: result.added, album: album.title }));
       addToPhotoAlbum.changed();
       addToPhotoAlbum.close();
     } catch (error) {
-      toasts.error("Couldn't add to the album", (error as Error).message);
+      toasts.error(t("photos.addToAlbum.couldntAdd"), (error as Error).message);
     } finally {
       setBusy(false);
     }
@@ -84,21 +85,21 @@ export default function AddToPhotoAlbum() {
     setBusy(true);
     try {
       const album = await PhotosApi.createAlbum({ libraryId, title: name, itemIds });
-      toasts.success(`Made ${album.title} with ${count}`);
+      toasts.success(t("photos.addToAlbum.made", { count, album: album.title }));
       addToPhotoAlbum.changed();
       addToPhotoAlbum.close();
     } catch (error) {
-      toasts.error("Couldn't make the album", (error as Error).message);
+      toasts.error(t("photos.addToAlbum.couldntMake"), (error as Error).message);
     } finally {
       setBusy(false);
     }
   }
 
   return (
-    <Dialog open={open} onOpenChange={(value) => !value && addToPhotoAlbum.close()} title="Add to album" description={`Add ${count} to one of your albums, or start a new one. The files stay where they are.`} size="sm">
+    <Dialog open={open} onOpenChange={(value) => !value && addToPhotoAlbum.close()} title={t("photos.addToAlbum.title")} description={t("photos.addToAlbum.description", { count })} size="sm">
       <form className="cn-add-playlist__new" onSubmit={create}>
-        <TextField label="New album" placeholder="Name" value={name} maxLength={128} onChange={(e) => setName(e.target.value)} />
-        <Button type="submit" variant="primary" icon={<Plus />} disabled={!name.trim()} loading={busy && !!name.trim()}>Create</Button>
+        <TextField label={t("photos.addToAlbum.newAlbum")} placeholder={t("photos.addToAlbum.name")} value={name} maxLength={128} onChange={(e) => setName(e.target.value)} />
+        <Button type="submit" variant="primary" icon={<Plus />} disabled={!name.trim()} loading={busy && !!name.trim()}>{t("photos.addToAlbum.create")}</Button>
       </form>
       {albums && albums.length > 0 && (
         <ul className="cn-add-playlist__list">

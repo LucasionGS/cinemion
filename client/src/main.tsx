@@ -1,4 +1,4 @@
-import { StrictMode, useEffect } from "react";
+import { Fragment, StrictMode, useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import "@fontsource-variable/sora";
 import "@fontsource-variable/manrope";
@@ -8,6 +8,7 @@ import { session } from "./Session.ts";
 import { type Route, router, RouterView } from "./lib/Router.tsx";
 import useController from "./lib/useController.ts";
 import { deviceMode } from "./lib/DeviceMode.ts";
+import { i18n, t } from "./i18n/I18n.ts";
 // Applies the theme picked for this device and follows the system setting when asked to
 import "./lib/Theme.ts";
 import { initSpatialNavigation } from "./lib/spatialNavigation.ts";
@@ -213,6 +214,7 @@ function App() {
   const { ready, server, user, error } = useController(session);
   const { path } = useController(router);
   useController(deviceMode);
+  const { language } = useController(i18n);
 
   useEffect(() => {
     session.init();
@@ -229,6 +231,11 @@ function App() {
     else if (!server.needsSetup && path === "/setup" && !user) router.navigate("/profiles", { replace: true });
   }, [ready, server?.needsSetup, path, user]);
 
+  // Each profile can pick its own language; before anyone signs in, the one used last on this device stays
+  useEffect(() => {
+    if (ready && user) i18n.use(user.preferences.language);
+  }, [ready, user?.id, user?.preferences.language]);
+
   // Each profile has its own queue; switching profiles stops the music
   useEffect(() => {
     if (ready) musicPlayer.setUser(user?.id ?? null);
@@ -242,7 +249,7 @@ function App() {
   }, [ready, user?.id]);
 
   if (!ready) {
-    return <div className="cn-boot"><Spinner size="2rem" label="Loading Cinemion" /></div>;
+    return <div className="cn-boot"><Spinner size="2rem" label={t("app.boot.loading")} /></div>;
   }
   if ((error || !server) && offline.downloads.some((d) => d.status === "ready")) {
     return (
@@ -256,14 +263,15 @@ function App() {
     return (
       <div className="cn-boot">
         <Logo size={2.5} />
-        <p>{error ?? "Can't reach the Cinemion server."}</p>
-        <Button variant="primary" onClick={() => location.reload()} data-autofocus>Try again</Button>
+        <p>{error ?? t("app.boot.unreachable")}</p>
+        <Button variant="primary" onClick={() => location.reload()} data-autofocus>{t("common.tryAgain")}</Button>
       </div>
     );
   }
 
+  // Everything is drawn again in a new language, so lines don't need to listen for the change themselves
   return (
-    <>
+    <Fragment key={language}>
       <RouterView routes={routes} fallback={<Redirect to="/" />} />
       {user && (
         <>
@@ -274,12 +282,15 @@ function App() {
         </>
       )}
       <Toaster />
-    </>
+    </Fragment>
   );
 }
 
-createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
-);
+// The language used last on this device is loaded first, so the app doesn't start in English and then switch
+i18n.init().finally(() => {
+  createRoot(document.getElementById("root")!).render(
+    <StrictMode>
+      <App />
+    </StrictMode>,
+  );
+});

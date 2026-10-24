@@ -6,6 +6,7 @@ import { router } from "../../lib/Router.tsx";
 import { episodeLabel, formatDuration, timeLeft } from "../../lib/playback.ts";
 import { formatDate } from "../../lib/format.ts";
 import cx from "../../lib/cx.ts";
+import { t } from "../../i18n/I18n.ts";
 import { fallbackColor } from "../PosterCard/PosterCard.tsx";
 import "./WideCard.scss";
 
@@ -38,14 +39,14 @@ export default function WideCard(props: WideCardProps) {
   // Title on the art: the show for "continue" episodes, the episode itself in episode lists
   const artTitle = isEpisode && variant === "continue" ? item.showTitle ?? item.title : item.title;
   const line1 = isEpisode
-    ? variant === "continue" ? `${episodeLabel(item)} · ${item.title}` : `${item.episodeNumber}. ${item.title}`
+    ? variant === "continue" ? [episodeLabel(item), item.title].join(t("common.dotSeparator")) : t("cards.wide.episodeTitle", { number: String(item.episodeNumber), title: item.title })
     : item.title;
   const date = item.releaseDate ? formatDate(item.releaseDate, true) : null;
   let line2: string;
-  if (variant === "continue") line2 = left ?? (isEpisode ? "Up next" : item.type === "video" ? date ?? "" : item.year ? String(item.year) : "");
-  else if (isFolder) line2 = `${item.childCount} ${item.childCount === 1 ? "video" : "videos"}`;
-  else if (variant === "video") line2 = [date, left].filter(Boolean).join(" · ");
-  else line2 = [item.runtime ? formatDuration(item.runtime * 60) : null, left].filter(Boolean).join(" · ");
+  if (variant === "continue") line2 = left ?? (isEpisode ? t("cards.wide.upNext") : item.type === "video" ? date ?? "" : item.year ? String(item.year) : "");
+  else if (isFolder) line2 = t("cards.wide.videos", { count: item.childCount });
+  else if (variant === "video") line2 = [date, left].filter(Boolean).join(t("common.dotSeparator"));
+  else line2 = [item.runtime ? formatDuration(item.runtime * 60) : null, left].filter(Boolean).join(t("common.dotSeparator"));
 
   return (
     <button
@@ -59,10 +60,10 @@ export default function WideCard(props: WideCardProps) {
         {showImage && <img src={ItemsApi.imageUrl(image!, 500)} srcSet={`${ItemsApi.imageUrl(image!, 500)} 500w, ${ItemsApi.imageUrl(image!, 780)} 780w`} sizes="26rem" alt="" loading="lazy" onError={() => setBroken(true)} />}
         <span className="cn-wide__shade" />
         {variant === "continue" && <span className="cn-wide__title">{artTitle}</span>}
-        {variant === "episode" && <span className="cn-wide__number">E{item.episodeNumber}</span>}
+        {variant === "episode" && <span className="cn-wide__number">{t("cards.wide.episodeNumber", { number: String(item.episodeNumber) })}</span>}
         {isFolder && <span className="cn-wide__number cn-wide__folder"><Folder aria-hidden="true" />{item.childCount}</span>}
         {variant === "video" && item.type === "video" && item.runtime && <span className="cn-wide__length">{formatDuration(item.runtime * 60)}</span>}
-        {item.userData?.watched && <span className="cn-wide__watched" aria-label="Watched"><Check /></span>}
+        {item.userData?.watched && <span className="cn-wide__watched" aria-label={t("cards.wide.watched")}><Check /></span>}
         {progress !== null && <span className="cn-wide__progress"><span style={{ width: `${Math.round(progress * 100)}%` }} /></span>}
       </span>
       <span className="cn-wide__meta">

@@ -1,20 +1,29 @@
+import { i18n, t } from "../i18n/I18n.ts";
+
 /**
  * "512 KB", "3.4 GB" or "7.2 TB".
  */
 export function formatBytes(bytes: number) {
-  if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`;
-  if (bytes < 1024 ** 3) return `${(bytes / 1024 ** 2).toFixed(1)} MB`;
-  if (bytes < 1024 ** 4) return `${(bytes / 1024 ** 3).toFixed(1)} GB`;
-  return `${(bytes / 1024 ** 4).toFixed(1)} TB`;
+  if (bytes < 1024 * 1024) return t("format.bytes.kb", { value: Math.round(bytes / 1024) });
+  if (bytes < 1024 ** 3) return t("format.bytes.mb", { value: decimal(bytes / 1024 ** 2) });
+  if (bytes < 1024 ** 4) return t("format.bytes.gb", { value: decimal(bytes / 1024 ** 3) });
+  return t("format.bytes.tb", { value: decimal(bytes / 1024 ** 4) });
+}
+
+/**
+ * A number with one decimal, written the language's way ("3.4", or "3,4" in German).
+ */
+function decimal(value: number) {
+  return value.toLocaleString(i18n.locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 }
 
 /**
  * "41 Mbps" or "800 kbps", from bits per second.
  */
 export function formatBitrate(bitsPerSecond: number) {
-  if (bitsPerSecond < 1_000_000) return `${Math.round(bitsPerSecond / 1000)} kbps`;
+  if (bitsPerSecond < 1_000_000) return t("format.bitrate.kbps", { value: Math.round(bitsPerSecond / 1000) });
   const mbps = bitsPerSecond / 1_000_000;
-  return `${mbps < 10 ? Math.round(mbps * 10) / 10 : Math.round(mbps)} Mbps`;
+  return t("format.bitrate.mbps", { value: mbps < 10 ? Math.round(mbps * 10) / 10 : Math.round(mbps) });
 }
 
 /**
@@ -22,12 +31,11 @@ export function formatBitrate(bitsPerSecond: number) {
  */
 export function timeAgo(iso: string) {
   const minutes = Math.round((Date.now() - new Date(iso).getTime()) / 60000);
-  if (minutes < 1) return "just now";
-  if (minutes < 60) return `${minutes} min ago`;
+  if (minutes < 1) return t("format.ago.justNow");
+  if (minutes < 60) return t("format.ago.minutes", { count: minutes });
   const hours = Math.round(minutes / 60);
-  if (hours < 24) return `${hours} ${hours === 1 ? "hour" : "hours"} ago`;
-  const days = Math.round(hours / 24);
-  return `${days} ${days === 1 ? "day" : "days"} ago`;
+  if (hours < 24) return t("format.ago.hours", { count: hours });
+  return t("format.ago.days", { count: Math.round(hours / 24) });
 }
 
 /**
@@ -35,11 +43,11 @@ export function timeAgo(iso: string) {
  */
 export function timeUntil(iso: string) {
   const minutes = Math.round((new Date(iso).getTime() - Date.now()) / 60000);
-  if (minutes < 1) return "soon";
-  if (minutes < 60) return `in ${minutes} min`;
+  if (minutes < 1) return t("format.until.soon");
+  if (minutes < 60) return t("format.until.minutes", { count: minutes });
   const hours = Math.round(minutes / 60);
-  if (hours < 24) return `in ${hours} ${hours === 1 ? "hour" : "hours"}`;
-  return new Date(iso).toLocaleString(undefined, { weekday: "short", hour: "2-digit", minute: "2-digit" });
+  if (hours < 24) return t("format.until.hours", { count: hours });
+  return new Date(iso).toLocaleString(i18n.locale, { weekday: "short", hour: "2-digit", minute: "2-digit" });
 }
 
 /**
@@ -47,11 +55,11 @@ export function timeUntil(iso: string) {
  */
 export function formatSpan(fromIso: string) {
   const minutes = Math.max(0, Math.floor((Date.now() - new Date(fromIso).getTime()) / 60000));
-  if (minutes < 1) return "less than a minute";
-  if (minutes < 60) return `${minutes} ${minutes === 1 ? "minute" : "minutes"}`;
+  if (minutes < 1) return t("format.span.underAMinute");
+  if (minutes < 60) return t("format.span.minutes", { count: minutes });
   const hours = Math.floor(minutes / 60);
-  if (hours < 48) return `${hours} ${hours === 1 ? "hour" : "hours"}`;
-  return `${Math.floor(hours / 24)} days`;
+  if (hours < 48) return t("format.span.hours", { count: hours });
+  return t("format.span.days", { count: Math.floor(hours / 24) });
 }
 
 /**
@@ -60,7 +68,7 @@ export function formatSpan(fromIso: string) {
 export function formatDate(date: string, short = false) {
   const [y, m, d] = date.split("-").map(Number);
   // Built from parts: new Date("2024-07-12") is midnight UTC, which is the day before in the Americas
-  return new Date(y, (m || 1) - 1, d || 1).toLocaleDateString(undefined, { day: "numeric", month: short ? "short" : "long", year: "numeric" });
+  return new Date(y, (m || 1) - 1, d || 1).toLocaleDateString(i18n.locale, { day: "numeric", month: short ? "short" : "long", year: "numeric" });
 }
 
 /**
@@ -75,9 +83,9 @@ export function formatDateRange(from: string, to: string) {
   };
   const [a, b] = [date(from), date(to)];
   const sameYear = a.getFullYear() === b.getFullYear();
-  if (sameYear && a.getMonth() === b.getMonth()) return `${a.getDate()} – ${formatDate(to)}`;
-  if (sameYear) return `${a.toLocaleDateString(undefined, { day: "numeric", month: "long" })} – ${formatDate(to)}`;
-  return `${formatDate(from, true)} – ${formatDate(to, true)}`;
+  if (sameYear && a.getMonth() === b.getMonth()) return t("format.dateRange", { from: a.toLocaleDateString(i18n.locale, { day: "numeric" }), to: formatDate(to) });
+  if (sameYear) return t("format.dateRange", { from: a.toLocaleDateString(i18n.locale, { day: "numeric", month: "long" }), to: formatDate(to) });
+  return t("format.dateRange", { from: formatDate(from, true), to: formatDate(to, true) });
 }
 
 /**
@@ -87,13 +95,13 @@ export function formatDateRange(from: string, to: string) {
 export function formatDateTime(value: string, short = false) {
   const [y, mo, d, h, mi] = value.split(/[-T:]/).map(Number);
   const date = new Date(y, (mo || 1) - 1, d || 1, h || 0, mi || 0);
-  const day = date.toLocaleDateString(undefined, short ? { day: "numeric", month: "short", year: "numeric" } : { weekday: "long", day: "numeric", month: "long", year: "numeric" });
-  return `${day}, ${date.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" })}`;
+  const day = date.toLocaleDateString(i18n.locale, short ? { day: "numeric", month: "short", year: "numeric" } : { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+  return t("format.dateTime", { date: day, time: date.toLocaleTimeString(i18n.locale, { hour: "2-digit", minute: "2-digit" }) });
 }
 
 /**
  * "34%", from 0 to 1.
  */
 export function formatPercent(value: number) {
-  return `${Math.round(value * 100)}%`;
+  return value.toLocaleString(i18n.locale, { style: "percent", maximumFractionDigits: 0 });
 }

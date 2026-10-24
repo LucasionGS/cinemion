@@ -4,6 +4,7 @@ import type { PlaybackInfo, QualityPreset } from "@shared/playback.ts";
 import useController from "../../lib/useController.ts";
 import { deviceMode } from "../../lib/DeviceMode.ts";
 import cx from "../../lib/cx.ts";
+import { t, type TranslationKey } from "../../i18n/I18n.ts";
 import IconButton from "../IconButton/IconButton.tsx";
 import Button from "../Button/Button.tsx";
 import type { PanelTab, PlayerController } from "./PlayerController.ts";
@@ -20,16 +21,19 @@ interface Option {
   onPick: () => void;
 }
 
-const TABS: { id: PanelTab; label: string }[] = [
-  { id: "subtitles", label: "Subtitles" },
-  { id: "audio", label: "Audio" },
-  { id: "quality", label: "Quality" },
+const TABS: { id: PanelTab; label: TranslationKey }[] = [
+  { id: "subtitles", label: "player.panel.tabs.subtitles" },
+  { id: "audio", label: "player.panel.tabs.audio" },
+  { id: "quality", label: "player.panel.tabs.quality" },
 ];
 
-const PRESETS: { id: Exclude<QualityPreset, "original">; height: number; detail: string }[] = [
-  { id: "1080p", height: 1080, detail: "Up to 8 Mbps · converted" },
-  { id: "720p", height: 720, detail: "Up to 4 Mbps · converted" },
-  { id: "480p", height: 480, detail: "Up to 1.5 Mbps · converted" },
+/**
+ * The fixed qualities. `mbps` is the most each one uses.
+ */
+const PRESETS: { id: Exclude<QualityPreset, "original">; height: number; mbps: number }[] = [
+  { id: "1080p", height: 1080, mbps: 8 },
+  { id: "720p", height: 720, mbps: 4 },
+  { id: "480p", height: 480, mbps: 1.5 },
 ];
 
 const CODECS: Record<string, string> = {
@@ -41,18 +45,18 @@ function codec(name: string) {
 }
 
 function channels(count: number) {
-  return count === 1 ? "mono" : count === 2 ? "stereo" : count === 6 ? "5.1" : count === 8 ? "7.1" : `${count} ch`;
+  return count === 1 ? t("player.panel.channels.mono") : count === 2 ? t("player.panel.channels.stereo") : count === 6 ? "5.1" : count === 8 ? "7.1" : t("player.panel.channels.count", { count });
 }
 
 /**
  * "Direct play", "Repackaged", "Converting" and so on, for the badge and the panel.
  */
 export function modeLabel(info: PlaybackInfo) {
-  if (info.mode === "direct") return "Direct play";
-  if (info.mode === "remux") return "Repackaged";
-  if (info.video.action === "copy") return "Converting audio";
+  if (info.mode === "direct") return t("player.panel.mode.direct");
+  if (info.mode === "remux") return t("player.panel.mode.remux");
+  if (info.video.action === "copy") return t("player.panel.mode.audio");
   const gpu = info.video.hardware && info.video.hardware !== "none";
-  return gpu ? "Converting on the GPU" : "Converting";
+  return gpu ? t("player.panel.mode.gpu") : t("player.panel.mode.converting");
 }
 
 /**
@@ -76,7 +80,7 @@ export default function TrackPanel(props: TrackPanelProps) {
 
   if (panelTab === "subtitles") {
     options = [
-      { key: "off", label: "Off", detail: "No subtitles", active: subtitleIndex === null, onPick: () => controller.setSubtitle(null) },
+      { key: "off", label: t("common.off"), detail: t("player.panel.noSubtitles"), active: subtitleIndex === null, onPick: () => controller.setSubtitle(null) },
       ...info.subtitles.map((s) => ({ key: String(s.index), label: s.label, detail: s.detail, active: subtitleIndex === s.index, onPick: () => controller.setSubtitle(s.index) })),
     ];
   }
@@ -85,20 +89,20 @@ export default function TrackPanel(props: TrackPanelProps) {
   }
   else {
     const height = file?.height ?? null;
-    const original = [height ? `${height}p` : null, file?.hdr ? "HDR" : null, file?.videoCodec ? codec(file.videoCodec) : null].filter(Boolean).join(" · ");
+    const original = [height ? `${height}p` : null, file?.hdr ? "HDR" : null, file?.videoCodec ? codec(file.videoCodec) : null].filter(Boolean).join(t("common.dotSeparator"));
     options = [
-      { key: "original", label: "Original", detail: original || "As the file is", active: info.quality === "original", onPick: () => controller.setQuality("original") },
+      { key: "original", label: t("player.panel.original"), detail: original || t("player.panel.originalDetail"), active: info.quality === "original", onPick: () => controller.setQuality("original") },
       {
         key: "auto",
-        label: "Automatic",
-        detail: info.quality === "auto" && currentHeight ? `Now ${currentHeight}p · switches with your connection` : "Switches with your connection · converted",
+        label: t("player.panel.automatic"),
+        detail: info.quality === "auto" && currentHeight ? t("player.panel.automaticNow", { height: String(currentHeight) }) : t("player.panel.automaticDetail"),
         active: info.quality === "auto",
         onPick: () => controller.setQuality("auto"),
       },
       ...PRESETS.filter((p) => !height || p.height < height * 0.95).map((p) => ({
         key: p.id,
         label: p.id,
-        detail: p.detail,
+        detail: t("player.panel.presetDetail", { mbps: p.mbps }),
         active: info.quality === p.id,
         onPick: () => controller.setQuality(p.id),
       })),
@@ -106,8 +110,8 @@ export default function TrackPanel(props: TrackPanelProps) {
     if (item.files.length > 1) {
       options.push(...item.files.map((f, i) => ({
         key: `file-${f.id}`,
-        label: `Version ${i + 1}${f.height ? ` · ${f.height}p` : ""}`,
-        detail: [f.videoCodec ? codec(f.videoCodec) : null, f.hdr ? "HDR" : null, f.path.split(/[\\/]/).pop()].filter(Boolean).join(" · "),
+        label: f.height ? t("player.panel.versionHeight", { number: i + 1, height: String(f.height) }) : t("player.panel.version", { number: i + 1 }),
+        detail: [f.videoCodec ? codec(f.videoCodec) : null, f.hdr ? "HDR" : null, f.path.split(/[\\/]/).pop()].filter(Boolean).join(t("common.dotSeparator")),
         active: info.fileId === f.id,
         onPick: () => controller.setVersion(f.id),
       })));
@@ -118,14 +122,18 @@ export default function TrackPanel(props: TrackPanelProps) {
     (info.video.ladder ? currentHeight : info.video.height) ? `${info.video.ladder ? currentHeight : info.video.height}p` : null,
     info.video.action === "convert" && info.video.source !== info.video.codec ? `${codec(info.video.source)} → ${codec(info.video.codec)}` : codec(info.video.codec),
     info.video.hdr ? "HDR" : null,
-    info.audioStream ? (info.audioStream.action === "convert" ? `${codec(info.audioStream.source)} → ${codec(info.audioStream.codec)} ${channels(info.audioStream.channels)}` : `${codec(info.audioStream.codec)} ${channels(info.audioStream.channels)}`) : null,
-    info.video.bitrate ? `${Math.round(info.video.bitrate / 100_000) / 10} Mbps` : null,
-  ].filter(Boolean).join(" · ");
+    info.audioStream
+      ? info.audioStream.action === "convert"
+        ? t("player.panel.audioConverted", { from: codec(info.audioStream.source), to: codec(info.audioStream.codec), channels: channels(info.audioStream.channels) })
+        : t("player.panel.audio", { codec: codec(info.audioStream.codec), channels: channels(info.audioStream.channels) })
+      : null,
+    info.video.bitrate ? t("player.panel.bitrate", { mbps: Math.round(info.video.bitrate / 100_000) / 10 }) : null,
+  ].filter(Boolean).join(t("common.dotSeparator"));
 
   return (
-    <aside className="cn-track-panel" aria-label="Playback options" data-focus-scope>
+    <aside className="cn-track-panel" aria-label={t("player.panel.label")} data-focus-scope>
       <div className="cn-track-panel__header">
-        <div role="tablist" aria-label="Options" className="cn-track-panel__tabs">
+        <div role="tablist" aria-label={t("player.panel.tabsLabel")} className="cn-track-panel__tabs">
           {TABS.map((tab) => (
             <button
               key={tab.id}
@@ -135,22 +143,22 @@ export default function TrackPanel(props: TrackPanelProps) {
               className={cx("cn-track-panel__tab", panelTab === tab.id && "cn-track-panel__tab--active")}
               onClick={() => controller.setPanelTab(tab.id)}
             >
-              {tab.label}
+              {t(tab.label)}
             </button>
           ))}
         </div>
-        <IconButton label="Close" icon={<X />} variant="ghost" size="sm" className="cn-track-panel__close" onClick={() => controller.closePanel()} />
+        <IconButton label={t("common.close")} icon={<X />} variant="ghost" size="sm" className="cn-track-panel__close" onClick={() => controller.closePanel()} />
       </div>
       <div ref={list} className="cn-track-panel__options" role="tabpanel">
-        {options.length === 0 && <p className="cn-track-panel__empty">This file has no other audio tracks.</p>}
-        {panelTab === "quality" && item.files.length > 1 && <span className="cn-track-panel__section">Quality</span>}
+        {options.length === 0 && <p className="cn-track-panel__empty">{t("player.panel.noAudio")}</p>}
+        {panelTab === "quality" && item.files.length > 1 && <span className="cn-track-panel__section">{t("player.panel.sectionQuality")}</span>}
         {options.map((option, i) => (
-          <OptionRow key={option.key} option={option} sectionBefore={panelTab === "quality" && item.files.length > 1 && option.key.startsWith("file-") && !options[i - 1]?.key.startsWith("file-") ? "Version" : null} />
+          <OptionRow key={option.key} option={option} sectionBefore={panelTab === "quality" && item.files.length > 1 && option.key.startsWith("file-") && !options[i - 1]?.key.startsWith("file-") ? t("player.panel.sectionVersion") : null} />
         ))}
       </div>
       {panelTab === "subtitles" && info.canSearchSubtitles && (
         <div className="cn-track-panel__actions">
-          <Button variant="secondary" icon={<Search />} block onClick={() => controller.setSubtitleSearchOpen(true)}>Search online</Button>
+          <Button variant="secondary" icon={<Search />} block onClick={() => controller.setSubtitleSearchOpen(true)}>{t("player.panel.searchOnline")}</Button>
         </div>
       )}
       {panelTab === "quality" && (

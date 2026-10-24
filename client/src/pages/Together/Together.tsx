@@ -9,6 +9,7 @@ import { applyAmbient } from "../../lib/ambient.ts";
 import { episodeLabel, formatClock } from "../../lib/playback.ts";
 import useController from "../../lib/useController.ts";
 import { session } from "../../Session.ts";
+import { rich, t } from "../../i18n/I18n.ts";
 import Avatar from "../../components/Avatar/Avatar.tsx";
 import Button from "../../components/Button/Button.tsx";
 import IconButton from "../../components/IconButton/IconButton.tsx";
@@ -64,16 +65,16 @@ export default function Together(props: TogetherProps) {
     <div className="cn-together">
       <div className="cn-together__glow" aria-hidden="true" />
       <div className="cn-together__top">
-        <IconButton label="Close" icon={<X />} onClick={() => router.back("/")} />
+        <IconButton label={t("common.close")} icon={<X />} onClick={() => router.back("/")} />
       </div>
       <div className="cn-together__content">
         <div className="cn-together__text">
-          <h1>Join a session</h1>
-          <p>Type the code shown on the host's screen, or open their invite link.</p>
+          <h1>{t("together.page.title")}</h1>
+          <p>{t("together.page.intro")}</p>
         </div>
 
         <label className="cn-together__code">
-          <span className="cn-together__code-label">Session code</span>
+          <span className="cn-together__code-label">{t("together.page.codeLabel")}</span>
           <input
             value={typed}
             onChange={(e) => {
@@ -91,7 +92,7 @@ export default function Together(props: TogetherProps) {
           />
         </label>
 
-        {loading && <Spinner size="2rem" label="Looking up the session" />}
+        {loading && <Spinner size="2rem" label={t("together.page.lookingUp")} />}
         {error && <p className="cn-together__error" role="alert">{error}</p>}
 
         {preview && item && (
@@ -101,10 +102,10 @@ export default function Together(props: TogetherProps) {
                 {poster && <img src={ItemsApi.imageUrl(poster, 160)} alt="" />}
               </div>
               <div className="cn-together__what">
-                <span>{preview.host.name} invited you to watch</span>
+                <span>{t("together.page.invited", { name: preview.host.name })}</span>
                 <strong>{item.type === "episode" ? item.showTitle : item.title}</strong>
-                {item.type === "episode" && <span>{episodeLabel(item)} · {item.title}</span>}
-                <span>{preview.state.playing ? "Playing" : "Paused"} at {formatClock(position)} · {preview.members.length} watching</span>
+                {item.type === "episode" && <span>{t("together.page.episode", { episode: episodeLabel(item), title: item.title })}</span>}
+                <span>{t(preview.state.playing ? "together.page.playingAt" : "together.page.pausedAt", { time: formatClock(position), count: preview.members.length })}</span>
               </div>
             </div>
             {preview.members.length > 0 && (
@@ -112,15 +113,25 @@ export default function Together(props: TogetherProps) {
                 {preview.members.map((m) => <Avatar key={m.id} profile={m.profile} size={2} />)}
               </div>
             )}
-            <Button variant="primary" size="lg" block onClick={join} data-autofocus>Join and watch</Button>
+            <Button variant="primary" size="lg" block onClick={join} data-autofocus>{t("together.page.join")}</Button>
           </div>
         )}
 
         <p className="cn-together__note">
-          Your own progress isn't changed when you watch along. Joining as {user?.name} (<a href="/profiles" onClick={(e) => {
-            e.preventDefault();
-            router.navigate("/profiles");
-          }}>switch profile</a>).
+          {rich("together.page.note", {
+            name: user?.name ?? "",
+            link: (text) => (
+              <a
+                href="/profiles"
+                onClick={(e) => {
+                  e.preventDefault();
+                  router.navigate("/profiles");
+                }}
+              >
+                {text}
+              </a>
+            ),
+          })}
         </p>
       </div>
     </div>

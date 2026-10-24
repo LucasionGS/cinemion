@@ -1,5 +1,6 @@
 import type { StartUploadRequest, UploadInfo, UploadRules } from "@shared/uploads.ts";
 import BaseApi from "./BaseApi.ts";
+import { t } from "../i18n/I18n.ts";
 
 export namespace UploadsApi {
   /**
@@ -77,10 +78,10 @@ export namespace UploadsApi {
           return;
         }
         const error = body as { message?: string; upload?: UploadInfo | null } | null;
-        const message = error?.message ?? (xhr.status === 413 ? "The piece was too large for the server or a proxy in front of it." : `The server answered ${xhr.status} ${xhr.statusText}.`);
+        const message = error?.message ?? (xhr.status === 413 ? t("uploads.errors.tooLarge") : t("uploads.errors.status", { status: String(xhr.status), statusText: xhr.statusText }));
         reject(new RequestError(message, xhr.status, error?.upload ?? null));
       };
-      xhr.onerror = () => reject(new RequestError("Lost the connection to the server.", 0));
+      xhr.onerror = () => reject(new RequestError(t("uploads.errors.connectionLost"), 0));
       xhr.ontimeout = xhr.onerror;
       xhr.onabort = () => reject(new DOMException("Cancelled", "AbortError"));
       signal.addEventListener("abort", () => xhr.abort(), { once: true });

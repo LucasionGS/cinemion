@@ -9,6 +9,7 @@ import { chooseTracks, defaultSubtitle, episodeLabel, formatDuration } from "../
 import { formatDate } from "../../lib/format.ts";
 import useController from "../../lib/useController.ts";
 import cx from "../../lib/cx.ts";
+import { i18n, t, type TranslationKey } from "../../i18n/I18n.ts";
 import AppShell from "../../components/AppShell/AppShell.tsx";
 import ItemHero from "../../components/ItemHero/ItemHero.tsx";
 import ItemMeta, { qualityBadges } from "../../components/ItemHero/ItemMeta.tsx";
@@ -58,9 +59,9 @@ export default function Item(props: ItemProps) {
       {!item && !error && <div className="cn-item__loading"><Spinner size="2rem" /></div>}
       {error && (
         <section className="cn-item__missing">
-          <h1>This title isn't available</h1>
+          <h1>{t("item.missing.title")}</h1>
           <p>{error}</p>
-          <Button variant="primary" onClick={() => router.navigate("/")}>Go home</Button>
+          <Button variant="primary" onClick={() => router.navigate("/")}>{t("item.missing.goHome")}</Button>
         </section>
       )}
       {item?.type === "movie" && <MovieView item={item} reload={reload} />}
@@ -95,13 +96,13 @@ function MovieView(props: ViewProps) {
       <Cast item={item} />
       {item.collection && (
         <Link href={`/collection/${item.collection.id}`} className="cn-item__collection">
-          <span>Part of</span>
+          <span>{t("item.collection.partOf")}</span>
           <strong>{item.collection.name}</strong>
-          <span>{item.collection.itemCount} movies</span>
+          <span>{t("item.collection.movies", { count: item.collection.itemCount })}</span>
         </Link>
       )}
       {item.similar.length > 0 && (
-        <Row title="More like this" kind="poster">
+        <Row title={t("item.moreLikeThis")} kind="poster">
           {item.similar.map((s) => <PosterCard key={s.id} item={s} />)}
         </Row>
       )}
@@ -120,9 +121,9 @@ function Details(props: { item: ItemDetail }) {
   const writers = item.credits.filter((c) => c.kind === "writer").map((c) => c.name);
 
   const facts = [
-    directors.length ? { label: directors.length > 1 ? "Directors" : "Director", value: directors.join(", ") } : null,
-    writers.length ? { label: writers.length > 1 ? "Writers" : "Writer", value: writers.slice(0, 3).join(", ") } : null,
-    item.studios.length ? { label: item.type === "show" ? "Network" : "Studio", value: item.studios.join(", ") } : null,
+    directors.length ? { label: directors.length > 1 ? t("item.details.directors") : t("item.details.director"), value: directors.join(t("common.listSeparator")) } : null,
+    writers.length ? { label: writers.length > 1 ? t("item.details.writers") : t("item.details.writer"), value: writers.slice(0, 3).join(t("common.listSeparator")) } : null,
+    item.studios.length ? { label: item.type === "show" ? t("item.details.network") : t("item.details.studio"), value: item.studios.join(t("common.listSeparator")) } : null,
   ].filter((f): f is { label: string; value: string } => !!f);
 
   return (
@@ -135,7 +136,7 @@ function Details(props: { item: ItemDetail }) {
       ))}
       {item.files.length > 1 && (
         <Select
-          label="Version"
+          label={t("item.details.version")}
           value={String(fileIndex)}
           onChange={(e) => {
             const index = Number(e.target.value);
@@ -148,7 +149,7 @@ function Details(props: { item: ItemDetail }) {
       {file && file.audio.length > 0 && (
         <Select
           key={`audio-${file.id}`}
-          label="Audio"
+          label={t("item.details.audio")}
           options={file.audio.map((a) => ({ value: String(a.index), label: trackLabel(a.language, a.title, channelLabel(a.channels), a.codec) }))}
           defaultValue={String(file.audio.find((a) => a.isDefault)?.index ?? file.audio[0].index)}
           onChange={(e) => chooseTracks(item.id, { fileId: file.id, audioIndex: Number(e.target.value) })}
@@ -157,8 +158,8 @@ function Details(props: { item: ItemDetail }) {
       {file && file.subtitles.length > 0 && (
         <Select
           key={`subtitles-${file.id}`}
-          label="Subtitles"
-          options={[{ value: "off", label: "Off" }, ...file.subtitles.map((s) => ({ value: String(s.index), label: trackLabel(s.language, s.title, s.isForced ? "Forced" : s.isImage ? "Picture" : null, null) }))]}
+          label={t("item.details.subtitles")}
+          options={[{ value: "off", label: t("common.off") }, ...file.subtitles.map((s) => ({ value: String(s.index), label: trackLabel(s.language, s.title, s.isForced ? t("item.details.forced") : s.isImage ? t("item.details.picture") : null, null) }))]}
           defaultValue={String(defaultSubtitle(file)?.index ?? "off")}
           onChange={(e) => chooseTracks(item.id, { fileId: file.id, subtitleIndex: e.target.value === "off" ? null : Number(e.target.value) })}
         />
@@ -169,38 +170,48 @@ function Details(props: { item: ItemDetail }) {
 
 function versionLabel(file: ItemDetail["files"][number]) {
   const height = file.height ?? 0;
-  const resolution = height >= 2000 ? "4K" : height >= 1000 ? "1080p" : height >= 700 ? "720p" : height ? "SD" : "Unknown";
-  const size = file.size > 1e9 ? `${(file.size / 1e9).toFixed(1)} GB` : `${Math.max(1, Math.round(file.size / 1e6))} MB`;
-  return `${resolution}${file.hdr ? " HDR" : ""} · ${file.videoCodec?.toUpperCase() ?? "?"} · ${size}`;
+  const resolution = height >= 2000 ? "4K" : height >= 1000 ? "1080p" : height >= 700 ? "720p" : height ? "SD" : t("common.unknown");
+  const size = file.size > 1e9
+    ? t("format.bytes.gb", { value: (file.size / 1e9).toLocaleString(i18n.locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 }) })
+    : t("format.bytes.mb", { value: Math.max(1, Math.round(file.size / 1e6)) });
+  return [`${resolution}${file.hdr ? " HDR" : ""}`, file.videoCodec?.toUpperCase() ?? "?", size].join(t("common.dotSeparator"));
 }
 
 function channelLabel(channels: number) {
-  return channels >= 8 ? "7.1" : channels >= 6 ? "5.1" : channels === 1 ? "Mono" : "Stereo";
+  return channels >= 8 ? "7.1" : channels >= 6 ? "5.1" : channels === 1 ? t("item.details.mono") : t("item.details.stereo");
 }
 
-const LANGUAGE_NAMES = new Intl.DisplayNames(["en"], { type: "language" });
-
 function languageName(code: string | null) {
-  if (!code) return "Unknown";
+  if (!code) return t("common.unknown");
   try {
-    return LANGUAGE_NAMES.of(code) ?? code;
+    return new Intl.DisplayNames([i18n.locale], { type: "language" }).of(code) ?? code;
   } catch {
     return code;
   }
 }
 
 function trackLabel(language: string | null, title: string | null, extra: string | null, codec: string | null) {
-  return [languageName(language), title, extra, codec?.toUpperCase()].filter(Boolean).join(" · ");
+  return [languageName(language), title, extra, codec?.toUpperCase()].filter(Boolean).join(t("common.dotSeparator"));
 }
+
+/**
+ * Jobs shown under a crew member's name in the cast row. Other jobs show as they are.
+ */
+const ROLE_LABELS: Record<string, TranslationKey> = {
+  producer: "item.cast.producer",
+  composer: "item.cast.composer",
+  author: "item.cast.author",
+  narrator: "item.cast.narrator",
+};
 
 function Cast(props: { item: ItemDetail }) {
   const { item } = props;
   // Directors and writers are listed in the details; the row is for the people on screen, then the rest
   const people = [...item.credits.filter((c) => c.kind === "cast"), ...item.credits.filter((c) => c.kind !== "cast" && c.kind !== "director" && c.kind !== "writer")];
   if (people.length === 0) return null;
-  const roleLabel = (kind: string, character: string | null) => kind === "cast" ? character : kind.charAt(0).toUpperCase() + kind.slice(1);
+  const roleLabel = (kind: string, character: string | null) => kind === "cast" ? character : ROLE_LABELS[kind] ? t(ROLE_LABELS[kind]) : kind.charAt(0).toUpperCase() + kind.slice(1);
   return (
-    <Row title="Cast & crew" kind="person">
+    <Row title={t("item.cast.title")} kind="person">
       {people.map((c, i) => <PersonCard key={`${c.personId}-${i}`} person={c} role={roleLabel(c.kind, c.character)} />)}
     </Row>
   );
@@ -234,13 +245,13 @@ function ShowView(props: ViewProps) {
       <ItemHero title={item.title} artwork={item.artwork} palette={item.palette}>
         <ItemMeta item={item} />
         <ItemActions item={item} playTarget={next} onChanged={refresh} />
-        {next && <p className="cn-item__next">{next.userData?.position ? "Continue with" : "Up next:"} {episodeLabel(next)} · {next.title}</p>}
+        {next && <p className="cn-item__next">{t(next.userData?.position ? "item.next.continueEpisode" : "item.next.upNextEpisode", { episode: episodeLabel(next), title: next.title })}</p>}
         {item.overview && <p className="cn-item__overview">{item.overview}</p>}
       </ItemHero>
 
       {seasons.length > 0 && (
         <section className="cn-item__seasons">
-          <div className="cn-item__tabs" role="tablist" aria-label="Seasons">
+          <div className="cn-item__tabs" role="tablist" aria-label={t("item.seasons")}>
             {seasons.map((s) => (
               <button
                 key={s.id}
@@ -265,7 +276,7 @@ function ShowView(props: ViewProps) {
       <Details item={item} />
       <Cast item={item} />
       {item.similar.length > 0 && (
-        <Row title="More like this" kind="poster">
+        <Row title={t("item.moreLikeThis")} kind="poster">
           {item.similar.map((s) => <PosterCard key={s.id} item={s} />)}
         </Row>
       )}
@@ -295,7 +306,7 @@ function EpisodeView(props: ViewProps) {
   const index = episodes.findIndex((e) => e.id === item.id);
   const previous = index > 0 ? episodes[index - 1] : null;
   const following = index >= 0 && index < episodes.length - 1 ? episodes[index + 1] : null;
-  const aired = item.releaseDate ? new Date(item.releaseDate).toLocaleDateString(undefined, { day: "numeric", month: "long", year: "numeric" }) : null;
+  const aired = item.releaseDate ? new Date(item.releaseDate).toLocaleDateString(i18n.locale, { day: "numeric", month: "long", year: "numeric" }) : null;
 
   return (
     <div className="cn-item">
@@ -304,7 +315,7 @@ function EpisodeView(props: ViewProps) {
         artwork={{ ...item.artwork, poster: null, logo: null }}
         palette={item.palette}
         hidePoster
-        eyebrow={<><Link href={`/item/${item.showId}`}>{item.showTitle}</Link> · {episodeLabel(item)}</>}
+        eyebrow={<><Link href={`/item/${item.showId}`}>{item.showTitle}</Link>{t("common.dotSeparator")}{episodeLabel(item)}</>}
       >
         <div className="cn-meta">
           {aired && <span>{aired}</span>}
@@ -321,7 +332,7 @@ function EpisodeView(props: ViewProps) {
       <Details item={item} />
       <Cast item={item} />
       {episodes.length > 1 && (
-        <Row title={`More from ${season?.title ?? "this season"}`} kind="wide">
+        <Row title={season ? t("item.episode.moreFrom", { season: season.title }) : t("item.episode.moreFromThisSeason")} kind="wide">
           {episodes.filter((e) => e.id !== item.id).map((e) => <WideCard key={e.id} item={e} variant="episode" />)}
         </Row>
       )}
@@ -340,7 +351,7 @@ function FolderPath(props: { item: ItemDetail }) {
   const { item } = props;
   const library = LibrariesApi.useLibraries()?.find((l) => l.id === item.libraryId);
   return (
-    <nav aria-label="Folders" className="cn-item__path">
+    <nav aria-label={t("item.folders")} className="cn-item__path">
       {library && <Link href={`/library/${library.id}`}>{library.name}</Link>}
       {item.folders.map((f) => <Link key={f.id} href={`/item/${f.id}`}>{f.title}</Link>)}
     </nav>
@@ -358,7 +369,7 @@ function VideoView(props: ViewProps) {
         <div className="cn-meta">
           {item.releaseDate && <span>{formatDate(item.releaseDate)}</span>}
           {item.runtime && <span>{formatDuration(item.runtime * 60)}</span>}
-          {item.genres.length > 0 && <span>{item.genres.join(", ")}</span>}
+          {item.genres.length > 0 && <span>{item.genres.join(t("common.listSeparator"))}</span>}
           {item.contentRating && <span className="cn-meta__badge cn-meta__badge--outline">{item.contentRating}</span>}
           {qualityBadges(item.files).map((b) => <span key={b} className="cn-meta__badge">{b}</span>)}
         </div>
@@ -367,7 +378,7 @@ function VideoView(props: ViewProps) {
       </ItemHero>
       <Details item={item} />
       {item.similar.length > 0 && (
-        <Row title={`More in ${parent?.title ?? library?.name ?? "this folder"}`} href={parent ? `/item/${parent.id}` : library ? `/library/${library.id}` : undefined} kind="wide">
+        <Row title={parent || library ? t("item.video.moreIn", { name: parent?.title ?? library?.name ?? "" }) : t("item.video.moreInThisFolder")} href={parent ? `/item/${parent.id}` : library ? `/library/${library.id}` : undefined} kind="wide">
           {item.similar.map((v) => <WideCard key={v.id} item={v} variant="video" />)}
         </Row>
       )}
@@ -384,7 +395,7 @@ function sortFolder(items: ItemSummary[], sort: FolderSort) {
   const compare = (a: ItemSummary, b: ItemSummary) => {
     if (sort === "date") return (b.releaseDate ?? "").localeCompare(a.releaseDate ?? "") || a.title.localeCompare(b.title);
     if (sort === "added") return b.addedAt.localeCompare(a.addedAt);
-    return a.title.localeCompare(b.title, undefined, { numeric: true });
+    return a.title.localeCompare(b.title, i18n.locale, { numeric: true });
   };
   return [...items].sort((a, b) => (a.type === "folder" ? 0 : 1) - (b.type === "folder" ? 0 : 1) || compare(a, b));
 }
@@ -401,33 +412,33 @@ function FolderView(props: ViewProps) {
   }, [item.id, item.userData?.unwatchedCount]);
 
   const counts = [
-    folders ? `${folders} ${folders === 1 ? "folder" : "folders"}` : null,
-    `${item.childCount} ${item.childCount === 1 ? "video" : "videos"}`,
-  ].filter(Boolean).join(" · ");
+    folders ? t("item.folder.folders", { count: folders }) : null,
+    t("item.folder.videos", { count: item.childCount }),
+  ].filter(Boolean).join(t("common.dotSeparator"));
 
   return (
     <div className="cn-item">
       <ItemHero title={item.title} artwork={{ ...item.artwork, poster: null, logo: null }} palette={item.palette} hidePoster eyebrow={<FolderPath item={item} />}>
         <div className="cn-meta">
           <span>{counts}</span>
-          {item.releaseDate && <span>Newest from {formatDate(item.releaseDate)}</span>}
+          {item.releaseDate && <span>{t("item.folder.newestFrom", { date: formatDate(item.releaseDate) })}</span>}
         </div>
         <ItemActions item={item} playTarget={next} onChanged={reload} />
-        {next && <p className="cn-item__next">{next.userData?.position ? "Continue with" : "Up next:"} {next.title}</p>}
+        {next && <p className="cn-item__next">{t(next.userData?.position ? "item.next.continue" : "item.next.upNext", { title: next.title })}</p>}
         {item.overview && <p className="cn-item__overview">{item.overview}</p>}
       </ItemHero>
 
-      <section className="cn-item__folder" aria-label="In this folder">
+      <section className="cn-item__folder" aria-label={t("item.folder.inThisFolder")}>
         <div className="cn-item__folder-head">
-          <h2>In this folder</h2>
+          <h2>{t("item.folder.inThisFolder")}</h2>
           <Select
-            label="Sort by"
+            label={t("item.folder.sortBy")}
             value={sort}
             onChange={(e) => setSort(e.target.value as FolderSort)}
-            options={[{ value: "title", label: "Title" }, { value: "date", label: "Date" }, { value: "added", label: "Recently added" }]}
+            options={[{ value: "title", label: t("item.folder.sortTitle") }, { value: "date", label: t("item.folder.sortDate") }, { value: "added", label: t("item.folder.sortAdded") }]}
           />
         </div>
-        {children.length === 0 && <p className="cn-item__next">Nothing in here that this profile can watch.</p>}
+        {children.length === 0 && <p className="cn-item__next">{t("item.folder.empty")}</p>}
         <div className="cn-item__videos">
           {children.map((c) => <WideCard key={c.id} item={c} variant="video" />)}
         </div>

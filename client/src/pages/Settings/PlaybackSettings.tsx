@@ -5,16 +5,17 @@ import PlaybackApi from "../../Api/PlaybackApi.ts";
 import { toasts } from "../../lib/Toasts.ts";
 import { formatBytes } from "../../lib/format.ts";
 import cx from "../../lib/cx.ts";
+import { t, type TranslationKey } from "../../i18n/I18n.ts";
 import Button from "../../components/Button/Button.tsx";
 import Select from "../../components/Select/Select.tsx";
 import Switch from "../../components/Switch/Switch.tsx";
 import Spinner from "../../components/Spinner/Spinner.tsx";
 
-const METHODS: { kind: HardwareAcceleration; label: string; description: string }[] = [
-  { kind: "none", label: "Off", description: "Convert on the CPU. Works everywhere, but 4K is slow." },
-  { kind: "vaapi", label: "VA-API", description: "Intel and AMD graphics on Linux." },
-  { kind: "qsv", label: "Intel Quick Sync", description: "Intel graphics, often a little faster than VA-API." },
-  { kind: "nvenc", label: "NVIDIA NVENC", description: "NVIDIA graphics cards." },
+const METHODS: { kind: HardwareAcceleration; label: string | null; description: TranslationKey }[] = [
+  { kind: "none", label: null, description: "settings.playback.methods.noneDescription" },
+  { kind: "vaapi", label: "VA-API", description: "settings.playback.methods.vaapiDescription" },
+  { kind: "qsv", label: "Intel Quick Sync", description: "settings.playback.methods.qsvDescription" },
+  { kind: "nvenc", label: "NVIDIA NVENC", description: "settings.playback.methods.nvencDescription" },
 ];
 
 const DECODE_CODECS = [
@@ -44,7 +45,7 @@ export default function PlaybackSettings() {
     PlaybackApi.getSettings().then((s) => {
       setSaved(s);
       setValue(s);
-    }).catch((e: Error) => toasts.error("Couldn't load playback settings", e.message));
+    }).catch((e: Error) => toasts.error(t("settings.playback.couldntLoad"), e.message));
     PlaybackApi.devices().then(setDevices).catch(() => { });
   }, []);
 
@@ -67,9 +68,9 @@ export default function PlaybackSettings() {
       const result = await PlaybackApi.setSettings(value!);
       setSaved(result);
       setValue(result);
-      toasts.success("Playback settings saved", "They apply to videos started from now on.");
+      toasts.success(t("settings.playback.saved"), t("settings.playback.savedDescription"));
     } catch (error) {
-      toasts.error("Couldn't save", (error as Error).message);
+      toasts.error(t("common.couldntSave"), (error as Error).message);
     } finally {
       setSaving(false);
     }
@@ -92,9 +93,9 @@ export default function PlaybackSettings() {
     try {
       const { cacheSize } = await PlaybackApi.clearCache();
       setDevices((d) => d && { ...d, cacheSize });
-      toasts.success("Conversion cache cleared", "Anyone watching a converted video has to start it again.");
+      toasts.success(t("settings.playback.cacheCleared"), t("settings.playback.cacheClearedDescription"));
     } catch (error) {
-      toasts.error("Couldn't clear the cache", (error as Error).message);
+      toasts.error(t("settings.playback.couldntClear"), (error as Error).message);
     } finally {
       setClearing(false);
     }
@@ -104,15 +105,15 @@ export default function PlaybackSettings() {
     <>
       <header className="cn-settings__header">
         <div>
-          <h1>Playback</h1>
-          <p>How Cinemion converts videos for devices that can't play the original file.</p>
+          <h1>{t("settings.playback.title")}</h1>
+          <p>{t("settings.playback.intro")}</p>
         </div>
-        <Button variant="primary" onClick={save} loading={saving} disabled={!changed}>Save changes</Button>
+        <Button variant="primary" onClick={save} loading={saving} disabled={!changed}>{t("settings.playback.saveChanges")}</Button>
       </header>
 
       <section className="cn-settings__card">
-        <h2>Hardware acceleration</h2>
-        <div role="radiogroup" aria-label="Hardware acceleration" className="cn-playback__methods">
+        <h2>{t("settings.playback.hardware")}</h2>
+        <div role="radiogroup" aria-label={t("settings.playback.hardware")} className="cn-playback__methods">
           {METHODS.map((method) => {
             const found = method.kind === "none" ? null : devices?.devices.find((d) => d.kind === method.kind);
             const available = method.kind === "none" || !!found?.available;
@@ -127,12 +128,12 @@ export default function PlaybackSettings() {
                 onClick={() => pick(method.kind)}
               >
                 <span className="cn-playback__method-head">
-                  <strong>{method.label}</strong>
+                  <strong>{method.label ?? t("settings.playback.methods.off")}</strong>
                   <span className="cn-playback__radio" />
                 </span>
-                <span className="cn-playback__method-text">{found?.available ? found.detail : method.description}</span>
+                <span className="cn-playback__method-text">{found?.available ? found.detail : t(method.description)}</span>
                 <span className="cn-playback__method-state">
-                  {method.kind === "none" ? "Always available" : !devices ? "Looking…" : available ? "Detected" : "Not detected"}
+                  {method.kind === "none" ? t("settings.playback.alwaysAvailable") : !devices ? t("settings.playback.looking") : available ? t("settings.playback.detected") : t("settings.playback.notDetected")}
                 </span>
               </button>
             );
@@ -143,15 +144,15 @@ export default function PlaybackSettings() {
           <div className="cn-playback__gpu">
             {value.hardwareAcceleration !== "nvenc" && (
               <Select
-                label="GPU"
+                label={t("settings.playback.gpu")}
                 value={value.device}
                 onChange={(e) => update({ device: e.target.value })}
                 options={[...new Set([value.device, ...nodes])].map((n) => ({ value: n, label: n }))}
-                description="The render device. In Docker, pass it in with --device /dev/dri."
+                description={t("settings.playback.gpuDescription", { flag: "--device /dev/dri" })}
               />
             )}
             <div className="cn-playback__codecs">
-              <span className="cn-field__label">Decode these on the GPU</span>
+              <span className="cn-field__label">{t("settings.playback.decodeOnGpu")}</span>
               <div className="cn-playback__chips">
                 {DECODE_CODECS.map(({ codec, label }) => {
                   const on = value.hardwareDecodeCodecs.includes(codec);
@@ -168,11 +169,11 @@ export default function PlaybackSettings() {
                   );
                 })}
               </div>
-              <span className="cn-field__description">Turn off codecs your GPU can't decode; they're decoded on the CPU and still converted on the GPU.</span>
+              <span className="cn-field__description">{t("settings.playback.decodeDescription")}</span>
             </div>
             <div className="cn-settings__row">
-              <Button variant="secondary" onClick={runTest} loading={testing}>Run a test</Button>
-              {testing && <span className="cn-playback__test">Converting a 5 second 1080p clip…</span>}
+              <Button variant="secondary" onClick={runTest} loading={testing}>{t("settings.playback.runTest")}</Button>
+              {testing && <span className="cn-playback__test">{t("settings.playback.testing")}</span>}
               {test && (
                 <span className={cx("cn-playback__test", test.ok ? "cn-playback__test--ok" : "cn-playback__test--failed")}>
                   {test.ok ? <CircleCheck /> : <CircleAlert />}
@@ -185,43 +186,47 @@ export default function PlaybackSettings() {
       </section>
 
       <section className="cn-settings__card">
-        <h2>Converting</h2>
+        <h2>{t("settings.playback.converting")}</h2>
         <div className="cn-playback__fields">
           <Select
-            label="Simultaneous conversions"
-            description="More than this are turned away until one stops. Direct play and repackaging don't count."
+            label={t("settings.playback.maxConversions")}
+            description={t("settings.playback.maxConversionsDescription")}
             value={String(value.maxConversions)}
             onChange={(e) => update({ maxConversions: Number(e.target.value) })}
             options={[1, 2, 3, 4, 6, 8, 12, 16].map((n) => ({ value: String(n), label: String(n) }))}
           />
           <Select
-            label="Quality preset"
-            description="Faster presets use less CPU but look a little worse at the same bitrate."
+            label={t("settings.playback.preset")}
+            description={t("settings.playback.presetDescription")}
             value={value.preset}
             onChange={(e) => update({ preset: e.target.value as Settings["preset"] })}
-            options={[{ value: "fast", label: "Fast" }, { value: "balanced", label: "Balanced" }, { value: "quality", label: "Quality" }]}
+            options={[
+              { value: "fast", label: t("settings.playback.presets.fast") },
+              { value: "balanced", label: t("settings.playback.presets.balanced") },
+              { value: "quality", label: t("settings.playback.presets.quality") },
+            ]}
           />
           <Select
-            label="Remote stream limit"
-            description="Per stream, for viewers outside your home network."
+            label={t("settings.playback.remoteLimit")}
+            description={t("settings.playback.remoteLimitDescription")}
             value={String(value.remoteMaxBitrate)}
             onChange={(e) => update({ remoteMaxBitrate: Number(e.target.value) })}
-            options={[...new Set([...REMOTE_LIMITS, value.remoteMaxBitrate])].sort((a, b) => (b || Infinity) - (a || Infinity)).map((n) => ({ value: String(n), label: n === 0 ? "No limit" : `${n / 1_000_000} Mbps` }))}
+            options={[...new Set([...REMOTE_LIMITS, value.remoteMaxBitrate])].sort((a, b) => (b || Infinity) - (a || Infinity)).map((n) => ({ value: String(n), label: n === 0 ? t("settings.playback.noLimit") : t("format.bitrate.mbps", { value: n / 1_000_000 }) }))}
           />
         </div>
         <div className="cn-settings__divider" />
-        <Switch label="Tone-map HDR to SDR" description="Keeps colours right on screens without HDR." checked={value.toneMapping} onChange={(toneMapping) => update({ toneMapping })} />
-        <Switch label="Make seek thumbnails" description="Small pictures above the seek bar. Made in the background after a scan, and when a video is first played." checked={value.seekThumbnails} onChange={(seekThumbnails) => update({ seekThumbnails })} />
-        <Switch label="Allow conversion for remote viewers" description="Off means viewers outside your network only get files their device plays as they are." checked={value.allowRemoteConversion} onChange={(allowRemoteConversion) => update({ allowRemoteConversion })} />
+        <Switch label={t("settings.playback.toneMapping")} description={t("settings.playback.toneMappingDescription")} checked={value.toneMapping} onChange={(toneMapping) => update({ toneMapping })} />
+        <Switch label={t("settings.playback.seekThumbnails")} description={t("settings.playback.seekThumbnailsDescription")} checked={value.seekThumbnails} onChange={(seekThumbnails) => update({ seekThumbnails })} />
+        <Switch label={t("settings.playback.remoteConversion")} description={t("settings.playback.remoteConversionDescription")} checked={value.allowRemoteConversion} onChange={(allowRemoteConversion) => update({ allowRemoteConversion })} />
       </section>
 
       <section className="cn-settings__card">
         <div className="cn-settings__row">
           <div className="cn-settings__row-text">
-            <strong>Conversion cache</strong>
-            <span>{devices ? `${devices.cacheDir} · ${formatBytes(devices.cacheSize)} · cleaned up when playback stops. Seek thumbnails use ${formatBytes(devices.thumbnailsSize)}.` : "Checking…"}</span>
+            <strong>{t("settings.playback.cache")}</strong>
+            <span>{devices ? t("settings.playback.cacheDetails", { folder: devices.cacheDir, size: formatBytes(devices.cacheSize), thumbnails: formatBytes(devices.thumbnailsSize) }) : t("settings.playback.checking")}</span>
           </div>
-          <Button variant="secondary" onClick={clearCache} loading={clearing}>Clear now</Button>
+          <Button variant="secondary" onClick={clearCache} loading={clearing}>{t("settings.playback.clearNow")}</Button>
         </div>
       </section>
     </>

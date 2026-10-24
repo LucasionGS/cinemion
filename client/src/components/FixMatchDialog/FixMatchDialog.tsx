@@ -3,6 +3,7 @@ import { Search } from "lucide-react";
 import type { ItemSummary, MatchCandidate } from "@shared/media.ts";
 import ItemsApi from "../../Api/ItemsApi.ts";
 import { toasts } from "../../lib/Toasts.ts";
+import { t } from "../../i18n/I18n.ts";
 import Dialog from "../Dialog/Dialog.tsx";
 import Button from "../Button/Button.tsx";
 import TextField from "../TextField/TextField.tsx";
@@ -54,11 +55,11 @@ export default function FixMatchDialog(props: FixMatchDialogProps) {
     setApplying(candidate.id);
     try {
       const updated = await ItemsApi.setMatch(item.id, candidate);
-      toasts.success(`Matched to ${candidate.title}`);
+      toasts.success(t("fixMatch.matched", { title: candidate.title }));
       onMatched(updated);
       onClose();
     } catch (e) {
-      toasts.error("Couldn't apply the match", (e as Error).message);
+      toasts.error(t("fixMatch.applyFailed"), (e as Error).message);
     } finally {
       setApplying(null);
     }
@@ -70,28 +71,28 @@ export default function FixMatchDialog(props: FixMatchDialogProps) {
   }
 
   return (
-    <Dialog open={!!item} onOpenChange={(open) => !open && onClose()} title="Fix match" description={item ? `Pick what "${item.title}" really is.` : undefined} size="lg">
+    <Dialog open={!!item} onOpenChange={(open) => !open && onClose()} title={t("fixMatch.title")} description={item ? t("fixMatch.description", { title: item.title }) : undefined} size="lg">
       <form className="cn-fix-match__search" onSubmit={submit}>
-        <TextField label="Title" value={query} onChange={(e) => setQuery(e.target.value)} style={{ flex: "1 1 16rem" }} />
-        <TextField label="Year" inputMode="numeric" maxLength={4} value={year} onChange={(e) => setYear(e.target.value.replace(/\D/g, ""))} style={{ flex: "0 0 7rem" }} />
-        <Button type="submit" variant="secondary" icon={<Search />} loading={searching}>Search</Button>
+        <TextField label={t("fixMatch.titleLabel")} value={query} onChange={(e) => setQuery(e.target.value)} style={{ flex: "1 1 16rem" }} />
+        <TextField label={t("fixMatch.year")} inputMode="numeric" maxLength={4} value={year} onChange={(e) => setYear(e.target.value.replace(/\D/g, ""))} style={{ flex: "0 0 7rem" }} />
+        <Button type="submit" variant="secondary" icon={<Search />} loading={searching}>{t("common.search")}</Button>
       </form>
 
       <div className="cn-fix-match__results">
         {searching && !results && <div className="cn-fix-match__empty"><Spinner size="2rem" /></div>}
         {error && <div className="cn-fix-match__empty cn-fix-match__empty--error">{error}</div>}
         {results && !error && results.length === 0 && (
-          <div className="cn-fix-match__empty">No results. Try another title, or check that a TMDB or TheTVDB key is set in Settings › Metadata.</div>
+          <div className="cn-fix-match__empty">{t("fixMatch.noResults")}</div>
         )}
         {results?.map((r) => (
           <div key={`${r.provider}:${r.id}`} className="cn-fix-match__result">
             <span className="cn-fix-match__poster">{r.posterUrl && <img src={r.posterUrl} alt="" loading="lazy" />}</span>
             <div className="cn-fix-match__text">
-              <strong>{r.title}{r.year ? ` (${r.year})` : ""}</strong>
+              <strong>{r.year ? t("fixMatch.resultWithYear", { title: r.title, year: String(r.year) }) : r.title}</strong>
               <span className="cn-fix-match__source">{r.provider === "tvdb" ? "TheTVDB" : "TMDB"}</span>
               {r.overview && <p>{r.overview}</p>}
             </div>
-            <Button size="sm" variant="primary" onClick={() => pick(r)} loading={applying === r.id} disabled={applying !== null}>Use this</Button>
+            <Button size="sm" variant="primary" onClick={() => pick(r)} loading={applying === r.id} disabled={applying !== null}>{t("fixMatch.useThis")}</Button>
           </div>
         ))}
       </div>

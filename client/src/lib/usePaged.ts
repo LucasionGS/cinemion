@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toasts } from "./Toasts.ts";
+import { t } from "../i18n/I18n.ts";
 
 /**
  * A list loaded a page at a time, with the next page coming when `sentinel` scrolls into view.
@@ -27,7 +28,7 @@ export default function usePaged<T>(load: (offset: number) => Promise<{ items: T
       setItems((previous) => [...(previous ?? []), ...page.items]);
     } catch (error) {
       s.done = true;
-      toasts.error("Couldn't load the list", (error as Error).message);
+      toasts.error(t("app.errors.loadList"), (error as Error).message);
     } finally {
       if (generation === state.current.generation) {
         s.loading = false;

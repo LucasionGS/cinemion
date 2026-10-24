@@ -19,6 +19,7 @@ import { together } from "../../lib/Together.ts";
 import { toasts } from "../../lib/Toasts.ts";
 import { formatDate } from "../../lib/format.ts";
 import { session } from "../../Session.ts";
+import { t } from "../../i18n/I18n.ts";
 import { DEFAULT_PREFERENCES } from "@shared/profiles.ts";
 import type PlayerController from "./PlayerController.ts";
 import "./Player.scss";
@@ -48,18 +49,18 @@ export default function PlayerView(props: PlayerViewProps) {
   }, [controller]);
 
   // Follow the watch together session while it's about this title
-  const t = useController(together);
-  const following = t.isConnected() && t.room?.itemId === c.item.id;
+  const group = useController(together);
+  const following = group.isConnected() && group.room?.itemId === c.item.id;
   useEffect(() => {
     if (following) controller.connectTogether(together);
     else controller.disconnectTogether();
   }, [following, controller]);
 
   useEffect(() => {
-    if (t.status !== "ended" || !t.endedReason) return;
-    toasts.show({ title: "Watch together ended", description: t.endedReason });
+    if (group.status !== "ended" || !group.endedReason) return;
+    toasts.show({ title: t("together.ended"), description: group.endedReason });
     together.dismissEnded();
-  }, [t.status, t.endedReason]);
+  }, [group.status, group.endedReason]);
 
   // Remote, keyboard and media keys. Runs before the app's spatial navigation, which skips handled keys.
   useEffect(() => {
@@ -244,7 +245,7 @@ export default function PlayerView(props: PlayerViewProps) {
 
   const item = c.item;
   const title = item.type === "episode" ? item.showTitle ?? item.title : item.title;
-  const subtitle = item.type === "episode" ? `${episodeLabel(item)} · ${item.title}` : item.type === "video" ? (item.releaseDate ? formatDate(item.releaseDate) : null) : item.year ? String(item.year) : null;
+  const subtitle = item.type === "episode" ? t("player.episodeSubtitle", { episode: episodeLabel(item), title: item.title }) : item.type === "video" ? (item.releaseDate ? formatDate(item.releaseDate) : null) : item.year ? String(item.year) : null;
   const cues = c.subtitleIndex !== null ? activeCues(c.cues, c.position) : [];
   const style = useController(session).user?.preferences.subtitles ?? DEFAULT_PREFERENCES.subtitles;
   const idle = !c.controlsVisible && !c.loading && !c.error;
@@ -265,16 +266,16 @@ export default function PlayerView(props: PlayerViewProps) {
       )}
 
       {(c.loading || c.buffering) && !c.error && (
-        <div className="cn-player__spinner"><Spinner size="3.5rem" label="Loading" /></div>
+        <div className="cn-player__spinner"><Spinner size="3.5rem" label={t("player.loading")} /></div>
       )}
 
       {c.error && (
         <div className="cn-player__error" role="alert" data-focus-scope>
-          <h2>This video can't play right now</h2>
+          <h2>{t("player.error.title")}</h2>
           <p>{c.error}</p>
           <div className="cn-player__error-actions">
-            <Button variant="primary" onClick={() => controller.load({ startAt: c.position })} data-autofocus>Try again</Button>
-            <Button onClick={() => controller.onExit()}>Back</Button>
+            <Button variant="primary" onClick={() => controller.load({ startAt: c.position })} data-autofocus>{t("common.tryAgain")}</Button>
+            <Button onClick={() => controller.onExit()}>{t("common.back")}</Button>
           </div>
         </div>
       )}
@@ -284,7 +285,7 @@ export default function PlayerView(props: PlayerViewProps) {
         <div className="cn-player__shade cn-player__shade--bottom" />
 
         <header className="cn-player__top">
-          {mode !== "tv" && <IconButton label="Back" icon={<ChevronLeft />} variant="ghost" onClick={() => controller.onExit()} />}
+          {mode !== "tv" && <IconButton label={t("common.back")} icon={<ChevronLeft />} variant="ghost" onClick={() => controller.onExit()} />}
           <div className="cn-player__titles">
             <span className="cn-player__title">{title}</span>
             {subtitle && <span className="cn-player__subtitle">{subtitle}</span>}
@@ -295,9 +296,9 @@ export default function PlayerView(props: PlayerViewProps) {
 
         {mode === "mobile" && (
           <div className="cn-player__center">
-            <IconButton label="Back 10 seconds" icon={<SkipIcon direction={-1} />} variant="ghost" size="lg" onClick={() => controller.seekBy(-10)} />
-            <IconButton label={c.playing ? "Pause" : "Play"} icon={c.playing ? <Pause fill="currentColor" /> : <Play fill="currentColor" />} size="lg" className="cn-player__big-play" onClick={() => controller.togglePlay()} />
-            <IconButton label="Forward 10 seconds" icon={<SkipIcon direction={1} />} variant="ghost" size="lg" onClick={() => controller.seekBy(10)} />
+            <IconButton label={t("player.controls.back10")} icon={<SkipIcon direction={-1} />} variant="ghost" size="lg" onClick={() => controller.seekBy(-10)} />
+            <IconButton label={c.playing ? t("player.controls.pause") : t("common.play")} icon={c.playing ? <Pause fill="currentColor" /> : <Play fill="currentColor" />} size="lg" className="cn-player__big-play" onClick={() => controller.togglePlay()} />
+            <IconButton label={t("player.controls.forward10")} icon={<SkipIcon direction={1} />} variant="ghost" size="lg" onClick={() => controller.seekBy(10)} />
           </div>
         )}
 
@@ -317,15 +318,15 @@ export default function PlayerView(props: PlayerViewProps) {
 
       {c.panelOpen && <TrackPanel controller={controller} />}
       {c.togetherOpen && <TogetherPanel controller={controller} />}
-      {t.notice && (
-        <div key={t.notice.id} className="cn-together-notice" role="status">
-          {t.notice.profile && <Avatar profile={t.notice.profile} size={1.75} />}
-          <span>{t.notice.text}</span>
+      {group.notice && (
+        <div key={group.notice.id} className="cn-together-notice" role="status">
+          {group.notice.profile && <Avatar profile={group.notice.profile} size={1.75} />}
+          <span>{group.notice.text}</span>
         </div>
       )}
-      {t.reactions.length > 0 && (
+      {group.reactions.length > 0 && (
         <div className="cn-reactions" aria-hidden="true">
-          {t.reactions.map((r) => (
+          {group.reactions.map((r) => (
             <span key={r.id} className="cn-reactions__item" style={{ "--lane": r.lane } as CSSProperties}>
               <span className="cn-reactions__emoji">{r.reaction}</span>
               <span className="cn-reactions__name">{r.profile.name}</span>
@@ -349,19 +350,19 @@ function DesktopRow(props: { controller: PlayerController; root: React.RefObject
 
   return (
     <div className="cn-player__row">
-      <IconButton label={c.playing ? "Pause (Space)" : "Play (Space)"} icon={c.playing ? <Pause fill="currentColor" /> : <Play fill="currentColor" />} variant="ghost" onClick={() => controller.togglePlay()} />
-      <IconButton label="Back 10 seconds (←)" icon={<SkipIcon direction={-1} />} variant="ghost" onClick={() => controller.seekBy(-10)} />
-      <IconButton label="Forward 10 seconds (→)" icon={<SkipIcon direction={1} />} variant="ghost" onClick={() => controller.seekBy(10)} />
-      {c.next && <IconButton label="Next episode" icon={<SkipForward />} variant="ghost" onClick={() => controller.playNext()} />}
+      <IconButton label={c.playing ? t("player.controls.pauseKey") : t("player.controls.playKey")} icon={c.playing ? <Pause fill="currentColor" /> : <Play fill="currentColor" />} variant="ghost" onClick={() => controller.togglePlay()} />
+      <IconButton label={t("player.controls.back10Key")} icon={<SkipIcon direction={-1} />} variant="ghost" onClick={() => controller.seekBy(-10)} />
+      <IconButton label={t("player.controls.forward10Key")} icon={<SkipIcon direction={1} />} variant="ghost" onClick={() => controller.seekBy(10)} />
+      {c.next && <IconButton label={t("player.controls.nextEpisode")} icon={<SkipForward />} variant="ghost" onClick={() => controller.playNext()} />}
       <div className="cn-player__volume">
-        <IconButton label={c.muted ? "Unmute (M)" : "Mute (M)"} icon={<VolumeIcon />} variant="ghost" onClick={() => controller.toggleMute()} />
+        <IconButton label={c.muted ? t("player.controls.unmuteKey") : t("player.controls.muteKey")} icon={<VolumeIcon />} variant="ghost" onClick={() => controller.toggleMute()} />
         <input
           type="range"
           min={0}
           max={1}
           step={0.01}
           value={c.muted ? 0 : c.volume}
-          aria-label="Volume"
+          aria-label={t("player.controls.volume")}
           className="cn-player__volume-slider"
           style={{ "--value": `${(c.muted ? 0 : c.volume) * 100}%` } as React.CSSProperties}
           onChange={(e) => controller.setVolume(Number(e.target.value))}
@@ -372,8 +373,8 @@ function DesktopRow(props: { controller: PlayerController; root: React.RefObject
         <StreamBadge controller={controller} />
         <PanelToggle controller={controller} />
         <TogetherButton controller={controller} />
-        {document.pictureInPictureEnabled && <IconButton label="Picture in picture" icon={<PictureInPicture2 />} variant="ghost" onClick={() => controller.togglePictureInPicture()} />}
-        <IconButton label={c.fullscreen ? "Exit full screen (F)" : "Full screen (F)"} icon={c.fullscreen ? <Minimize /> : <Maximize />} variant="ghost" onClick={() => controller.toggleFullscreen(root.current!)} />
+        {document.pictureInPictureEnabled && <IconButton label={t("player.controls.pictureInPicture")} icon={<PictureInPicture2 />} variant="ghost" onClick={() => controller.togglePictureInPicture()} />}
+        <IconButton label={c.fullscreen ? t("player.controls.exitFullScreenKey") : t("player.controls.fullScreenKey")} icon={c.fullscreen ? <Minimize /> : <Maximize />} variant="ghost" onClick={() => controller.toggleFullscreen(root.current!)} />
       </div>
     </div>
   );
@@ -384,10 +385,10 @@ function MobileRow(props: { controller: PlayerController; root: React.RefObject<
   const c = useController(controller);
   return (
     <div className="cn-player__row">
-      {c.next && <Button variant="ghost" size="sm" icon={<SkipForward />} onClick={() => controller.playNext()}>Next episode</Button>}
+      {c.next && <Button variant="ghost" size="sm" icon={<SkipForward />} onClick={() => controller.playNext()}>{t("player.controls.nextEpisode")}</Button>}
       <div className="cn-player__end">
         <StreamBadge controller={controller} />
-        <IconButton label={c.fullscreen ? "Exit full screen" : "Full screen"} icon={c.fullscreen ? <Minimize /> : <Maximize />} variant="ghost" onClick={() => controller.toggleFullscreen(root.current!)} />
+        <IconButton label={c.fullscreen ? t("player.controls.exitFullScreen") : t("player.controls.fullScreen")} icon={c.fullscreen ? <Minimize /> : <Maximize />} variant="ghost" onClick={() => controller.toggleFullscreen(root.current!)} />
       </div>
     </div>
   );
@@ -404,9 +405,9 @@ function TvRow(props: { controller: PlayerController }) {
         <span className="cn-player__clock">{formatClock(c.scrubTarget)} <span>/ {formatClock(c.duration)}</span></span>
         <span className="cn-player__delta">{delta >= 0 ? "+" : "-"}{formatClock(Math.abs(delta))}</span>
         <div className="cn-player__hints">
-          <Hint keys="◀ ▶">Seek</Hint>
-          <Hint keys="OK">Jump here</Hint>
-          <Hint keys="Back">Cancel</Hint>
+          <Hint keys="◀ ▶">{t("player.hints.seek")}</Hint>
+          <Hint keys="OK">{t("player.hints.jumpHere")}</Hint>
+          <Hint keys={t("player.hints.backKey")}>{t("common.cancel")}</Hint>
         </div>
       </div>
     );
@@ -417,10 +418,10 @@ function TvRow(props: { controller: PlayerController }) {
       <span className="cn-player__clock">{formatClock(c.position)} <span>/ {formatClock(c.duration)}</span></span>
       <div className="cn-player__end">
         <StreamBadge controller={controller} />
-        <Button variant="secondary" icon={c.playing ? <Pause fill="currentColor" /> : <Play fill="currentColor" />} onClick={() => controller.togglePlay()}>{c.playing ? "Pause" : "Play"}</Button>
-        <Button variant="secondary" icon={<Captions />} onClick={() => controller.openPanel()} data-panel-toggle>Subtitles &amp; audio</Button>
+        <Button variant="secondary" icon={c.playing ? <Pause fill="currentColor" /> : <Play fill="currentColor" />} onClick={() => controller.togglePlay()}>{c.playing ? t("player.controls.pause") : t("common.play")}</Button>
+        <Button variant="secondary" icon={<Captions />} onClick={() => controller.openPanel()} data-panel-toggle>{t("player.controls.subtitlesAndAudio")}</Button>
         <TogetherButton controller={controller} />
-        {c.next && <Button variant="secondary" icon={<SkipForward />} onClick={() => controller.playNext()}>Next episode</Button>}
+        {c.next && <Button variant="secondary" icon={<SkipForward />} onClick={() => controller.playNext()}>{t("player.controls.nextEpisode")}</Button>}
       </div>
     </div>
   );
@@ -457,23 +458,23 @@ function Hint(props: { keys: string; children: ReactNode }) {
 function TogetherButton(props: { controller: PlayerController }) {
   const { controller } = props;
   const { togetherOpen, item } = useController(controller);
-  const t = useController(together);
+  const group = useController(together);
   const { mode } = useController(deviceMode);
-  const count = t.isConnected() && t.room?.itemId === item.id ? t.room.members.length : 0;
+  const count = group.isConnected() && group.room?.itemId === item.id ? group.room.members.length : 0;
   const toggle = () => controller.setTogetherOpen(!togetherOpen);
-  const unread = count && !togetherOpen && t.unread > 0 ? <span className="cn-player__unread" aria-label={`${t.unread} new messages`}>{t.unread}</span> : null;
+  const unread = count && !togetherOpen && group.unread > 0 ? <span className="cn-player__unread" aria-label={t("together.button.unread", { count: group.unread })}>{group.unread}</span> : null;
 
   if (mode === "tv") {
-    return <Button variant="secondary" icon={<Users />} onClick={toggle}>{count ? `${count} watching` : "Watch together"}{unread}</Button>;
+    return <Button variant="secondary" icon={<Users />} onClick={toggle}>{count ? t("together.button.watching", { count }) : t("together.button.watchTogether")}{unread}</Button>;
   }
   if (count > 0) {
     return (
       <button type="button" className={cx("cn-player__watching", togetherOpen && "cn-player__watching--open")} aria-expanded={togetherOpen} onClick={toggle}>
-        <Users aria-hidden="true" /> {count} watching{unread}
+        <Users aria-hidden="true" /> {t("together.button.watching", { count })}{unread}
       </button>
     );
   }
-  return <IconButton label="Watch together" icon={<Users />} variant="ghost" className={cx(togetherOpen && "cn-player__panel-toggle--open")} aria-expanded={togetherOpen} onClick={toggle} />;
+  return <IconButton label={t("together.button.watchTogether")} icon={<Users />} variant="ghost" className={cx(togetherOpen && "cn-player__panel-toggle--open")} aria-expanded={togetherOpen} onClick={toggle} />;
 }
 
 function PanelToggle(props: { controller: PlayerController }) {
@@ -481,7 +482,7 @@ function PanelToggle(props: { controller: PlayerController }) {
   const { panelOpen } = useController(controller);
   return (
     <IconButton
-      label="Subtitles, audio and quality (C)"
+      label={t("player.controls.panelToggle")}
       icon={<Captions />}
       variant="ghost"
       className={cx("cn-player__panel-toggle", panelOpen && "cn-player__panel-toggle--open")}
@@ -499,8 +500,8 @@ function StreamBadge(props: { controller: PlayerController }) {
   const height = info.video.ladder ? currentHeight : info.video.height;
   const size = height ? (height >= 2000 ? "4K" : `${height}p`) : null;
   // Repackaging doesn't touch the picture or sound, so it reads as direct too
-  const label = info.mode !== "transcode" ? "Direct" : info.video.action === "copy" ? "Audio converted" : info.video.ladder ? "Auto" : "Converted";
-  const text = [size, info.video.hdr ? "HDR" : null, label].filter(Boolean).join(" · ");
+  const label = info.mode !== "transcode" ? t("player.badge.direct") : info.video.action === "copy" ? t("player.badge.audioConverted") : info.video.ladder ? t("player.badge.auto") : t("player.badge.converted");
+  const text = [size, info.video.hdr ? "HDR" : null, label].filter(Boolean).join(t("common.dotSeparator"));
   // On TV it's only a label; the remote shouldn't stop on it
   if (deviceMode.isTv()) return <span className="cn-player__badge">{text}</span>;
   return (
@@ -518,7 +519,7 @@ function SkipIntro(props: { controller: PlayerController }) {
   const c = useController(controller);
   return (
     <div className={cx("cn-skip", c.controlsVisible && "cn-skip--raised")} data-focus-scope={deviceMode.isTv() ? true : undefined}>
-      <Button variant="secondary" icon={<ChevronsRight />} onClick={() => controller.skipIntro()} data-autofocus={deviceMode.isTv() || undefined}>Skip intro</Button>
+      <Button variant="secondary" icon={<ChevronsRight />} onClick={() => controller.skipIntro()} data-autofocus={deviceMode.isTv() || undefined}>{t("player.skipIntro")}</Button>
     </div>
   );
 }
@@ -530,15 +531,15 @@ function NextUp(props: { controller: PlayerController }) {
   const image = next.artwork.thumb ?? next.artwork.backdrop;
 
   return (
-    <div className="cn-next-up" role="region" aria-label="Up next" data-focus-scope={deviceMode.isTv() ? true : undefined}>
+    <div className="cn-next-up" role="region" aria-label={t("player.nextUp.label")} data-focus-scope={deviceMode.isTv() ? true : undefined}>
       {image && <img src={ItemsApi.imageUrl(image, 342)} alt="" className="cn-next-up__image" />}
       <div className="cn-next-up__body">
-        <span className="cn-next-up__eyebrow">{next.type === "episode" ? `Up next · ${episodeLabel(next)}` : "Up next"}</span>
+        <span className="cn-next-up__eyebrow">{next.type === "episode" ? t("player.nextUp.episode", { episode: episodeLabel(next) }) : t("player.nextUp.label")}</span>
         <strong>{next.title}</strong>
-        <span className="cn-next-up__countdown">Starts in {nextCountdown} s</span>
+        <span className="cn-next-up__countdown">{t("player.nextUp.countdown", { count: nextCountdown ?? 0 })}</span>
         <div className="cn-next-up__actions">
-          <Button variant="primary" size="sm" icon={<Play fill="currentColor" />} onClick={() => controller.playNext()} data-autofocus>Play now</Button>
-          <Button variant="ghost" size="sm" onClick={() => controller.dismissNext()}>Hide</Button>
+          <Button variant="primary" size="sm" icon={<Play fill="currentColor" />} onClick={() => controller.playNext()} data-autofocus>{t("player.nextUp.playNow")}</Button>
+          <Button variant="ghost" size="sm" onClick={() => controller.dismissNext()}>{t("player.nextUp.hide")}</Button>
         </div>
       </div>
     </div>

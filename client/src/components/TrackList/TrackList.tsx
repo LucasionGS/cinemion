@@ -7,6 +7,7 @@ import useController from "../../lib/useController.ts";
 import { router } from "../../lib/Router.tsx";
 import { formatClock } from "../../lib/playback.ts";
 import cx from "../../lib/cx.ts";
+import { t } from "../../i18n/I18n.ts";
 import { addToPlaylist } from "../AddToPlaylist/AddToPlaylist.tsx";
 import { Cover } from "../MusicCard/MusicCard.tsx";
 import "./TrackList.scss";
@@ -32,10 +33,10 @@ export interface TrackListProps {
  * Rows of tracks that play when clicked, with a menu for the queue and playlists. The playing track is highlighted.
  */
 export default function TrackList(props: TrackListProps) {
-  const { tracks, onPlay, variant = "list", menuItems, label = "Tracks" } = props;
+  const { tracks, onPlay, variant = "list", menuItems, label = t("music.trackList.label") } = props;
   const player = useController(musicPlayer);
   const current = player.current;
-  const discs = variant === "album" && new Set(tracks.map((t) => t.disc ?? 1)).size > 1;
+  const discs = variant === "album" && new Set(tracks.map((track) => track.disc ?? 1)).size > 1;
   const play = (index: number) => onPlay ? onPlay(index) : musicPlayer.play(tracks, index);
 
   return (
@@ -45,9 +46,9 @@ export default function TrackList(props: TrackListProps) {
         const newDisc = discs && (i === 0 || (tracks[i - 1].disc ?? 1) !== (track.disc ?? 1));
         return (
           <Fragment key={"entryId" in track ? `e${track.entryId}` : `${track.id}-${i}`}>
-            {newDisc && <li className="cn-tracks__disc" aria-hidden="true"><Disc3 /> Disc {track.disc ?? 1}</li>}
+            {newDisc && <li className="cn-tracks__disc" aria-hidden="true"><Disc3 /> {t("music.trackList.disc", { number: track.disc ?? 1 })}</li>}
             <li className={cx("cn-tracks__row", isCurrent && "cn-tracks__row--current")}>
-              <button type="button" className="cn-tracks__main" onClick={() => isCurrent ? musicPlayer.toggle() : play(i)} aria-label={`${isCurrent && player.playing ? "Pause" : "Play"} ${track.title}`}>
+              <button type="button" className="cn-tracks__main" onClick={() => isCurrent ? musicPlayer.toggle() : play(i)} aria-label={isCurrent && player.playing ? t("music.trackList.pause", { title: track.title }) : t("music.trackList.play", { title: track.title })}>
                 <span className="cn-tracks__lead">
                   {variant === "list" && <Cover image={track.cover} title={track.albumTitle} width={96} className="cn-tracks__cover" />}
                   {variant === "album" && <span className="cn-tracks__number">{track.number ?? i + 1}</span>}
@@ -80,16 +81,16 @@ function TrackMenu(props: { track: TrackInfo; index: number; extra?: ReactNode }
   const { track, extra } = props;
   return (
     <Menu.Root>
-      <Menu.Trigger className="cn-tracks__menu" aria-label={`More for ${track.title}`}><EllipsisVertical /></Menu.Trigger>
+      <Menu.Trigger className="cn-tracks__menu" aria-label={t("music.trackList.more", { title: track.title })}><EllipsisVertical /></Menu.Trigger>
       <Menu.Portal>
         <Menu.Positioner sideOffset={6} align="end" className="cn-menu__positioner">
           <Menu.Popup className="cn-menu">
-            <Menu.Item className="cn-menu__item" onClick={() => musicPlayer.playNext([track])}><ListStart /> Play next</Menu.Item>
-            <Menu.Item className="cn-menu__item" onClick={() => musicPlayer.addToQueue([track])}><ListEnd /> Add to queue</Menu.Item>
-            <Menu.Item className="cn-menu__item" onClick={() => addToPlaylist.show([track.id])}><ListPlus /> Add to playlist…</Menu.Item>
+            <Menu.Item className="cn-menu__item" onClick={() => musicPlayer.playNext([track])}><ListStart /> {t("music.trackList.playNext")}</Menu.Item>
+            <Menu.Item className="cn-menu__item" onClick={() => musicPlayer.addToQueue([track])}><ListEnd /> {t("music.trackList.addToQueue")}</Menu.Item>
+            <Menu.Item className="cn-menu__item" onClick={() => addToPlaylist.show([track.id])}><ListPlus /> {t("music.trackList.addToPlaylist")}</Menu.Item>
             {(track.albumId || track.artistId) && <Menu.Separator className="cn-menu__separator" />}
-            {track.albumId && <Menu.Item className="cn-menu__item" onClick={() => router.navigate(`/album/${track.albumId}`)}><Disc3 /> Go to album</Menu.Item>}
-            {track.artistId && <Menu.Item className="cn-menu__item" onClick={() => router.navigate(`/artist/${track.artistId}`)}><Mic2 /> Go to artist</Menu.Item>}
+            {track.albumId && <Menu.Item className="cn-menu__item" onClick={() => router.navigate(`/album/${track.albumId}`)}><Disc3 /> {t("music.trackList.goToAlbum")}</Menu.Item>}
+            {track.artistId && <Menu.Item className="cn-menu__item" onClick={() => router.navigate(`/artist/${track.artistId}`)}><Mic2 /> {t("music.trackList.goToArtist")}</Menu.Item>}
             {extra && <Menu.Separator className="cn-menu__separator" />}
             {extra}
           </Menu.Popup>

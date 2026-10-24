@@ -3,6 +3,7 @@ import { ArrowLeft } from "lucide-react";
 import offline from "../../lib/Offline.ts";
 import { session } from "../../Session.ts";
 import { router } from "../../lib/Router.tsx";
+import { rich, t } from "../../i18n/I18n.ts";
 import IconButton from "../../components/IconButton/IconButton.tsx";
 import "./Downloads.scss";
 
@@ -59,20 +60,20 @@ export default function OfflinePlayer(props: OfflinePlayerProps) {
   if (!download || download.status !== "ready") {
     return (
       <div className="cn-offline-player cn-dark-theme">
-        <p className="cn-offline-player__message">This download isn't on this device. <a href="/downloads">See your downloads</a>.</p>
+        <p className="cn-offline-player__message">{rich("downloads.player.missing", { link: (text) => <a href="/downloads">{text}</a> })}</p>
       </div>
     );
   }
   return (
     <div className="cn-offline-player cn-dark-theme">
       <header className="cn-offline-player__bar">
-        <IconButton label="Back" icon={<ArrowLeft />} variant="ghost" onClick={back} data-autofocus />
+        <IconButton label={t("common.back")} icon={<ArrowLeft />} variant="ghost" onClick={back} data-autofocus />
         <div>
           <strong>{download.title}</strong>
           {download.subtitle && <span>{download.subtitle}</span>}
         </div>
       </header>
-      {!navigator.serviceWorker?.controller && <p className="cn-offline-player__message">Offline playback starts after the page has been reloaded once.</p>}
+      {!navigator.serviceWorker?.controller && <p className="cn-offline-player__message">{t("downloads.player.reloadFirst")}</p>}
       <video ref={video} className="cn-offline-player__video" src={offline.url(download.key, "video")} controls autoPlay playsInline>
         {download.subtitles.filter((s) => !s.isForced || download.subtitles.length === 1).map((s) => (
           <track key={s.index} kind="subtitles" src={offline.url(download.key, `sub/${s.index}.vtt`)} label={s.label} srcLang={s.language ?? undefined} />

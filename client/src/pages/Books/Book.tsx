@@ -9,6 +9,7 @@ import { Link, router } from "../../lib/Router.tsx";
 import { toasts } from "../../lib/Toasts.ts";
 import { formatClock, formatDuration } from "../../lib/playback.ts";
 import cx from "../../lib/cx.ts";
+import { rich, t } from "../../i18n/I18n.ts";
 import AppShell from "../../components/AppShell/AppShell.tsx";
 import Button from "../../components/Button/Button.tsx";
 import IconButton from "../../components/IconButton/IconButton.tsx";
@@ -50,7 +51,7 @@ export default function Book(props: BookProps) {
       await BooksApi.progress(id, { finished });
       load();
     } catch (e) {
-      toasts.error("Couldn't save that", (e as Error).message);
+      toasts.error(t("books.book.saveFailed"), (e as Error).message);
     }
   }
 
@@ -62,23 +63,23 @@ export default function Book(props: BookProps) {
   return (
     <AppShell>
       <div className="cn-music">
-        {error && <section className="cn-music__empty"><h2>Book not found</h2><p>{error}</p></section>}
+        {error && <section className="cn-music__empty"><h2>{t("books.book.notFound")}</h2><p>{error}</p></section>}
         {!book && !error && <div className="cn-music__loading"><Spinner size="2rem" /></div>}
         {book && (
           <>
             <MusicHeader
               cover={<Cover image={book.cover} title={book.title} width={500} className={cx(!audio && "cn-cover--portrait")} />}
-              eyebrow={audio ? "Audiobook" : book.format === "pdf" ? "Book · PDF" : "Book"}
+              eyebrow={audio ? t("books.book.eyebrow.audiobook") : book.format === "pdf" ? t("books.book.eyebrow.bookPdf") : t("books.book.eyebrow.book")}
               title={book.title}
               meta={
                 <>
-                  {book.authorCredits.map((a, i) => <Fragment key={a.personId}>{i > 0 && ", "}<Link href={`/person/${a.personId}`}>{a.name}</Link></Fragment>)}
+                  {book.authorCredits.map((a, i) => <Fragment key={a.personId}>{i > 0 && t("common.listSeparator")}<Link href={`/person/${a.personId}`}>{a.name}</Link></Fragment>)}
                   {book.narratorCredits.length > 0 && (
                     <span>
-                      · read by {book.narratorCredits.map((n, i) => <Fragment key={n.personId}>{i > 0 && ", "}<Link href={`/person/${n.personId}`}>{n.name}</Link></Fragment>)}
+                      {t("common.dotSeparator")}{rich("books.book.readBy", { narrators: book.narratorCredits.map((n, i) => <Fragment key={n.personId}>{i > 0 && t("common.listSeparator")}<Link href={`/person/${n.personId}`}>{n.name}</Link></Fragment>) })}
                     </span>
                   )}
-                  {details.length > 0 && <span>{book.authorCredits.length || book.narratorCredits.length ? "· " : ""}{details.join(" · ")}</span>}
+                  {details.length > 0 && <span>{book.authorCredits.length || book.narratorCredits.length ? t("common.dotSeparator") : ""}{details.join(t("common.dotSeparator"))}</span>}
                 </>
               }
               actions={
@@ -86,26 +87,26 @@ export default function Book(props: BookProps) {
                   {audio
                     ? (
                       <Button variant="primary" icon={<Play />} data-autofocus onClick={() => playingThis ? musicPlayer.toggle() : musicPlayer.playBook(book)}>
-                        {playingThis ? (player.playing ? "Pause" : "Resume") : started ? `Continue · ${formatDuration(left)} left` : "Listen"}
+                        {playingThis ? (player.playing ? t("books.book.pause") : t("common.resume")) : started ? t("books.book.continueListening", { left: formatDuration(left) }) : t("books.book.listen")}
                       </Button>
                     )
-                    : <Button variant="primary" icon={<BookOpen />} data-autofocus onClick={() => router.navigate(`/read/${book.id}`)}>{started ? "Continue reading" : "Read"}</Button>}
-                  {audio && started && !playingThis && <Button variant="secondary" icon={<RotateCcw />} onClick={() => musicPlayer.playBook(book, 0)}>From the start</Button>}
+                    : <Button variant="primary" icon={<BookOpen />} data-autofocus onClick={() => router.navigate(`/read/${book.id}`)}>{started ? t("books.book.continueReading") : t("books.book.read")}</Button>}
+                  {audio && started && !playingThis && <Button variant="secondary" icon={<RotateCcw />} onClick={() => musicPlayer.playBook(book, 0)}>{t("books.book.fromStart")}</Button>}
                   {book.finished
-                    ? <IconButton label="Mark as not finished" icon={<Undo2 />} onClick={() => setFinished(false)} />
-                    : <IconButton label="Mark as finished" icon={<Check />} onClick={() => setFinished(true)} />}
+                    ? <IconButton label={t("books.book.markUnfinished")} icon={<Undo2 />} onClick={() => setFinished(false)} />
+                    : <IconButton label={t("books.book.markFinished")} icon={<Check />} onClick={() => setFinished(true)} />}
                 </>
               }
             />
             {book.progress !== null && !book.finished && (
-              <div className="cn-book__progress" aria-label={`${Math.round(book.progress * 100)}% done`}>
+              <div className="cn-book__progress" aria-label={t("books.book.done", { percent: Math.round(book.progress * 100) })}>
                 <span style={{ width: `${book.progress * 100}%` }} />
               </div>
             )}
             {book.description && <p className="cn-book__description">{book.description}</p>}
             {audio && book.chapters.length > 1 && (
               <section className="cn-music__section">
-                <h2>Chapters</h2>
+                <h2>{t("books.book.chapters")}</h2>
                 <ol className="cn-book__chapters">
                   {book.chapters.map((chapter, i) => {
                     const current = playingThis && player.currentChapterIndex() === i;
@@ -122,9 +123,9 @@ export default function Book(props: BookProps) {
                 </ol>
               </section>
             )}
-            {book.genres.length > 0 && <p className="cn-book__genres">{book.genres.join(" · ")}</p>}
+            {book.genres.length > 0 && <p className="cn-book__genres">{book.genres.join(t("common.dotSeparator"))}</p>}
             {book.moreByAuthor.length > 0 && (
-              <Row title={`More by ${book.authors[0]}`} kind="square">
+              <Row title={t("books.book.moreBy", { author: book.authors[0] })} kind="square">
                 {book.moreByAuthor.map((b) => <BookCard key={b.id} book={b} subtitle={b.year ? String(b.year) : ""} />)}
               </Row>
             )}

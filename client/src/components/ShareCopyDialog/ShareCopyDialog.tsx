@@ -6,6 +6,7 @@ import ClipsApi from "../../Api/ClipsApi.ts";
 import { toasts } from "../../lib/Toasts.ts";
 import { copyText } from "../../lib/clipboard.ts";
 import { formatBytes } from "../../lib/format.ts";
+import { t } from "../../i18n/I18n.ts";
 import Dialog from "../Dialog/Dialog.tsx";
 import Button from "../Button/Button.tsx";
 import SegmentedControl from "../SegmentedControl/SegmentedControl.tsx";
@@ -60,7 +61,7 @@ export default function ShareCopyDialog(props: ShareCopyDialogProps) {
     const timer = setInterval(() => {
       ClipsApi.share(job.id).then(setJob).catch((error) => {
         setJob(null);
-        toasts.error("Couldn't make the copy", (error as Error).message);
+        toasts.error(t("clips.share.couldntMake"), (error as Error).message);
       });
     }, POLL_MS);
     return () => clearInterval(timer);
@@ -80,7 +81,7 @@ export default function ShareCopyDialog(props: ShareCopyDialogProps) {
         audio: audio === "default" ? null : audio === "mix" ? "mix" : Number(audio),
       }));
     } catch (error) {
-      toasts.error("Couldn't make the copy", (error as Error).message);
+      toasts.error(t("clips.share.couldntMake"), (error as Error).message);
     } finally {
       setStarting(false);
     }
@@ -89,7 +90,7 @@ export default function ShareCopyDialog(props: ShareCopyDialogProps) {
   async function copyLink() {
     if (!job) return;
     await copyText(ClipsApi.shareUrl(job));
-    toasts.success("Link copied", "It works for a day, without signing in.");
+    toasts.success(t("clips.share.linkCopied"), t("clips.share.linkCopiedDescription"));
   }
 
   const done = job?.state === "done";
@@ -99,37 +100,37 @@ export default function ShareCopyDialog(props: ShareCopyDialogProps) {
     <Dialog
       open={!!item}
       onOpenChange={(value) => !value && onClose()}
-      title="Make a small copy"
-      description="A copy that fits a chat app's upload limit, converted so every app plays it. The clip itself stays as it is."
+      title={t("clips.share.title")}
+      description={t("clips.share.description")}
       size="lg"
       footer={
         <>
-          <Button variant="ghost" onClick={onClose}>{done ? "Close" : "Cancel"}</Button>
-          {!done && <Button variant="primary" icon={<Send />} loading={starting || working} disabled={!fit} onClick={make}>Make the copy</Button>}
-          {done && <Button icon={<Link2 />} onClick={copyLink}>Copy link</Button>}
-          {done && <a className="cn-button cn-button--primary cn-button--md" href={ClipsApi.shareUrl(job!, true)} download={job!.fileName}><Download /> Download</a>}
+          <Button variant="ghost" onClick={onClose}>{done ? t("common.close") : t("common.cancel")}</Button>
+          {!done && <Button variant="primary" icon={<Send />} loading={starting || working} disabled={!fit} onClick={make}>{t("clips.share.make")}</Button>}
+          {done && <Button icon={<Link2 />} onClick={copyLink}>{t("clips.share.copyLink")}</Button>}
+          {done && <a className="cn-button cn-button--primary cn-button--md" href={ClipsApi.shareUrl(job!, true)} download={job!.fileName}><Download /> {t("common.download")}</a>}
         </>
       }
     >
       {item && file && (
         <div className="cn-share-copy">
           <div className="cn-share-copy__options">
-            <SegmentedControl<"whole" | "part"> label="What to copy" value={part} onChange={setPart} options={[{ value: "whole", label: "The whole clip" }, { value: "part", label: "A part of it" }]} />
+            <SegmentedControl<"whole" | "part"> label={t("clips.share.what")} value={part} onChange={setPart} options={[{ value: "whole", label: t("clips.share.whole") }, { value: "part", label: t("clips.share.part") }]} />
             <SegmentedControl<string>
-              label="Size limit"
+              label={t("clips.share.size")}
               value={String(sizeMb)}
               onChange={(value) => setSizeMb(Number(value))}
-              options={SHARE_COPY_SIZES.map((mb) => ({ value: String(mb), label: `${mb} MB` }))}
+              options={SHARE_COPY_SIZES.map((mb) => ({ value: String(mb), label: t("clips.share.sizeOption", { size: mb }) }))}
             />
             {file.audio.length > 1 && (
               <Select
-                label="Sound"
+                label={t("clips.share.sound")}
                 value={audio}
                 onChange={(e) => setAudio(e.target.value)}
                 options={[
-                  { value: "default", label: "The main track" },
-                  ...file.audio.map((a, i) => ({ value: String(a.index), label: a.title ?? `Track ${i + 1}` })),
-                  { value: "mix", label: "All tracks together" },
+                  { value: "default", label: t("clips.share.mainTrack") },
+                  ...file.audio.map((a, i) => ({ value: String(a.index), label: a.title ?? t("clips.share.track", { number: i + 1 }) })),
+                  { value: "mix", label: t("clips.share.allTracks") },
                 ]}
               />
             )}
@@ -137,15 +138,15 @@ export default function ShareCopyDialog(props: ShareCopyDialogProps) {
           {part === "part" && <ClipRange item={item} duration={duration} start={range[0]} end={range[1]} onChange={(s, e) => setRange([s, e])} />}
           <p className="cn-share-copy__note">
             {fit
-              ? `Comes out at about ${fit.height}p, ${fit.fps} frames per second. 10 MB fits apps with the smallest limits, like Discord without Nitro.`
-              : `${Math.round(end - start)} seconds don't fit in ${sizeMb} MB. Pick a bigger size, or a shorter part.`}
+              ? t("clips.share.fits", { height: String(fit.height), fps: fit.fps })
+              : t("clips.share.tooBig", { count: Math.round(end - start), size: sizeMb })}
           </p>
           {working && (
             <div className="cn-share-copy__progress" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round((job.progress ?? 0) * 100)}>
               <span style={{ width: `${Math.round((job.progress ?? 0) * 100)}%` }} />
             </div>
           )}
-          {done && <p className="cn-share-copy__ready">Ready: {formatBytes(job!.size ?? 0)}, {job!.height}p. The download link works for a day, without signing in.</p>}
+          {done && <p className="cn-share-copy__ready">{t("clips.share.ready", { size: formatBytes(job!.size ?? 0), height: String(job!.height) })}</p>}
           {job?.state === "failed" && <p className="cn-share-copy__error">{job.error}</p>}
         </div>
       )}

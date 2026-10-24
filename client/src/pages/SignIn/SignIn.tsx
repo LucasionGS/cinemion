@@ -2,6 +2,7 @@ import { type FormEvent, useState } from "react";
 import AuthApi from "../../Api/AuthApi.ts";
 import { session } from "../../Session.ts";
 import { Link, router } from "../../lib/Router.tsx";
+import { t } from "../../i18n/I18n.ts";
 import Logo from "../../components/Logo/Logo.tsx";
 import TextField from "../../components/TextField/TextField.tsx";
 import Button from "../../components/Button/Button.tsx";
@@ -35,13 +36,13 @@ export default function SignIn() {
       <form className="cn-signin__card" onSubmit={submit}>
         <Logo size={2.25} />
         <div className="cn-signin__text">
-          <h1>Sign in</h1>
+          <h1>{t("signIn.title")}</h1>
           <p>{session.server?.name ?? "Cinemion"}</p>
         </div>
-        <TextField label="Username" autoComplete="username" autoCapitalize="none" autoFocus value={username} onChange={(e) => setUsername(e.target.value)} />
-        <TextField label="Password" type="password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} error={error} />
-        <Button type="submit" variant="primary" size="lg" block loading={busy} disabled={!username || !password}>Sign in</Button>
-        <Link href="/profiles" className="cn-signin__alt">Back to profiles</Link>
+        <TextField label={t("signIn.username")} autoComplete="username" autoCapitalize="none" autoFocus value={username} onChange={(e) => setUsername(e.target.value)} />
+        <TextField label={t("signIn.password")} type="password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} error={error} />
+        <Button type="submit" variant="primary" size="lg" block loading={busy} disabled={!username || !password}>{t("signIn.submit")}</Button>
+        <Link href="/profiles" className="cn-signin__alt">{t("signIn.backToProfiles")}</Link>
       </form>
     </div>
   );

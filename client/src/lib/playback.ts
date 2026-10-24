@@ -1,5 +1,7 @@
 import type { ItemSummary, MediaFileInfo } from "@shared/media.ts";
+import { findLanguage } from "@shared/languages.ts";
 import { router } from "./Router.tsx";
+import { i18n, t } from "../i18n/I18n.ts";
 
 /**
  * Tracks picked on a title's page before pressing Play. `undefined` fields use the file's defaults.
@@ -58,9 +60,9 @@ export function formatClock(seconds: number) {
  */
 export function formatDuration(seconds: number) {
   const minutes = Math.max(1, Math.round(seconds / 60));
-  if (minutes < 60) return `${minutes} min`;
+  if (minutes < 60) return t("player.duration.minutes", { count: minutes });
   const hours = Math.floor(minutes / 60);
-  return `${hours}h ${String(minutes % 60).padStart(2, "0")}m`;
+  return t("player.duration.hoursMinutes", { hours, minutes: String(minutes % 60).padStart(2, "0") });
 }
 
 /**
@@ -71,14 +73,38 @@ export function timeLeft(item: Pick<ItemSummary, "runtime" | "userData">) {
   const progress = item.userData?.progress;
   if (!position || !progress) return null;
   const total = position / progress;
-  return `${formatDuration(total - position)} left`;
+  return t("player.duration.left", { duration: formatDuration(total - position) });
 }
 
 /**
  * "S1 E3" for an episode, "Season 2" for a season.
  */
 export function episodeLabel(item: Pick<ItemSummary, "type" | "seasonNumber" | "episodeNumber">) {
-  if (item.type === "season") return item.seasonNumber === 0 ? "Specials" : `Season ${item.seasonNumber}`;
+  if (item.type === "season") return item.seasonNumber === 0 ? t("player.episode.specials") : t("player.episode.season", { number: String(item.seasonNumber) });
   if (item.type !== "episode") return "";
-  return item.seasonNumber === 0 ? `Special ${item.episodeNumber}` : `S${item.seasonNumber} E${item.episodeNumber}`;
+  return item.seasonNumber === 0
+    ? t("player.episode.special", { number: String(item.episodeNumber) })
+    : t("player.episode.short", { season: String(item.seasonNumber), episode: String(item.episodeNumber) });
+}
+
+// The language table names these by script rather than by country
+const SCRIPTS: Record<string, string> = { "zh-cn": "zh-Hans", "zh-tw": "zh-Hant" };
+let _languageNames: { locale: string; names: Intl.DisplayNames } | null = null;
+
+/**
+ * The name of a language code or English name ("por", "pt", "Portuguese") in the interface's language, or the code
+ * itself in capitals when unknown.
+ */
+export function displayLanguage(value: string | null | undefined): string | null {
+  if (!value) return null;
+  const language = findLanguage(value);
+  if (!language) return value.toUpperCase();
+  if (_languageNames?.locale !== i18n.locale) {
+    _languageNames = { locale: i18n.locale, names: new Intl.DisplayNames([i18n.locale], { type: "language", languageDisplay: "standard" }) };
+  }
+  try {
+    return _languageNames.names.of(SCRIPTS[language.code] ?? language.code) ?? language.name;
+  } catch {
+    return language.name;
+  }
 }

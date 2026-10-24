@@ -7,6 +7,7 @@ import useController from "../../lib/useController.ts";
 import usePoll from "../../lib/usePoll.ts";
 import cx from "../../lib/cx.ts";
 import { useUpdates } from "../../lib/Updates.ts";
+import { t } from "../../i18n/I18n.ts";
 import AppShell from "../../components/AppShell/AppShell.tsx";
 import ProfileSettings from "./ProfileSettings.tsx";
 import DeviceSettings from "./DeviceSettings.tsx";
@@ -53,40 +54,40 @@ export default function Settings(props: SettingsProps) {
   const update = useUpdates().available();
 
   const tabs: Tab[] = [
-    { id: "profile", label: "Your profile", icon: <UserRound />, group: "you", visible: true, render: () => <ProfileSettings /> },
-    { id: "device", label: "This device", icon: <MonitorSmartphone />, group: "you", visible: true, render: () => <DeviceSettings /> },
-    { id: "about", label: "About", icon: <Info />, group: "you", visible: true, dot: update && `Cinemion ${update.version} is out`, render: () => <AboutSettings /> },
-    { id: "dashboard", label: "Dashboard", icon: <LayoutDashboard />, group: "server", visible: canManage, wide: true, render: () => <Dashboard /> },
-    { id: "libraries", label: "Libraries", icon: <FolderOpen />, group: "server", visible: session.can("LIBRARY_MANAGE"), render: () => <LibrariesSettings /> },
-    { id: "users", label: "Users", icon: <Users />, group: "server", visible: session.can("USERS_MANAGE"), render: () => <UsersSettings /> },
-    { id: "playback", label: "Playback", icon: <Clapperboard />, group: "server", visible: canManage, render: () => <PlaybackSettings /> },
-    { id: "metadata", label: "Metadata", icon: <LibraryIcon />, group: "server", visible: canManage, render: () => <MetadataSettings /> },
-    { id: "subtitles", label: "Subtitles", icon: <Captions />, group: "server", visible: canManage, render: () => <SubtitleSettings /> },
-    { id: "integrations", label: "Integrations", icon: <Plug />, group: "server", visible: canManage, render: () => <IntegrationsSettings /> },
-    { id: "webhooks", label: "Webhooks", icon: <Webhook />, group: "server", visible: canManage, render: () => <WebhooksSettings /> },
-    { id: "tasks", label: "Tasks", icon: <ListChecks />, group: "server", visible: canManage, badge: running, render: () => <TasksSettings /> },
-    { id: "logs", label: "Logs", icon: <ScrollText />, group: "server", visible: canManage, wide: true, render: () => <LogsSettings /> },
+    { id: "profile", label: t("settings.tabs.profile"), icon: <UserRound />, group: "you", visible: true, render: () => <ProfileSettings /> },
+    { id: "device", label: t("settings.tabs.device"), icon: <MonitorSmartphone />, group: "you", visible: true, render: () => <DeviceSettings /> },
+    { id: "about", label: t("settings.tabs.about"), icon: <Info />, group: "you", visible: true, dot: update && t("updates.isOut", { version: update.version }), render: () => <AboutSettings /> },
+    { id: "dashboard", label: t("settings.tabs.dashboard"), icon: <LayoutDashboard />, group: "server", visible: canManage, wide: true, render: () => <Dashboard /> },
+    { id: "libraries", label: t("settings.tabs.libraries"), icon: <FolderOpen />, group: "server", visible: session.can("LIBRARY_MANAGE"), render: () => <LibrariesSettings /> },
+    { id: "users", label: t("settings.tabs.users"), icon: <Users />, group: "server", visible: session.can("USERS_MANAGE"), render: () => <UsersSettings /> },
+    { id: "playback", label: t("settings.tabs.playback"), icon: <Clapperboard />, group: "server", visible: canManage, render: () => <PlaybackSettings /> },
+    { id: "metadata", label: t("settings.tabs.metadata"), icon: <LibraryIcon />, group: "server", visible: canManage, render: () => <MetadataSettings /> },
+    { id: "subtitles", label: t("settings.tabs.subtitles"), icon: <Captions />, group: "server", visible: canManage, render: () => <SubtitleSettings /> },
+    { id: "integrations", label: t("settings.tabs.integrations"), icon: <Plug />, group: "server", visible: canManage, render: () => <IntegrationsSettings /> },
+    { id: "webhooks", label: t("settings.tabs.webhooks"), icon: <Webhook />, group: "server", visible: canManage, render: () => <WebhooksSettings /> },
+    { id: "tasks", label: t("settings.tabs.tasks"), icon: <ListChecks />, group: "server", visible: canManage, badge: running, render: () => <TasksSettings /> },
+    { id: "logs", label: t("settings.tabs.logs"), icon: <ScrollText />, group: "server", visible: canManage, wide: true, render: () => <LogsSettings /> },
   ];
-  const visible = tabs.filter((t) => t.visible);
-  const current = visible.find((t) => t.id === tab) ?? visible[0];
+  const visible = tabs.filter((item) => item.visible);
+  const current = visible.find((item) => item.id === tab) ?? visible[0];
   const groups = [
-    { id: "you", title: "You", tabs: visible.filter((t) => t.group === "you") },
-    { id: "server", title: "Server", tabs: visible.filter((t) => t.group === "server") },
+    { id: "you", title: t("settings.tabs.you"), tabs: visible.filter((item) => item.group === "you") },
+    { id: "server", title: t("settings.tabs.server"), tabs: visible.filter((item) => item.group === "server") },
   ].filter((g) => g.tabs.length > 0);
 
   return (
     <AppShell>
       <div className="cn-settings">
-        <nav className="cn-settings__nav" aria-label="Settings">
+        <nav className="cn-settings__nav" aria-label={t("settings.tabs.navigation")}>
           {groups.map((g) => (
             <div key={g.id} className="cn-settings__nav-group">
               <span className="cn-settings__nav-title">{g.title}</span>
-              {g.tabs.map((t) => (
-                <Link key={t.id} href={`/settings/${t.id}`} className={cx("cn-settings__link", t === current && "cn-settings__link--active")} aria-current={t === current ? "page" : undefined}>
-                  {t.icon}
-                  {t.label}
-                  {t.dot && <span className="cn-settings__link-dot" role="img" aria-label={t.dot} />}
-                  {!!t.badge && <span className="cn-settings__link-badge" aria-label={`${t.badge} running`}>{t.badge}</span>}
+              {g.tabs.map((item) => (
+                <Link key={item.id} href={`/settings/${item.id}`} className={cx("cn-settings__link", item === current && "cn-settings__link--active")} aria-current={item === current ? "page" : undefined}>
+                  {item.icon}
+                  {item.label}
+                  {item.dot && <span className="cn-settings__link-dot" role="img" aria-label={item.dot} />}
+                  {!!item.badge && <span className="cn-settings__link-badge" aria-label={t("settings.tabs.running", { count: item.badge })}>{item.badge}</span>}
                 </Link>
               ))}
             </div>

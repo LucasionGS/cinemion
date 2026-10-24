@@ -8,6 +8,7 @@ import { detectCapabilities } from "./capabilities.ts";
 import { episodeLabel } from "./playback.ts";
 import { toasts } from "./Toasts.ts";
 import { session } from "../Session.ts";
+import { t } from "../i18n/I18n.ts";
 
 const MEDIA_CACHE = "cn-media-v1";
 const MEDIA_PREFIX = "/offline-media/";
@@ -148,7 +149,7 @@ export class OfflineController extends Controller {
     // The offline pages have to be in the app cache before the connection goes
     import("../pages/Downloads/Downloads.tsx");
     import("../pages/Downloads/OfflinePlayer.tsx");
-    const subtitle = item.type === "episode" ? `${item.showTitle ?? ""} · ${episodeLabel(item)}` : item.year ? String(item.year) : "";
+    const subtitle = item.type === "episode" ? t("downloads.episodeSubtitle", { show: item.showTitle ?? "", episode: episodeLabel(item) }) : item.year ? String(item.year) : "";
     const download: OfflineDownload = {
       key: info.id,
       itemId: item.id,
@@ -206,7 +207,7 @@ export class OfflineController extends Controller {
         if (abort.signal.aborted) return;
         info = await BaseApi.GET<DownloadInfo>(`/downloads/${key}`);
       }
-      if (info.status === "failed") throw new Error(info.error ?? "The server couldn't make the copy.");
+      if (info.status === "failed") throw new Error(info.error ?? t("downloads.errors.copyFailed"));
 
       const size = info.size ?? 0;
       const cache = await caches.open(MEDIA_CACHE);
@@ -223,7 +224,7 @@ export class OfflineController extends Controller {
           continue;
         }
         const res = await fetch(`/api/downloads/${key}/file`, { headers: { ...BaseApi.getHeaders(false), Range: `bytes=${start}-${end}` }, signal: abort.signal });
-        if (!res.ok || !res.body) throw new Error(`The download stopped: ${res.status} ${res.statusText}`);
+        if (!res.ok || !res.body) throw new Error(t("downloads.errors.stopped", { status: `${res.status} ${res.statusText}` }));
         // Counted as it arrives, so the progress bar moves within a piece too
         const reader = res.body.getReader();
         const parts: Uint8Array[] = [];
@@ -244,7 +245,8 @@ export class OfflineController extends Controller {
       }
       await cache.put(this.url(key, "video").replace(/video$/, "manifest"), new Response(JSON.stringify({ size, chunkSize: CHUNK_SIZE, type: info.contentType }), { headers: { "Content-Type": "application/json" } }));
       this._update(key, { status: "ready", received: size, preparing: null });
-      toasts.success(`${this.get(key)?.title ?? "The download"} is ready to watch offline`);
+      const title = this.get(key)?.title;
+      toasts.success(title ? t("downloads.readyToast", { title }) : t("downloads.readyToastUntitled"));
     } catch (error) {
       if (abort.signal.aborted) return;
       this._update(key, { status: "failed", error: (error as Error).message });

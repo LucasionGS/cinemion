@@ -1,6 +1,5 @@
 import Hls from "hls.js";
 import type { ItemDetail, ItemSummary, SubtitleTrack } from "@shared/media.ts";
-import { languageName } from "@shared/languages.ts";
 import type { PlaybackInfo, QualityPreset, StartPlaybackRequest, TrickplayInfo } from "@shared/playback.ts";
 import type { TogetherAction } from "@shared/together.ts";
 import { together, type TogetherSession } from "../../lib/Together.ts";
@@ -14,7 +13,8 @@ import { canRenderStyled, renderStyled } from "../../lib/styledSubtitles.ts";
 import type JASSUB from "jassub";
 import { session } from "../../Session.ts";
 import ItemsApi from "../../Api/ItemsApi.ts";
-import { defaultSubtitle, tracksFor } from "../../lib/playback.ts";
+import { defaultSubtitle, displayLanguage, tracksFor } from "../../lib/playback.ts";
+import { t } from "../../i18n/I18n.ts";
 
 export type PanelTab = "subtitles" | "audio" | "quality";
 
@@ -372,12 +372,12 @@ export class PlayerController extends Controller {
   private _restartHere() {
     if (this._destroyed) return;
     const now = Date.now();
-    this._restarts = this._restarts.filter((t) => now - t < 60_000);
+    this._restarts = this._restarts.filter((time) => now - time < 60_000);
     if (this._restarts.length >= 3) {
       this._hls?.destroy();
       this._hls = null;
       this.loading = false;
-      this.error = "The stream keeps stopping. The server log may say why.";
+      this.error = t("player.error.keepsStopping");
       this.notify();
       return;
     }
@@ -476,7 +476,7 @@ export class PlayerController extends Controller {
       return;
     }
     this.loading = false;
-    this.error = code === MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED ? "This device can't play the video." : "The video stopped loading. Check your connection and try again.";
+    this.error = code === MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED ? t("player.error.unsupported") : t("player.error.stoppedLoading");
     this.notify();
   };
 
@@ -668,9 +668,9 @@ export class PlayerController extends Controller {
     if (!info.subtitles.some((s) => s.index === track.index)) {
       info.subtitles = [...info.subtitles, {
         index: track.index,
-        label: track.title ?? languageName(track.language) ?? "Subtitles",
+        label: track.title ?? displayLanguage(track.language) ?? t("player.subtitles.fallbackLabel"),
         language: track.language,
-        detail: ["Downloaded", track.isHearingImpaired ? "SDH" : null, "Text"].filter(Boolean).join(" · "),
+        detail: track.isHearingImpaired ? t("player.subtitles.downloadedSdh") : t("player.subtitles.downloaded"),
         isForced: track.isForced,
         isDefault: false,
         url: `${info.streamBase}/subtitles/${track.index}.vtt`,
@@ -720,13 +720,13 @@ export class PlayerController extends Controller {
    * Tell the room about a local play, pause or seek. Returns `false` when this device isn't allowed to.
    */
   private _shareControl(action: TogetherAction, position: number) {
-    const t = this._together;
-    if (!t?.isConnected() || this._applyingShared) return true;
-    if (!t.canControl()) {
-      toasts.show({ title: "Only the host can pause and seek", description: "Ask them to turn on \"Anyone can pause and seek\"." });
+    const group = this._together;
+    if (!group?.isConnected() || this._applyingShared) return true;
+    if (!group.canControl()) {
+      toasts.show({ title: t("together.onlyHost.title"), description: t("together.onlyHost.description") });
       return false;
     }
-    t.sendControl(action, position);
+    group.sendControl(action, position);
     return true;
   }
 
@@ -734,14 +734,14 @@ export class PlayerController extends Controller {
    * Match the room's shared state: jump when far off, then play or pause.
    */
   private _applyShared() {
-    const t = this._together;
+    const group = this._together;
     const video = this._video;
-    if (!t?.room || !video || !this.info) return;
-    const state = t.room.state;
+    if (!group?.room || !video || !this.info) return;
+    const state = group.room.state;
     this._applyingShared = true;
     try {
       this._wantPlay = state.playing;
-      const expected = t.expectedPosition();
+      const expected = group.expectedPosition();
       const beyondEnd = !!this.duration && expected >= this.duration - 1;
       if (Math.abs(expected - this.position) > 1.5 && !beyondEnd) this.seek(expected);
       if (state.playing && video.paused && !this.loading) video.play().catch(() => { });
@@ -755,11 +755,11 @@ export class PlayerController extends Controller {
    * Small drift is fixed by playing a little faster or slower; big drift by jumping.
    */
   private _keepInSync() {
-    const t = this._together;
+    const group = this._together;
     const video = this._video;
-    if (!t?.isConnected() || !t.room || !video || this.loading || this.error) return;
-    const state = t.room.state;
-    const expected = t.expectedPosition();
+    if (!group?.isConnected() || !group.room || !video || this.loading || this.error) return;
+    const state = group.room.state;
+    const expected = group.expectedPosition();
     // Past the end there's nothing to catch up with; let this player finish on its own
     if (this.ended || video.ended || (this.duration && expected >= this.duration - 1)) {
       video.playbackRate = 1;
@@ -917,7 +917,7 @@ export class PlayerController extends Controller {
     if (!intro || this._autoSkipped.has(intro.start)) return;
     this._autoSkipped.add(intro.start);
     this.seek(intro.end);
-    toasts.show({ title: "Skipped the intro" });
+    toasts.show({ title: t("player.skippedIntro") });
   }
   //#endregion
 
@@ -955,7 +955,7 @@ export class PlayerController extends Controller {
   public playNext() {
     if (!this.next) return;
     if (together.isConnected() && !together.isHost()) {
-      toasts.show({ title: "The host picks what's next", description: "Everyone moves on when their episode ends." });
+      toasts.show({ title: t("together.hostPicksNext.title"), description: t("together.hostPicksNext.description") });
       return;
     }
     // The rest is credits; count this one as watched

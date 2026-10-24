@@ -1,7 +1,7 @@
 # Cinemion handoff
 
 Everything an assistant needs to pick this project up with no earlier context. Read it fully before changing code.
-Last updated 2026-10-24, after the update check (21c).
+Last updated 2026-10-24, after translations (milestone 22).
 
 ## 1. What Cinemion is
 
@@ -217,6 +217,7 @@ home, search), `playback.ts` (device capabilities, playback info, playback/subti
   `/sign-in`, `/`, `/library/:id`, `/item/:id`, `/collection/:id`, `/person/:id`, `/search`, `/settings/:tab`,
   `/watch/:id` (`?from=start`, `?together=CODE`), `/together[/:code]`, `/album/:id`, `/artist/:id`, `/playlist/:id`,
   `/photos/folder/:id` and `/photos/album/:id` (`?photo=ID` opens the viewer, `&slideshow=1` plays).
+- `i18n/`: `I18n.ts` (`t()`, `rich()`, `TranslationKey`, `LANGUAGES`) and `locales/en.json`; see "Milestone 22".
 - `theme/` tokens (`--cn-*`, TV scales rem with `calc(100vw/80)`) and base styles. Fonts Sora + Manrope via @fontsource.
 - `lib/`: Controller + useController, Router, DeviceMode (desktop/mobile/TV, MediaHub detection), spatialNavigation
   (TV D-pad focus engine), gamepad, ambient (title colours), Toasts, playback helpers, capabilities (what the browser
@@ -272,6 +273,8 @@ and on amd64 Intel's non-free VA driver + Quick Sync runtime), `docker/entrypoin
 | 20 | done | Photos libraries: folders as albums, hand-made albums, timeline, viewer with details and slideshows (below) |
 | 21 | done | Clips libraries: game clips sorted by game, picture recognition, cutting, small copies, stars (below) |
 | 21b | done | Podium's upload protocol: Podium uploads into any library, with the clip's game and details (below) |
+| 21c | done | Update check: admins are told when a newer release is out (below) |
+| 22 | done | Translations: every line of the client in `en.json`, a language per profile, `deno task i18n` (below) |
 
 Not planned in these rounds: **built-in remote access** (needs a relay service on ionnet.io that doesn't exist yet).
 Photos were asked for on 2026-10-21 and became milestone 20. The owner asked for each milestone to be committed and pushed, and
@@ -762,6 +765,35 @@ Asked for on 2026-10-24: tell admins when a newer Cinemion is out; nothing is do
 - **Tested** against a scratch server: the real GitHub check (finds 0.5.0, nothing to show), a made-up 0.5.1 in the
   stored setting (screenshots of About, the menu and the dashboard), a profile without `SERVER_MANAGE` (no dot, no
   card, 403 from the API), and switching the check off and on.
+
+### Milestone 22: Translations
+Asked for on 2026-10-24: translations with only English for now, the English file being the template every other
+language matches. Guide for translators: `docs/translating.md`.
+- **The file** (`client/src/i18n/locales/en.json`, ~1830 lines): nested groups per screen (`settings.about.title`,
+  `player.panel.audio`, `clips.share.tooBig`), `{placeholders}`, plurals as objects of CLDR forms
+  (`{ "one": "…", "other": "…" }`, picked by `count`), and `<tag>…</tag>` pairs for links, bold and code. `common.*`
+  holds the few words used everywhere (Cancel, Save, separators).
+- **The code** (`client/src/i18n/I18n.ts`): `t(key, values)` for text, `rich(key, values)` when a line has tags or
+  elements in it. `TranslationKey` is derived from the English file, so a wrong key fails `deno task check`. Lines a
+  language doesn't have (or has empty) come from English. `i18n.locale` is for every `Intl`/`toLocale*` call; it's the
+  browser's own locale when that's the same language, so English dates still follow the reader's country. The
+  language is picked once before the first render (the one used last on this device, from `localStorage`), then
+  follows the profile's `preferences.language` (`null` = the browser's); changing it re-renders the whole app (a
+  `key` on the root in `main.tsx`), so `t()` needs no subscription. Rules the conversion followed: whole sentences
+  only, no keys built at runtime (maps of literal keys instead), no `t()` at module load, no variable named `t`.
+- **Picking one**: Settings › Your profile › Language. `LANGUAGES` in `I18n.ts` lists them; English is bundled, others
+  load as their own chunk.
+- **The tool** (`scripts/i18n.ts`, `deno task i18n`, also run in CI): `check` compares every language with English
+  (missing, extra, plural forms the language needs from `Intl.PluralRules`, placeholders and tags) and lists English
+  lines no code uses; `new <code>` starts a file with every line empty; `sync <code>` adds and drops lines to match
+  English, keeping what's translated.
+- **Not translated yet**: text made by the server (error messages, activity lines, task labels and statuses, scan
+  results, clip titles made from recording times like "1 May 2025, 18:22", season names). The download size labels
+  the server sends are translated on the client by their id instead. Language names come from `Intl.DisplayNames`
+  (`displayLanguage()` in `lib/playback.ts`). The watch-together device name ("Firefox on a computer") is sent in the
+  sender's language.
+- **Tested** with a made-up language that wraps every line in brackets: a scan of every page found only library
+  data, brand names and server text outside the brackets. Done by eight parallel workers, one per area.
 
 ## 6. Design decisions
 

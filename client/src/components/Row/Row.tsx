@@ -2,6 +2,7 @@ import { type ReactNode, useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Link } from "../../lib/Router.tsx";
 import cx from "../../lib/cx.ts";
+import { t } from "../../i18n/I18n.ts";
 import IconButton from "../IconButton/IconButton.tsx";
 import "./Row.scss";
 
@@ -47,9 +48,9 @@ export default function Row(props: RowProps) {
       <div className="cn-row__header">
         <h2>{title}</h2>
         <div className="cn-row__tools">
-          {href && <Link href={href} className="cn-row__all">See all</Link>}
-          {overflows && <IconButton label="Scroll left" icon={<ChevronLeft />} size="sm" className="cn-row__arrow" tabIndex={-1} onClick={() => scroll(-1)} />}
-          {overflows && <IconButton label="Scroll right" icon={<ChevronRight />} size="sm" className="cn-row__arrow" tabIndex={-1} onClick={() => scroll(1)} />}
+          {href && <Link href={href} className="cn-row__all">{t("cards.row.seeAll")}</Link>}
+          {overflows && <IconButton label={t("cards.row.scrollLeft")} icon={<ChevronLeft />} size="sm" className="cn-row__arrow" tabIndex={-1} onClick={() => scroll(-1)} />}
+          {overflows && <IconButton label={t("cards.row.scrollRight")} icon={<ChevronRight />} size="sm" className="cn-row__arrow" tabIndex={-1} onClick={() => scroll(1)} />}
         </div>
       </div>
       <div ref={scroller} className={cx("cn-row__items", `cn-row__items--${kind}`)}>{children}</div>

@@ -5,6 +5,7 @@ import AdminApi from "../../Api/AdminApi.ts";
 import { toasts } from "../../lib/Toasts.ts";
 import usePoll from "../../lib/usePoll.ts";
 import { formatPercent, timeAgo, timeUntil } from "../../lib/format.ts";
+import { t, type TranslationKey } from "../../i18n/I18n.ts";
 import Button from "../../components/Button/Button.tsx";
 import Select from "../../components/Select/Select.tsx";
 import Spinner from "../../components/Spinner/Spinner.tsx";
@@ -21,14 +22,14 @@ export default function TasksSettings() {
   const [busy, setBusy] = useState<string | null>(null);
   const [confirmRemake, setConfirmRemake] = useState(false);
 
-  async function start(key: string, action: () => Promise<unknown>, done: string) {
+  async function start(key: string, action: () => Promise<unknown>, done: TranslationKey) {
     setBusy(key);
     try {
       await action();
-      toasts.success(done);
+      toasts.success(t(done));
       reload();
     } catch (e) {
-      toasts.error("Couldn't start that", (e as Error).message);
+      toasts.error(t("admin.tasks.startFailed"), (e as Error).message);
     } finally {
       setBusy(null);
     }
@@ -38,9 +39,9 @@ export default function TasksSettings() {
     try {
       const result = await AdminApi.setScanInterval(hours);
       if (data) setData({ ...data, scanIntervalHours: result.scanIntervalHours, scheduled: result.scheduled });
-      toasts.success(`Libraries are scanned every ${hours} ${hours === 1 ? "hour" : "hours"}`);
+      toasts.success(t("admin.tasks.intervalSaved", { count: hours }));
     } catch (e) {
-      toasts.error("Couldn't save", (e as Error).message);
+      toasts.error(t("common.couldntSave"), (e as Error).message);
     }
   }
 
@@ -50,82 +51,82 @@ export default function TasksSettings() {
     <>
       <header className="cn-settings__header">
         <div>
-          <h1>Tasks</h1>
-          <p>Work Cinemion does in the background, and when it scans your libraries by itself.</p>
+          <h1>{t("admin.tasks.title")}</h1>
+          <p>{t("admin.tasks.intro")}</p>
         </div>
       </header>
 
       <section className="cn-settings__card">
-        <h2>Running</h2>
-        {data.running.length === 0 && <p className="cn-settings__row-text"><span>Nothing is running right now.</span></p>}
-        {data.running.map((t) => (
-          <div key={t.id} className="cn-dashboard__task">
+        <h2>{t("admin.tasks.running")}</h2>
+        {data.running.length === 0 && <p className="cn-settings__row-text"><span>{t("admin.tasks.nothingRunning")}</span></p>}
+        {data.running.map((task) => (
+          <div key={task.id} className="cn-dashboard__task">
             <div className="cn-dashboard__task-head">
-              <span>{t.label}</span>
-              <span>{t.status}{t.progress !== null && ` · ${formatPercent(t.progress)}`}</span>
+              <span>{task.label}</span>
+              <span>{task.status}{task.progress !== null && ` · ${formatPercent(task.progress)}`}</span>
             </div>
-            {t.progress !== null && <span className="cn-meter"><span style={{ width: formatPercent(t.progress) }} /></span>}
+            {task.progress !== null && <span className="cn-meter"><span style={{ width: formatPercent(task.progress) }} /></span>}
           </div>
         ))}
       </section>
 
       <section className="cn-settings__card">
-        <h2>Run now</h2>
-        <ActionRow title="Scan all libraries" text="Look for new, changed and removed files in every library." label="Scan now" loading={busy === "scan"}
-          onClick={() => start("scan", () => AdminApi.scanAll(), "Scanning every library")} />
+        <h2>{t("admin.tasks.runNow")}</h2>
+        <ActionRow title={t("admin.tasks.actions.scan.title")} text={t("admin.tasks.actions.scan.text")} label={t("admin.tasks.actions.scan.button")} loading={busy === "scan"}
+          onClick={() => start("scan", () => AdminApi.scanAll(), "admin.tasks.actions.scan.started")} />
         <div className="cn-settings__divider" />
-        <ActionRow title="Refresh all details" text="Fetch details and artwork again for every title. This takes a while on big libraries." label="Refresh" loading={busy === "refresh"}
-          onClick={() => start("refresh", () => AdminApi.scanAll(true), "Refreshing every title's details")} />
+        <ActionRow title={t("admin.tasks.actions.refresh.title")} text={t("admin.tasks.actions.refresh.text")} label={t("admin.tasks.actions.refresh.button")} loading={busy === "refresh"}
+          onClick={() => start("refresh", () => AdminApi.scanAll(true), "admin.tasks.actions.refresh.started")} />
         <div className="cn-settings__divider" />
-        <ActionRow title="Make missing seek thumbnails" text="The pictures that show while you drag through a video. New videos get them by themselves." label="Make thumbnails" loading={busy === "thumbs"}
-          onClick={() => start("thumbs", () => AdminApi.thumbnails(), "Making missing seek thumbnails")} />
+        <ActionRow title={t("admin.tasks.actions.thumbnails.title")} text={t("admin.tasks.actions.thumbnails.text")} label={t("admin.tasks.actions.thumbnails.button")} loading={busy === "thumbs"}
+          onClick={() => start("thumbs", () => AdminApi.thumbnails(), "admin.tasks.actions.thumbnails.started")} />
         <div className="cn-settings__divider" />
-        <ActionRow title="Find intros and credits again" text="Compare every season's episodes and read chapters again, for Skip intro and starting the next episode early. New episodes are looked at by themselves." label="Find again" loading={busy === "markers"}
-          onClick={() => start("markers", () => AdminApi.markers(true), "Looking for intros and credits")} />
+        <ActionRow title={t("admin.tasks.actions.markers.title")} text={t("admin.tasks.actions.markers.text")} label={t("admin.tasks.actions.markers.button")} loading={busy === "markers"}
+          onClick={() => start("markers", () => AdminApi.markers(true), "admin.tasks.actions.markers.started")} />
         <div className="cn-settings__divider" />
-        <ActionRow title="Download missing subtitles" text="Look for subtitles in your languages for every movie and episode that has none, even ones searched lately. With automatic downloads on, this also happens once a day." label="Look now" loading={busy === "subtitles"}
-          onClick={() => start("subtitles", () => AdminApi.subtitles(), "Looking for missing subtitles")} />
+        <ActionRow title={t("admin.tasks.actions.subtitles.title")} text={t("admin.tasks.actions.subtitles.text")} label={t("admin.tasks.actions.subtitles.button")} loading={busy === "subtitles"}
+          onClick={() => start("subtitles", () => AdminApi.subtitles(), "admin.tasks.actions.subtitles.started")} />
         <div className="cn-settings__divider" />
-        <ActionRow title="Remake all seek thumbnails" text="Delete every seek thumbnail and make them again, one video at a time." label="Remake" loading={busy === "remake"}
+        <ActionRow title={t("admin.tasks.actions.remake.title")} text={t("admin.tasks.actions.remake.text")} label={t("admin.tasks.actions.remake.button")} loading={busy === "remake"}
           onClick={() => setConfirmRemake(true)} />
       </section>
 
       <section className="cn-settings__card">
-        <h2>Schedule</h2>
+        <h2>{t("admin.tasks.schedule")}</h2>
         <Select
-          label="Scan libraries every"
-          description="New files usually show up within a minute anyway. Scheduled scans catch what the folder watcher misses, like changes on network shares."
+          label={t("admin.tasks.scanEvery")}
+          description={t("admin.tasks.scanEveryDescription")}
           value={String(data.scanIntervalHours)}
-          options={[...new Set([...INTERVALS, data.scanIntervalHours])].sort((a, b) => a - b).map((h) => ({ value: String(h), label: `${h} ${h === 1 ? "hour" : "hours"}` }))}
+          options={[...new Set([...INTERVALS, data.scanIntervalHours])].sort((a, b) => a - b).map((h) => ({ value: String(h), label: t("admin.tasks.hours", { count: h }) }))}
           onChange={(e) => changeInterval(Number(e.target.value))}
         />
         <div className="cn-settings__list">
           {data.scheduled.map((s) => (
             <div key={s.libraryId} className="cn-tasks__row">
               <strong>{s.libraryName}</strong>
-              <span>{s.lastScannedAt ? `Scanned ${timeAgo(s.lastScannedAt)}` : "Not scanned yet"} · next {timeUntil(s.nextAt)}</span>
+              <span>{s.lastScannedAt ? t("admin.tasks.scanned", { ago: timeAgo(s.lastScannedAt), next: timeUntil(s.nextAt) }) : t("admin.tasks.notScanned", { next: timeUntil(s.nextAt) })}</span>
             </div>
           ))}
         </div>
       </section>
 
       <section className="cn-settings__card">
-        <h2>Recently finished</h2>
-        {data.history.length === 0 && <p className="cn-settings__row-text"><span>Nothing has finished since the server started.</span></p>}
+        <h2>{t("admin.tasks.recentlyFinished")}</h2>
+        {data.history.length === 0 && <p className="cn-settings__row-text"><span>{t("admin.tasks.nothingFinished")}</span></p>}
         <div className="cn-settings__list">
-          {data.history.map((t, i) => <HistoryRow key={`${t.id}-${t.finishedAt}-${i}`} task={t} />)}
+          {data.history.map((task, i) => <HistoryRow key={`${task.id}-${task.finishedAt}-${i}`} task={task} />)}
         </div>
       </section>
 
       <ConfirmDialog
         open={confirmRemake}
         onOpenChange={setConfirmRemake}
-        title="Remake all seek thumbnails?"
-        description="Every video gets new thumbnails, one after another. Until a video's turn comes, it has none."
-        confirmLabel="Remake thumbnails"
+        title={t("admin.tasks.actions.remake.confirmTitle")}
+        description={t("admin.tasks.actions.remake.confirmDescription")}
+        confirmLabel={t("admin.tasks.actions.remake.confirm")}
         onConfirm={async () => {
           setConfirmRemake(false);
-          await start("remake", () => AdminApi.thumbnails(true), "Remaking all seek thumbnails");
+          await start("remake", () => AdminApi.thumbnails(true), "admin.tasks.actions.remake.started");
         }}
       />
     </>
@@ -147,7 +148,7 @@ function ActionRow(props: { title: string; text: string; label: string; loading:
 
 function duration(task: TaskRecord) {
   const seconds = Math.max(0, Math.round((new Date(task.finishedAt).getTime() - new Date(task.startedAt).getTime()) / 1000));
-  return seconds < 60 ? `${seconds} s` : `${Math.round(seconds / 60)} min`;
+  return seconds < 60 ? t("admin.tasks.history.seconds", { count: seconds }) : t("admin.tasks.history.minutes", { count: Math.round(seconds / 60) });
 }
 
 function HistoryRow(props: { task: TaskRecord }) {
@@ -155,9 +156,9 @@ function HistoryRow(props: { task: TaskRecord }) {
   const failed = task.outcome === "failed";
   return (
     <div className="cn-tasks__row">
-      {failed ? <CircleAlert className="cn-tasks__icon cn-tasks__icon--failed" aria-label="Failed" /> : <CircleCheck className="cn-tasks__icon" aria-label="Done" />}
+      {failed ? <CircleAlert className="cn-tasks__icon cn-tasks__icon--failed" aria-label={t("admin.tasks.history.failed")} /> : <CircleCheck className="cn-tasks__icon" aria-label={t("admin.tasks.history.done")} />}
       <strong>{task.label}</strong>
-      <span>{failed ? task.error ?? "Failed" : `Took ${duration(task)}`} · {timeAgo(task.finishedAt)}</span>
+      <span>{failed ? t("admin.tasks.history.failedAgo", { error: task.error ?? t("admin.tasks.history.failed"), ago: timeAgo(task.finishedAt) }) : t("admin.tasks.history.tookAgo", { duration: duration(task), ago: timeAgo(task.finishedAt) })}</span>
     </div>
   );
 }
