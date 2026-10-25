@@ -64,6 +64,11 @@ export interface Language {
  */
 export const LANGUAGES: Language[] = [
   { code: "en", name: "English", load: () => Promise.resolve(en) },
+  { code: "da", name: "Dansk", load: () => import("./locales/da.json", { with: { type: "json" } }).then((m) => m.default) },
+  { code: "de", name: "Deutsch", load: () => import("./locales/de.json", { with: { type: "json" } }).then((m) => m.default) },
+  { code: "es", name: "Español", load: () => import("./locales/es.json", { with: { type: "json" } }).then((m) => m.default) },
+  { code: "fr", name: "Français", load: () => import("./locales/fr.json", { with: { type: "json" } }).then((m) => m.default) },
+  { code: "nl", name: "Nederlands", load: () => import("./locales/nl.json", { with: { type: "json" } }).then((m) => m.default) },
 ];
 
 const STORAGE_KEY = "cn-language";

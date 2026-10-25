@@ -1,0 +1,3831 @@
+{
+  "common": {
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "close": "Fermer",
+    "remove": "Retirer",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "back": "Retour",
+    "next": "Suivant",
+    "copy": "Copier",
+    "search": "Rechercher",
+    "play": "Lire",
+    "resume": "Reprendre",
+    "download": "Télécharger",
+    "upload": "Envoyer",
+    "open": "Ouvrir",
+    "select": "Choisir",
+    "tryAgain": "Réessayer",
+    "loading": "Chargement…",
+    "more": "Plus",
+    "off": "Désactivé",
+    "none": "Aucun",
+    "automatic": "Automatique",
+    "unknown": "Inconnu",
+    "couldntSave": "Impossible d'enregistrer",
+    "saved": "Enregistré",
+    "listSeparator": ", ",
+    "dotSeparator": " · "
+  },
+  "format": {
+    "bytes": {
+      "kb": "{value} Ko",
+      "mb": "{value} Mo",
+      "gb": "{value} Go",
+      "tb": "{value} To"
+    },
+    "bitrate": {
+      "kbps": "{value} kbit/s",
+      "mbps": "{value} Mbit/s"
+    },
+    "ago": {
+      "justNow": "à l'instant",
+      "minutes": "il y a {count} min",
+      "hours": {
+        "one": "il y a {count} heure",
+        "many": "il y a {count} heures",
+        "other": "il y a {count} heures"
+      },
+      "days": {
+        "one": "il y a {count} jour",
+        "many": "il y a {count} jours",
+        "other": "il y a {count} jours"
+      }
+    },
+    "until": {
+      "soon": "bientôt",
+      "minutes": "dans {count} min",
+      "hours": {
+        "one": "dans {count} heure",
+        "many": "dans {count} heures",
+        "other": "dans {count} heures"
+      }
+    },
+    "span": {
+      "underAMinute": "moins d'une minute",
+      "minutes": {
+        "one": "{count} minute",
+        "many": "{count} minutes",
+        "other": "{count} minutes"
+      },
+      "hours": {
+        "one": "{count} heure",
+        "many": "{count} heures",
+        "other": "{count} heures"
+      },
+      "days": {
+        "one": "{count} jour",
+        "many": "{count} jours",
+        "other": "{count} jours"
+      }
+    },
+    "dateRange": "{from} – {to}",
+    "dateTime": "{date} à {time}"
+  },
+  "app": {
+    "boot": {
+      "loading": "Chargement de Cinemion",
+      "unreachable": "Impossible de joindre le serveur Cinemion."
+    },
+    "toasts": {
+      "region": "Notifications",
+      "dismiss": "Fermer"
+    },
+    "errors": {
+      "loadList": "Impossible de charger la liste"
+    }
+  },
+  "api": {
+    "unreachable": "Impossible de joindre le serveur Cinemion. Vérifie qu'il tourne et que tu es sur le même réseau."
+  },
+  "setup": {
+    "steps": {
+      "navigation": "Étapes de configuration",
+      "account": {
+        "label": "Ton compte",
+        "sub": "Compte admin et nom du serveur"
+      },
+      "libraries": {
+        "label": "Bibliothèques",
+        "sub": "Où se trouvent tes médias"
+      },
+      "metadata": {
+        "label": "Métadonnées",
+        "sub": "Affiches, résumés et casting"
+      },
+      "done": {
+        "label": "Terminé",
+        "sub": "Commencer avec Cinemion"
+      }
+    },
+    "note": "Tout ceci pourra être modifié plus tard dans les Réglages.",
+    "progress": "Étape {step} sur {total}",
+    "account": {
+      "title": "Bienvenue dans Cinemion",
+      "intro": "Préparons ton serveur. D'abord, crée le compte admin. Il te servira à gérer les bibliothèques et à ajouter le reste de la maison.",
+      "serverName": "Nom du serveur",
+      "serverNameDescription": "Affiché sur les appareils quand ils se connectent à ce serveur.",
+      "name": "Ton nom",
+      "username": "Nom d'utilisateur",
+      "usernameDescription": "Sert à se connecter avec un mot de passe.",
+      "password": "Mot de passe",
+      "confirmPassword": "Confirmer le mot de passe",
+      "pin": "Code PIN du profil <optional>(facultatif)</optional>",
+      "pinPlaceholder": "4 chiffres",
+      "pinDescription": "Utilisé sur les écrans partagés comme la télé, à la place de ton mot de passe.",
+      "errors": {
+        "name": "Indique ton nom.",
+        "username": "Utilise 2 à 32 lettres minuscules, chiffres, points, tirets ou tirets bas.",
+        "password": "Utilise au moins 6 caractères.",
+        "confirm": "Les mots de passe ne correspondent pas.",
+        "pin": "Le code PIN doit faire exactement 4 chiffres.",
+        "serverName": "Donne un nom à ton serveur."
+      }
+    },
+    "libraries": {
+      "title": "Ajoute tes bibliothèques",
+      "intro": "Indique à Cinemion les dossiers qui contiennent tes films et séries, tes autres vidéos (comme les vidéos de famille), tes clips de jeu, ta musique et tes livres. Une bibliothèque peut utiliser plusieurs dossiers.",
+      "remove": "Retirer {name}",
+      "type": "Type de bibliothèque",
+      "types": {
+        "movies": "Films",
+        "shows": "Séries",
+        "videos": "Vidéos",
+        "music": "Musique",
+        "photos": "Photos",
+        "clips": "Clips",
+        "audiobooks": "Livres audio",
+        "books": "Livres"
+      },
+      "name": "Nom",
+      "noFolders": "Ouvre un dossier et choisis « Utiliser ce dossier ».",
+      "removeFolder": "Retirer {path}",
+      "add": "Ajouter une bibliothèque"
+    },
+    "metadata": {
+      "title": "Affiches, résumés et casting",
+      "intro": "Cinemion cherche les infos de tout ce qu'il trouve. Les sources en haut de la liste l'emportent en cas de désaccord."
+    },
+    "done": {
+      "title": "Tout est prêt",
+      "intro": "Cinemion est prêt. Tes bibliothèques sont enregistrées, et le reste de la maison peut avoir son propre profil depuis les Réglages.",
+      "noLibraries": "Pas encore de bibliothèque. Tu pourras en ajouter plus tard dans Réglages › Bibliothèques."
+    },
+    "actions": {
+      "finish": "Terminer",
+      "goToCinemion": "Aller dans Cinemion",
+      "skip": "Passer pour l'instant",
+      "continue": "Continuer"
+    },
+    "failed": "La configuration n'a pas abouti",
+    "restore": {
+      "hintTitle": "Tu déménages ou tu réinstalles ?",
+      "hint": "Récupère un Cinemion depuis une sauvegarde au lieu de tout reconfigurer.",
+      "open": "Restaurer une sauvegarde",
+      "title": "Restaurer une sauvegarde",
+      "intro": "Tout revient comme avant : profils, ce que chacun a regardé, bibliothèques, réglages et images. Tu te connecteras comme avant.",
+      "foundLabel": "Sauvegardes trouvées sur ce serveur",
+      "found": "Trouvées dans {folder} :",
+      "protected": "Protégée",
+      "chooseFile": "Envoyer un fichier de sauvegarde",
+      "otherFile": "Choisir un autre fichier",
+      "password": "Mot de passe de la sauvegarde",
+      "passwordDescription": "Le mot de passe choisi pour protéger la sauvegarde dans Réglages › Sauvegardes.",
+      "sending": "Envoi de la sauvegarde… {percent}",
+      "failed": "La restauration n'a pas abouti : {error}",
+      "warning": "Si tes médias sont dans d'autres dossiers sur ce serveur, change ensuite les dossiers des bibliothèques dans Réglages › Bibliothèques.",
+      "instead": "Tout configurer de zéro",
+      "start": "Restaurer",
+      "doneTitle": "Bon retour",
+      "doneText": "{name} est revenu tel qu'il était le {date}. Connecte-toi comme avant.",
+      "doneTextShort": "La sauvegarde est restaurée. Connecte-toi comme avant."
+    }
+  },
+  "profiles": {
+    "loading": "Chargement des profils",
+    "title": "Qui regarde ?",
+    "pinProtected": "Protégé par code PIN",
+    "passwordProtected": "Protégé par mot de passe",
+    "admin": "Admin",
+    "upTo": "Jusqu'à {rating}",
+    "add": "Ajouter un profil",
+    "usePassword": "Se connecter avec un mot de passe",
+    "pin": {
+      "title": "Code PIN de {name}",
+      "keyboardHint": "Tu peux aussi le taper au clavier."
+    },
+    "password": {
+      "title": "Mot de passe de {name}",
+      "intro": "Les profils admin sans code PIN demandent leur mot de passe.",
+      "label": "Mot de passe",
+      "signIn": "Se connecter"
+    },
+    "backToProfiles": "Retour aux profils",
+    "openFailed": "Impossible d'ouvrir ce profil",
+    "loadFailed": "Impossible de charger les profils"
+  },
+  "signIn": {
+    "title": "Connexion",
+    "username": "Nom d'utilisateur",
+    "password": "Mot de passe",
+    "submit": "Se connecter",
+    "backToProfiles": "Retour aux profils"
+  },
+  "topbar": {
+    "home": "Accueil",
+    "mainNavigation": "Principal",
+    "profile": "Profil : {name}",
+    "profileWithUpdate": "Profil : {name}. Un nouveau Cinemion est sorti",
+    "admin": "Admin",
+    "profileRole": "Profil",
+    "menu": {
+      "settings": "Profil et réglages",
+      "dashboard": "Tableau de bord du serveur",
+      "together": "Rejoindre un visionnage commun",
+      "downloads": "Téléchargements",
+      "switchProfile": "Changer de profil",
+      "signOut": "Se déconnecter",
+      "myList": "Ma liste",
+      "stats": "Tes statistiques"
+    },
+    "search": {
+      "default": "Rechercher films et séries",
+      "videos": "Rechercher films, séries et vidéos",
+      "music": "Rechercher films, séries et musique",
+      "books": "Rechercher films, séries et livres",
+      "albums": "Rechercher films, séries et albums",
+      "games": "Rechercher films, séries et jeux",
+      "everything": "Rechercher dans tes bibliothèques"
+    }
+  },
+  "home": {
+    "greeting": {
+      "night": "Bonne nuit, {name}",
+      "morning": "Bonjour, {name}",
+      "afternoon": "Bon après-midi, {name}",
+      "evening": "Bonsoir, {name}"
+    },
+    "spotlight": {
+      "upNext": "À suivre",
+      "seasons": {
+        "one": "{count} saison",
+        "many": "{count} saisons",
+        "other": "{count} saisons"
+      },
+      "details": "Détails"
+    },
+    "rows": {
+      "continueWatching": "Reprendre",
+      "nextUp": "À suivre",
+      "newIn": "Nouveau dans {library}",
+      "recentlyAddedIn": "Ajouté récemment dans {library}",
+      "continueBooks": "Reprends ton livre",
+      "becauseYouWatched": "Parce que tu as regardé {title}",
+      "myList": "Ma liste"
+    },
+    "empty": {
+      "addFolder": "Ajoute un dossier de films ou de séries pour commencer.",
+      "askAdmin": "Demande à la personne qui gère ce serveur d'ajouter une bibliothèque.",
+      "addLibrary": "Ajouter une bibliothèque",
+      "scanning": "Cinemion parcourt tes bibliothèques. Les titres apparaissent ici au fur et à mesure.",
+      "nothingToWatch": "Il n'y a encore rien ici que ce profil peut regarder."
+    },
+    "loadFailed": "Impossible de charger l'accueil"
+  },
+  "library": {
+    "notFound": {
+      "title": "Bibliothèque introuvable",
+      "description": "Elle a peut-être été retirée, ou ton profil n'y a pas accès."
+    },
+    "count": {
+      "videos": {
+        "one": "{count} vidéo",
+        "many": "{count} de vidéos",
+        "other": "{count} vidéos"
+      },
+      "shows": {
+        "one": "{count} série",
+        "many": "{count} de séries",
+        "other": "{count} séries"
+      },
+      "movies": {
+        "one": "{count} film",
+        "many": "{count} de films",
+        "other": "{count} films"
+      }
+    },
+    "scanning": "Analyse…",
+    "filters": {
+      "show": "Afficher",
+      "all": "Tout",
+      "unwatched": "Pas vus",
+      "collections": "Collections",
+      "tag": "Tag",
+      "genre": "Genre",
+      "allTags": "Tous les tags",
+      "allGenres": "Tous les genres",
+      "sortBy": "Trier par"
+    },
+    "sort": {
+      "title": "Titre",
+      "added": "Ajout récent",
+      "year": "Année de sortie",
+      "rating": "Note",
+      "date": "Date"
+    },
+    "noMatches": {
+      "title": "Aucun résultat",
+      "unwatched": "Tu as tout vu ici.",
+      "unwatchedWithTag": "Tu as tout vu ici avec ce tag.",
+      "unwatchedInGenre": "Tu as tout vu ici dans ce genre.",
+      "tag": "Rien avec ce tag.",
+      "genre": "Rien dans ce genre."
+    },
+    "empty": {
+      "title": "Rien ici pour l'instant",
+      "scanning": "Cinemion parcourt cette bibliothèque en ce moment. Les titres apparaissent au fur et à mesure.",
+      "movies": "Les films de {paths} apparaîtront ici après une analyse.",
+      "shows": "Les séries de {paths} apparaîtront ici après une analyse.",
+      "videos": "Les vidéos de {paths} apparaîtront ici après une analyse.",
+      "music": "La musique de {paths} apparaîtra ici après une analyse.",
+      "audiobooks": "Les livres audio de {paths} apparaîtront ici après une analyse.",
+      "books": "Les livres de {paths} apparaîtront ici après une analyse.",
+      "photos": "Les photos de {paths} apparaîtront ici après une analyse.",
+      "clips": "Les clips de {paths} apparaîtront ici après une analyse."
+    },
+    "unmatched": "Non identifié",
+    "menu": {
+      "moreFor": "Plus pour {title}",
+      "fixMatch": "Corriger l'identification",
+      "refresh": "Actualiser les infos"
+    },
+    "refreshing": "Actualisation de {title}…",
+    "upToDate": "{title} est à jour",
+    "refreshFailed": "Impossible d'actualiser",
+    "loadFailed": "Impossible de charger cette bibliothèque"
+  },
+  "search": {
+    "placeholder": "Films, séries, vidéos, personnes et musique",
+    "clear": "Effacer",
+    "nothingFound": "Rien trouvé pour « {query} ».",
+    "titles": "Films et séries",
+    "collections": "Collections",
+    "episodes": "Épisodes",
+    "videos": "Vidéos",
+    "games": "Jeux",
+    "clips": {
+      "one": "{count} clip",
+      "many": "{count} de clips",
+      "other": "{count} clips"
+    },
+    "photoAlbums": "Albums photo",
+    "artists": "Artistes",
+    "albums": "Albums",
+    "songs": "Morceaux",
+    "books": "Livres",
+    "people": "Personnes"
+  },
+  "item": {
+    "missing": {
+      "title": "Ce titre n'est pas disponible",
+      "goHome": "Retour à l'accueil",
+      "season": "Saison {number}",
+      "show": {
+        "one": "Afficher {count} épisode manquant",
+        "many": "Afficher {count} d'épisodes manquants",
+        "other": "Afficher {count} épisodes manquants"
+      },
+      "hide": {
+        "one": "Masquer {count} épisode manquant",
+        "many": "Masquer {count} d'épisodes manquants",
+        "other": "Masquer {count} épisodes manquants"
+      },
+      "notHere": "Absent",
+      "label": "Épisode {number}, {title}, absent de ta bibliothèque",
+      "untitled": "Épisode {number}",
+      "aired": "Diffusé le {date}"
+    },
+    "meta": {
+      "seasons": {
+        "one": "{count} saison",
+        "many": "{count} de saisons",
+        "other": "{count} saisons"
+      },
+      "imdbRating": "Note IMDb",
+      "votes": {
+        "one": "{count} vote",
+        "many": "{count} de votes",
+        "other": "{count} votes"
+      },
+      "scoreDetail": "{name}, {detail}"
+    },
+    "collection": {
+      "partOf": "Fait partie de",
+      "movies": {
+        "one": "{count} film",
+        "many": "{count} de films",
+        "other": "{count} films"
+      }
+    },
+    "moreLikeThis": "Dans le même genre",
+    "details": {
+      "director": "Réalisation",
+      "directors": "Réalisation",
+      "writer": "Scénario",
+      "writers": "Scénario",
+      "network": "Chaîne",
+      "studio": "Studio",
+      "version": "Version",
+      "audio": "Audio",
+      "subtitles": "Sous-titres",
+      "forced": "Forcés",
+      "picture": "Image",
+      "mono": "Mono",
+      "stereo": "Stéréo"
+    },
+    "cast": {
+      "title": "Casting et équipe",
+      "producer": "Production",
+      "composer": "Musique",
+      "author": "Auteur",
+      "narrator": "Narration"
+    },
+    "next": {
+      "continueEpisode": "Reprendre {episode} · {title}",
+      "upNextEpisode": "À suivre : {episode} · {title}",
+      "continue": "Reprendre {title}",
+      "upNext": "À suivre : {title}"
+    },
+    "seasons": "Saisons",
+    "episode": {
+      "moreFrom": "Plus de {season}",
+      "moreFromThisSeason": "Plus de cette saison"
+    },
+    "folders": "Dossiers",
+    "video": {
+      "moreIn": "Plus dans {name}",
+      "moreInThisFolder": "Plus dans ce dossier"
+    },
+    "folder": {
+      "folders": {
+        "one": "{count} dossier",
+        "many": "{count} de dossiers",
+        "other": "{count} dossiers"
+      },
+      "videos": {
+        "one": "{count} vidéo",
+        "many": "{count} de vidéos",
+        "other": "{count} vidéos"
+      },
+      "newestFrom": "Plus récent du {date}",
+      "inThisFolder": "Dans ce dossier",
+      "sortBy": "Trier par",
+      "sortTitle": "Titre",
+      "sortDate": "Date",
+      "sortAdded": "Ajout récent",
+      "empty": "Rien ici que ce profil peut regarder."
+    },
+    "deleteSeason": "Supprimer {season} du disque…"
+  },
+  "itemActions": {
+    "play": "Lire",
+    "resume": "Reprendre",
+    "playEpisode": "Lire S{season} E{episode}",
+    "resumeEpisode": "Reprendre S{season} E{episode}",
+    "fromStart": "Depuis le début",
+    "markUnwatched": "Marquer comme non vu",
+    "markWatched": "Marquer comme vu",
+    "moreOptions": "Plus d'options",
+    "fixMatch": "Corriger l'identification",
+    "editDetails": "Modifier les infos",
+    "refresh": "Actualiser les infos",
+    "updateFailed": "Impossible de mettre à jour",
+    "refreshing": "Actualisation de {title}…",
+    "upToDate": "{title} est à jour",
+    "refreshFailed": "Impossible d'actualiser",
+    "addToList": "Ajouter à Ma liste",
+    "removeFromList": "Retirer de Ma liste",
+    "addedToList": "{title} est dans ta liste",
+    "removedFromList": "{title} n'est plus dans ta liste",
+    "delete": "Supprimer du disque…"
+  },
+  "editDetails": {
+    "videoTitle": "Modifier les infos de la vidéo",
+    "folderTitle": "Modifier les infos du dossier",
+    "description": "Tes changements restent, même quand la bibliothèque est analysée ou actualisée.",
+    "thumbnail": {
+      "title": "Miniature",
+      "moment": "Moment de la vidéo",
+      "time": "{time} sur {duration}",
+      "useFrame": "Utiliser cette image",
+      "byHand": "Choisie à la main.",
+      "fromVideo": "Prise automatiquement dans la vidéo.",
+      "fromFolder": "Une image du dossier, ou celle de sa vidéo la plus récente.",
+      "upload": "Envoyer une image",
+      "pickFrame": "Choisir une image",
+      "automatic": "Automatique",
+      "changed": "Miniature modifiée",
+      "reset": "Retour à la miniature automatique",
+      "failed": "Impossible de changer la miniature"
+    },
+    "titleLabel": "Titre",
+    "date": "Date",
+    "dateDescription": "Date de l'enregistrement.",
+    "descriptionLabel": "Description",
+    "tags": "Tags",
+    "tagsPlaceholder": "Famille, Vacances",
+    "tagsDescription": "Sépare-les par des virgules. La bibliothèque peut être filtrée par tag.",
+    "rating": "Classification d'âge",
+    "ratingDefault": "Par défaut de la bibliothèque ({rating})",
+    "ratingDefaultUnrated": "Par défaut de la bibliothèque (non classé)",
+    "ratingDescription": "Les profils avec une limite d'âge ne voient que les vidéos dans cette limite.",
+    "saved": "Infos enregistrées"
+  },
+  "fixMatch": {
+    "title": "Corriger l'identification",
+    "description": "Choisis ce qu'est vraiment « {title} ».",
+    "titleLabel": "Titre",
+    "year": "Année",
+    "noResults": "Aucun résultat. Essaie un autre titre, ou vérifie qu'une clé TMDB ou TheTVDB est configurée dans Réglages › Métadonnées.",
+    "resultWithYear": "{title} ({year})",
+    "useThis": "Choisir",
+    "matched": "Identifié comme {title}",
+    "applyFailed": "Impossible d'appliquer l'identification"
+  },
+  "cards": {
+    "row": {
+      "seeAll": "Tout voir",
+      "scrollLeft": "Défiler à gauche",
+      "scrollRight": "Défiler à droite"
+    },
+    "poster": {
+      "movies": {
+        "one": "{count} film",
+        "many": "{count} de films",
+        "other": "{count} films"
+      },
+      "seasons": {
+        "one": "{count} saison",
+        "many": "{count} de saisons",
+        "other": "{count} saisons"
+      },
+      "withYear": "{title} ({year})",
+      "watched": "Vu",
+      "unwatched": "{count} non vus"
+    },
+    "wide": {
+      "upNext": "À suivre",
+      "episodeTitle": "{number}. {title}",
+      "videos": {
+        "one": "{count} vidéo",
+        "many": "{count} de vidéos",
+        "other": "{count} vidéos"
+      },
+      "episodeNumber": "E{number}",
+      "watched": "Vu"
+    }
+  },
+  "person": {
+    "titles": {
+      "one": "{count} titre dans tes bibliothèques",
+      "many": "{count} de titres dans tes bibliothèques",
+      "other": "{count} titres dans tes bibliothèques"
+    },
+    "roles": {
+      "director": "Réalisation",
+      "writer": "Scénario",
+      "producer": "Production",
+      "composer": "Musique",
+      "author": "Auteur",
+      "narrator": "Narration"
+    }
+  },
+  "collection": {
+    "movies": {
+      "one": "{count} film",
+      "many": "{count} de films",
+      "other": "{count} films"
+    },
+    "watched": "{count} vus"
+  },
+  "player": {
+    "loading": "Chargement",
+    "joining": "Connexion à la séance",
+    "onlyPlayable": "Seuls les films, épisodes et vidéos peuvent être lus.",
+    "cantPlayTitle": "Ce titre ne peut pas être lu",
+    "episodeSubtitle": "{episode} · {title}",
+    "error": {
+      "title": "Cette vidéo ne peut pas être lue pour l'instant",
+      "keepsStopping": "La lecture n'arrête pas de s'interrompre. Le journal du serveur dit peut-être pourquoi.",
+      "unsupported": "Cet appareil ne peut pas lire la vidéo.",
+      "stoppedLoading": "La vidéo a arrêté de charger. Vérifie ta connexion et réessaie."
+    },
+    "controls": {
+      "back10": "Reculer de 10 secondes",
+      "forward10": "Avancer de 10 secondes",
+      "pause": "Pause",
+      "playKey": "Lecture (Espace)",
+      "pauseKey": "Pause (Espace)",
+      "back10Key": "Reculer de 10 secondes (←)",
+      "forward10Key": "Avancer de 10 secondes (→)",
+      "nextEpisode": "Épisode suivant",
+      "muteKey": "Couper le son (M)",
+      "unmuteKey": "Remettre le son (M)",
+      "volume": "Volume",
+      "pictureInPicture": "Image dans l'image",
+      "fullScreenKey": "Plein écran (F)",
+      "exitFullScreenKey": "Quitter le plein écran (F)",
+      "fullScreen": "Plein écran",
+      "exitFullScreen": "Quitter le plein écran",
+      "subtitlesAndAudio": "Sous-titres et audio",
+      "panelToggle": "Sous-titres, audio et qualité (C)"
+    },
+    "scrubber": {
+      "label": "Position",
+      "value": "{position} sur {duration}"
+    },
+    "hints": {
+      "seek": "Avancer/reculer",
+      "jumpHere": "Aller ici",
+      "backKey": "Retour"
+    },
+    "badge": {
+      "direct": "Direct",
+      "audioConverted": "Audio converti",
+      "auto": "Auto",
+      "converted": "Converti"
+    },
+    "skipIntro": "Passer l'intro",
+    "skippedIntro": "Intro passée",
+    "nextUp": {
+      "label": "À suivre",
+      "episode": "À suivre · {episode}",
+      "countdown": {
+        "one": "Début dans {count} s",
+        "many": "Début dans {count} s",
+        "other": "Début dans {count} s"
+      },
+      "playNow": "Lire maintenant",
+      "hide": "Masquer"
+    },
+    "panel": {
+      "label": "Options de lecture",
+      "tabsLabel": "Options",
+      "tabs": {
+        "subtitles": "Sous-titres",
+        "audio": "Audio",
+        "quality": "Qualité"
+      },
+      "noSubtitles": "Pas de sous-titres",
+      "original": "Original",
+      "originalDetail": "Tel quel",
+      "automatic": "Automatique",
+      "automaticNow": "Actuellement {height}p · s'adapte à ta connexion",
+      "automaticDetail": "S'adapte à ta connexion · converti",
+      "presetDetail": "Jusqu'à {mbps} Mbit/s · converti",
+      "version": "Version {number}",
+      "versionHeight": "Version {number} · {height}p",
+      "noAudio": "Ce fichier n'a pas d'autre piste audio.",
+      "sectionQuality": "Qualité",
+      "sectionVersion": "Version",
+      "searchOnline": "Chercher en ligne",
+      "audio": "{codec} {channels}",
+      "audioConverted": "{from} → {to} {channels}",
+      "bitrate": "{mbps} Mbit/s",
+      "channels": {
+        "mono": "mono",
+        "stereo": "stéréo",
+        "count": "{count} canaux"
+      },
+      "mode": {
+        "direct": "Lecture directe",
+        "remux": "Réemballé",
+        "audio": "Conversion de l'audio",
+        "gpu": "Conversion sur la carte graphique",
+        "converting": "Conversion"
+      }
+    },
+    "subtitles": {
+      "fallbackLabel": "Sous-titres",
+      "downloaded": "Téléchargés · Texte",
+      "downloadedSdh": "Téléchargés · SME · Texte"
+    },
+    "subtitleSearch": {
+      "title": "Trouver des sous-titres",
+      "episode": "{show} · {episode}",
+      "movieYear": "{title} ({year})",
+      "language": "Langue",
+      "hearingImpaired": "Seulement les sous-titres pour sourds et malentendants",
+      "searching": "Recherche",
+      "nothingFound": "Rien trouvé en {language}. Essaie un autre titre ou une autre langue.",
+      "matchesFile": "Correspond à ton fichier",
+      "sdh": "SME",
+      "downloads": {
+        "one": "{count} téléchargement",
+        "many": "{count} de téléchargements",
+        "other": "{count} téléchargements"
+      },
+      "rating": "★ {rating}",
+      "inUse": "Utilisés",
+      "use": "Utiliser",
+      "footer": "Résultats des sites de sous-titres configurés dans Réglages › Sous-titres. Les téléchargements sont gardés avec la vidéo, pour la prochaine fois.",
+      "added": "Sous-titres ajoutés",
+      "addedDescription": "Ils sont aussi gardés pour la prochaine fois.",
+      "downloadFailed": "Impossible de télécharger les sous-titres"
+    },
+    "duration": {
+      "minutes": {
+        "one": "{count} min",
+        "many": "{count} min",
+        "other": "{count} min"
+      },
+      "hoursMinutes": "{hours} h {minutes} min",
+      "left": "{duration} restantes"
+    },
+    "episode": {
+      "specials": "Épisodes spéciaux",
+      "season": "Saison {number}",
+      "special": "Spécial {number}",
+      "short": "S{season} E{episode}"
+    }
+  },
+  "together": {
+    "ended": "Le visionnage commun est terminé",
+    "onlyHost": {
+      "title": "Seul l'hôte peut mettre en pause et se déplacer",
+      "description": "Demande-lui d'activer « Tout le monde peut mettre en pause et se déplacer »."
+    },
+    "hostPicksNext": {
+      "title": "L'hôte choisit la suite",
+      "description": "Tout le monde passe à la suite quand son épisode se termine."
+    },
+    "button": {
+      "watchTogether": "Regarder ensemble",
+      "watching": {
+        "one": "{count} spectateur",
+        "many": "{count} de spectateurs",
+        "other": "{count} spectateurs"
+      },
+      "unread": {
+        "one": "{count} nouveau message",
+        "many": "{count} de nouveaux messages",
+        "other": "{count} nouveaux messages"
+      }
+    },
+    "panel": {
+      "title": "Regarder ensemble",
+      "intro": "Lecture, pause et déplacements restent synchronisés pour tout le monde.",
+      "pitch": "Lance une séance et partage le code ou le lien. Chacun regarde sur son propre écran, depuis ce serveur, en même temps que toi.",
+      "connecting": "Connexion…",
+      "start": "Lancer une séance",
+      "startFailed": "Impossible de lancer la séance",
+      "linkCopied": "Lien d'invitation copié",
+      "shareLink": "Partage ce lien",
+      "tabs": {
+        "chat": "Discussion",
+        "people": "Personnes · {count}",
+        "unread": {
+          "one": "{count} nouveau",
+          "many": "{count} de nouveaux",
+          "other": "{count} nouveaux"
+        }
+      },
+      "invite": "Inviter",
+      "code": "Code {code}",
+      "copyLink": "Copier le lien",
+      "people": "Personnes",
+      "you": "{name} (toi)",
+      "host": "Hôte",
+      "hostOnDevice": "Hôte · {device}",
+      "status": {
+        "loading": "Chargement",
+        "buffering": "Mise en mémoire",
+        "ready": "Synchronisé",
+        "catchingUp": "Rattrapage"
+      },
+      "anyoneControls": "Tout le monde peut mettre en pause et se déplacer",
+      "onlyHostNote": "Seul l'hôte peut mettre en pause et se déplacer.",
+      "leave": "Quitter",
+      "endForEveryone": "Terminer pour tous"
+    },
+    "chat": {
+      "messages": "Messages",
+      "empty": "Dis bonjour. Les messages et réactions s'affichent pour tous les participants.",
+      "at": "à {time}",
+      "reactions": "Réactions",
+      "placeholder": "Écris un message",
+      "message": "Message",
+      "send": "Envoyer"
+    },
+    "notice": {
+      "joined": "{name} a rejoint",
+      "left": "{name} est parti",
+      "played": "{name} a relancé la lecture",
+      "paused": "{name} a mis en pause à {time}",
+      "jumped": "{name} est allé à {time}",
+      "chat": "{name} : {text}"
+    },
+    "errors": {
+      "couldntJoin": "Impossible de rejoindre la séance.",
+      "lostConnection": "Connexion à la séance perdue."
+    },
+    "device": {
+      "tv": "Télé",
+      "browser": "Navigateur",
+      "onPhone": "{browser} sur un téléphone",
+      "onComputer": "{browser} sur un ordinateur"
+    },
+    "page": {
+      "title": "Rejoindre une séance",
+      "intro": "Tape le code affiché sur l'écran de l'hôte, ou ouvre son lien d'invitation.",
+      "codeLabel": "Code de la séance",
+      "lookingUp": "Recherche de la séance",
+      "invited": "{name} t'invite à regarder",
+      "episode": "{episode} · {title}",
+      "playingAt": {
+        "one": "En lecture à {time} · {count} spectateur",
+        "many": "En lecture à {time} · {count} de spectateurs",
+        "other": "En lecture à {time} · {count} spectateurs"
+      },
+      "pausedAt": {
+        "one": "En pause à {time} · {count} spectateur",
+        "many": "En pause à {time} · {count} de spectateurs",
+        "other": "En pause à {time} · {count} spectateurs"
+      },
+      "join": "Rejoindre et regarder",
+      "note": "Ta propre progression ne change pas quand tu regardes avec les autres. Tu rejoins en tant que {name} (<link>changer de profil</link>)."
+    }
+  },
+  "music": {
+    "trackCount": {
+      "one": "{count} morceau",
+      "many": "{count} de morceaux",
+      "other": "{count} morceaux"
+    },
+    "albumCount": {
+      "one": "{count} album",
+      "many": "{count} d'albums",
+      "other": "{count} albums"
+    },
+    "actions": {
+      "shuffle": "Lecture aléatoire",
+      "addToQueue": "Ajouter à la file",
+      "addToPlaylist": "Ajouter à une playlist"
+    },
+    "library": {
+      "scanning": "Analyse…",
+      "show": "Afficher",
+      "tabs": {
+        "albums": "Albums",
+        "artists": "Artistes",
+        "songs": "Morceaux",
+        "playlists": "Playlists"
+      },
+      "shuffleAll": "Tout en aléatoire",
+      "shuffleFailed": "Impossible de lancer l'aléatoire",
+      "emptyTitle": "Rien ici pour l'instant",
+      "scanningText": "Cinemion parcourt cette bibliothèque en ce moment. Les albums apparaissent au fur et à mesure.",
+      "emptyText": "La musique de {paths} apparaît ici après une analyse. Les tags sont lus dans les fichiers ; sans eux, des dossiers comme Artiste/Album/01 Titre.mp3 marchent aussi.",
+      "playedLately": "Écouté récemment",
+      "allAlbums": "Tous les albums",
+      "genre": "Genre",
+      "allGenres": "Tous les genres",
+      "sortBy": "Trier par",
+      "sorts": {
+        "title": "Titre",
+        "artist": "Artiste",
+        "added": "Ajout récent",
+        "year": "Année de sortie"
+      },
+      "songCount": {
+        "one": "{count} morceau",
+        "many": "{count} de morceaux",
+        "other": "{count} morceaux"
+      },
+      "songs": "Morceaux",
+      "yourPlaylists": "Tes playlists",
+      "newPlaylist": "Nouvelle playlist",
+      "newPlaylistName": "Playlist {number}",
+      "makeFailed": "Impossible de créer la playlist",
+      "noPlaylists": "Pas encore de playlist. Crées-en une ici, ou choisis « Ajouter à une playlist » dans le menu d'un morceau."
+    },
+    "card": {
+      "play": "Lire {title}",
+      "playAlbumFailed": "Impossible de lire l'album"
+    },
+    "album": {
+      "notFound": "Album introuvable",
+      "eyebrow": "Album",
+      "tracksOf": "Morceaux de {title}",
+      "moreBy": "Plus de {artist}"
+    },
+    "artist": {
+      "notFound": "Artiste introuvable",
+      "eyebrow": "Artiste",
+      "appearsOnMore": {
+        "one": "sur {count} autre",
+        "many": "sur {count} d'autres",
+        "other": "sur {count} autres"
+      },
+      "playFailed": "Impossible de lire l'artiste",
+      "mostPlayedTitle": "Ce que tu écoutes le plus",
+      "mostPlayed": "Les plus écoutés",
+      "albums": "Albums",
+      "appearsOn": "Apparaît sur"
+    },
+    "playlist": {
+      "notFound": "Playlist introuvable",
+      "eyebrow": "Playlist",
+      "name": "Nom de la playlist",
+      "saveName": "Enregistrer le nom",
+      "rename": "Renommer",
+      "delete": "Supprimer la playlist",
+      "emptyTitle": "Rien ici pour l'instant",
+      "emptyText": "Ajoute des morceaux depuis leur menu avec « Ajouter à une playlist », ou enregistre ce qui joue depuis la file.",
+      "tracksOf": "Morceaux de {name}",
+      "moveUp": "Monter",
+      "moveDown": "Descendre",
+      "removeFromPlaylist": "Retirer de la playlist",
+      "confirmTitle": "Supprimer {name} ?",
+      "confirmDescription": "La playlist disparaît pour de bon. Ses morceaux restent dans ta bibliothèque.",
+      "deleted": "{name} supprimée",
+      "changeFailed": "Impossible de modifier la playlist",
+      "renameFailed": "Impossible de renommer la playlist",
+      "deleteFailed": "Impossible de supprimer la playlist"
+    },
+    "trackList": {
+      "label": "Morceaux",
+      "disc": "Disque {number}",
+      "play": "Lire {title}",
+      "pause": "Mettre {title} en pause",
+      "more": "Plus pour {title}",
+      "playNext": "Lire ensuite",
+      "addToQueue": "Ajouter à la file",
+      "addToPlaylist": "Ajouter à une playlist…",
+      "goToAlbum": "Aller à l'album",
+      "goToArtist": "Aller à l'artiste"
+    },
+    "addToPlaylist": {
+      "title": "Ajouter à une playlist",
+      "description": {
+        "one": "Ajoute {count} morceau à l'une de tes playlists, ou crées-en une nouvelle.",
+        "many": "Ajoute {count} de morceaux à l'une de tes playlists, ou crées-en une nouvelle.",
+        "other": "Ajoute {count} morceaux à l'une de tes playlists, ou crées-en une nouvelle."
+      },
+      "newPlaylist": "Nouvelle playlist",
+      "namePlaceholder": "Nom",
+      "create": "Créer",
+      "added": {
+        "one": "{count} morceau ajouté à {name}",
+        "many": "{count} de morceaux ajoutés à {name}",
+        "other": "{count} morceaux ajoutés à {name}"
+      },
+      "addFailed": "Impossible d'ajouter à la playlist",
+      "made": {
+        "one": "{name} créée avec {count} morceau",
+        "many": "{name} créée avec {count} de morceaux",
+        "other": "{name} créée avec {count} morceaux"
+      },
+      "makeFailed": "Impossible de créer la playlist"
+    },
+    "player": {
+      "region": "Lecteur de musique",
+      "cantPlay": "Ce morceau ne peut pas être lu pour l'instant.",
+      "previous": "Précédent",
+      "next": "Suivant",
+      "back30": "Reculer de 30 secondes",
+      "forward30": "Avancer de 30 secondes",
+      "pause": "Pause",
+      "stopAndClose": "Arrêter et fermer",
+      "position": "Position",
+      "positionValue": "{position} sur {duration}",
+      "mute": "Couper le son",
+      "unmute": "Remettre le son",
+      "volume": "Volume"
+    },
+    "miniPlayer": {
+      "open": "En cours : {title}, {artist}. Ouvrir le lecteur.",
+      "time": "{position} / {duration}",
+      "chapters": "Chapitres",
+      "lyrics": "Paroles",
+      "queue": "File d'attente"
+    },
+    "nowPlaying": {
+      "title": "En cours de lecture",
+      "speed": "Vitesse {speed}×. Changer la vitesse",
+      "speedValue": "{speed}×",
+      "previousChapter": "Chapitre précédent",
+      "nextChapter": "Chapitre suivant",
+      "shuffle": "Lecture aléatoire",
+      "shuffleOn": "Lecture aléatoire activée",
+      "repeat": "Répéter",
+      "repeatAll": "Répétition de la file",
+      "repeatOne": "Répétition de ce morceau",
+      "sleep": {
+        "label": "Minuteur de mise en veille",
+        "labelSet": "Mise en veille : {left}",
+        "chapterEnd": "fin du chapitre",
+        "minutes": {
+          "one": "{count} minute",
+          "many": "{count} minutes",
+          "other": "{count} minutes"
+        },
+        "hours": {
+          "one": "{count} heure",
+          "many": "{count} heures",
+          "other": "{count} heures"
+        },
+        "endOfChapter": "À la fin de ce chapitre",
+        "turnOff": "Désactiver"
+      },
+      "tabs": "Afficher",
+      "upNext": "À suivre",
+      "lyrics": "Paroles",
+      "chapters": {
+        "label": "Chapitres",
+        "count": {
+          "one": "{count} chapitre",
+          "many": "{count} de chapitres",
+          "other": "{count} chapitres"
+        }
+      },
+      "queue": {
+        "saveAsPlaylist": "Enregistrer comme playlist",
+        "remove": "Retirer {title} de la file"
+      },
+      "lyricsPanel": {
+        "failed": "Impossible de charger les paroles.",
+        "none": "Pas de paroles pour ce morceau.",
+        "source": "Cinemion lit les paroles dans les tags du fichier, ou dans un fichier {file} du même nom placé à côté."
+      }
+    }
+  },
+  "books": {
+    "audiobookCount": {
+      "one": "{count} livre audio",
+      "many": "{count} de livres audio",
+      "other": "{count} livres audio"
+    },
+    "bookCount": {
+      "one": "{count} livre",
+      "many": "{count} de livres",
+      "other": "{count} livres"
+    },
+    "library": {
+      "scanning": "Analyse…",
+      "show": "Afficher",
+      "filters": {
+        "all": "Tout",
+        "listening": "En écoute",
+        "reading": "En cours",
+        "notStarted": "Pas commencés",
+        "unread": "Non lus",
+        "finished": "Terminés"
+      },
+      "genre": "Genre",
+      "allGenres": "Tous les genres",
+      "sortBy": "Trier par",
+      "sorts": {
+        "title": "Titre",
+        "author": "Auteur",
+        "added": "Ajout récent",
+        "year": "Année"
+      },
+      "emptyTitle": "Rien ici pour l'instant",
+      "scanningText": "Cinemion parcourt cette bibliothèque en ce moment. Les livres apparaissent au fur et à mesure.",
+      "emptyAudiobooks": "Les livres audio de {paths} apparaissent ici après une analyse : un dossier de fichiers audio forme un livre, tout comme un seul fichier .m4b.",
+      "emptyBooks": "Les livres EPUB et PDF de {paths} apparaissent ici après une analyse.",
+      "noneListening": "Rien en écoute pour l'instant.",
+      "noneReading": "Rien en cours de lecture pour l'instant.",
+      "noneFinished": "Rien de terminé pour l'instant.",
+      "noneHere": "Rien ici."
+    },
+    "card": {
+      "audiobook": "Livre audio",
+      "finished": "Terminé"
+    },
+    "book": {
+      "notFound": "Livre introuvable",
+      "eyebrow": {
+        "audiobook": "Livre audio",
+        "book": "Livre",
+        "bookPdf": "Livre · PDF"
+      },
+      "readBy": "lu par {narrators}",
+      "pause": "Pause",
+      "continueListening": "Reprendre · encore {left}",
+      "listen": "Écouter",
+      "continueReading": "Reprendre la lecture",
+      "read": "Lire",
+      "fromStart": "Depuis le début",
+      "markUnfinished": "Marquer comme non terminé",
+      "markFinished": "Marquer comme terminé",
+      "saveFailed": "Impossible d'enregistrer",
+      "done": "{percent} % lu",
+      "chapters": "Chapitres",
+      "moreBy": "Plus de {author}"
+    },
+    "reader": {
+      "chapter": "Chapitre",
+      "chapterNumber": "Chapitre {number}",
+      "smaller": "Texte plus petit",
+      "bigger": "Texte plus grand",
+      "themes": {
+        "light": "Page claire",
+        "sepia": "Page sépia",
+        "dark": "Page sombre"
+      },
+      "markFinished": "Marquer comme terminé",
+      "markedFinished": "Marqué comme terminé",
+      "saveFailed": "Impossible d'enregistrer",
+      "frameTitle": "Livre",
+      "previous": "Précédent",
+      "percent": "{percent} %",
+      "next": "Suivant",
+      "finished": "Terminé"
+    }
+  },
+  "photos": {
+    "counts": {
+      "photos": {
+        "one": "{count} photo",
+        "many": "{count} de photos",
+        "other": "{count} photos"
+      },
+      "videos": {
+        "one": "{count} vidéo",
+        "many": "{count} de vidéos",
+        "other": "{count} vidéos"
+      },
+      "items": {
+        "one": "{count} élément",
+        "many": "{count} d'éléments",
+        "other": "{count} éléments"
+      },
+      "albums": {
+        "one": "{count} album",
+        "many": "{count} d'albums",
+        "other": "{count} albums"
+      },
+      "empty": "Vide"
+    },
+    "cover": {
+      "changed": "Couverture de l'album modifiée",
+      "couldntChange": "Impossible de changer la couverture"
+    },
+    "library": {
+      "scanning": "Analyse…",
+      "show": "Afficher",
+      "albums": "Albums",
+      "timeline": "Chronologie",
+      "sortAlbums": "Trier les albums",
+      "sort": {
+        "newest": "Plus récents d'abord",
+        "oldest": "Plus anciens d'abord",
+        "title": "Nom"
+      },
+      "newAlbum": "Nouvel album",
+      "slideshow": "Diaporama",
+      "emptyTitle": "Rien ici pour l'instant",
+      "emptyScanning": "Cinemion parcourt cette bibliothèque en ce moment. Les photos apparaissent au fur et à mesure.",
+      "emptyHint": "Les photos et vidéos de {paths} apparaissent ici après une analyse. Chaque dossier devient un album, et les dates viennent des photos elles-mêmes.",
+      "outsideAlbums": "Photos hors albums",
+      "photos": "Photos",
+      "couldntLoadAlbums": "Impossible de charger les albums"
+    },
+    "newAlbum": {
+      "title": "Nouvel album",
+      "description": "Les albums rassemblent des photos de partout dans cette bibliothèque. Les fichiers restent où ils sont.",
+      "name": "Nom",
+      "placeholder": "Le meilleur de l'été",
+      "create": "Créer",
+      "couldntMake": "Impossible de créer l'album"
+    },
+    "album": {
+      "unavailable": "Cet album n'est pas disponible",
+      "folders": "Dossiers",
+      "madeBy": "Créé par {name}",
+      "slideshow": "Diaporama",
+      "shuffle": "Diaporama aléatoire",
+      "select": "Choisir des photos",
+      "renameAndDescribe": "Renommer et décrire",
+      "editDetails": "Modifier les infos",
+      "automaticCover": "Utiliser la couverture automatique",
+      "delete": "Supprimer l'album",
+      "emptyAlbum": "Pas encore de photo dans cet album",
+      "emptyFolder": "Rien ici que ce profil peut voir",
+      "emptyAlbumHint": "Ouvre une photo n'importe où dans {library} et choisis « Ajouter à un album » dans son menu, ou choisis-en plusieurs avec Choisir.",
+      "emptyAlbumHintNoLibrary": "Ouvre une photo n'importe où dans la bibliothèque et choisis « Ajouter à un album » dans son menu, ou choisis-en plusieurs avec Choisir.",
+      "useAsCover": "Utiliser comme couverture",
+      "takeOut": "Retirer",
+      "tookOut": {
+        "one": "{count} photo retirée de l'album",
+        "many": "{count} de photos retirées de l'album",
+        "other": "{count} photos retirées de l'album"
+      },
+      "tookOutDescription": "Les fichiers eux-mêmes sont toujours à leur place.",
+      "couldntTakeOut": "Impossible de les retirer",
+      "deleteTitle": "Supprimer {title} ?",
+      "deleteDescription": "L'album disparaît ; ses photos restent dans la bibliothèque et sur le disque.",
+      "deleted": "{title} supprimé",
+      "deletedDescription": "Ses photos sont toujours dans la bibliothèque.",
+      "couldntDelete": "Impossible de supprimer l'album",
+      "edit": {
+        "albumTitle": "Renommer et décrire",
+        "folderTitle": "Modifier les infos de l'album",
+        "folderDescription": "Le dossier sur le disque garde son nom ; c'est ce que Cinemion affiche.",
+        "name": "Nom",
+        "description": "Description"
+      }
+    },
+    "selection": {
+      "label": "Photos choisies",
+      "stop": "Arrêter la sélection",
+      "pick": "Choisir des photos",
+      "selected": "{count} choisies",
+      "addToAlbum": "Ajouter à un album"
+    },
+    "list": {
+      "couldntLoad": "Impossible de charger les photos"
+    },
+    "grid": {
+      "photo": "Photo, {when}",
+      "video": "Vidéo, {when}",
+      "photoUndated": "Photo, date inconnue",
+      "videoUndated": "Vidéo, date inconnue",
+      "noDate": "Sans date"
+    },
+    "card": {
+      "years": "{from} – {to}"
+    },
+    "addToAlbum": {
+      "title": "Ajouter à un album",
+      "description": {
+        "one": "Ajoute {count} photo à l'un de tes albums, ou crées-en un nouveau. Les fichiers restent où ils sont.",
+        "many": "Ajoute {count} de photos à l'un de tes albums, ou crées-en un nouveau. Les fichiers restent où ils sont.",
+        "other": "Ajoute {count} photos à l'un de tes albums, ou crées-en un nouveau. Les fichiers restent où ils sont."
+      },
+      "newAlbum": "Nouvel album",
+      "name": "Nom",
+      "create": "Créer",
+      "alreadyIn": "Déjà dans {album}",
+      "added": {
+        "one": "{count} photo ajoutée à {album}",
+        "many": "{count} de photos ajoutées à {album}",
+        "other": "{count} photos ajoutées à {album}"
+      },
+      "couldntAdd": "Impossible d'ajouter à l'album",
+      "made": {
+        "one": "{album} créé avec {count} photo",
+        "many": "{album} créé avec {count} de photos",
+        "other": "{album} créé avec {count} photos"
+      },
+      "couldntMake": "Impossible de créer l'album"
+    },
+    "viewer": {
+      "label": "Visionneuse de photos",
+      "dateUnknown": "Date inconnue",
+      "photo": "Photo, {when}",
+      "video": "Vidéo, {when}",
+      "position": "{context} · {index} sur {count}",
+      "pause": "Pause",
+      "slideshow": "Diaporama",
+      "fullScreen": "Plein écran",
+      "leaveFullScreen": "Quitter le plein écran",
+      "details": "Infos",
+      "download": "Télécharger l'original",
+      "addToAlbum": "Ajouter à un album…",
+      "useAsCover": "Utiliser comme couverture de l'album",
+      "takeOut": "Retirer de cet album",
+      "openFolder": "Ouvrir son dossier",
+      "previous": "Précédente",
+      "around": "Photos autour de celle-ci",
+      "photoNumber": "Photo {number}",
+      "videoNumber": "Vidéo {number}",
+      "takenOut": "Retirée de l'album",
+      "takenOutDescription": "Le fichier lui-même est toujours à sa place.",
+      "couldntTakeOut": "Impossible de la retirer de l'album",
+      "loadingVideo": "Chargement de la vidéo"
+    },
+    "info": {
+      "title": "Infos",
+      "edit": "Modifier les infos",
+      "close": "Fermer les infos",
+      "dateUnknown": "Date inconnue",
+      "cameraClock": "Horloge de l'appareil sur UTC{offset}",
+      "length": "Durée {length}",
+      "megapixels": "{value} Mpx",
+      "camera": "Appareil",
+      "place": "{latitude}, {longitude}",
+      "north": "{value}° N",
+      "south": "{value}° S",
+      "east": "{value}° E",
+      "west": "{value}° O",
+      "openMap": "Ouvrir sur une carte",
+      "folder": "Dossier",
+      "inAlbum": "Dans un album",
+      "inAlbums": "Dans des albums",
+      "tags": "Tags",
+      "rated": "Classé {rating}",
+      "caption": "Légende",
+      "captionPlaceholder": "Que se passe-t-il ici ?",
+      "date": "Date",
+      "dateDescription": "L'heure de la journée reste la même.",
+      "tagsPlaceholder": "Plage, Mira",
+      "tagsDescription": "Sépare-les par des virgules.",
+      "rating": "Classification d'âge",
+      "ratingDefault": "Par défaut de la bibliothèque",
+      "saved": "Infos enregistrées"
+    }
+  },
+  "clips": {
+    "counts": {
+      "clips": {
+        "one": "{count} clip",
+        "many": "{count} de clips",
+        "other": "{count} clips"
+      },
+      "games": {
+        "one": "{count} jeu",
+        "many": "{count} de jeux",
+        "other": "{count} jeux"
+      }
+    },
+    "library": {
+      "scanning": "Analyse…",
+      "show": "Afficher",
+      "games": "Jeux",
+      "allClips": "Tous les clips",
+      "sortGames": "Trier les jeux",
+      "sort": {
+        "recent": "Clips récents",
+        "title": "Nom",
+        "clips": "Le plus de clips"
+      },
+      "emptyTitle": "Rien ici pour l'instant",
+      "emptyScanning": "Cinemion parcourt cette bibliothèque en ce moment. Les clips apparaissent au fur et à mesure.",
+      "emptyHint": "Les clips de {paths} apparaissent ici après une analyse, rangés par jeu d'après les noms que leur a donnés ton logiciel d'enregistrement.",
+      "suggestion": {
+        "one": "Cinemion a une idée du jeu pour {clips} sans jeu, d'après ce qu'on y voit.",
+        "many": "Cinemion a une idée du jeu pour {clips} sans jeu, d'après ce qu'on y voit.",
+        "other": "Cinemion a une idée du jeu pour {clips} sans jeu, d'après ce qu'on y voit."
+      },
+      "haveALook": "Jeter un œil",
+      "newest": "Clips récents",
+      "noGame": "Sans jeu",
+      "noGameLabel": {
+        "one": "Sans jeu, {count} clip",
+        "many": "Sans jeu, {count} de clips",
+        "other": "Sans jeu, {count} clips"
+      },
+      "couldntLoad": "Impossible de charger les jeux"
+    },
+    "browser": {
+      "label": "Clips",
+      "game": "Jeu",
+      "allGames": "Tous les jeux",
+      "noGame": "Sans jeu",
+      "tag": "Tag",
+      "allTags": "Tous les tags",
+      "show": "Afficher",
+      "all": "Tout",
+      "starred": "Favoris",
+      "sortBy": "Trier par",
+      "sort": {
+        "newest": "Plus récents d'abord",
+        "oldest": "Plus anciens d'abord",
+        "longest": "Plus longs d'abord"
+      },
+      "emptyStarred": "Aucun clip en favori",
+      "empty": "Aucun clip ici",
+      "emptyStarredHint": "Mets un clip en favori avec l'étoile sur son image, et il apparaîtra ici.",
+      "emptyTag": "Aucun clip n'a ce tag.",
+      "emptyFilters": "Rien ne correspond à ces filtres.",
+      "selectionLabel": "Clips choisis",
+      "stop": "Arrêter la sélection",
+      "pick": "Choisir des clips",
+      "selected": "{count} choisis",
+      "setGame": "Choisir le jeu",
+      "star": "Favori",
+      "unstar": "Retirer des favoris",
+      "didStar": {
+        "one": "{count} clip mis en favori",
+        "many": "{count} de clips mis en favori",
+        "other": "{count} clips mis en favori"
+      },
+      "didUnstar": "Retirés des favoris",
+      "couldntStar": "Impossible de mettre les clips en favori",
+      "inGame": {
+        "one": "{count} clip est maintenant dans {game}",
+        "many": "{count} de clips sont maintenant dans {game}",
+        "other": "{count} clips sont maintenant dans {game}"
+      },
+      "noGameNow": {
+        "one": "{count} clip n'a plus de jeu",
+        "many": "{count} de clips n'ont plus de jeu",
+        "other": "{count} clips n'ont plus de jeu"
+      },
+      "setGameTitle": {
+        "one": "Choisir le jeu de {count} clip",
+        "many": "Choisir le jeu de {count} de clips",
+        "other": "Choisir le jeu de {count} clips"
+      },
+      "setGameDescription": "Choisis un jeu que tu as, cherche sur Steam, ou tape un nom."
+    },
+    "card": {
+      "noGame": "Sans jeu",
+      "suggestion": "On dirait {game}",
+      "suggestionShort": "{game} ?",
+      "watched": "Vu",
+      "unstar": "Retirer des favoris",
+      "star": "Mettre ce clip en favori",
+      "starred": "Favori",
+      "starTitle": "Favori",
+      "couldntStar": "Impossible de mettre le clip en favori"
+    },
+    "view": {
+      "library": "Bibliothèque",
+      "noGame": "Sans jeu",
+      "unstar": "Retirer des favoris",
+      "star": "Mettre ce clip en favori",
+      "setGame": "Choisir le jeu",
+      "cut": "Couper le clip",
+      "share": "Faire une petite copie à partager",
+      "suggested": "Jeu suggéré",
+      "suggestionSimilar": "On dirait {game}, d'après des clips qui lui ressemblent (sûr à {percent} %).",
+      "suggestionPicture": "On dirait {game}, d'après l'image (sûr à {percent} %).",
+      "useIt": "Choisir",
+      "notThis": "Pas ce jeu",
+      "found": {
+        "folder": "Jeu tiré du nom du dossier",
+        "file": "Jeu tiré du nom du fichier",
+        "tags": "Jeu tiré des tags du fichier",
+        "steam": "Jeu tiré du nom de l'enregistrement Steam",
+        "upload": "Jeu donné par l'appli qui l'a envoyé",
+        "manual": "Jeu choisi à la main"
+      },
+      "moreFrom": "Plus de {game}",
+      "moreWithout": "Plus de clips sans jeu",
+      "setGameTitle": "Choisir le jeu",
+      "setGameDescription": "Choisis un jeu que tu as, cherche sur Steam, ou tape un nom.",
+      "couldntStar": "Impossible de mettre le clip en favori",
+      "inGame": "Il est maintenant dans {game}",
+      "noGameNow": "Il n'a plus de jeu",
+      "couldntChange": "Impossible de changer le jeu"
+    },
+    "game": {
+      "library": "Bibliothèque",
+      "released": "Sorti en {year}",
+      "notFound": "Introuvable en ligne",
+      "playNewest": "Lire le plus récent",
+      "moreOptions": "Plus d'options",
+      "change": "Changer de jeu",
+      "lookUp": "Rechercher à nouveau",
+      "remove": "Retirer le jeu",
+      "changeTitle": "Changer de jeu",
+      "changeDescription": "Choisis le bon jeu pour avoir son nom et ses images, ou tape un nouveau nom. Choisir un autre jeu que tu as y range ces clips.",
+      "removeTitle": "Retirer {title} ?",
+      "removeDescription": "Ses clips restent dans la bibliothèque, dans Sans jeu. Les fichiers ne sont pas touchés.",
+      "renamed": "C'est maintenant {title}",
+      "moved": "Les clips sont maintenant dans {title}",
+      "lookingUp": "Recherche de {title}…",
+      "upToDate": "{title} est à jour",
+      "couldntLookUp": "Impossible de le rechercher",
+      "removed": "{title} a été retiré",
+      "removedDescription": "Ses clips sont maintenant dans Sans jeu.",
+      "couldntRemove": "Impossible de retirer le jeu"
+    },
+    "range": {
+      "pause": "Pause",
+      "play": "Lire la partie choisie",
+      "start": "Début de la partie",
+      "end": "Fin de la partie",
+      "from": "De {time}",
+      "keeps": "Garde {time}",
+      "to": "À {time}"
+    },
+    "setGame": {
+      "game": "Jeu",
+      "placeholder": "Chercher un jeu",
+      "searching": "Recherche",
+      "inLibrary": {
+        "one": "Dans cette bibliothèque · {count} clip",
+        "many": "Dans cette bibliothèque · {count} de clips",
+        "other": "Dans cette bibliothèque · {count} clips"
+      },
+      "typed": "L'appeler « {name} »",
+      "typedHint": "Un jeu avec juste ce nom, sans images",
+      "typeToSearch": "Tape le nom d'un jeu pour le chercher.",
+      "none": "Sans jeu",
+      "noneHint": "Comme les enregistrements du bureau",
+      "couldntSet": "Impossible de choisir le jeu"
+    },
+    "trim": {
+      "title": "Couper le clip",
+      "description": "Fais glisser les poignées sur la partie à garder. Rien n'est converti, donc la qualité reste la même ; c'est pour ça que le début se cale sur l'image clé la plus proche (les traits sur la barre) avant l'endroit choisi.",
+      "cutOriginal": "Couper l'original",
+      "saveCut": "Enregistrer la coupe",
+      "reading": "Lecture du clip",
+      "where": "Où va la coupe",
+      "copy": "Enregistrer comme nouveau clip",
+      "replace": "Remplacer l'original",
+      "copyNote": "La coupe est placée à côté du fichier original, avec le même jeu et les mêmes infos. L'original reste tel quel.",
+      "replaceNote": "Le fichier original est remplacé par la coupe. Ce qui est coupé disparaît pour de bon.",
+      "confirmTitle": "Remplacer l'original ?",
+      "confirmDescription": "Le fichier du clip est raccourci pour de bon. Ce qui est coupé ne pourra pas être récupéré.",
+      "confirmLabel": "Remplacer",
+      "couldntRead": "Impossible de lire le clip",
+      "cut": "Le clip a été coupé",
+      "savedNew": "La coupe a été enregistrée comme nouveau clip",
+      "couldntCut": "Impossible de couper le clip"
+    },
+    "share": {
+      "title": "Faire une petite copie",
+      "description": "Une copie qui tient dans la limite d'envoi d'une appli de discussion, convertie pour que toutes les applis la lisent. Le clip lui-même reste tel quel.",
+      "make": "Faire la copie",
+      "copyLink": "Copier le lien",
+      "what": "Quoi copier",
+      "whole": "Le clip entier",
+      "part": "Une partie",
+      "size": "Taille max",
+      "sizeOption": "{size} Mo",
+      "sound": "Son",
+      "mainTrack": "La piste principale",
+      "track": "Piste {number}",
+      "allTracks": "Toutes les pistes ensemble",
+      "fits": "Donne environ {height}p, {fps} images par seconde. 10 Mo passe dans les applis aux limites les plus basses, comme Discord sans Nitro.",
+      "tooBig": {
+        "one": "{count} seconde ne tient pas dans {size} Mo. Choisis une taille plus grande, ou une partie plus courte.",
+        "many": "{count} de secondes ne tiennent pas dans {size} Mo. Choisis une taille plus grande, ou une partie plus courte.",
+        "other": "{count} secondes ne tiennent pas dans {size} Mo. Choisis une taille plus grande, ou une partie plus courte."
+      },
+      "ready": "Prête : {size}, {height}p. Le lien de téléchargement marche pendant un jour, sans connexion.",
+      "couldntMake": "Impossible de faire la copie",
+      "linkCopied": "Lien copié",
+      "linkCopiedDescription": "Il marche pendant un jour, sans connexion."
+    }
+  },
+  "downloads": {
+    "title": "Téléchargements",
+    "intro": "Gardés sur cet appareil, pour regarder sans connexion.",
+    "introOffline": "Le serveur est injoignable, alors voici ce qui est gardé sur cet appareil.",
+    "storage": "{used} utilisés, {free} libres.",
+    "retryServer": "Réessayer le serveur",
+    "offline": "Hors ligne",
+    "unsupported": {
+      "title": "Ce navigateur ne peut pas garder de téléchargements ici",
+      "text": "Les téléchargements hors ligne demandent que Cinemion soit ouvert en https (ou en localhost sur le serveur lui-même). Avec une simple adresse http, les navigateurs ne le permettent pas. La personne qui gère le serveur peut activer https dans Réglages › HTTPS."
+    },
+    "empty": {
+      "title": "Rien de gardé pour l'instant",
+      "text": "Ouvre un film ou un épisode et utilise son bouton de téléchargement pour le garder sur cet appareil."
+    },
+    "status": {
+      "preparing": "Préparation sur le serveur…",
+      "preparingPercent": "Préparation sur le serveur · {percent} %",
+      "downloading": "Téléchargement · {received}",
+      "downloadingOf": "Téléchargement · {received} sur {size}",
+      "paused": "En pause · {received}",
+      "pausedOf": "En pause · {received} sur {size}",
+      "failed": "Le téléchargement s'est arrêté."
+    },
+    "quality": {
+      "original": "Original",
+      "high": "Haute (1080p)",
+      "medium": "Moyenne (720p)",
+      "small": "Petite (480p)"
+    },
+    "pause": "Pause",
+    "carryOn": "Continuer",
+    "deleteFromDevice": "Supprimer de cet appareil",
+    "delete": {
+      "title": "Supprimer {title} ?",
+      "titleUntitled": "Supprimer ce téléchargement ?",
+      "description": "Il est supprimé de cet appareil seulement. Il reste sur le serveur."
+    },
+    "player": {
+      "missing": "Ce téléchargement n'est pas sur cet appareil. <link>Voir tes téléchargements</link>.",
+      "reloadFirst": "La lecture hors ligne marche après avoir rechargé la page une fois."
+    },
+    "button": {
+      "label": "Télécharger pour regarder hors ligne",
+      "ready": "Téléchargé. Ouvrir les téléchargements",
+      "failed": "Échec du téléchargement. Ouvrir les téléchargements",
+      "progress": "Téléchargement {percent} %. Ouvrir les téléchargements",
+      "description": "{title} est gardé sur cet appareil, pour quand il n'y a pas de connexion. Ta progression est renvoyée au serveur plus tard.",
+      "size": "Taille",
+      "about": "Environ {size}",
+      "asIs": "Lu tel quel, en pleine qualité",
+      "madeOnServer": "Préparé d'abord sur le serveur",
+      "needsHttps": "Les téléchargements demandent https",
+      "needsHttpsDescription": "Les navigateurs ne laissent les sites garder des vidéos que s'ils sont ouverts en https (ou en localhost sur le serveur). Ça s'active dans Réglages › HTTPS.",
+      "sizesFailed": "Impossible d'obtenir les tailles de téléchargement",
+      "started": "Téléchargement lancé",
+      "startedDescription": "Suis-le dans Téléchargements, dans le menu du profil.",
+      "startFailed": "Impossible de lancer le téléchargement"
+    },
+    "episodeSubtitle": "{show} · {episode}",
+    "readyToast": "{title} est prêt à regarder hors ligne",
+    "readyToastUntitled": "Le téléchargement est prêt à regarder hors ligne",
+    "errors": {
+      "copyFailed": "Le serveur n'a pas pu faire la copie.",
+      "stopped": "Le téléchargement s'est arrêté : {status}"
+    }
+  },
+  "settings": {
+    "tabs": {
+      "you": "Toi",
+      "server": "Serveur",
+      "profile": "Ton profil",
+      "device": "Cet appareil",
+      "about": "À propos",
+      "dashboard": "Tableau de bord",
+      "libraries": "Bibliothèques",
+      "users": "Utilisateurs",
+      "playback": "Lecture",
+      "metadata": "Métadonnées",
+      "subtitles": "Sous-titres",
+      "integrations": "Intégrations",
+      "webhooks": "Webhooks",
+      "tasks": "Tâches",
+      "logs": "Journaux",
+      "navigation": "Réglages",
+      "running": {
+        "one": "{count} en cours",
+        "many": "{count} en cours",
+        "other": "{count} en cours"
+      },
+      "backups": "Sauvegardes",
+      "https": "HTTPS",
+      "upkeep": "Entretien"
+    },
+    "about": {
+      "title": "À propos",
+      "intro": "Quel Cinemion c'est, et qui l'aide à savoir ce qu'il y a dans tes bibliothèques.",
+      "version": "Cinemion {version}",
+      "versionOn": "Cinemion {version} sur {name}",
+      "pitch": "Un chez-soi auto-hébergé pour tes films, séries, vidéos, musique et livres. Logiciel libre sous licence GNU General Public License, version 3 ou ultérieure.",
+      "sourceCode": "Code source",
+      "releases": "Versions",
+      "credits": "Crédits"
+    },
+    "profile": {
+      "title": "Ton profil",
+      "intro": "Comment tu apparais dans le choix du profil et partout dans Cinemion.",
+      "changePicture": "Changer la photo de profil",
+      "picture": "Photo de profil",
+      "pictureShown": "Affichée à la place de ton initiale.",
+      "pictureNone": "Envoie une photo, ou garde ton initiale sur ta couleur.",
+      "changePictureButton": "Changer la photo",
+      "uploadPicture": "Envoyer une photo",
+      "name": "Nom",
+      "colour": "Couleur",
+      "colourWithPicture": "Couleur (utilisée si la photo ne charge pas)",
+      "saveChanges": "Enregistrer",
+      "saved": "Profil enregistré",
+      "couldntSave": "Impossible d'enregistrer ton profil",
+      "signIn": "Connexion",
+      "pin": {
+        "title": "Code PIN du profil",
+        "on": "Demandé quand tu choisis ton profil sur un écran partagé.",
+        "off": "N'importe qui peut ouvrir ton profil depuis le choix du profil.",
+        "change": "Changer le code PIN",
+        "set": "Définir un code PIN",
+        "removed": "Code PIN retiré",
+        "couldntRemove": "Impossible de retirer le code PIN",
+        "dialogDescription": "Quatre chiffres, demandés quand ton profil est choisi sur un écran partagé.",
+        "save": "Enregistrer le code PIN",
+        "newPin": "Nouveau code PIN",
+        "saved": "Code PIN enregistré",
+        "couldntSave": "Impossible d'enregistrer le code PIN"
+      },
+      "password": {
+        "title": "Mot de passe",
+        "on": "Connecte-toi en tant que « {username} » sur les nouveaux appareils.",
+        "off": "Pas encore de mot de passe, donc ce profil ne s'ouvre que depuis le choix du profil.",
+        "change": "Changer le mot de passe",
+        "set": "Définir un mot de passe",
+        "save": "Enregistrer le mot de passe",
+        "current": "Mot de passe actuel",
+        "new": "Nouveau mot de passe",
+        "newDescription": "Au moins 6 caractères.",
+        "confirm": "Confirmer le nouveau mot de passe",
+        "mismatch": "Les mots de passe ne correspondent pas.",
+        "changed": "Mot de passe changé",
+        "couldntChange": "Impossible de changer le mot de passe"
+      },
+      "subtitles": {
+        "title": "Sous-titres",
+        "previewLine1": "Tu as entendu ça ?",
+        "previewLine2": "Il y a quelque chose dehors.",
+        "size": "Taille",
+        "sizes": {
+          "small": "Petite",
+          "medium": "Moyenne",
+          "large": "Grande",
+          "huge": "Énorme"
+        },
+        "colour": "Couleur",
+        "colours": {
+          "white": "Blanc",
+          "yellow": "Jaune",
+          "cyan": "Cyan",
+          "green": "Vert"
+        },
+        "background": "Fond",
+        "backgrounds": {
+          "box": "Cadre sombre",
+          "shadow": "Contour"
+        },
+        "keepStyling": "Garder le style des sous-titres stylisés",
+        "keepStylingDescription": "Les sous-titres ASS, courants pour l'anime, ont leurs propres polices, couleurs et positions. Désactivé, ils prennent le style ci-dessus comme tous les autres sous-titres."
+      },
+      "trakt": {
+        "linked": "Lié",
+        "linkedAs": "Lié en tant que {name}",
+        "linkedDescription": "Ce que tu regardes est envoyé à ton historique Trakt pendant la lecture, tout comme ce que tu marques comme vu.",
+        "unlink": "Délier",
+        "importTitle": "Récupérer ton historique",
+        "importDescription": "Marque comme vu ici tout ce que tu as vu sur Trakt, pour ce qui est dans tes bibliothèques.",
+        "importButton": "Récupérer",
+        "keepUpToDate": "Garde ton historique Trakt à jour",
+        "linkDescription": "Lie ton compte Trakt et ce que tu regardes ici y sera ajouté.",
+        "link": "Lier Trakt",
+        "goTo": "Va sur {url} et saisis",
+        "waiting": "En attente de Trakt…",
+        "isLinked": "Trakt est lié",
+        "signedInAs": "Connecté en tant que {name}.",
+        "declined": "La connexion à Trakt a été refusée",
+        "expired": "Le code a expiré",
+        "startAgain": "Recommence pour avoir un nouveau code.",
+        "couldntLink": "Impossible de lier Trakt",
+        "couldntStart": "Impossible de lancer la liaison",
+        "imported": "{movies} et {episodes} marqués comme vus",
+        "movies": {
+          "one": "{count} film",
+          "many": "{count} de films",
+          "other": "{count} films"
+        },
+        "episodes": {
+          "one": "{count} épisode",
+          "many": "{count} d'épisodes",
+          "other": "{count} épisodes"
+        },
+        "upToDate": "Tout était déjà à jour",
+        "couldntImport": "Impossible de récupérer l'historique",
+        "couldntUnlink": "Impossible de délier Trakt"
+      }
+    },
+    "device": {
+      "title": "Cet appareil",
+      "intro": "Ces réglages sont enregistrés dans ce navigateur seulement.",
+      "layout": "Disposition",
+      "layoutAuto": {
+        "desktop": "Choisie automatiquement. Cet appareil utilise la disposition Ordinateur.",
+        "mobile": "Choisie automatiquement. Cet appareil utilise la disposition Mobile.",
+        "tv": "Choisie automatiquement. Cet appareil utilise la disposition Télé."
+      },
+      "layoutFixed": {
+        "desktop": "Toujours utiliser la disposition Ordinateur.",
+        "mobile": "Toujours utiliser la disposition Mobile.",
+        "tv": "Toujours utiliser la disposition Télé."
+      },
+      "mediahub": "Fonctionne dans MediaHub.",
+      "layouts": {
+        "desktop": "Ordinateur",
+        "mobile": "Mobile",
+        "tv": "Télé"
+      },
+      "tvHelp": "La disposition Télé est faite pour le canapé : tout est plus grand, et tu te déplaces avec les flèches, une télécommande ou une manette. Ouvre Cinemion avec {param} à la fin de l'adresse pour passer directement une télé dessus.",
+      "theme": "Thème",
+      "themeSystem": {
+        "dark": "Suit le réglage de cet appareil, qui est sombre en ce moment.",
+        "light": "Suit le réglage de cet appareil, qui est clair en ce moment."
+      },
+      "themeFixed": "Les vidéos sont toujours lues sur un écran sombre.",
+      "themes": {
+        "dark": "Sombre",
+        "light": "Clair",
+        "system": "Comme l'appareil"
+      },
+      "playback": "Lecture",
+      "speakers": "Haut-parleurs",
+      "speakersDescription": "Le son surround que cet appareil ne peut pas lire est converti en ce qu'il peut lire. Avec un ampli ou une barre de son, le Dolby Digital est transmis tel quel pour qu'il le décode.",
+      "speakerOptions": {
+        "auto": "Automatique (surround sur les télés, stéréo ailleurs)",
+        "stereo": "Stéréo",
+        "surround51": "Surround 5.1",
+        "surround71": "Surround 7.1",
+        "passthrough": "Ampli ou barre de son (transmettre le Dolby Digital)"
+      },
+      "intros": "Intros",
+      "introsDescription": "Cinemion trouve les intros des séries en comparant leurs épisodes, ou grâce à leurs chapitres.",
+      "introOptions": {
+        "button": "Afficher Passer",
+        "auto": "Passer tout seul"
+      }
+    },
+    "playback": {
+      "title": "Lecture",
+      "intro": "Comment Cinemion convertit les vidéos pour les appareils qui ne peuvent pas lire le fichier original.",
+      "saveChanges": "Enregistrer",
+      "couldntLoad": "Impossible de charger les réglages de lecture",
+      "saved": "Réglages de lecture enregistrés",
+      "savedDescription": "Ils s'appliquent aux vidéos lancées à partir de maintenant.",
+      "hardware": "Accélération matérielle",
+      "methods": {
+        "off": "Désactivée",
+        "noneDescription": "Convertir sur le processeur. Marche partout, mais la 4K est lente.",
+        "vaapiDescription": "Cartes graphiques Intel et AMD sous Linux.",
+        "qsvDescription": "Cartes graphiques Intel, souvent un peu plus rapide que VA-API.",
+        "nvencDescription": "Cartes graphiques NVIDIA."
+      },
+      "alwaysAvailable": "Toujours disponible",
+      "looking": "Recherche…",
+      "detected": "Détectée",
+      "notDetected": "Non détectée",
+      "gpu": "Carte graphique",
+      "gpuDescription": "Le périphérique de rendu. Dans Docker, transmets-le avec {flag}.",
+      "decodeOnGpu": "Décoder ceux-ci sur la carte graphique",
+      "decodeDescription": "Désactive les codecs que ta carte graphique ne sait pas décoder ; ils sont décodés sur le processeur et quand même convertis sur la carte graphique.",
+      "runTest": "Lancer un test",
+      "testing": "Conversion d'un clip 1080p de 5 secondes…",
+      "converting": "Conversion",
+      "maxConversions": "Conversions simultanées",
+      "maxConversionsDescription": "Au-delà, elles sont refusées jusqu'à ce qu'une s'arrête. La lecture directe et le réemballage ne comptent pas.",
+      "preset": "Préréglage de qualité",
+      "presetDescription": "Les préréglages rapides utilisent moins le processeur mais rendent un peu moins bien au même débit.",
+      "presets": {
+        "fast": "Rapide",
+        "balanced": "Équilibré",
+        "quality": "Qualité"
+      },
+      "remoteLimit": "Limite des flux à distance",
+      "remoteLimitDescription": "Par flux, pour les spectateurs hors de ton réseau local.",
+      "noLimit": "Pas de limite",
+      "toneMapping": "Convertir le HDR en SDR",
+      "toneMappingDescription": "Garde des couleurs justes sur les écrans sans HDR.",
+      "seekThumbnails": "Créer des miniatures de navigation",
+      "seekThumbnailsDescription": "Petites images au-dessus de la barre de lecture. Créées en arrière-plan après une analyse, et à la première lecture d'une vidéo.",
+      "remoteConversion": "Autoriser la conversion pour les spectateurs à distance",
+      "remoteConversionDescription": "Désactivé, les spectateurs hors de ton réseau n'ont que les fichiers que leur appareil lit tels quels.",
+      "cache": "Cache de conversion",
+      "cacheDetails": "{folder} · {size} · vidé quand la lecture s'arrête. Les miniatures de navigation utilisent {thumbnails}.",
+      "checking": "Vérification…",
+      "clearNow": "Vider maintenant",
+      "cacheCleared": "Cache de conversion vidé",
+      "cacheClearedDescription": "Ceux qui regardent une vidéo convertie doivent la relancer.",
+      "couldntClear": "Impossible de vider le cache"
+    },
+    "metadata": {
+      "title": "Métadonnées",
+      "intro": "D'où viennent les affiches, résumés et le casting. Les sources en haut de la liste l'emportent en cas de désaccord.",
+      "saveChanges": "Enregistrer",
+      "couldntLoad": "Impossible de charger les réglages des métadonnées",
+      "saved": "Réglages des métadonnées enregistrés",
+      "savedDescription": "Utilise « Actualiser toutes les infos » sur une bibliothèque pour les appliquer à ce qui s'y trouve déjà."
+    },
+    "subtitles": {
+      "title": "Sous-titres",
+      "intro": "Cherche des sous-titres en ligne depuis le lecteur, ou laisse Cinemion les récupérer pour les nouveaux films et épisodes. Les fichiers de sous-titres à côté de tes vidéos sont pris en compte tout seuls.",
+      "saveChanges": "Enregistrer",
+      "couldntLoad": "Impossible de charger les réglages des sous-titres",
+      "saved": "Réglages des sous-titres enregistrés",
+      "automatic": "Téléchargements automatiques",
+      "autoDownload": "Télécharger les sous-titres tout seul",
+      "autoDownloadDescription": "Les films et épisodes sans sous-titres dans une de tes langues reçoivent les meilleurs que les sites proposent, en privilégiant ceux faits pour le fichier exact. Ce qui n'est pas trouvé est recherché à nouveau après un jour, trois jours, une semaine, et ainsi de suite.",
+      "noSite": "Active au moins un site de sous-titres ci-dessous pour que ça trouve quelque chose.",
+      "sites": "Sites de sous-titres",
+      "openSubtitlesHelp": "Crée un compte gratuit sur <link>opensubtitles.com</link>, puis ajoute un API consumer dans les réglages API de ton profil et colle sa clé ici. La connexion est facultative ; elle augmente le nombre de téléchargements par jour.",
+      "apiKey": "Clé API",
+      "username": "Nom d'utilisateur",
+      "optional": "Facultatif",
+      "password": "Mot de passe",
+      "passwordSaved": "Enregistré. Tapes-en un nouveau pour le changer.",
+      "subdlHelp": "Un site gratuit avec un gros catalogue. Crée un compte sur <link>subdl.com</link> et copie la clé API depuis la page de ton compte.",
+      "podnapisiDescription": "Chercher aussi sur podnapisi.net. Pas besoin de compte ; ses sous-titres sont trouvés par titre, donc leur synchro peut être un peu décalée.",
+      "languages": "Langues",
+      "languagesDescription": "Proposées en premier lors d'une recherche, et celles téléchargées automatiquement.",
+      "saveNextToVideo": "Enregistrer à côté du fichier vidéo",
+      "saveNextToVideoDescription": "Désactivé, ou si le dossier des médias est en lecture seule (comme dans Docker avec :ro), les téléchargements sont gardés dans le dossier de configuration."
+    },
+    "games": {
+      "couldntLoad": "Impossible de charger les réglages des jeux",
+      "saved": "Réglages des jeux enregistrés",
+      "title": "Jeux",
+      "intro": "Les bibliothèques de clips rangent les clips par jeu d'après les noms de leurs fichiers et dossiers, et cherchent les jeux pour avoir leur vrai nom, leur jaquette et leurs images.",
+      "lookups": "Chercher les jeux en ligne",
+      "lookupsDescription": "Sur la boutique Steam, qui ne demande pas de clé et connaît la plupart des jeux PC.",
+      "steamGridDbKey": "Clé API SteamGridDB (facultatif)",
+      "steamGridDbDescription": "Trouve les jeux qui ne sont pas sur Steam, comme VALORANT ou League of Legends, et des images que Steam n'a pas. Obtiens une clé gratuite dans tes <link>préférences SteamGridDB</link>.",
+      "saveKey": "Enregistrer la clé",
+      "recognition": {
+        "title": "Reconnaissance d'image",
+        "intro": "Pour les clips dont le nom ne dit pas le jeu, comme les enregistrements OBS : Cinemion regarde quelques images de chaque clip et suggère un jeu quand un clip ressemble à ceux à qui tu as déjà donné un jeu (ou, au mieux, à un jeu qu'il connaît). Les suggestions ne sont appliquées que si tu le dis. Ça tourne sur le processeur de ce serveur, un clip à la fois, et rien ne quitte le serveur.",
+        "checking": "Vérification…",
+        "installed": "Installée",
+        "downloading": "Téléchargement… {percent}",
+        "failed": "Le téléchargement n'a pas marché",
+        "notInstalled": "Pas installée",
+        "pending": {
+          "one": "{count} clip n'a pas encore été regardé.",
+          "many": "{count} de clips n'ont pas encore été regardés.",
+          "other": "{count} clips n'ont pas encore été regardés."
+        },
+        "allDone": "Tous les clips ont été regardés.",
+        "downloadSize": "Un téléchargement unique de {size} : un modèle d'image (CLIP) et de quoi le faire tourner.",
+        "runNow": "Regarder les clips maintenant",
+        "autoSuggest": "Suggérer des jeux après chaque analyse",
+        "autoSuggestDescription": "Les nouveaux clips sans jeu reçoivent une suggestion tout seuls. Désactivé, ça ne tourne qu'avec « Regarder les clips maintenant ».",
+        "removeTitle": "Retirer la reconnaissance d'image ?",
+        "removeDescription": "Le téléchargement est supprimé. Les suggestions déjà faites restent, et ce qu'elle a vu dans les clips est gardé pour quand elle sera téléchargée à nouveau.",
+        "couldntDownload": "Impossible de télécharger la reconnaissance d'image",
+        "couldntRemove": "Impossible de retirer la reconnaissance d'image",
+        "started": "Analyse des clips",
+        "startedDescription": "Les suggestions apparaissent sur les clips sans jeu. Tâches montre où ça en est.",
+        "couldntStart": "Impossible de lancer"
+      }
+    }
+  },
+  "language": {
+    "title": "Langue",
+    "label": "Langue de l'interface",
+    "automatic": "Comme ce navigateur ({language})",
+    "description": "Seulement pour ce profil. Les titres, résumés et autres infos gardent la langue choisie dans Réglages › Métadonnées.",
+    "helpTranslate": "La tienne manque ? Cinemion peut être traduit dans n'importe quelle langue ; <link>voici comment</link>."
+  },
+  "colors": {
+    "sky": "ciel",
+    "coral": "corail",
+    "mint": "menthe",
+    "violet": "violet",
+    "amber": "ambre",
+    "rose": "rose",
+    "teal": "sarcelle",
+    "slate": "ardoise"
+  },
+  "avatarEditor": {
+    "title": "Photo de profil",
+    "descriptionCrop": "Fais glisser la photo pour la placer.",
+    "descriptionPick": "Choisis une photo. Tu pourras la recadrer ensuite.",
+    "choose": "Choisir une photo",
+    "hint": "JPG, PNG ou WebP, jusqu'à 10 Mo",
+    "zoom": "Zoom",
+    "preview": "Aperçu",
+    "previews": {
+      "picker": "Choix du profil",
+      "topBar": "Barre du haut",
+      "badges": "Pastilles"
+    },
+    "sizesHint": "Enregistrée dans toutes les tailles dont Cinemion a besoin, du choix du profil jusqu'aux petites pastilles du visionnage commun.",
+    "chooseAnother": "Choisir une autre photo",
+    "removePicture": "Retirer la photo et utiliser les initiales",
+    "save": "Enregistrer la photo",
+    "cantOpen": "Ce navigateur ne peut pas ouvrir cette image",
+    "cantOpenDescription": "Essaie un JPG, PNG ou WebP.",
+    "couldntPrepare": "Impossible de préparer l'image.",
+    "saved": "Photo de profil enregistrée",
+    "couldntSave": "Impossible d'enregistrer la photo",
+    "removed": "Photo de profil retirée",
+    "couldntRemove": "Impossible de retirer la photo"
+  },
+  "pinPad": {
+    "entered": {
+      "one": "{entered} chiffre sur {count} saisi",
+      "many": "{entered} chiffres sur {count} saisis",
+      "other": "{entered} chiffres sur {count} saisis"
+    },
+    "delete": "Effacer"
+  },
+  "metadataForm": {
+    "sources": "Sources de métadonnées, par ordre de priorité",
+    "providers": {
+      "local": "Tes fichiers",
+      "localDescription": "Fichiers NFO et images à côté de tes vidéos",
+      "tmdbDescription": "Base de données en ligne de films et séries",
+      "tvdbDescription": "Base de données en ligne de séries, forte sur l'anime et l'ordre des épisodes"
+    },
+    "moveUp": "Monter {name}",
+    "moveDown": "Descendre {name}",
+    "tmdb": {
+      "ownKey": "Ta propre clé API (facultatif)",
+      "apiKey": "Clé API",
+      "builtInPlaceholder": "Utilise la clé intégrée à Cinemion",
+      "placeholder": "Colle ta clé API TMDB ou ton jeton d'accès en lecture",
+      "builtInDescription": "TMDB marche sans clé. Ajoute la tienne si la clé intégrée ne marche plus ou si tu préfères utiliser la tienne. <link>Comment en obtenir une</link>",
+      "description": "Gratuite avec un compte TMDB. <link>Comment en obtenir une</link>"
+    },
+    "tvdb": {
+      "apiKey": "Clé API",
+      "placeholder": "Colle la clé API de ton projet TheTVDB",
+      "description": "Depuis un compte TheTVDB. <link>Comment en obtenir une</link>",
+      "pin": "PIN d'abonné (facultatif)",
+      "pinDescription": "Seulement pour les clés liées à un abonnement TheTVDB."
+    },
+    "omdb": {
+      "label": "Clé API OMDb, pour les notes (facultatif)",
+      "placeholder": "Colle ta clé API OMDb",
+      "description": "Ajoute les notes IMDb, Rotten Tomatoes et Metacritic aux films et séries qui ont un identifiant IMDb. Les clés gratuites permettent 1000 recherches par jour. <link>Comment en obtenir une</link>"
+    },
+    "language": "Langue",
+    "languages": {
+      "en": "Anglais",
+      "nl": "Néerlandais",
+      "de": "Allemand",
+      "fr": "Français",
+      "es": "Espagnol",
+      "it": "Italien",
+      "pt": "Portugais",
+      "sv": "Suédois",
+      "da": "Danois",
+      "no": "Norvégien",
+      "ja": "Japonais"
+    },
+    "country": "Pays (pour les classifications d'âge)",
+    "countries": {
+      "us": "États-Unis",
+      "gb": "Royaume-Uni",
+      "nl": "Pays-Bas",
+      "de": "Allemagne",
+      "fr": "France",
+      "es": "Espagne",
+      "it": "Italie",
+      "se": "Suède",
+      "dk": "Danemark",
+      "no": "Norvège",
+      "jp": "Japon"
+    }
+  },
+  "ratings": {
+    "g": "G / Tous publics",
+    "pg": "PG",
+    "age12": "12",
+    "pg13": "PG-13",
+    "age16": "16",
+    "r": "R",
+    "age18": "18"
+  },
+  "admin": {
+    "dashboard": {
+      "title": "Tableau de bord",
+      "serverLine": "{name} · Cinemion {version} · en marche depuis {uptime}",
+      "serverLineUpdate": "{name} · Cinemion {version} ({update}) · en marche depuis {uptime}",
+      "updateOut": "{version} est sorti",
+      "scanAll": "Analyser toutes les bibliothèques",
+      "scanStarted": "Analyse de toutes les bibliothèques",
+      "scanFailed": "Impossible de lancer l'analyse",
+      "stats": {
+        "streams": "Flux",
+        "maxConversions": {
+          "one": "Jusqu'à {count} conversion à la fois",
+          "many": "Jusqu'à {count} de conversions à la fois",
+          "other": "Jusqu'à {count} conversions à la fois"
+        },
+        "streamKinds": "{direct} en direct · {converting} en conversion",
+        "cpu": "Processeur",
+        "cores": {
+          "one": "{count} cœur",
+          "many": "{count} de cœurs",
+          "other": "{count} cœurs"
+        },
+        "coresMemory": {
+          "one": "{count} cœur · {memory} de mémoire",
+          "many": "{count} de cœurs · {memory} de mémoire",
+          "other": "{count} cœurs · {memory} de mémoire"
+        },
+        "gpu": "Carte graphique ({name})",
+        "hardwareConversions": {
+          "one": "{count} conversion matérielle",
+          "many": "{count} de conversions matérielles",
+          "other": "{count} conversions matérielles"
+        },
+        "usageNotReported": "Utilisation non communiquée",
+        "noConversions": "Aucune conversion",
+        "memory": "Mémoire",
+        "memoryOf": "sur {total}",
+        "notReported": "Non communiqué",
+        "storage": "Stockage",
+        "storageOnMount": "sur {total} sur {mount}",
+        "storageOnDrives": {
+          "one": "sur {total} sur {count} disque",
+          "many": "sur {total} sur {count} de disques",
+          "other": "sur {total} sur {count} disques"
+        },
+        "drivesUnreadable": "Impossible de lire les disques"
+      },
+      "nowPlaying": "En cours de lecture",
+      "nothingPlaying": "Rien n'est en lecture en ce moment.",
+      "stream": {
+        "awayFromHome": "{device} · hors de la maison",
+        "paused": "En pause"
+      },
+      "tasks": "Tâches",
+      "allTasks": "Toutes les tâches",
+      "libraryScan": "Analyse de bibliothèque · {library}",
+      "nothingRunning": "Rien en cours.",
+      "activity": "Activité",
+      "noActivity": "Rien ne s'est encore passé."
+    },
+    "tasks": {
+      "title": "Tâches",
+      "intro": "Le travail que Cinemion fait en arrière-plan, et quand il analyse tes bibliothèques tout seul.",
+      "startFailed": "Impossible de lancer ça",
+      "running": "En cours",
+      "nothingRunning": "Rien n'est en cours en ce moment.",
+      "runNow": "Lancer maintenant",
+      "actions": {
+        "scan": {
+          "title": "Analyser toutes les bibliothèques",
+          "text": "Chercher les fichiers nouveaux, modifiés et supprimés dans chaque bibliothèque.",
+          "button": "Analyser",
+          "started": "Analyse de toutes les bibliothèques"
+        },
+        "refresh": {
+          "title": "Actualiser toutes les infos",
+          "text": "Récupérer à nouveau les infos et images de chaque titre. Ça prend un moment sur les grosses bibliothèques.",
+          "button": "Actualiser",
+          "started": "Actualisation des infos de chaque titre"
+        },
+        "thumbnails": {
+          "title": "Créer les miniatures de navigation manquantes",
+          "text": "Les images qui s'affichent quand tu fais glisser la barre d'une vidéo. Les nouvelles vidéos les ont toutes seules.",
+          "button": "Créer les miniatures",
+          "started": "Création des miniatures de navigation manquantes"
+        },
+        "markers": {
+          "title": "Retrouver les intros et génériques",
+          "text": "Comparer à nouveau les épisodes de chaque saison et relire les chapitres, pour Passer l'intro et lancer l'épisode suivant plus tôt. Les nouveaux épisodes sont examinés tout seuls.",
+          "button": "Rechercher",
+          "started": "Recherche des intros et génériques"
+        },
+        "subtitles": {
+          "title": "Télécharger les sous-titres manquants",
+          "text": "Chercher des sous-titres dans tes langues pour chaque film et épisode qui n'en a pas, même ceux cherchés récemment. Avec les téléchargements automatiques activés, ça se fait aussi une fois par jour.",
+          "button": "Chercher",
+          "started": "Recherche des sous-titres manquants"
+        },
+        "remake": {
+          "title": "Refaire toutes les miniatures de navigation",
+          "text": "Supprimer toutes les miniatures de navigation et les refaire, une vidéo à la fois.",
+          "button": "Refaire",
+          "confirmTitle": "Refaire toutes les miniatures de navigation ?",
+          "confirmDescription": "Chaque vidéo reçoit de nouvelles miniatures, l'une après l'autre. Tant que son tour n'est pas venu, une vidéo n'en a pas.",
+          "confirm": "Refaire les miniatures",
+          "started": "Recréation de toutes les miniatures de navigation"
+        }
+      },
+      "schedule": "Planning",
+      "scanEvery": "Analyser les bibliothèques toutes les",
+      "scanEveryDescription": "Les nouveaux fichiers apparaissent en général en moins d'une minute de toute façon. Les analyses planifiées rattrapent ce que la surveillance des dossiers rate, comme les changements sur les partages réseau.",
+      "hours": {
+        "one": "{count} heure",
+        "many": "{count} heures",
+        "other": "{count} heures"
+      },
+      "intervalSaved": {
+        "one": "Les bibliothèques sont analysées toutes les heures",
+        "many": "Les bibliothèques sont analysées toutes les {count} heures",
+        "other": "Les bibliothèques sont analysées toutes les {count} heures"
+      },
+      "scanned": "Analysée {ago} · prochaine {next}",
+      "notScanned": "Pas encore analysée · prochaine {next}",
+      "recentlyFinished": "Terminées récemment",
+      "nothingFinished": "Rien ne s'est terminé depuis le démarrage du serveur.",
+      "history": {
+        "failed": "Échec",
+        "done": "Terminé",
+        "failedAgo": "{error} · {ago}",
+        "tookAgo": "A pris {duration} · {ago}",
+        "seconds": "{count} s",
+        "minutes": "{count} min"
+      }
+    },
+    "logs": {
+      "title": "Journaux",
+      "intro": {
+        "one": "La dernière ligne du journal du serveur. Pratique quand quelque chose ne marche pas.",
+        "many": "Les {count} dernières lignes du journal du serveur, les plus récentes en premier. Pratique quand quelque chose ne marche pas.",
+        "other": "Les {count} dernières lignes du journal du serveur, les plus récentes en premier. Pratique quand quelque chose ne marche pas."
+      },
+      "show": "Afficher",
+      "filters": {
+        "all": "Tout",
+        "info": "Info",
+        "warn": "Avertissements",
+        "error": "Erreurs"
+      },
+      "searchPlaceholder": "Mots du message",
+      "noMatch": "Aucune ligne ne correspond.",
+      "lines": "Lignes du journal",
+      "levels": {
+        "debug": "Débogage",
+        "info": "Info",
+        "warn": "Avertissement",
+        "error": "Erreur"
+      }
+    },
+    "users": {
+      "title": "Utilisateurs",
+      "intro": "Chaque personne de la maison a son propre profil, son historique et ses réglages.",
+      "addProfile": "Ajouter un profil",
+      "you": "{name} (toi)",
+      "roles": {
+        "admin": "Admin",
+        "user": "Profil"
+      },
+      "badges": {
+        "pin": "PIN",
+        "pickerOnly": "Choix du profil seulement",
+        "upTo": "Jusqu'à {rating}",
+        "hidden": "Masqué du choix du profil"
+      },
+      "edit": "Modifier {name}",
+      "dialog": {
+        "addTitle": "Ajouter un profil",
+        "editTitle": "Modifier {name}",
+        "addDescription": "Un profil pour quelqu'un de la maison. Il aura son propre historique.",
+        "saveChanges": "Enregistrer",
+        "picture": "Photo de profil",
+        "pictureUploaded": "Photo envoyée.",
+        "pictureInitial": "Initiale sur sa couleur.",
+        "changePicture": "Changer",
+        "name": "Nom",
+        "username": "Nom d'utilisateur",
+        "usernamePlaceholder": "Tiré du nom",
+        "colour": "Couleur",
+        "role": "Rôle",
+        "ratingLimit": "Limite de classification d'âge",
+        "noLimit": "Pas de limite",
+        "showOnPicker": "Afficher dans le choix du profil",
+        "showOnPickerDescription": "Les profils masqués se connectent avec leur nom d'utilisateur et leur mot de passe.",
+        "newPin": "Nouveau code PIN",
+        "pin": "Code PIN",
+        "keepIt": "Laisse vide pour le garder",
+        "pinPlaceholder": "Facultatif, 4 chiffres",
+        "pinInvalid": "Le code PIN doit faire exactement 4 chiffres.",
+        "removePin": "Retirer le code PIN",
+        "newPassword": "Nouveau mot de passe",
+        "password": "Mot de passe",
+        "passwordPlaceholder": "Facultatif",
+        "passwordDescription": "Sans mot de passe, ce profil ne peut s'ouvrir que depuis le choix du profil.",
+        "passwordInvalid": "Utilise au moins 6 caractères."
+      },
+      "added": "{name} a été ajouté",
+      "saved": "Changements enregistrés",
+      "pinRemoved": "Code PIN retiré",
+      "pinRemoveFailed": "Impossible de retirer le code PIN",
+      "removed": "{name} a été retiré",
+      "removeFailed": "Impossible de retirer l'utilisateur",
+      "remove": {
+        "title": "Retirer {name} ?",
+        "description": "Son profil, sa photo et son historique sont supprimés. C'est définitif."
+      }
+    },
+    "integrations": {
+      "title": "Intégrations",
+      "intro": "Laisse Sonarr et Radarr prévenir Cinemion des nouveaux téléchargements, pour qu'ils apparaissent tout de suite, connecte des applis comme Seerr et Homepage, et laisse les profils garder leur historique Trakt à jour.",
+      "saveChanges": "Enregistrer",
+      "loadFailed": "Impossible de charger les intégrations",
+      "copyFailed": "Impossible de copier",
+      "copyItByHand": "Sélectionne-le et copie-le à la main.",
+      "arr": {
+        "title": "Sonarr et Radarr",
+        "address": "Adresse du webhook",
+        "copied": "Adresse copiée",
+        "copyByHand": "Sélectionne l'adresse et copie-la à la main.",
+        "localhostHint": "Tu as ouvert Cinemion en tant que {host}, que Sonarr et Radarr ne peuvent pas joindre depuis un autre ordinateur ou conteneur. Ouvre Cinemion par son adresse réseau (comme {example}) et copie l'adresse depuis là.",
+        "steps": {
+          "connect": "Dans Sonarr ou Radarr, ouvre <strong>Settings → Connect</strong>, clique sur <strong>+</strong> et choisis <strong>Webhook</strong>.",
+          "paste": "Colle l'adresse ci-dessus dans <strong>URL</strong> et laisse la méthode sur <strong>POST</strong>.",
+          "events": "Coche <strong>On File Import</strong>, <strong>On File Upgrade</strong>, <strong>On Rename</strong> et les événements <strong>Delete</strong>.",
+          "test": "Clique sur <strong>Test</strong>. Cinemion affiche ci-dessous qu'il l'a reçu."
+        },
+        "lastEvent": "{event}, {ago}. {result}",
+        "eventName": "{app} · {eventType}",
+        "nothingReceived": "Rien reçu pour l'instant.",
+        "newAddress": {
+          "title": "Nouvelle adresse",
+          "text": "Si l'adresse a fuité, crées-en une nouvelle. L'ancienne cesse de marcher, alors colle la nouvelle dans Sonarr et Radarr.",
+          "button": "Créer une nouvelle adresse",
+          "made": "Nouvelle adresse créée",
+          "madeDescription": "Colle-la à nouveau dans Sonarr et Radarr.",
+          "failed": "Impossible de créer une nouvelle adresse",
+          "confirmTitle": "Créer une nouvelle adresse ?",
+          "confirmDescription": "Sonarr et Radarr ne pourront plus joindre Cinemion avec l'ancienne adresse tant que tu n'y auras pas collé la nouvelle."
+        }
+      },
+      "mappings": {
+        "title": "Correspondances de chemins",
+        "text": "Seulement utile quand Sonarr ou Radarr voient tes médias dans un autre dossier que Cinemion, comme {theirs} dans leur conteneur et {ours} ici. Les dossiers à l'intérieur d'un dossier associé sont associés aussi.",
+        "theirFolder": "Leur dossier",
+        "ourFolder": "Dossier de Cinemion",
+        "remove": "Retirer cette correspondance",
+        "add": "Ajouter une correspondance",
+        "saved": "Correspondances de chemins enregistrées"
+      },
+      "apps": {
+        "title": "Seerr, Homepage et autres applis",
+        "text": "Les applis faites pour d'autres serveurs multimédias peuvent utiliser Cinemion à la place. Dans Seerr, choisis le serveur multimédia qui se connecte avec une adresse de serveur, un nom d'utilisateur et un mot de passe, donne-lui l'adresse ci-dessous, et connecte-toi avec tes identifiants Cinemion : il voit ce qu'il y a dans tes bibliothèques et renvoie ici. Le widget serveur multimédia de Homepage peut afficher ce qui est en lecture et la taille de tes bibliothèques avec une clé créée ci-dessous.",
+        "serverAddress": "Adresse du serveur",
+        "addressCopied": "Adresse copiée",
+        "keyCopied": "Clé copiée",
+        "madeBy": "Créée par {name}, {ago}",
+        "madeByRemoved": "Créée {ago} par un profil qui a été retiré, donc elle ne marche pas",
+        "copyKey": "Copier la clé pour {app}",
+        "removeKey": "Retirer la clé pour {app}",
+        "newKeyFor": "Nouvelle clé pour",
+        "makeKey": "Créer la clé",
+        "makeFailed": "Impossible de créer une clé",
+        "removed": "Clé retirée",
+        "removedDescription": "{app} ne peut plus joindre Cinemion avec.",
+        "removeFailed": "Impossible de retirer la clé",
+        "confirmTitle": "Retirer la clé pour {app} ?",
+        "confirmDescription": "L'appli qui l'utilise ne pourra plus joindre Cinemion tant qu'elle n'aura pas une nouvelle clé.",
+        "confirm": "Retirer la clé"
+      },
+      "podium": {
+        "title": "Podium",
+        "text": "Podium peut envoyer des clips directement dans une bibliothèque. Crée une cible pour chaque bibliothèque où envoyer, puis ajoute un serveur compatible Podium dans Podium avec l'URL du serveur et le jeton de la cible. Les clips gardent le jeu enregistré par Podium, leur titre, leur date d'enregistrement et le nom de leurs pistes son. Podium envoie dans n'importe quelle bibliothèque ; les bibliothèques de clips tirent le meilleur de ce qu'il sait.",
+        "serverUrl": "URL du serveur",
+        "serverUrlCopied": "URL du serveur copiée",
+        "tokenCopied": "Jeton copié",
+        "libraryRemoved": "Sa bibliothèque a été retirée, donc elle ne marche pas",
+        "creatorRemoved": "Créée par un profil qui a été retiré, donc elle ne marche pas",
+        "into": "Dans {where} · utilisée {ago}",
+        "intoNotUsed": "Dans {where} · pas encore utilisée",
+        "intoGames": "Dans {where}, un dossier par jeu · utilisée {ago}",
+        "intoGamesNotUsed": "Dans {where}, un dossier par jeu · pas encore utilisée",
+        "copyToken": "Copier le jeton de {name}",
+        "remove": "Retirer {name}",
+        "newTargetFor": "Nouvelle cible pour",
+        "nameInPodium": "Nom dans Podium",
+        "folder": "Dossier",
+        "folderPlaceholder": "Le dossier de la bibliothèque lui-même",
+        "makeTarget": "Créer la cible",
+        "uploadsInto": "Les envois vont dans ce dossier à l'intérieur de {path}. Cinemion doit pouvoir y écrire, comme pour les envois depuis le navigateur.",
+        "uploadsIntoFirst": "Les envois vont dans ce dossier à l'intérieur du premier dossier de la bibliothèque. Cinemion doit pouvoir y écrire, comme pour les envois depuis le navigateur.",
+        "gameFolders": "Un dossier par jeu",
+        "gameFoldersDescription": "Met chaque clip dans un dossier au nom de son jeu, comme le font les logiciels d'enregistrement.",
+        "makeFailed": "Impossible de créer la cible",
+        "removed": "Cible retirée",
+        "removedDescription": "Podium ne peut plus envoyer avec son jeton.",
+        "removeFailed": "Impossible de retirer la cible",
+        "confirmTitle": "Retirer {name} ?",
+        "confirmDescription": "Podium ne peut plus envoyer avec son jeton. Ce qu'il a envoyé reste dans la bibliothèque.",
+        "confirm": "Retirer la cible"
+      },
+      "trakt": {
+        "title": "Trakt",
+        "text": "Avec une appli Trakt, chaque profil peut lier son propre compte Trakt : ce qu'il regarde est envoyé à Trakt au fil de la lecture, et ce qu'il marque comme vu apparaît dans son historique Trakt. Crée l'appli sur {link} avec {redirect} comme redirect URI, puis copie ses clés ici.",
+        "clientId": "Client ID",
+        "clientSecret": "Client secret",
+        "secretSaved": "Enregistré (tape pour remplacer)",
+        "save": "Enregistrer l'appli Trakt",
+        "setUp": "Trakt est configuré",
+        "setUpDescription": "Les profils peuvent lier leur compte dans Réglages › Ton profil."
+      },
+      "email": {
+        "title": "E-mail",
+        "text": "Permet à Cinemion d'envoyer des e-mails aux profils qui veulent leurs notifications par e-mail. Utilise le serveur SMTP de ton fournisseur de messagerie, ou un serveur de ton réseau.",
+        "host": "Serveur de messagerie",
+        "port": "Port",
+        "security": "Chiffrement",
+        "starttls": "STARTTLS (souvent le port 587)",
+        "tls": "TLS (souvent le port 465)",
+        "none": "Aucun (seulement sur ton propre réseau)",
+        "from": "Expéditeur",
+        "username": "Nom d'utilisateur",
+        "password": "Mot de passe",
+        "passwordSaved": "Enregistré ; tape pour le changer",
+        "saved": "Réglages e-mail enregistrés",
+        "off": "Cinemion n'enverra pas d'e-mail",
+        "turnOff": "Désactiver les e-mails",
+        "testTo": "Envoyer un test à",
+        "test": "Envoyer un test",
+        "testSent": "Test envoyé à {to}",
+        "testFailed": "L'e-mail de test n'est pas parti"
+      }
+    },
+    "webhooks": {
+      "title": "Webhooks",
+      "intro": "Envoie des événements comme « lecture lancée » à d'autres applis, comme Home Assistant ou un bot de discussion.",
+      "add": "Ajouter un webhook",
+      "loadFailed": "Impossible de charger les webhooks",
+      "empty": {
+        "title": "Pas encore de webhook",
+        "text": "Un webhook est une adresse à laquelle Cinemion envoie un court message JSON à chaque fois que quelque chose que tu as choisi se produit. Baisse les lumières quand un film commence, ou poste les nouveaux épisodes dans une discussion."
+      },
+      "everyEvent": "Tous les événements",
+      "sendTest": "Envoyer un test",
+      "more": "Plus pour {name}",
+      "turnOff": "Désactiver",
+      "turnOn": "Activer",
+      "testArrived": "Le test est arrivé",
+      "testAnswered": "{name} a répondu {status}.",
+      "testFailed": "Le test n'est pas arrivé",
+      "testSendFailed": "Impossible d'envoyer le test",
+      "toggleFailed": "Impossible de modifier le webhook",
+      "removed": "{name} a été retiré",
+      "removeFailed": "Impossible de retirer le webhook",
+      "delivery": {
+        "nothingSent": "Rien envoyé pour l'instant",
+        "test": "Test",
+        "delivered": "{event} livré {ago} · {status}",
+        "failed": "{event} a échoué {ago} : {error}",
+        "failedRetry": "{event} a échoué {ago} : {error} Nouvel essai {retry}."
+      },
+      "developers": {
+        "title": "Pour les développeurs",
+        "text": "Chaque événement est un {method} avec un corps JSON : {body}. L'en-tête {header} est {prefix} suivi du HMAC-SHA256 du corps brut, avec le secret du webhook comme clé, pour que le destinataire puisse vérifier qu'il vient de ce serveur. Les envois ratés sont retentés après 10 secondes, 1 minute et 5 minutes."
+      },
+      "remove": {
+        "title": "Retirer {name} ?",
+        "description": "Cinemion arrête d'envoyer des événements à cette adresse.",
+        "confirm": "Retirer le webhook"
+      },
+      "dialog": {
+        "addTitle": "Ajouter un webhook",
+        "editTitle": "Modifier {name}",
+        "name": "Nom",
+        "nameDescription": "Facultatif. Par défaut, l'hôte de l'adresse.",
+        "address": "Adresse",
+        "events": "Événements",
+        "clearAll": "Tout décocher",
+        "pickAll": "Tout cocher",
+        "enabled": "Activé",
+        "enabledDescription": "Désactivé, rien n'est envoyé.",
+        "secret": "Secret",
+        "secretDescription": "Pour vérifier l'en-tête {header}.",
+        "secretCopied": "Secret copié",
+        "newSecret": "Nouveau",
+        "secretLater": "Un secret pour vérifier les signatures est créé quand tu ajoutes le webhook.",
+        "add": "Ajouter le webhook",
+        "saved": "Webhook enregistré",
+        "added": "Webhook ajouté",
+        "addedDescription": "Utilise Envoyer un test pour vérifier qu'il arrive.",
+        "saveFailed": "Impossible d'enregistrer le webhook",
+        "newSecretMade": "Nouveau secret créé",
+        "newSecretDescription": "Mets-le aussi à jour dans l'appli qui reçoit.",
+        "newSecretFailed": "Impossible de créer un nouveau secret",
+        "copyFailed": "Impossible de copier",
+        "copyByHand": "Sélectionne-le et copie-le à la main."
+      },
+      "events": {
+        "playbackStarted": "Lecture lancée",
+        "playbackPaused": "Lecture en pause",
+        "playbackResumed": "Lecture reprise",
+        "playbackStopped": "Lecture arrêtée",
+        "itemWatched": "Visionnage terminé",
+        "itemAdded": "Nouveau film ou épisode",
+        "libraryScanned": "Bibliothèque analysée",
+        "userSignedIn": "Quelqu'un s'est connecté",
+        "togetherStarted": "Visionnage commun lancé",
+        "subtitlesDownloaded": "Sous-titres téléchargés"
+      }
+    }
+  },
+  "libraries": {
+    "title": "Bibliothèques",
+    "intro": "Les dossiers où Cinemion cherche les films, séries, autres vidéos, la musique et les livres. Les nouveaux fichiers sont pris en compte tout seuls.",
+    "addButton": "Ajouter une bibliothèque",
+    "loadFailed": "Impossible de charger les bibliothèques",
+    "empty": "Pas encore de bibliothèque.",
+    "conflict": "{conflict} Utilise « Modifier la bibliothèque » pour changer les dossiers.",
+    "uploadProgress": {
+      "adding": {
+        "one": "Ajout d'un envoi à la bibliothèque",
+        "many": "Ajout de {count} d'envois à la bibliothèque",
+        "other": "Ajout de {count} envois à la bibliothèque"
+      },
+      "uploading": {
+        "one": "Envoi de {count} fichier · {percent} %",
+        "many": "Envoi de {count} de fichiers · {percent} %",
+        "other": "Envoi de {count} fichiers · {percent} %"
+      },
+      "needsALook": {
+        "one": "{count} envoi demande ton attention",
+        "many": "{count} d'envois demandent ton attention",
+        "other": "{count} envois demandent ton attention"
+      }
+    },
+    "scanProgress": "{status} · {percent} %",
+    "row": {
+      "scanned": "analysée {ago}",
+      "notScanned": "pas encore analysée",
+      "rated": "classée {rating}",
+      "unrated": "non classée"
+    },
+    "scanNow": "Analyser",
+    "scanFailed": "Impossible de lancer l'analyse",
+    "moreFor": "Plus pour {name}",
+    "menu": {
+      "upload": "Envoyer des fichiers",
+      "edit": "Modifier la bibliothèque",
+      "refresh": {
+        "all": "Actualiser toutes les infos",
+        "detailsAndThumbnails": "Actualiser les infos et les miniatures",
+        "thumbnailsAndGames": "Actualiser les miniatures et les jeux",
+        "covers": "Rechercher à nouveau les couvertures",
+        "bookDetails": "Relire les infos des livres"
+      },
+      "remove": "Retirer la bibliothèque"
+    },
+    "remove": {
+      "title": "Retirer {name} ?",
+      "description": "Cinemion oublie cette bibliothèque et son historique de visionnage. Les fichiers dans ses dossiers ne sont pas touchés.",
+      "confirm": "Retirer la bibliothèque",
+      "done": "{name} a été retirée",
+      "failed": "Impossible de retirer la bibliothèque"
+    },
+    "types": {
+      "movies": {
+        "name": "Films",
+        "count": {
+          "one": "{count} film",
+          "many": "{count} de films",
+          "other": "{count} films"
+        }
+      },
+      "shows": {
+        "name": "Séries",
+        "count": {
+          "one": "{count} série",
+          "many": "{count} de séries",
+          "other": "{count} séries"
+        }
+      },
+      "videos": {
+        "name": "Vidéos",
+        "description": "Pour les vidéos de famille, les enregistrements et tout ce qui n'est ni un film ni une série. Rien n'est cherché en ligne : les titres viennent des noms de fichiers, et tu peux modifier les infos à la main.",
+        "count": {
+          "one": "{count} vidéo",
+          "many": "{count} de vidéos",
+          "other": "{count} vidéos"
+        }
+      },
+      "music": {
+        "name": "Musique",
+        "description": "Albums, artistes et morceaux, rangés d'après les tags des fichiers (ou des dossiers comme Artiste/Album/01 Titre.mp3). Les pochettes viennent des fichiers ou d'un cover.jpg à côté, et les paroles des tags ou de fichiers .lrc. Rien n'est cherché en ligne.",
+        "count": {
+          "one": "{count} album",
+          "many": "{count} d'albums",
+          "other": "{count} albums"
+        }
+      },
+      "photos": {
+        "name": "Photos",
+        "description": "Photos et vidéos de téléphone, chaque dossier devenant un album. Les dates, appareils et lieux viennent des photos elles-mêmes (le HEIC des iPhone marche aussi), et rien n'est cherché en ligne. Chacun peut aussi créer ses propres albums sans déplacer de fichiers.",
+        "count": {
+          "one": "{count} photo",
+          "many": "{count} de photos",
+          "other": "{count} photos"
+        }
+      },
+      "clips": {
+        "name": "Clips",
+        "description": "Enregistrements de jeux, regroupés par jeu. Le jeu vient des noms que les logiciels d'enregistrement donnent à leurs fichiers et dossiers (NVIDIA, AMD, Xbox Game Bar, OBS, Steam et d'autres), avec les jaquettes de Steam. Les clips sans jeu peuvent en recevoir un à la main, ou une suggestion par reconnaissance d'image.",
+        "count": {
+          "one": "{count} clip",
+          "many": "{count} de clips",
+          "other": "{count} clips"
+        }
+      },
+      "audiobooks": {
+        "name": "Livres audio",
+        "description": "Un dossier de fichiers audio forme un livre (les parties dans des dossiers CD1, CD2… aussi), tout comme un seul fichier .m4b. Les chapitres viennent des fichiers, les infos de leurs tags, et chacun garde sa propre progression.",
+        "count": {
+          "one": "{count} livre audio",
+          "many": "{count} de livres audio",
+          "other": "{count} livres audio"
+        }
+      },
+      "books": {
+        "name": "Livres",
+        "description": "Les livres EPUB se lisent directement dans Cinemion, avec la page de chacun gardée ; les PDF s'ouvrent dans la visionneuse du navigateur. Les infos et couvertures viennent des fichiers.",
+        "count": {
+          "one": "{count} livre",
+          "many": "{count} de livres",
+          "other": "{count} livres"
+        }
+      }
+    },
+    "form": {
+      "type": "Type de bibliothèque",
+      "name": "Nom",
+      "noFolders": "Ouvre un dossier et choisis « {button} »."
+    },
+    "rating": {
+      "videos": {
+        "label": "Classification des vidéos non classées",
+        "description": "Les profils avec une limite d'âge ne voient que les vidéos dans cette limite. Choisis « {rating} » pour les vidéos de famille que tout le monde peut voir."
+      },
+      "music": {
+        "label": "Classification de ces albums",
+        "description": "Les profils avec une limite d'âge ne voient que la musique dans cette limite. Choisis « {rating} » pour que tout le monde puisse écouter."
+      },
+      "photos": {
+        "label": "Classification des photos non classées",
+        "description": "Les profils avec une limite d'âge ne voient que les photos et vidéos dans cette limite. Choisis « {rating} » pour les photos de famille que tout le monde peut voir."
+      },
+      "clips": {
+        "label": "Classification des clips non classés",
+        "description": "Les profils avec une limite d'âge ne voient que les clips dans cette limite. Choisis-en une qui convient aux jeux auxquels tu joues, comme « {rating} »."
+      },
+      "books": {
+        "label": "Classification de ces livres",
+        "description": "Les profils avec une limite d'âge ne voient que les livres dans cette limite. Choisis « {rating} » pour que tout le monde puisse lire et écouter."
+      },
+      "none": "Aucune : les cacher aux profils avec limite d'âge"
+    },
+    "edit": {
+      "title": "Modifier {name}",
+      "titleFallback": "Modifier la bibliothèque",
+      "rescanNote": "Après l'enregistrement, les bibliothèques sont analysées à nouveau. Les titres des dossiers retirés quittent cette bibliothèque, avec leur historique de visionnage ici.",
+      "saved": "Bibliothèque enregistrée",
+      "failed": "Impossible d'enregistrer la bibliothèque"
+    },
+    "add": {
+      "title": "Ajouter une bibliothèque",
+      "confirm": "Ajouter",
+      "added": "{name} a été ajoutée",
+      "scanning": "Cinemion l'analyse en ce moment.",
+      "failed": "Impossible d'ajouter la bibliothèque"
+    }
+  },
+  "folderBrowser": {
+    "path": "Chemin du dossier",
+    "drives": "Disques",
+    "top": "Racine",
+    "typePath": "Taper un chemin",
+    "useFolder": "Utiliser ce dossier",
+    "selected": "Choisi",
+    "empty": "Aucun dossier ici.",
+    "stopTyping": "Arrêter de taper"
+  },
+  "uploads": {
+    "dialog": {
+      "title": "Envoyer dans {name}",
+      "description": "Les fichiers vont dans le dossier choisi. Les fichiers zip y sont décompressés, en gardant les dossiers qu'ils contiennent. Les envois continuent quand tu fermes cette fenêtre.",
+      "newFolder": "Nouveau dossier à l'intérieur (facultatif)",
+      "newFolderDescription": "Utilise / pour un dossier dans un dossier. Il est créé au début de l'envoi.",
+      "goesTo": "Va dans {destination}",
+      "openFolder": "Ouvre le dossier où envoyer.",
+      "drop": "Dépose des fichiers, dossiers ou fichiers zip ici",
+      "maxSize": "Jusqu'à {size} chacun.",
+      "chooseFiles": "Choisir des fichiers",
+      "chooseFolder": "Choisir un dossier",
+      "picked": "Fichiers choisis",
+      "leftOut": "Laissé de côté : {reason}",
+      "replace": "Remplacer les fichiers déjà présents",
+      "replaceDescription": "Sinon, un fichier déjà dans le dossier n'est pas envoyé, et les fichiers zip laissent ces fichiers de côté.",
+      "uploads": "Envois",
+      "clearFinished": "Effacer les terminés",
+      "cantCarryOn": "Impossible de continuer avec ce fichier",
+      "uploadButton": {
+        "one": "Envoyer {count} fichier · {size}",
+        "many": "Envoyer {count} de fichiers · {size}",
+        "other": "Envoyer {count} fichiers · {size}"
+      }
+    },
+    "accepts": {
+      "video": "Fichiers vidéo, sous-titres, fichiers NFO et images, ou fichiers zip qui en contiennent.",
+      "music": "Fichiers audio, paroles et pochettes, ou fichiers zip qui en contiennent.",
+      "audiobooks": "Fichiers audio, fichiers cue, descriptions et couvertures, ou fichiers zip qui en contiennent.",
+      "books": "Fichiers EPUB et PDF et couvertures, ou fichiers zip qui en contiennent.",
+      "photos": "Photos (JPG, HEIC, PNG et autres) et vidéos, ou fichiers zip qui en contiennent.",
+      "clips": "Fichiers vidéo, sous-titres et images, ou fichiers zip qui en contiennent."
+    },
+    "folderExample": {
+      "movies": "Glass Harbor (2021)",
+      "shows": "Saltwater Kings/Saison 1",
+      "videos": "Vacances 2025",
+      "music": "Artiste/Album",
+      "audiobooks": "Auteur/Titre du livre",
+      "books": "Auteur",
+      "photos": "Vacances 2025/Jour 1",
+      "clips": "Counter-Strike 2"
+    },
+    "skip": {
+      "notUsed": "Pas un fichier utilisé par cette bibliothèque",
+      "empty": "Vide",
+      "tooBig": "Plus gros que ce que le serveur accepte ({size})"
+    },
+    "folderErrors": {
+      "outside": "Le nouveau dossier doit être à l'intérieur du dossier ci-dessus.",
+      "hidden": "Les noms de dossiers qui commencent par un point sont cachés, donc la bibliothèque ne les afficherait jamais."
+    },
+    "status": {
+      "waitingResumed": "En attente · {percent} % déjà envoyés",
+      "waiting": "En attente · {size}",
+      "percent": "{percent} %",
+      "sentOf": "{sent} sur {size}",
+      "speed": "{speed}/s",
+      "retrying": "Nouvel essai…",
+      "paused": "Arrêté à {percent} %. Choisis à nouveau le fichier pour continuer.",
+      "adding": "Ajout à la bibliothèque",
+      "processingProgress": "{status} · {percent} %",
+      "added": "Ajouté",
+      "stopped": "L'envoi s'est arrêté."
+    },
+    "timeLeft": {
+      "underAMinute": "moins d'une minute restante",
+      "minutes": {
+        "one": "environ {count} min restante",
+        "many": "environ {count} min restantes",
+        "other": "environ {count} min restantes"
+      },
+      "hours": "environ {hours} h {minutes} min restantes"
+    },
+    "row": {
+      "leftOut": {
+        "one": "{count} laissé de côté",
+        "many": "{count} laissés de côté",
+        "other": "{count} laissés de côté"
+      },
+      "pickFile": "Choisir le fichier",
+      "replace": "Le remplacer",
+      "clear": "Effacer",
+      "cancel": "Annuler l'envoi"
+    },
+    "errors": {
+      "tooLarge": "Le morceau était trop gros pour le serveur ou un proxy devant lui.",
+      "status": "Le serveur a répondu {status} {statusText}.",
+      "connectionLost": "Connexion au serveur perdue.",
+      "differentFile": {
+        "one": "C'est un autre fichier. Choisis « {name} » ({count} octet) pour continuer.",
+        "many": "C'est un autre fichier. Choisis « {name} » ({count} d'octets) pour continuer.",
+        "other": "C'est un autre fichier. Choisis « {name} » ({count} octets) pour continuer."
+      },
+      "differentContents": "Ce fichier n'a pas le même contenu que celui en cours d'envoi.",
+      "retrying": "{error} Nouvel essai…"
+    },
+    "toasts": {
+      "uploadFailed": "Impossible d'envoyer {name}",
+      "added": "{name} a été ajouté",
+      "addFailed": "Impossible d'ajouter {name}"
+    }
+  },
+  "updates": {
+    "title": "Mises à jour",
+    "isOut": "Cinemion {version} est sorti",
+    "versions": "Ce serveur a la {current}. La nouvelle est sortie le {date}.",
+    "whatsNew": "Quoi de neuf",
+    "how": {
+      "docker": "Pour mettre à jour, récupère la nouvelle image et relance le conteneur, par exemple avec {command}. Tes bibliothèques et réglages restent tels quels.",
+      "aur": "Pour mettre à jour, mets à jour le paquet {package} (par exemple avec {upgrade}), puis redémarre Cinemion avec {restart}.",
+      "binary": "Pour mettre à jour, télécharge la nouvelle version depuis la page de la version, mets-la à la place de celle-ci et relance Cinemion. Tes bibliothèques et réglages restent tels quels.",
+      "source": "Pour mettre à jour, récupère la nouvelle version avec {command} et relance Cinemion."
+    },
+    "upToDate": "Tu as le Cinemion le plus récent",
+    "notChecked": "Pas encore vérifié",
+    "lastCheckFailed": "La dernière vérification n'a pas marché : {error}",
+    "checked": "Vérifié {ago}.",
+    "checksSoon": "Cinemion vérifie une minute après son démarrage.",
+    "checkNow": "Vérifier",
+    "checkFailed": "Impossible de vérifier les mises à jour",
+    "switch": "Vérifier les mises à jour",
+    "switchDescription": "Regarde les versions de Cinemion sur GitHub deux fois par jour et prévient les admins quand il y en a une nouvelle. Rien sur ton serveur ou tes bibliothèques n'est envoyé, et rien ne s'installe tout seul.",
+    "disabledByEnv": "Désactivé pour ce serveur avec {setting}."
+  },
+  "credits": {
+    "tmdb": "Ce produit utilise TMDB et les API TMDB, mais n'est ni soutenu, ni certifié, ni approuvé d'une autre manière par TMDB."
+  },
+  "backups": {
+    "title": "Sauvegardes",
+    "intro": "Garde une copie de tout ce que Cinemion ne peut pas récupérer tout seul : profils, ce que chacun a regardé, réglages, playlists, albums et les infos que tu as modifiées.",
+    "makeNow": "Faire une sauvegarde",
+    "making": "Sauvegarde en cours",
+    "makeFailed": "Impossible de faire une sauvegarde",
+    "listTitle": "Tes sauvegardes",
+    "none": "Pas encore de sauvegarde. Fais-en une maintenant, ou active un planning ci-dessous.",
+    "protected": "Protégée par mot de passe",
+    "downloadOne": "Télécharger la sauvegarde du {date}",
+    "deleteOne": "Supprimer la sauvegarde du {date}",
+    "downloadFailed": "Impossible de télécharger la sauvegarde",
+    "deleted": "Sauvegarde supprimée",
+    "deleteFailed": "Impossible de supprimer la sauvegarde",
+    "confirmDeleteTitle": "Supprimer cette sauvegarde ?",
+    "confirmDeleteDescription": "La sauvegarde du {date} disparaîtra pour de bon.",
+    "folderWithSpace": "Enregistrées dans {folder} · {free} libres",
+    "folderOnly": "Enregistrées dans {folder}",
+    "kind": {
+      "manual": "Faite à la main",
+      "scheduled": "Planifiée",
+      "update": "Avant une mise à jour"
+    },
+    "schedule": {
+      "title": "Planning",
+      "label": "Faire une sauvegarde automatiquement",
+      "off": "Jamais",
+      "daily": "Chaque nuit",
+      "weekly": "Une fois par semaine",
+      "keep": "Garder",
+      "keepDescription": "Les sauvegardes planifiées plus anciennes sont supprimées. Celles faites à la main sont gardées jusqu'à ce que tu les supprimes.",
+      "keepCount": {
+        "one": "La dernière sauvegarde",
+        "many": "Les {count} dernières sauvegardes",
+        "other": "Les {count} dernières sauvegardes"
+      },
+      "next": "La prochaine est prévue {when}, la nuit si possible.",
+      "lastFailed": "La dernière sauvegarde planifiée n'a pas marché : {error}",
+      "beforeUpdates": "Cinemion fait aussi une sauvegarde tout seul avant qu'une mise à jour change sa base de données, pour que tu puisses revenir en arrière. Il garde les trois dernières."
+    },
+    "contents": {
+      "title": "Ce qui est inclus",
+      "text": "Chaque sauvegarde contient la base de données, la clé de connexion, les photos de profil et les images choisies ou envoyées à la main. Les conversions, miniatures de navigation et autres éléments du cache sont laissés de côté ; ils sont refaits quand il faut.",
+      "artwork": "Inclure les images téléchargées",
+      "artworkDescription": "Affiches et fonds d'internet. Les sauvegardes sont plus grosses, mais un serveur restauré est complet tout de suite au lieu d'après une actualisation de toutes les infos.",
+      "folder": "Dossier des sauvegardes",
+      "folderDescription": "Un chemin complet sur le serveur. Laisse vide pour utiliser le dossier affiché. Un dossier sur un autre disque garde tes sauvegardes à l'abri si celui-ci lâche.",
+      "folderSaved": "Les sauvegardes iront dans le nouveau dossier"
+    },
+    "password": {
+      "on": "Les sauvegardes sont protégées par mot de passe",
+      "off": "Les sauvegardes ne sont pas protégées",
+      "text": "Une sauvegarde contient la clé de connexion et les clés des services que tu as connectés, donc n'importe qui avec le fichier pourrait entrer dans ce serveur. Un mot de passe verrouille les nouvelles sauvegardes ; sans lui, elles ne peuvent pas être restaurées, alors garde-le en lieu sûr.",
+      "set": "Définir un mot de passe",
+      "change": "Changer le mot de passe",
+      "remove": "Retirer le mot de passe",
+      "removeTitle": "Ne plus protéger les nouvelles sauvegardes ?",
+      "removeDescription": "Les nouvelles sauvegardes n'auront pas besoin de mot de passe. Celles qui étaient protégées ont toujours besoin de l'ancien.",
+      "removed": "Les nouvelles sauvegardes ne seront pas protégées",
+      "saved": "Les nouvelles sauvegardes seront protégées par ce mot de passe",
+      "dialogTitle": "Protéger les sauvegardes par mot de passe",
+      "dialogDescription": "Les nouvelles sauvegardes demanderont ce mot de passe pour être restaurées. Les sauvegardes d'avant gardent leur mot de passe.",
+      "new": "Mot de passe",
+      "confirm": "Retape-le",
+      "tooShort": "Utilise au moins 8 caractères.",
+      "mismatch": "Les mots de passe ne correspondent pas."
+    },
+    "restore": {
+      "title": "Restaurer une sauvegarde",
+      "text": "Une restauration remplace tout sur un serveur par le contenu de la sauvegarde, donc elle se fait quand rien d'autre ne tourne :",
+      "wizard": "Sur un Cinemion neuf ou réinstallé, choisis « Restaurer une sauvegarde » sur la première page de la configuration. Il trouve les sauvegardes dans le dossier des sauvegardes, ou tu peux en envoyer une.",
+      "cli": "Sur ce serveur, arrête Cinemion et lance {command}, puis redémarre-le."
+    }
+  },
+  "myList": {
+    "title": "Ma liste",
+    "intro": "Les films et séries que tu veux regarder. Ajoute-les avec le bouton marque-page sur leur page.",
+    "here": {
+      "one": "Prêt à regarder",
+      "many": "Prêts à regarder · {count}",
+      "other": "Prêts à regarder · {count}"
+    },
+    "waiting": {
+      "one": "Pas encore là",
+      "many": "Pas encore là · {count}",
+      "other": "Pas encore là · {count}"
+    },
+    "waitingText": "Ils sont dans ta liste mais dans aucune bibliothèque que tu peux voir. Ils remontent tout seuls dès qu'ils sont ajoutés.",
+    "notHere": "Pas encore là",
+    "justArrived": "Tout juste arrivé",
+    "kind": {
+      "movie": "Film",
+      "show": "Série",
+      "video": "Vidéo"
+    },
+    "empty": {
+      "title": "Rien dans ta liste pour l'instant",
+      "text": "Tu as trouvé quelque chose pour plus tard ? Appuie sur le bouton marque-page sur sa page et il apparaîtra ici et sur l'accueil."
+    },
+    "trakt": {
+      "syncNow": "Synchroniser avec Trakt",
+      "synced": "Ta liste est synchronisée avec Trakt",
+      "syncFailed": "Impossible de synchroniser avec Trakt",
+      "syncedAgo": "Synchronisée avec ta watchlist Trakt, dans les deux sens. Dernière synchro {ago}.",
+      "notYet": "Synchronisée avec ta watchlist Trakt, dans les deux sens. La première synchro a lieu dans quelques minutes.",
+      "failed": "La dernière synchro avec Trakt n'a pas marché : {error}",
+      "notLinked": "Lie Trakt dans <link>Réglages › Ton profil</link> pour synchroniser cette liste avec ta watchlist Trakt."
+    }
+  },
+  "https": {
+    "title": "HTTPS",
+    "intro": "Une adresse sécurisée pour Cinemion, sans configurer de reverse proxy. Les navigateurs en ont besoin pour les téléchargements hors ligne et pour les notifications sur téléphone.",
+    "notStarted": "https n'a pas démarré",
+    "renewed": "Le certificat est renouvelé",
+    "renewFailed": "Impossible de renouveler le certificat",
+    "address": {
+      "title": "Adresse sécurisée",
+      "switch": "Activer https",
+      "switchDescription": "Cinemion répond aussi sur un second port, chiffré. L'adresse http simple continue de marcher à côté.",
+      "turnedOn": "https est activé",
+      "turnedOff": "https est désactivé",
+      "port": "Port https",
+      "portDescription": "8443, sauf si autre chose l'utilise. Avec Docker, publie aussi ce port.",
+      "openAt": "Ouvre Cinemion à :"
+    },
+    "certificate": {
+      "title": "Certificat",
+      "kind": "D'où vient le certificat",
+      "inUse": "Utilisé",
+      "use": "Utiliser ce certificat",
+      "switched": "Le nouveau certificat est utilisé",
+      "facts": "De {issuer}, valable jusqu'au {date}. Il se renouvelle tout seul avant d'expirer."
+    },
+    "kind": {
+      "cinemion": "Créé par Cinemion",
+      "letsencrypt": "Let's Encrypt",
+      "own": "Le tien"
+    },
+    "cinemion": {
+      "text": "Marche sur n'importe quel réseau domestique, sans nom de domaine. Cinemion signe son propre certificat, donc chaque appareil doit faire confiance à Cinemion une fois (voir ci-dessous) ; d'ici là, les navigateurs affichent un avertissement pour l'adresse.",
+      "names": "Noms et adresses en plus",
+      "namesDescription": "Cinemion couvre tout seul le nom et les adresses de cet ordinateur. Ajoute les autres par lesquels on le joint, comme un nom donné par ta box ou l'adresse de l'ordinateur quand Cinemion tourne dans Docker.",
+      "covers": "Valable pour {names}.",
+      "notCovered": "Tu as ouvert cette page à {host}, que le certificat ne couvre pas encore.",
+      "add": "Ajouter {host}",
+      "added": "Le certificat couvre maintenant cette adresse",
+      "remake": "Créer un nouveau certificat"
+    },
+    "trust": {
+      "title": "Faire confiance à Cinemion sur tes appareils",
+      "text": "À faire une fois sur chaque appareil qui ouvre Cinemion en https. L'appareil fera confiance aux certificats signés par ce Cinemion, et à rien d'autre.",
+      "download": "Télécharger le certificat de Cinemion",
+      "onPhone": "Sur un téléphone ou une tablette, ouvre {address} dans son navigateur pour le télécharger dessus.",
+      "windows": {
+        "title": "Windows",
+        "steps": "Ouvre le fichier téléchargé et choisis Installer le certificat.\nChoisis Ordinateur local, puis Placer tous les certificats dans le magasin suivant, Parcourir, et Autorités de certification racines de confiance.\nTermine, puis redémarre le navigateur."
+      },
+      "mac": {
+        "title": "Mac",
+        "steps": "Ouvre le fichier téléchargé ; Trousseaux d'accès l'ajoute au trousseau session.\nDouble-clique sur le certificat, ouvre Se fier, et règle Lors de l'utilisation de ce certificat sur Toujours approuver.\nFerme la fenêtre et saisis ton mot de passe pour enregistrer."
+      },
+      "iphone": {
+        "title": "iPhone et iPad",
+        "steps": "Ouvre l'adresse de téléchargement dans Safari et autorise le téléchargement du profil.\nVa dans Réglages › Général › VPN et gestion de l'appareil, ouvre le profil Cinemion et installe-le.\nPuis va dans Réglages › Général › Informations › Réglages des certificats et active la confiance totale pour Cinemion."
+      },
+      "android": {
+        "title": "Android",
+        "steps": "Télécharge le fichier dans le navigateur.\nVa dans Paramètres › Sécurité › Plus de paramètres de sécurité (ou Chiffrement et identifiants) › Installer un certificat › Certificat CA, et choisis le fichier.\nLes noms changent un peu d'un téléphone à l'autre ; chercher « certificat » dans les Paramètres le trouve."
+      },
+      "linux": {
+        "title": "Linux",
+        "steps": "Arch : sudo trust anchor cinemion-ca.crt\nDebian et Ubuntu : copie le fichier dans /usr/local/share/ca-certificates/ et lance sudo update-ca-certificates.\nChrome sous Linux a sa propre liste : Paramètres › Confidentialité et sécurité › Sécurité › Gérer les certificats › Autorités › Importer."
+      },
+      "firefox": {
+        "title": "Firefox (tout ordinateur)",
+        "steps": "Firefox a sa propre liste. Va dans Paramètres › Vie privée et sécurité › Certificats › Afficher les certificats › Autorités › Importer, choisis le fichier et coche Confirmer cette AC pour identifier des sites web."
+      }
+    },
+    "letsencrypt": {
+      "text": "Un certificat auquel tous les appareils font confiance tout de suite, gratuit grâce à Let's Encrypt, pour ton propre nom de domaine qui pointe vers ce serveur.",
+      "stepDomain": "Fais pointer le domaine (ou un sous-domaine) vers l'adresse internet de ta maison.",
+      "stepPort80": "Redirige le port 80 de ta box vers le port {port} de cet ordinateur. Let's Encrypt vérifie le domaine par là, à nouveau tous les deux ou trois mois.",
+      "stepPort443": "Redirige le port 443 vers le port https {port}, pour que le domaine ouvre Cinemion en https.",
+      "domain": "Domaine",
+      "email": "Adresse e-mail (facultatif)",
+      "emailDescription": "Let's Encrypt écrit ici si un certificat va expirer sans avoir été renouvelé.",
+      "terms": "Obtenir un certificat veut dire accepter <link>le contrat d'abonné de Let's Encrypt</link>.",
+      "get": "Obtenir un certificat",
+      "done": "Let's Encrypt a délivré un certificat",
+      "renew": "Renouveler"
+    },
+    "own": {
+      "text": "Tu as déjà un certificat, de ta box, de ta propre autorité de certification ou un wildcard pour ton domaine ? Colle-le ici. Tu devras le remplacer toi-même avant qu'il expire.",
+      "certificate": "Certificat",
+      "certificateDescription": "Texte PEM, avec les certificats intermédiaires après le tien (la chaîne complète).",
+      "key": "Clé privée",
+      "use": "Utiliser ce certificat",
+      "replace": "Remplacer le certificat",
+      "saved": "Ton certificat est utilisé"
+    },
+    "redirect": {
+      "title": "http simple",
+      "switch": "Rediriger les navigateurs vers https",
+      "description": "Les pages ouvertes à l'adresse http passent à l'adresse https. Les applis, Sonarr, Radarr et les webhooks continuent d'utiliser http comme avant. N'active ça qu'une fois que tes appareils font confiance au certificat."
+    }
+  },
+  "notifications": {
+    "bell": "Notifications",
+    "bellUnread": {
+      "one": "Notifications, {count} non lue",
+      "many": "Notifications, {count} non lues",
+      "other": "Notifications, {count} non lues"
+    },
+    "title": "Notifications",
+    "markAllRead": "Tout marquer comme lu",
+    "empty": "Rien de nouveau pour l'instant. Les nouveaux films, épisodes et titres de ta liste apparaissent ici.",
+    "settings": "Réglages des notifications",
+    "episodeCode": "S{season} E{episode}",
+    "episode": "{code} est disponible",
+    "episodeWithTitle": "{code} · {title} est disponible",
+    "episodes": {
+      "one": "Un nouvel épisode à regarder",
+      "many": "{count} de nouveaux épisodes à regarder",
+      "other": "{count} nouveaux épisodes à regarder"
+    },
+    "albumBy": "Un nouvel album de {artist}",
+    "newIn": "Nouveau dans {library}",
+    "fromList": "De ta liste, maintenant disponible",
+    "prefs": {
+      "title": "Notifications",
+      "mode": "Me prévenir pour",
+      "modeDescription": "Les nouveaux films, épisodes, albums et livres dans les bibliothèques que tu peux voir. Les titres de Ma liste comptent toujours.",
+      "all": "Toutes les nouveautés",
+      "following": "Les séries que je regarde et les titres de Ma liste",
+      "none": "Rien",
+      "sameAsAbove": "Comme ci-dessus",
+      "push": "Notifications sur cet appareil",
+      "pushDescription": "Reçois-les comme les messages des autres applis, même quand Cinemion n'est pas ouvert.",
+      "pushUnavailable": "Ce serveur ne peut pas envoyer de notifications push pour l'instant.",
+      "pushNeedsHttps": "Ce navigateur ne peut les recevoir que si Cinemion est ouvert en https (Réglages › HTTPS). Sur iPhone et iPad, il faut d'abord ajouter Cinemion à l'écran d'accueil.",
+      "pushOn": "Cet appareil reçoit maintenant les notifications",
+      "pushFailed": "Impossible d'activer les notifications",
+      "pushDenied": "Le navigateur a été réglé pour ne pas afficher les notifications de Cinemion. Autorise-les dans les réglages du site du navigateur, puis réessaie.",
+      "pushNoWorker": "Recharge la page une fois et réessaie ; la partie qui reçoit les notifications ne tournait pas encore.",
+      "thisDevice": "{name} (cet appareil)",
+      "since": "Depuis {ago}",
+      "removeDevice": "Arrêter les notifications sur {name}",
+      "test": "Envoyer un test",
+      "testSent": {
+        "one": "Envoyé à {count} appareil",
+        "many": "Envoyé à {count} d'appareils",
+        "other": "Envoyé à {count} appareils"
+      },
+      "testNone": "Aucun appareil n'a reçu le test. Désactive puis réactive les notifications sur l'appareil.",
+      "email": "E-mail",
+      "emailDescription": "Laisse vide pour ne pas recevoir d'e-mail. Tu reçois un e-mail par lot de nouveautés.",
+      "emailSaved": "Les notifications seront aussi envoyées par e-mail",
+      "emailOff": "Plus d'e-mails de notification"
+    },
+    "testBody": "Les notifications marchent sur cet appareil.",
+    "email": {
+      "one": "{title} : {text}",
+      "many": {
+        "one": "{count} nouveauté sur {server}",
+        "many": "{count} de nouveautés sur {server}",
+        "other": "{count} nouveautés sur {server}"
+      },
+      "greeting": "Salut {name},",
+      "line": "• {title} : {text}",
+      "open": "Ouvre {server} : {link}",
+      "openPlain": "Ouvre {server} pour regarder.",
+      "why": "Tu reçois ces messages à cause de tes réglages de notifications dans Cinemion (Réglages › Ton profil)."
+    }
+  },
+  "stats": {
+    "title": "Tes statistiques",
+    "intro": "Ce que tu as regardé, écouté et lu, et pendant combien de temps.",
+    "everyoneTitle": "Les statistiques de tous",
+    "everyoneIntro": "Le temps de toute la maison, les favoris, et ce que personne ne regarde.",
+    "yearLink": "Ton bilan {year}",
+    "whose": "Statistiques de qui",
+    "you": "Toi",
+    "everyone": "Tout le monde",
+    "periodLabel": "Période",
+    "period": {
+      "week": "7 derniers jours",
+      "month": "30 derniers jours",
+      "year": "12 derniers mois",
+      "all": "Depuis toujours"
+    },
+    "emptyTitle": "Rien ici pour l'instant",
+    "emptyText": "Regarde, écoute ou lis quelque chose et le temps apparaîtra ici.",
+    "watching": "Visionnage",
+    "listening": "Écoute",
+    "reading": "Lecture",
+    "chartLabel": "Temps par jour ou par mois, réparti entre visionnage, écoute et lecture",
+    "minutes": {
+      "one": "{count} min",
+      "many": "{count} min",
+      "other": "{count} min"
+    },
+    "hours": {
+      "one": "{count} h",
+      "many": "{count} h",
+      "other": "{count} h"
+    },
+    "counts": {
+      "movies": {
+        "one": "{count} film",
+        "many": "{count} de films",
+        "other": "{count} films"
+      },
+      "episodes": {
+        "one": "{count} épisode",
+        "many": "{count} d'épisodes",
+        "other": "{count} épisodes"
+      },
+      "tracks": {
+        "one": "{count} morceau",
+        "many": "{count} de morceaux",
+        "other": "{count} morceaux"
+      },
+      "books": {
+        "one": "{count} livre",
+        "many": "{count} de livres",
+        "other": "{count} livres"
+      },
+      "days": {
+        "one": "{count} jour avec quelque chose",
+        "many": "{count} de jours avec quelque chose",
+        "other": "{count} jours avec quelque chose"
+      },
+      "plays": {
+        "one": "Lu une fois",
+        "many": "Lu {count} de fois",
+        "other": "Lu {count} fois"
+      },
+      "sittings": {
+        "one": "{count} séance",
+        "many": "{count} de séances",
+        "other": "{count} séances"
+      }
+    },
+    "topShows": "Séries préférées",
+    "topMovies": "Films préférés",
+    "topArtists": "Artistes préférés",
+    "topBooks": "Livres préférés",
+    "genres": "Genres",
+    "streak": {
+      "current": {
+        "one": "{count} jour d'affilée",
+        "many": "{count} de jours d'affilée",
+        "other": "{count} jours d'affilée"
+      },
+      "longest": {
+        "one": "Ta plus longue série est de {count} jour",
+        "many": "Ta plus longue série est de {count} de jours",
+        "other": "Ta plus longue série est de {count} jours"
+      },
+      "none": "Pas de série en cours"
+    },
+    "binge": {
+      "title": {
+        "one": "{count} épisode de {show} en un jour",
+        "many": "{count} d'épisodes de {show} en un jour",
+        "other": "{count} épisodes de {show} en un jour"
+      },
+      "when": "Ton plus gros marathon, le {date}"
+    },
+    "people": "Qui a le plus regardé",
+    "privateProfiles": {
+      "one": "{count} profil garde ses statistiques privées ; son temps compte dans les totaux.",
+      "many": "{count} de profils gardent leurs statistiques privées ; leur temps compte dans les totaux.",
+      "other": "{count} profils gardent leurs statistiques privées ; leur temps compte dans les totaux."
+    },
+    "untouched": {
+      "title": "Ce que personne ne regarde",
+      "text": "Les films et séries que personne sur ce serveur n'a jamais lancés.",
+      "count": "{count} sur {total}",
+      "oldest": "Ceux qui attendent depuis le plus longtemps",
+      "added": "{library} · ajouté le {date}"
+    },
+    "private": {
+      "label": "Garder mes statistiques privées",
+      "description": "Ton nom n'apparaît pas dans les statistiques de tous ni dans le bilan de l'année de la maison. Ton temps compte toujours dans les totaux, sans ton nom."
+    }
+  },
+  "review": {
+    "eyebrow": "Bilan de l'année",
+    "title": "Bilan {year}",
+    "whose": "L'année de qui",
+    "me": "Toi",
+    "household": "La maison",
+    "emptyTitle": "Une année calme",
+    "emptyText": "Rien n'a encore été regardé, écouté ou lu en {year}.",
+    "youSpent": "Tu as passé",
+    "householdSpent": "Tout le monde chez {name} a passé",
+    "watching": "{time} à regarder",
+    "listening": "{time} à écouter",
+    "reading": "{time} à lire",
+    "days": {
+      "one": "Sur {count} jour de l'année",
+      "many": "Sur {count} de jours de l'année",
+      "other": "Sur {count} jours de l'année"
+    },
+    "topShow": "Série préférée",
+    "topMovie": "Film préféré",
+    "topArtist": "Artiste préféré",
+    "topBook": "Livre préféré",
+    "months": "Mois par mois",
+    "busiest": "Mois le plus chargé : {month}",
+    "records": "Records",
+    "streak": {
+      "one": "{count} jour d'affilée",
+      "many": "{count} de jours d'affilée",
+      "other": "{count} jours d'affilée"
+    },
+    "binge": {
+      "one": "{count} épisode de {show} le {date}",
+      "many": "{count} d'épisodes de {show} le {date}",
+      "other": "{count} épisodes de {show} le {date}"
+    },
+    "genres": "Tes genres",
+    "first": "Le début de l'année",
+    "people": "Qui a le plus regardé",
+    "share": {
+      "button": "Partager",
+      "copied": "Résumé copié",
+      "heading": "L'année {year} de {name} sur Cinemion",
+      "hours": "{time} à regarder, écouter et lire",
+      "show": "Série préférée : {title}",
+      "movie": "Film préféré : {title}",
+      "artist": "Artiste préféré : {title}",
+      "streak": {
+        "one": "Plus longue série : {count} jour",
+        "many": "Plus longue série : {count} de jours",
+        "other": "Plus longue série : {count} jours"
+      }
+    }
+  },
+  "upkeep": {
+    "title": "Entretien",
+    "intro": "Garde les bibliothèques en ordre : vois où part l'espace, trouve les titres présents en double et les fichiers qui ne se lisent pas.",
+    "viewLabel": "Que regarder",
+    "views": {
+      "space": "Espace utilisé",
+      "duplicates": "Doublons",
+      "broken": "Fichiers abîmés",
+      "missing": "Épisodes manquants"
+    },
+    "notInLibrary": "Rattaché à aucun titre",
+    "modified": "modifié le {date}",
+    "space": {
+      "total": "{size} au total",
+      "files": {
+        "one": "{count} fichier",
+        "many": "{count} de fichiers",
+        "other": "{count} fichiers"
+      },
+      "free": "{size} libres sur son disque",
+      "types": "Par type de fichier",
+      "shows": "Plus grosses séries",
+      "biggest": "Plus gros fichiers"
+    },
+    "duplicates": {
+      "title": {
+        "one": "{count} titre en plusieurs exemplaires",
+        "many": "{count} de titres en plusieurs exemplaires",
+        "other": "{count} titres en plusieurs exemplaires"
+      },
+      "text": "Le même film ou épisode dans plusieurs fichiers, ou le même titre à deux endroits. C'est parfois voulu, comme une version 4K à côté d'une plus petite.",
+      "none": "Rien n'est en double dans tes bibliothèques.",
+      "extra": "Les copies en trop prennent {size}"
+    },
+    "broken": {
+      "title": {
+        "one": "{count} fichier abîmé",
+        "many": "{count} de fichiers abîmés",
+        "other": "{count} fichiers abîmés"
+      },
+      "text": "Les fichiers que Cinemion ne peut pas lire, qui sont tronqués ou endommagés, ou dont la conversion s'est arrêtée en route. Remplacer le fichier et analyser la bibliothèque règle le problème.",
+      "unchecked": {
+        "one": "{count} fichier n'a pas encore été lu en entier. La vérification trouve les fichiers tronqués.",
+        "many": "{count} de fichiers n'ont pas encore été lus en entier. La vérification trouve les fichiers tronqués.",
+        "other": "{count} fichiers n'ont pas encore été lus en entier. La vérification trouve les fichiers tronqués."
+      },
+      "checkAll": "Vérifier tous les fichiers",
+      "checkStarted": "Vérification des fichiers en arrière-plan",
+      "checkFailed": "Impossible de vérifier",
+      "checkAgain": "Vérifier à nouveau",
+      "stillBroken": "Toujours abîmé",
+      "fine": "Le fichier va bien maintenant",
+      "none": "Aucun fichier abîmé trouvé."
+    },
+    "missing": {
+      "title": {
+        "one": "{count} série avec des épisodes manquants",
+        "many": "{count} de séries avec des épisodes manquants",
+        "other": "{count} séries avec des épisodes manquants"
+      },
+      "text": "Les épisodes déjà diffusés, d'après TMDB ou TheTVDB, mais absents de tes bibliothèques. Les épisodes spéciaux sont laissés de côté. Les pages des séries les affichent aussi en grisé.",
+      "lookedUp": "Listes d'épisodes récupérées pour {done} séries sur {total}. Les séries récupèrent la leur quand quelqu'un les ouvre.",
+      "lookUp": "Récupérer toutes les séries",
+      "started": "Récupération des listes d'épisodes en arrière-plan",
+      "failed": "Impossible de les récupérer",
+      "none": "Aucun épisode manquant dans les séries vérifiées jusqu'ici.",
+      "count": "{count} manquants sur {aired}"
+    },
+    "deleteFile": "Supprimer {path}",
+    "deleteTitle": "Supprimer ce fichier ?",
+    "deleteDescription": "{path} ({size}) disparaît du disque pour de bon, avec ses sous-titres et son fichier NFO.",
+    "deleted": "Le fichier est supprimé"
+  },
+  "deleteDialog": {
+    "title": "Supprimer {title} ?",
+    "description": "Les fichiers disparaissent du disque pour de bon, avec leurs sous-titres et fichiers NFO. C'est définitif.",
+    "summary": {
+      "one": "{count} fichier, {size}",
+      "many": "{count} de fichiers, {size}",
+      "other": "{count} fichiers, {size}"
+    },
+    "folder": "Le dossier {folder} part aussi, puisqu'il ne contient rien d'autre.",
+    "more": {
+      "one": "et {count} autre fichier",
+      "many": "et {count} d'autres fichiers",
+      "other": "et {count} autres fichiers"
+    },
+    "readOnly": "Cinemion peut seulement lire ce dossier, donc il ne peut rien supprimer ici. Autorise l'écriture dans le dossier de la bibliothèque (dans Docker, monte-le sans :ro) pour supprimer depuis Cinemion.",
+    "confirm": "Supprimer pour de bon",
+    "deleted": "{title} est supprimé",
+    "failed": "Impossible de supprimer"
+  },
+  "server": {
+    "aBackupIsBeingMade_395c69": "Une sauvegarde est déjà en cours.",
+    "aBackupIsBeingRestored_5e6f08": "Une sauvegarde est déjà en cours de restauration.",
+    "aClipOfWasAdded_ec878d": "Un clip de {title} a été ajouté à {name}",
+    "aClipWasAddedTo_ddd0d4": "Un clip a été ajouté à {name}",
+    "addingArtworkOf_bce324": "Ajout des images ({i} sur {images})",
+    "addingProfilePictures_59c64b": "Ajout des photos de profil",
+    "addingToTheLibrary_954c26": "Ajout à la bibliothèque",
+    "aLibraryFolderPathAnd_716316": "Une bibliothèque, un dossier, un chemin et une taille sont nécessaires.",
+    "aNameIsRequired_6ab24f": "Un nom est nécessaire.",
+    "aNameTypeAndFolders_ed3d17": "Un nom, un type et des dossiers sont nécessaires.",
+    "aPhotoWasAddedTo_576c1c": "Une photo a été ajoutée à {library}",
+    "aPhotoWasAddedTo_f8e80d": "Une photo a été ajoutée à {folder} dans {library}",
+    "aPlaylistCanHoldUp_7c5307": "Une playlist peut contenir jusqu'à {MAX_TRACKS} morceaux.",
+    "aPositionInSecondsIs_392b1d": "Une position en secondes est nécessaire.",
+    "asASystemServiceAllow_6afb50": "En tant que service système, autorise-le avec « systemctl edit cinemion » : [Service] ReadWritePaths={real}",
+    "asASystemServiceAllow_762a40": "En tant que service système, autorise-le avec « systemctl edit cinemion » : [Service] ReadWritePaths={folder}",
+    "aServerNameAndThe_65331e": "Un nom de serveur et le nom, le nom d'utilisateur et le mot de passe de l'admin sont nécessaires.",
+    "audiobooksAndBooksLibrariesList_905a54": "Les bibliothèques de livres audio et de livres listent leurs livres sous /api/books.",
+    "audiobooksWereAddedTo_b08eb2": "{count} livres audio ont été ajoutés à {name}",
+    "aVideoWasAddedTo_4b6524": "Une vidéo a été ajoutée à {folder} dans {library}",
+    "aVideoWasAddedTo_6393b3": "Une vidéo a été ajoutée à {library}",
+    "booksWereAddedTo_19f1ea": "{count} livres ont été ajoutés à {name}",
+    "checkingFiles_5e84d1": "Vérification des fichiers",
+    "checkingFilesOf_e1a5e7": "Vérification des fichiers ({i} sur {files})",
+    "checkingForUpdatesIsTurned_5432ee": "La vérification des mises à jour est désactivée avec UPDATE_CHECK=false.",
+    "checkingTheBackup_c58a37": "Vérification de la sauvegarde",
+    "chooseAtLeastOneFolder_4e75bd": "Choisis au moins un dossier pour la bibliothèque « {name} ».",
+    "cinemionCantDeleteFilesIn_01f4ec": "Cinemion ne peut pas supprimer de fichiers dans ce dossier : il n'a qu'un accès en lecture. Autorise l'écriture dans le dossier de la bibliothèque (dans Docker, monte-le sans :ro) et réessaie.",
+    "cinemionCantReadHowLong_74c5b2": "Cinemion ne peut pas lire sa durée. Il est sûrement endommagé ou tronqué.",
+    "cinemionCantReadIt_b53657": "Cinemion ne peut pas le lire : {value}",
+    "cinemionCantWriteToPick_a22911": "Cinemion ne peut pas écrire dans {folder}. Choisis un autre dossier, ou donne-y accès à l'utilisateur sous lequel tourne Cinemion.",
+    "cinemionHasAlreadyBeenSet_b0f537": "Cinemion est déjà configuré.",
+    "cinemionHasntMadeItsCertificate_afd8f3": "Cinemion n'a pas encore créé son certificat. Active d'abord https dans Réglages › HTTPS.",
+    "cinemionIsOutThisServer_cafec1": "Cinemion {version} est sorti. Ce serveur a la {VERSION}.",
+    "clipsLibrariesListTheirGames_c7005e": "Les bibliothèques de clips listent leurs jeux et clips sous /api/clips.",
+    "clipsOfWereAddedTo_1c6b52": "{count} clips de {title} ont été ajoutés à {name}",
+    "clipsWereAddedTo_510311": "{count} clips ont été ajoutés à {name}",
+    "convertedSOfPVideo_2522a9": "{seconds} s de vidéo 1080p converties en {elapsed} s ({speed}× le temps réel).",
+    "convertingOnTheGpu_31726d": "Conversion sur la carte graphique",
+    "convertingOnTheGpuFailed_70f2d5": "La conversion sur la carte graphique ({kind}) a échoué, donc le processeur prend le relais",
+    "convertingTheVideoTookToo_954b9d": "La conversion de la vidéo a mis trop de temps à démarrer.",
+    "couldNotConvertThePicture_e98b3c": "Impossible de convertir l'image : {stderr}",
+    "couldNotFind_4aa82a": "Impossible de trouver « {binary} ». {installHint}",
+    "couldNotReachTheMail_1e5df1": "Impossible de joindre le serveur de messagerie {host}:{port} : {value}",
+    "couldNotReadTheFile_18cc93": "Impossible de lire le fichier comme média : {trim}",
+    "couldNotReadTheImage_e16cd4": "Impossible de lire l'image : {stderr}",
+    "couldNotReadTheSubtitles_41b913": "Impossible de lire les sous-titres : {value}",
+    "couldntBeFoundCheckThe_4a1085": "{value} est introuvable. Vérifie l'adresse.",
+    "couldntBeFoundOnlineAnymore_35af30": "« {title} » est introuvable en ligne maintenant. Refais une recherche.",
+    "couldntConnectTo_cf197e": "Impossible de se connecter à {host} : {pop}",
+    "couldntDownloadFromOpensubtitles_6feeae": "Impossible de télécharger depuis OpenSubtitles : {status} {detail}",
+    "couldntDownloadFromPodnapisi_9f382a": "Impossible de télécharger depuis Podnapisi : {status} {statusText}",
+    "couldntDownloadFromSubdl_0abb09": "Impossible de télécharger depuis SubDL : {status} {statusText}",
+    "couldntDownloadTheSubtitleFile_7bb2aa": "Impossible de télécharger le fichier de sous-titres : {status} {statusText}",
+    "couldntSearchOnPodnapisi_5016b5": "Impossible de chercher sur Podnapisi : {status} {statusText}",
+    "couldntSearchOnSubdl_6e9714": "Impossible de chercher sur SubDL : {status} {statusText}",
+    "couldntSearchOpensubtitles_f83ebc": "Impossible de chercher sur OpenSubtitles : {status} {detail}",
+    "couldntSignInToOpensubtitles_e13991": "Impossible de se connecter à OpenSubtitles : {status} {detail}",
+    "cuttingAClip_6ce1bf": "Coupe d'un clip",
+    "decodingOnTheGpuFailed_5dd260": "Le décodage sur la carte graphique ({kind}) a échoué, donc seul l'encodage l'utilise",
+    "deletedFrom_e64eed": "{name} a supprimé {what} de {name2}",
+    "didntDownloadCorrectlyItsChecksum_6b7674": "{name} ne s'est pas téléchargé correctement (sa somme de contrôle est fausse). Réessaie.",
+    "dolbyVision_7b8bf0": "Dolby Vision",
+    "downloadingFailed_caa02d": "Le téléchargement de {name} a échoué : {status} {statusText}",
+    "downloadingSubtitles_5da4f5": "Téléchargement des sous-titres",
+    "downloadPictureRecognitionFirstIn_9de9d6": "Télécharge d'abord la reconnaissance d'image, dans Réglages › Métadonnées.",
+    "eachPathMappingNeedsBoth_0eaed7": "Chaque correspondance de chemin a besoin des deux dossiers.",
+    "emailIsntSetUpOn_2a344f": "L'e-mail n'est pas configuré sur ce serveur. Un admin peut le configurer dans Réglages › Intégrations.",
+    "enterTheAddressEmailsCome_11c4c4": "Indique l'adresse d'où partent les e-mails, comme cinemion@example.com.",
+    "enterTheAddressOfThe_e68e0b": "Indique l'adresse du serveur de messagerie, comme smtp.example.com.",
+    "enterTheAddressToSend_a2d4ea": "Indique l'adresse où envoyer le test.",
+    "enterTheDomainThatPoints_4c7d3d": "Indique d'abord le domaine qui pointe vers ce serveur.",
+    "enterTheFullAddressStarting_5d7e58": "Indique l'adresse complète, qui commence par http:// ou https://.",
+    "episodesOfWereAddedTo_13f334": "{episodes} épisodes de {title} ont été ajoutés à {name}",
+    "everythingInTheZipFile_204424": "Tout le contenu du fichier zip est déjà dans ce dossier. Réessaie avec « Remplacer les fichiers déjà présents » activé.",
+    "fetchingDetails_acc92a": "Récupération des infos",
+    "filesAreBeingCheckedAlready_f4eb25": "Les fichiers sont déjà en cours de vérification.",
+    "findingAlbumCovers_fef1c4": "Recherche des pochettes d'albums",
+    "fromWasAddedTo_122599": "{title} de {what} a été ajouté à {name}",
+    "githubAnswered_391401": "GitHub a répondu {status} {statusText}.",
+    "githubAskedToSlowDown_960c7e": "GitHub a demandé de ralentir. Cinemion réessaiera plus tard.",
+    "giveTheAlbumAName_768d35": "Donne un nom à l'album.",
+    "giveTheFolderAsA_79550c": "Indique le dossier par un chemin complet, comme /backups ou D:\\Backups.",
+    "giveTheGameAName_dc4cb4": "Donne un nom au jeu.",
+    "giveTheKeyAName_48fdfb": "Donne un nom à la clé, comme l'appli qui va l'utiliser.",
+    "giveThePlaylistAName_6f4394": "Donne un nom à la playlist.",
+    "hasCharactersAFileName_4f2ac0": "« {path} » contient des caractères interdits dans un nom de fichier.",
+    "inDockerMountTheMedia_4ad860": "Dans Docker, monte le dossier des médias sans :ro.",
+    "installFfmpegOrSetFfmpeg_a3394e": "Installe ffmpeg, ou règle FFMPEG_PATH et FFPROBE_PATH sur l'endroit où il est installé.",
+    "installItWithSudoApt_88763c": "Installe-le avec : sudo apt install ffmpeg",
+    "installItWithSudoPacman_e85f7e": "Installe-le avec : sudo pacman -S ffmpeg",
+    "installTheDriverWithSudo_199431": "Installe le pilote avec : sudo pacman -S intel-media-driver vpl-gpu-rt",
+    "installTheDriverWithSudo_a08672": "Installe le pilote avec : sudo apt install intel-media-va-driver-non-free",
+    "installTheDriverWithSudo_a8164d": "Installe le pilote avec : sudo apt install mesa-va-drivers",
+    "installTheDriverWithSudo_d876ad": "Installe le pilote avec : sudo pacman -S libva-mesa-driver",
+    "installTheVaApiDriver_cc41d4": "Installe le pilote VA-API de ta carte graphique.",
+    "inTheZipFileIs_29bb35": "« {name} » dans le fichier zip est endommagé : sa somme de contrôle ne correspond pas.",
+    "inTheZipFileIs_2ef996": "« {name} » dans le fichier zip est endommagé : il est plus gros que prévu une fois décompressé.",
+    "invalidUsernameUseToLetters_0d6217": "Nom d'utilisateur « {username} » invalide. Utilise 2 à 32 lettres, chiffres, points, tirets ou tirets bas.",
+    "isAFileNotA_36ac02": "« {wanted} » est un fichier, pas un dossier.",
+    "isAlreadyInThatFolder_28eab9": "« {path} » est déjà dans ce dossier. Réessaie avec « Remplacer les fichiers déjà présents » activé.",
+    "isHiddenANameStarts_79b64e": "« {path} » est caché (un nom commence par un point), donc la bibliothèque ne l'afficherait jamais.",
+    "isntADomainNameEnter_6630ed": "« {domain} » n'est pas un nom de domaine. Indiques-en un comme cinemion.example.com.",
+    "isntAHostNameOr_b6d32a": "« {bad} » n'est ni un nom d'hôte ni une adresse.",
+    "isntALanguageCinemionKnows_13297e": "« {unknown} » n'est pas une langue que Cinemion connaît.",
+    "isntAnEventCinemionSends_589e2b": "« {unknown} » n'est pas un événement que Cinemion envoie.",
+    "isntARatingCinemionKnows_05c3bd": "« {rating} » n'est pas une classification que Cinemion connaît. Utilises-en une comme « G », « PG », « 12 » ou « 16 ».",
+    "isntARatingCinemionKnows_0605d6": "« {contentRating} » n'est pas une classification que Cinemion connaît. Utilises-en une comme « G », « PG », « 12 » ou « 16 ».",
+    "isPackedInAWay_37e5df": "« {name} » est compressé d'une façon que Cinemion ne sait pas décompresser (méthode {method}). Recompresse-le en zip avec une compression normale.",
+    "isPasswordProtected_c6edd3": "« {name} » est protégé par mot de passe.",
+    "isReadyWithAlbum_0de6d0": "{name} est prête, avec 1 album",
+    "isReadyWithAlbums_6d834b": "{name} est prête, avec {count} albums",
+    "isReadyWithAudiobook_a54ba0": "{name} est prête, avec 1 livre audio",
+    "isReadyWithAudiobooks_22a47b": "{name} est prête, avec {count} livres audio",
+    "isReadyWithBook_3ac268": "{name} est prête, avec 1 livre",
+    "isReadyWithBooks_fa6663": "{name} est prête, avec {count} livres",
+    "isReadyWithClip_3b2acf": "{name} est prête, avec 1 clip",
+    "isReadyWithClips_070adc": "{name} est prête, avec {count} clips",
+    "isReadyWithMovie_b8a791": "{name} est prête, avec 1 film",
+    "isReadyWithMovies_1adaaa": "{name} est prête, avec {count} films",
+    "isReadyWithPhotosAnd_6376a8": "{name} est prête, avec {items} photos et vidéos",
+    "isReadyWithShow_42627c": "{name} est prête, avec 1 série",
+    "isReadyWithShows_e6c8cf": "{name} est prête, avec {count} séries",
+    "isReadyWithVideo_347cdc": "{name} est prête, avec 1 vidéo",
+    "isReadyWithVideos_19aebf": "{name} est prête, avec {count} vidéos",
+    "isTooLongForA_47e3c6": "« {part} » est trop long pour un nom de fichier.",
+    "itsCutShortOrDamaged_a7add9": "Il est tronqué ou endommagé vers la fin : {error}",
+    "itWontPlayFromThe_d01c33": "Il ne se lit pas depuis le début : {error}",
+    "joinARoomFirst_906cce": "Rejoins d'abord une séance.",
+    "keepBetweenAndBackups_c988d7": "Garde entre 1 et 100 sauvegardes.",
+    "keepEachTagUnderCharacters_50c072": "Garde chaque tag sous les 40 caractères.",
+    "keepTheNameUnderCharacters_e25b35": "Garde le nom sous les 64 caractères.",
+    "letsEncryptCouldntReachOn_60e570": "Let's Encrypt n'a pas pu joindre {value} sur le port 80{reason}. Vérifie que le domaine pointe vers ce serveur et que le port 80 est redirigé vers Cinemion.",
+    "letsEncryptDidntOfferA_e254cc": "Let's Encrypt n'a proposé aucun moyen de vérifier {value} en http.",
+    "letsEncryptRefusedTheRequest_9a636d": "Let's Encrypt a refusé la demande{detail}",
+    "letsEncryptSentSomethingThat_870464": "Let's Encrypt a envoyé quelque chose qui n'est pas un certificat.",
+    "limitedTo_4ad376": "Limité à {maxBitrate}.",
+    "limitedToForViewersOutside_7c3ff9": "Limité à {maxBitrate} pour les spectateurs hors du réseau local.",
+    "lookingAtClips_80cfb3": "Analyse des clips",
+    "lookingForFiles_9f1d43": "Recherche des fichiers",
+    "lookingForSubtitles_c45427": "Recherche des sous-titres",
+    "lookingUpEpisodes_27a1e0": "Recherche des épisodes",
+    "lookingUpEpisodesOf_910797": "Recherche des épisodes ({i} sur {shows})",
+    "makingABackup_e1f796": "Sauvegarde en cours",
+    "makingASmallCopyOf_fcba3a": "Création d'une petite copie d'un clip",
+    "makingSeekThumbnails_0d2cda": "Création des miniatures de navigation",
+    "makingThumbnails_e26cfc": "Création des miniatures",
+    "mariadbAt_01738a": "MariaDB sur {DB_HOST}:{DB_PORT}",
+    "matchingByHandWorksWith_e7a2d3": "L'identification à la main marche avec TMDB et TheTVDB, pas avec « {providerId} ».",
+    "moviesWereAddedTo_9a53e3": "{count} films ont été ajoutés à {name}",
+    "musicLibrariesListTheirAlbums_bd2ac8": "Les bibliothèques de musique listent leurs albums, artistes et morceaux sous /api/music.",
+    "mustBeAFullPath_f4ffe7": "« {to} » doit être un chemin complet, comme /media/shows.",
+    "noneOfTheFilesCould_996fa6": "Aucun des fichiers n'a pu être décompressé. {reason}",
+    "noneOfThoseClipsAre_507fd7": "Aucun de ces clips n'est dans cette bibliothèque.",
+    "noNvidiaGpuFoundIn_5f7a12": "Aucune carte graphique NVIDIA trouvée. Dans Docker, il faut le NVIDIA container runtime.",
+    "noSubtitleSiteIsSet_d27750": "Aucun site de sous-titres n'est configuré. Actives-en un dans Réglages › Sous-titres.",
+    "nothingAnsweredAtCheckThe_b3601f": "Rien n'a répondu à {host}. Vérifie l'adresse, et que l'appli qui reçoit tourne.",
+    "nothingInTheZipFile_967a9c": "Rien dans le fichier zip n'est utilisé par {name} ({type}).",
+    "nothingToChange_ce9c2c": "Rien à changer.",
+    "nvidiaGpuFound_525a49": "Carte graphique NVIDIA trouvée",
+    "omdbRejectedTheApiKey_1f4b98": "OMDb a refusé la clé API. Vérifie-la dans Réglages › Métadonnées.",
+    "omdbRequestFailed_83c4bb": "La requête OMDb a échoué : {status} {statusText}",
+    "omdbsDailyLimitIsUsed_d7e82e": "La limite quotidienne d'OMDb est atteinte. Les notes seront récupérées à nouveau demain.",
+    "onlyAdminsCanChangeRoles_63fae9": "Seuls les admins peuvent changer les rôles.",
+    "onlyAdminsCanCreateOther_91e80e": "Seuls les admins peuvent créer d'autres admins.",
+    "onlyAdminsCanDeleteAdmins_c349cd": "Seuls les admins peuvent supprimer des admins.",
+    "onlyAdminsCanDoThis_286d13": "Seuls les admins peuvent faire ça.",
+    "onlyAssAndSsaSubtitles_0ef47b": "Seuls les sous-titres ASS et SSA gardent leur propre style.",
+    "onlyLibraryManagersCanBrowse_7dafee": "Seuls ceux qui gèrent les bibliothèques peuvent parcourir les dossiers.",
+    "onlyMoviesAndShowsCan_2ed91b": "Seuls les films et séries peuvent être identifiés.",
+    "onlyMoviesEpisodesAndVideos_b6c177": "Seuls les films, épisodes et vidéos peuvent être regardés ensemble.",
+    "onlyMoviesEpisodesAndVideos_ba8e30": "Seuls les films, épisodes et vidéos peuvent être lus.",
+    "onlyMoviesEpisodesAndVideos_cf1ddc": "Seuls les films, épisodes et vidéos peuvent être téléchargés.",
+    "onlyMoviesEpisodesAndVideos_db09eb": "Seuls les films, épisodes et vidéos ont une progression.",
+    "onlyMoviesShowsAndVideos_7e5e26": "Seuls les films, séries et vidéos peuvent aller dans ta liste.",
+    "onlyMoviesShowsSeasonsEpisodes_3d2986": "Seuls les films, séries, saisons, épisodes et vidéos peuvent être supprimés.",
+    "onlyShowsHaveMissingEpisodes_f63c82": "Seules les séries ont des épisodes manquants.",
+    "onlyShowsSeasonsEpisodesVideos_a27187": "Seuls les séries, saisons, épisodes, vidéos, dossiers et jeux ont une suite.",
+    "onlyTheHostCanChange_f2c4e5": "Seul l'hôte peut changer ça.",
+    "onlyTheHostCanEnd_b456a9": "Seul l'hôte peut terminer la séance pour tout le monde.",
+    "onlyTheHostCanPause_e6b92f": "Seul l'hôte peut mettre en pause et se déplacer dans cette séance.",
+    "onlyTheHostCanPick_ada439": "Seul l'hôte peut choisir ce qui passe.",
+    "onlyTheOneWhoMade_6940be": "Seule la personne qui a créé cet album, ou quelqu'un qui gère les bibliothèques, peut le modifier.",
+    "onlyTheOneWhoMade_a93d39": "Seule la personne qui a créé cet album, ou quelqu'un qui gère les bibliothèques, peut le supprimer.",
+    "onlyTheOneWhoMade_fe0668": "Seule la personne qui a créé cet album, ou quelqu'un qui gère les bibliothèques, peut y ajouter des éléments.",
+    "onlyVideosAndFoldersCan_0198db": "Seuls les vidéos et dossiers peuvent recevoir une miniature à la main.",
+    "onlyVideosAndFoldersHave_db0207": "Seuls les vidéos et dossiers ont une miniature choisie à la main.",
+    "onlyVideosPhotosAndFolders_25ef1b": "Seuls les vidéos, photos et dossiers peuvent être modifiés.",
+    "opensubtitlesDidntAcceptTheApi_9189b6": "OpenSubtitles n'a pas accepté la clé API ou la connexion ({detail}). Vérifie-les dans Réglages › Sous-titres.",
+    "opensubtitlesDidntSendADownload_31846a": "OpenSubtitles n'a pas envoyé de lien de téléchargement. La limite quotidienne est atteinte ; elle repart à zéro {reset}.",
+    "opensubtitlesDidntSendADownload_910e04": "OpenSubtitles n'a pas envoyé de lien de téléchargement. La limite quotidienne est atteinte ; elle repart à zéro demain.",
+    "opensubtitlesDidntSendADownload_946ade": "OpenSubtitles n'a pas envoyé de lien de téléchargement.",
+    "opensubtitlesIsGettingTooMany_5b85a7": "OpenSubtitles reçoit trop de requêtes. Attends quelques secondes et réessaie.",
+    "pasteBothTheCertificateAnd_545257": "Colle le certificat et sa clé privée.",
+    "pasteYourCertificateAndIts_594086": "Colle d'abord ton certificat et sa clé privée.",
+    "photosAndVideosWereAdded_1f9620": "{count} photos et vidéos ont été ajoutées à {library}",
+    "photosAndVideosWereAdded_de2c11": "{count} photos et vidéos ont été ajoutées à {folder} dans {library}",
+    "photosLibrariesListTheirAlbums_a880cd": "Les bibliothèques de photos listent leurs albums et photos sous /api/photos.",
+    "photosWereAddedTo_b6e82f": "{count} photos ont été ajoutées à {library}",
+    "photosWereAddedToIn_b7dfa0": "{count} photos ont été ajoutées à {folder} dans {library}",
+    "pickALanguageToSearch_e3f5c2": "Choisis une langue pour la recherche.",
+    "pickAPhotoFromInside_cbf104": "Choisis une photo de cet album comme couverture.",
+    "pickAPhotoOrVideo_17011d": "Choisis une photo ou une vidéo de cet album.",
+    "pickAPhotosLibraryFor_c6aeeb": "Choisis une bibliothèque de photos pour l'album.",
+    "pickASearchResultTo_171c8a": "Choisis un résultat de recherche à télécharger.",
+    "pickASearchResultTo_1f98f1": "Choisis un résultat de recherche à associer.",
+    "pickATitleAndA_395012": "Choisis un titre et une taille à télécharger.",
+    "pickAtLeastOneEvent_9ad686": "Choisis au moins un événement à envoyer.",
+    "pickAtLeastOneSubtitle_2ad24d": "Choisis au moins une langue de sous-titres.",
+    "pickAtLeastOneTrack_c1087e": "Choisis au moins un morceau à ajouter.",
+    "pickAYearUpTo_4ee805": "Choisis une année jusqu'à celle-ci.",
+    "pickHowTheConnectionIs_af287c": "Choisis comment la connexion est chiffrée.",
+    "pickOffVaApiQuick_35f1f6": "Choisis Désactivée, VA-API, Quick Sync ou NVENC pour l'accélération matérielle.",
+    "pickOneOfHours_36e597": "Choisis parmi {join} heures.",
+    "pickPhotosOrVideosFrom_997c6f": "Choisis des photos ou vidéos de la bibliothèque de cet album.",
+    "pickTheLibraryPodiumUploads_83b934": "Choisis la bibliothèque où Podium envoie.",
+    "pickWhereTheCertificateComes_5490c3": "Choisis d'où vient le certificat.",
+    "pictureSubtitlesCantBeTurned_28a314": "Les sous-titres en image ne peuvent pas être transformés en texte. Ils sont incrustés dans la vidéo à la place.",
+    "pictureSubtitlesDrawnIntoThe_2012cf": "Sous-titres en image, incrustés dans la vidéo",
+    "playbackWasStopped_da411d": "La lecture a été arrêtée.",
+    "podnapisiIsGettingTooMany_285d10": "Podnapisi reçoit trop de requêtes. Attends une minute et réessaie.",
+    "pointsOutsideTheFolder_387a56": "« {path} » pointe en dehors du dossier.",
+    "portIsAlreadyInUse_018337": "Le port {port} est déjà utilisé par un autre programme. Choisis un autre port.",
+    "portIsThePlainHttp_c0716c": "Le port {port} est le port http simple. Choisis-en un autre pour https, comme 8443.",
+    "preparingADownload_1a4e9b": "Préparation d'un téléchargement : {label}",
+    "readingBookDetails_05093f": "Lecture des infos des livres",
+    "readingChapters_4100fa": "Lecture des chapitres",
+    "readingFiles_44b3c3": "Lecture des fichiers",
+    "recognisingGamesInClips_febdb5": "Reconnaissance des jeux dans les clips",
+    "refreshingDetailsOfEveryLibrary_5e5f04": "Actualisation des infos de toutes les bibliothèques",
+    "restoredABackupMadeOn_c4323c": "Sauvegarde du {slice} faite par Cinemion {version} restaurée",
+    "restoringProfilePicturesAndArtwork_59d8ac": "Restauration des photos de profil et des images",
+    "restoringTheDatabase_4cda9f": "Restauration de la base de données",
+    "samsungInternet_22e8e7": "Samsung Internet",
+    "savedToWatchOffline_752902": "{name} a gardé {inline} pour regarder hors ligne",
+    "savingTheDatabase_216b90": "Enregistrement de la base de données",
+    "sayWhereTheCutStarts_b80ae1": "Indique où la coupe commence et finit, en secondes : { \"start\": 2.5, \"end\": 30, \"replace\": false }.",
+    "sayWhetherItsWatchedWatched_cd4397": "Indique si c'est vu : { \"watched\": true }.",
+    "sayWhetherToTakeThe_ca5f53": "Indique s'il faut accepter la suggestion : { \"accept\": true }.",
+    "sayWhichClipsAndWhether_e31e37": "Indique quels clips et s'il faut les mettre en favori : { \"ids\": [1], \"favorite\": true }.",
+    "sayWhichClipsAndWhich_a8a2d0": "Indique quels clips et quel jeu : { \"ids\": [1, 2], \"game\": { \"gameId\": 3 } }.",
+    "sayWhichPhotosToTake_596f15": "Indique quelles photos retirer : { \"itemIds\": [1, 2] }.",
+    "scanningEveryLibrary_fd17a7": "Analyse de toutes les bibliothèques",
+    "seasonOf_128c67": "Saison {done} sur {size}",
+    "seekThumbnailsAreTurnedOff_2b23b3": "Les miniatures de navigation sont désactivées dans Réglages › Lecture.",
+    "sendANewTitleOr_e9f4d0": "Envoie un nouveau titre, ou un jeu trouvé en ligne à associer.",
+    "sendAPictureOrFor_a4df0f": "Envoie une image, ou pour une vidéo le moment à utiliser : { \"time\": 12.5 }.",
+    "sendEnabledAsTrueOr_acfd2b": "Envoie `enabled` à true ou false.",
+    "sendTheBackupFileAs_8a8eab": "Envoie le fichier de sauvegarde comme corps de la requête.",
+    "sendTheFullListOf_23809f": "Envoie la liste complète des correspondances de chemins.",
+    "sendThePictureAsA_b1e8ba": "Envoie l'image dans un champ « file » d'un formulaire multipart.",
+    "sendTheSettingsAsJson_c699ce": "Envoie les réglages en JSON.",
+    "sendTheSettingsToChange_604519": "Envoie les réglages à changer en JSON.",
+    "signedIn_a91315": "{name} s'est connecté ({device})",
+    "signedInAwayFromHome_223d32": "{name} s'est connecté hors de la maison ({device})",
+    "signInOrUseAn_d49227": "Connecte-toi ou utilise une clé d'appli depuis Réglages › Intégrations de Cinemion.",
+    "simultaneousConversionsMustBeBetween_396df1": "Les conversions simultanées doivent être entre 1 et 32.",
+    "slowDownALittleWait_0abb02": "Doucement : attends un instant avant d'en envoyer plus.",
+    "somethingWentWrongInCinemion_9bd9c1": "Un problème est survenu dans Cinemion. Son journal a les détails.",
+    "somethingWentWrongOnThe_9a755f": "Un problème est survenu sur le serveur. Le journal du serveur a les détails.",
+    "somethingWentWrongWithThe_70b01c": "Un problème est survenu avec l'envoi. Le journal du serveur a les détails.",
+    "sortingFiles_7f20bb": "Tri des fichiers",
+    "startedWatchingTogether_0d922c": "{name} a lancé un visionnage commun de {inline}",
+    "startingHttps_b5992b": "Démarrage de https",
+    "styledText_37d03a": "Texte stylisé",
+    "subdlDidntAcceptTheApi_68f488": "SubDL n'a pas accepté la clé API. Vérifie-la dans Réglages › Sous-titres.",
+    "subdlIsGettingTooMany_d1ea6f": "SubDL reçoit trop de requêtes. Attends une minute et réessaie.",
+    "subtitlesDownloadedAutomaticallyForVideos_f0d1d0": "{downloaded} sous-titres téléchargés automatiquement, pour {value} vidéos",
+    "subtitlesDownloadedFor_fe8ac3": "Sous-titres téléchargés pour {inline} ({language})",
+    "subtitleSearchIsntSetUp_d7894b": "La recherche de sous-titres n'est pas encore configurée. Un admin peut activer un site de sous-titres dans Réglages › Sous-titres.",
+    "suggestingGames_88f61f": "Suggestion de jeux",
+    "thatAlbumDoesntExist_6b337f": "Cet album n'existe pas.",
+    "thatArtistDoesntExist_d1dd55": "Cet artiste n'existe pas.",
+    "thatBackupIsntInThe_8c68f8": "Cette sauvegarde n'est pas dans le dossier des sauvegardes.",
+    "thatBackupIsntThereAny_0a53f5": "Cette sauvegarde n'est plus là.",
+    "thatBookDoesntExist_9bf733": "Ce livre n'existe pas.",
+    "thatCertificateCantBeRead_b98ea0": "Ce certificat ne peut pas être lu.",
+    "thatCertificateRanOutOn_df2674": "Ce certificat a expiré le {slice}.",
+    "thatClipDoesntExist_6ed3ec": "Ce clip n'existe pas.",
+    "thatClipHasNoSuggested_4fe61d": "Ce clip n'a pas de jeu suggéré.",
+    "thatCollectionDoesntExist_da099e": "Cette collection n'existe pas.",
+    "thatCopyDoesntExistAnymore_77b83f": "Cette copie n'existe plus. Fais-en une nouvelle.",
+    "thatDownloadDoesntExist_102c34": "Ce téléchargement n'existe pas.",
+    "thatEmailAddressDoesntLook_16ab4c": "Cette adresse e-mail ne semble pas correcte.",
+    "thatFileIsntAnImage_bf8c1b": "Ce fichier n'est pas une image que Cinemion peut lire. Essaie un JPG, PNG ou WebP.",
+    "thatFileIsntAPicture_210789": "Ce fichier n'est pas une image que Cinemion peut lire. Utilise une image JPG, PNG ou WebP.",
+    "thatFileIsntInA_7a6e00": "Ce fichier n'est plus dans une bibliothèque.",
+    "thatFileIsntInThis_d1a6a4": "Ce fichier n'est pas dans ce livre.",
+    "thatFilesLibraryIsGone_1ffcdd": "La bibliothèque de ce fichier n'existe plus.",
+    "thatFontIsntAttachedTo_cb0925": "Cette police n'est pas jointe à cette vidéo.",
+    "thatGameCouldntBeFound_644589": "Ce jeu est introuvable en ligne maintenant. Refais une recherche.",
+    "thatGameDoesntExist_36930a": "Ce jeu n'existe pas.",
+    "thatGameIsntInThis_b8d6fe": "Ce jeu n'est pas dans cette bibliothèque.",
+    "thatIsntASonarrOr_a1b9b8": "Ce n'est pas un webhook Sonarr ou Radarr.",
+    "thatIsntASubdlDownload_f23a67": "Ce n'est pas un téléchargement SubDL.",
+    "thatIsntOnYourList_f148fc": "Ce n'est pas dans ta liste.",
+    "thatIsntPartOfThe_f3cbfb": "Ça ne fait pas partie du flux.",
+    "thatItemDoesntExist_9f1dc9": "Cet élément n'existe pas.",
+    "thatKeyDoesntExist_c40fcf": "Cette clé n'existe pas.",
+    "thatLibraryDoesntExist_946173": "Cette bibliothèque n'existe pas.",
+    "thatMomentOfTheVideo_54778b": "Ce moment de la vidéo n'a pas pu être lu.",
+    "thatPartOfTheAudiobook_81047a": "Cette partie du livre audio n'existe pas.",
+    "thatPartOfTheStream_cfa256": "Cette partie du flux n'est pas prête.",
+    "thatPasswordIsntRight_d9c3ad": "Ce mot de passe n'est pas le bon.",
+    "thatPersonDoesntExist_dbc387": "Cette personne n'existe pas.",
+    "thatPhotoDoesntExist_1f955c": "Cette photo n'existe pas.",
+    "thatPhotosFileIsGone_dccfc2": "Le fichier de cette photo n'existe plus.",
+    "thatPinIsntRight_d4a9e5": "Ce code PIN n'est pas le bon.",
+    "thatPlaybackSessionHasEnded_b8a810": "Cette session de lecture est terminée.",
+    "thatPlaylistDoesntExist_4575aa": "Cette playlist n'existe pas.",
+    "thatPrivateKeyDoesntBelong_24b35f": "Cette clé privée ne correspond pas au certificat.",
+    "thatProfileDoesntExist_75c2c5": "Ce profil n'existe pas.",
+    "thatShowDoesntExist_c5ac9f": "Cette série n'existe pas.",
+    "thatSubtitleTrackDoesntExist_710ed9": "Cette piste de sous-titres n'existe pas.",
+    "thatThumbnailSheetDoesntExist_1f2e03": "Cette planche de miniatures n'existe pas.",
+    "thatTitleDoesntExist_292076": "Ce titre n'existe pas.",
+    "thatTitlesLibraryIsGone_92ae13": "La bibliothèque de ce titre n'existe plus.",
+    "thatTrackDoesntExist_c52d23": "Ce morceau n'existe pas.",
+    "thatUploadDoesntExistAnymore_3a8f5a": "Cet envoi n'existe plus.",
+    "thatUploadTargetDoesntExist_140a3e": "Cette cible d'envoi n'existe pas.",
+    "thatUserDoesntExist_e32611": "Cet utilisateur n'existe pas.",
+    "thatUserHasNoProfile_ecefe4": "Cet utilisateur n'a pas de photo de profil.",
+    "thatUsernameAndPasswordDont_283d84": "Ce nom d'utilisateur et ce mot de passe ne correspondent pas.",
+    "thatVideoDoesntExist_5c43f3": "Cette vidéo n'existe pas.",
+    "thatViewingHasEnded_4330d6": "Ce visionnage est terminé.",
+    "thatWebhookDoesntExist_4a6037": "Ce webhook n'existe pas.",
+    "theAddressMustStartWith_615b70": "L'adresse doit commencer par http:// ou https://.",
+    "theArchiveIsCutShort_a570b7": "L'archive est tronquée ; « {name} » est incomplet.",
+    "theArchiveIsCutShort_ee4219": "L'archive est tronquée.",
+    "theBackupDidntArriveIn_f1921d": "La sauvegarde n'est pas arrivée en entier : {error}",
+    "theBookFileCantBe_b91bcc": "Le fichier du livre est introuvable sur le disque.",
+    "theBrowserDidntHandOver_c1b3fb": "Le navigateur n'a pas transmis d'abonnement push complet.",
+    "theCertificateAndKeyCant_0718c6": "Le certificat et la clé ne peuvent pas être utilisés ensemble : {message}",
+    "theCertificateAuthorityAnswered_4cc590": "L'autorité de certification a répondu {status}.",
+    "theCertificateAuthorityDidntAnswer_308aca": "L'autorité de certification n'a pas répondu ({status}).",
+    "theCertificateAuthorityDidntHand_8bc292": "L'autorité de certification n'a pas fourni de nonce.",
+    "theCertificateAuthorityDidntSay_443125": "L'autorité de certification n'a pas indiqué où se trouve le compte.",
+    "theCertificateAuthoritySaid_8b6295": "L'autorité de certification a dit : {detail}",
+    "theCertificateAuthorityTookToo_758f22": "L'autorité de certification a mis trop de temps à vérifier le domaine.",
+    "theCertificateAuthorityTookToo_8f2837": "L'autorité de certification a mis trop de temps à créer le certificat.",
+    "theCertificateIsCutShort_4fe9ae": "Le certificat est tronqué.",
+    "theCopyCouldntBeMade_465759": "La copie n'a pas pu être faite : {value}",
+    "theCopyIsntReadyYet_f9342e": "La copie n'est pas encore prête.",
+    "theDateMustLookLike_c72438": "La date doit ressembler à 2024-07-12.",
+    "theDownloadedSubtitleFileIs_cfe3d1": "Le fichier de sous-titres téléchargé est vide.",
+    "theDownloadHadNoSubtitle_ddbb45": "Le téléchargement ne contenait aucun fichier de sous-titres.",
+    "theFileIsCutShort_943411": "Le fichier est tronqué.",
+    "theFileIsDamagedPart_225c7b": "Le fichier est endommagé : une partie ne correspond pas à sa somme de contrôle.",
+    "theFileIsDamagedTheres_cab6fb": "Le fichier est endommagé : il y a des données après sa fin.",
+    "theFileIsntThereAny_2f39a5": "Le fichier n'est plus là.",
+    "theFileNeedsAName_0f3c8c": "Le fichier a besoin d'un nom.",
+    "theFolderHoldsAFolder_64c23b": "Le dossier « {path} » contient un dossier qui est déjà dans la bibliothèque « {name} ». Une vidéo ne peut être que dans une seule bibliothèque, alors donne à chaque bibliothèque ses propres dossiers.",
+    "theFolderIsAlreadyIn_1795d7": "Le dossier « {path} » est déjà dans la bibliothèque « {name} ». Une vidéo ne peut être que dans une seule bibliothèque, alors donne à chaque bibliothèque ses propres dossiers.",
+    "theFolderIsInsideA_74965d": "Le dossier « {path} » est à l'intérieur d'un dossier qui est déjà dans la bibliothèque « {name} ». Une vidéo ne peut être que dans une seule bibliothèque, alors donne à chaque bibliothèque ses propres dossiers.",
+    "theFolderIsntAvailableOnly_2fe2c5": "Le dossier « {path} » n'est pas disponible. Seuls les dossiers à l'intérieur de {join} peuvent être utilisés.",
+    "theFolderIsntAvailableOnly_71dcfb": "Le dossier « {wanted} » n'est pas disponible. Seuls les dossiers à l'intérieur de {join} peuvent être utilisés.",
+    "theFolderIsntThereAnymore_44e169": "Le dossier « {folder} » n'est plus là.",
+    "theFoldersAndOverlapPick_ff7eab": "Les dossiers « {path} » et « {other} » se chevauchent. Choisis-en un seul pour « {name} ».",
+    "theGameLookupFailed_d64ee9": "La recherche du jeu a échoué : {status} {statusText}",
+    "theGpuDecodeListMust_a93f2f": "La liste de décodage sur la carte graphique doit être une liste de noms de codecs.",
+    "theGpuDeviceMustBe_f74de0": "Le périphérique de la carte graphique doit être un chemin sous /dev, comme /dev/dri/renderD128.",
+    "theLibraryNameMustBe_d6d24b": "Le nom de la bibliothèque doit faire entre 1 et 60 caractères.",
+    "theLibrarysDriveRanOut_a75b14": "Le disque de la bibliothèque est plein. Libère de la place, puis réessaie.",
+    "theLibraryWasRemovedWhile_081d8c": "La bibliothèque a été retirée pendant l'envoi.",
+    "theMailServerAtPort_dd1fd1": "Le serveur de messagerie sur le port {port} ne commence pas par du chiffrement. Choisis STARTTLS, ou le port pour TLS (souvent 465).",
+    "theMailServerClosedThe_10d030": "Le serveur de messagerie a fermé la connexion.",
+    "theMailServerDidntSay_4e5e9e": "Le serveur de messagerie n'a pas dit bonjour : {code} {text}",
+    "theMailServerDoesntOffer_421444": "Le serveur de messagerie ne propose pas STARTTLS. Choisis un autre type de chiffrement ou un autre port.",
+    "theMailServerRefusedThe_075155": "Le serveur de messagerie a refusé le message : {code} {text}",
+    "theMailServerRefusedThe_2bd1fc": "Le serveur de messagerie a refusé le nom d'utilisateur : {code} {text}",
+    "theMailServerRefusedThe_5253e4": "Le serveur de messagerie a refusé le nom d'utilisateur ou le mot de passe : {code} {text}",
+    "theMailServerRefusedThe_5514a5": "Le serveur de messagerie a refusé l'adresse {to} : {code} {text}",
+    "theMailServerRefusedThe_ec2e5f": "Le serveur de messagerie a refusé la salutation : {code} {text}",
+    "theMailServerRefusedThe_f3c90f": "Le serveur de messagerie a refusé l'adresse de l'expéditeur : {code} {text}",
+    "theMailServerRefusedTo_2add84": "Le serveur de messagerie a refusé la connexion : {code} {text}",
+    "theMailServerRefusedTo_876280": "Le serveur de messagerie a refusé de chiffrer la connexion : {code} {text}",
+    "theMailServerStoppedAnswering_850600": "Le serveur de messagerie ne répond plus.",
+    "theMusicFileCantBe_3f904e": "Le fichier de musique est introuvable sur le disque.",
+    "theNameMustBeBetween_3ccbc4": "Le nom doit faire entre 1 et 40 caractères.",
+    "theNewestReleaseHasA_0bfe70": "La version la plus récente a un nom que Cinemion ne comprend pas : {tag_name}",
+    "theOffsetIsMissing_483de0": "Le décalage manque.",
+    "theOpensubtitlesDownloadLimitFor_984034": "La limite de téléchargements OpenSubtitles pour aujourd'hui est atteinte. {detail}",
+    "thePasswordIsWrong_85bcc1": "Le mot de passe est faux.",
+    "thePasswordMustBeAt_e9240e": "Le mot de passe doit faire au moins 6 caractères.",
+    "thePhotoCantBeFound_ddf92b": "La photo est introuvable sur le disque.",
+    "thePictureCouldntBeSaved_83751a": "L'image n'a pas pu être enregistrée. Le journal du serveur a les détails.",
+    "thePictureIsTooLarge_82507e": "L'image est trop lourde. La limite est de 10 Mo.",
+    "thePictureIsTooLarge_c8c603": "L'image est trop lourde. La limite est de 15 Mo.",
+    "thePictureIsTooLarge_db1e82": "L'image est trop grande. Les images peuvent faire au plus {MAX_DIMENSION} pixels de large ou de haut.",
+    "thePictureRecognitionIsntLoaded_eaf700": "La reconnaissance d'image n'est pas chargée.",
+    "thePinMustBeExactly_d86e68": "Le code PIN doit faire exactement 4 chiffres.",
+    "thePlayerHasToSay_7ba7ca": "Le lecteur doit indiquer ce que cet appareil peut lire.",
+    "thePortMustBeA_483ab8": "Le port doit être un nombre de 1 à 65535.",
+    "theQualityPresetMustBe_1db7db": "Le préréglage de qualité doit être Rapide, Équilibré ou Qualité.",
+    "thereAreNoFilesTo_09e35e": "Il n'y a aucun fichier à supprimer.",
+    "theReceiverDidntAnswerWithin_763efb": "Le destinataire n'a pas répondu dans les 10 secondes.",
+    "thereIsntEnoughFreeSpace_1c5b5f": "Il n'y a pas assez d'espace libre dans {dir} pour la sauvegarde.",
+    "theRemoteStreamLimitMust_dcf6c7": "La limite des flux à distance doit être 0 (pas de limite) ou plus.",
+    "theresNoApiEndpointAt_f4e2a9": "Il n'y a pas de point d'accès API à {method} {path}.",
+    "theresNoCertificateInThat_e97dc3": "Il n'y a pas de certificat dans ce texte. Il devrait commencer par -----BEGIN CERTIFICATE-----.",
+    "theresNoFolder_de0a5e": "Il n'y a pas de dossier « {wanted} ».",
+    "theresNoPrivateKeyIn_ae5776": "Il n'y a pas de clé privée dans ce texte.",
+    "theresNoPrivateKeyIn_c286b9": "Il n'y a pas de clé privée dans ce texte. Elle devrait commencer par -----BEGIN PRIVATE KEY-----.",
+    "theresNoSessionWithThat_ab19e5": "Il n'y a pas de séance avec ce code. Elle est peut-être terminée ; demandes-en un nouveau.",
+    "theresNoVideoInIt_e8447c": "Il ne contient pas de vidéo.",
+    "theScheduledBackupFailed_3b6d72": "La sauvegarde planifiée a échoué : {message}",
+    "theScheduleMustBeOff_11651a": "Le planning doit être désactivé, quotidien ou hebdomadaire.",
+    "theSeasonPackHasNo_b75c62": "Le pack de la saison n'a pas de fichier de sous-titres pour cet épisode.",
+    "theSecureConnectionToFailed_e6d973": "La connexion sécurisée à {host} a échoué : son certificat n'est pas reconnu.",
+    "theServerIsAlreadyConverting_f80cb7": "Le serveur convertit déjà {maxConversions} vidéos. Réessaie quand l'une d'elles s'arrête, ou choisis la qualité Original sur un appareil qui peut lire le fichier.",
+    "theSqliteDatabaseIsNot_9b4b21": "La base de données SQLite n'est pas ouverte.",
+    "theSteamgriddbKeyWasRefused_4f6f49": "La clé SteamGridDB a été refusée. Vérifie-la dans Réglages › Métadonnées.",
+    "theSubtitlesWereSavedBut_8a7ef2": "Les sous-titres ont été enregistrés, mais restent introuvables. Analyse la bibliothèque pour les prendre en compte.",
+    "theTitleIsGone_dbc170": "Le titre n'existe plus.",
+    "theTitleMustBeBetween_432657": "Le titre doit faire entre 1 et 200 caractères.",
+    "thetvdbDidntSendASign_864953": "TheTVDB n'a pas renvoyé de jeton de connexion.",
+    "thetvdbKeptRefusingRequestsTry_6e8957": "TheTVDB a continué de refuser les requêtes. Réessaie dans une minute.",
+    "thetvdbNeedsAnApiKey_8b90b4": "TheTVDB a besoin d'une clé API. Ajoutes-en une dans Réglages › Métadonnées.",
+    "thetvdbRejectedTheApiKey_9e923e": "TheTVDB a refusé la clé API (ou le PIN). Vérifie-les dans Réglages › Métadonnées.",
+    "thetvdbRequestFailed_9bbc50": "La requête TheTVDB a échoué : {status} {statusText}",
+    "thetvdbSignInFailed_624676": "La connexion à TheTVDB a échoué : {status} {statusText}",
+    "theUsernameIsAlreadyTaken_468954": "Le nom d'utilisateur « {username} » est déjà pris.",
+    "theVideoFileCantBe_d5ed86": "Le fichier vidéo est introuvable sur le disque. Vérifie que le dossier des médias est monté, puis analyse à nouveau la bibliothèque.",
+    "theVideoFileCantBe_e1d1b8": "Le fichier vidéo est introuvable sur le disque.",
+    "theVideosLengthIsntKnown_bc1d93": "La durée de la vidéo n'est pas connue, donc les miniatures ne peuvent pas être réparties.",
+    "theZipFileIsCut_0d41bc": "Le fichier zip est tronqué. Vérifie que l'envoi s'est terminé et que le fichier s'ouvre sur ton ordinateur.",
+    "theZipFileIsCut_ba27f0": "Le fichier zip est tronqué.",
+    "theZipFileIsCut_e3018e": "Le fichier zip est tronqué ; « {name} » est incomplet.",
+    "theZipFileIsDamaged_74c3c5": "Le fichier zip est endommagé : son enregistrement de fin zip64 est illisible.",
+    "theZipFileIsDamaged_76ff88": "Le fichier zip est endommagé : son enregistrement de fin zip64 manque.",
+    "theZipFileIsDamaged_c92c38": "Le fichier zip est endommagé vers « {name} ».",
+    "theZipFilesListOf_46667a": "La liste du contenu du fichier zip est endommagée.",
+    "thisAddressIsntValidAnymore_e7c93b": "Cette adresse n'est plus valable. Copie l'adresse actuelle depuis Réglages › Intégrations de Cinemion.",
+    "thisBackupWasMadeBy_07b4a4": "Cette sauvegarde a été faite par Cinemion {version}, plus récent que celui-ci ({VERSION}). Mets d'abord Cinemion à jour, puis restaure-la.",
+    "thisBackupWasMadeBy_f9c554": "Cette sauvegarde a été faite par un Cinemion plus récent. Mets d'abord Cinemion à jour, puis restaure-la.",
+    "thisBookCantBeOpened_5a111c": "Ce livre ne peut pas être ouvert : {error}",
+    "thisBookLinkHasExpired_31f620": "Ce lien vers le livre a expiré. Ouvre à nouveau le livre.",
+    "thisDeviceCantPlayThe_7aaff8": "Cet appareil ne peut pas lire le fichier original. Choisis une des autres tailles.",
+    "thisDownloadLinkHasRun_5d0360": "Ce lien de téléchargement a expiré. Relance le téléchargement depuis Réglages › Sauvegardes.",
+    "thisEpubHasNoChapters_11cdf3": "Cet EPUB n'a aucun chapitre à afficher.",
+    "thisEpubHasNoPackage_987f8c": "Cet EPUB n'a pas de fichier package, donc il ne peut pas être lu.",
+    "thisFileHasToBe_4e1ed1": "Ce fichier doit être converti pour cet appareil, et ton profil n'a pas le droit de convertir des vidéos. Demande à un admin, ou essaie un autre appareil.",
+    "thisFileHasToBe_c712e2": "Ce fichier doit être converti pour cet appareil, et le serveur ne convertit pas de vidéos pour les spectateurs hors du réseau local.",
+    "thisFileIsntMatchedTo_6bd4e1": "Ce fichier n'est pas encore associé à un film ou un épisode.",
+    "thisFileIsntPasswordProtected_a142f4": "Ce fichier n'est pas protégé par mot de passe.",
+    "thisFileWasProtectedBy_af1e07": "Ce fichier a été protégé par un Cinemion plus récent. Mets Cinemion à jour pour l'ouvrir.",
+    "thisIsATestFrom_3c0162": "Ceci est un test de {APP_NAME}. Ça marche !",
+    "thisIsntACinemionBackup_55cb33": "Ce n'est pas une sauvegarde Cinemion, ou elle est endommagée.",
+    "thisIsntATarArchive_28a910": "Ce n'est pas une archive tar, ou elle est endommagée.",
+    "thisIsntAZipFile_f58271": "Ce n'est pas un fichier zip, ou il est tronqué. Vérifie que l'envoi s'est terminé et que le fichier s'ouvre sur ton ordinateur.",
+    "thisIsntAZipFile_f5b1a3": "Ce n'est pas un fichier zip.",
+    "thisIsTheOnlyAdmin_cebaeb": "C'est le seul admin. Fais d'abord de quelqu'un d'autre un admin.",
+    "thisLinkHasExpiredOpen_91da54": "Ce lien a expiré. Ouvre à nouveau la photo.",
+    "thisProfileCantWatchWhats_1f674b": "Ce profil ne peut pas regarder ce qui passe dans cette séance.",
+    "thisProfileIsntLinkedTo_158063": "Ce profil n'est pas lié à Trakt. Lie-le dans Réglages › Ton profil.",
+    "thisProfileIsntLinkedTo_6659a5": "Ce profil n'est pas lié à Trakt. Lie-le d'abord.",
+    "thisProfileIsntLinkedTo_797508": "Ce profil n'est pas lié à Trakt.",
+    "thisStreamHasExpiredPlay_48c8ab": "Ce flux a expiré. Relance le morceau.",
+    "thisStreamHasExpiredStart_62c362": "Ce flux a expiré. Relance la lecture.",
+    "thisTitleHasNoVideo_8f175b": "Ce titre n'a pas de fichier vidéo. Il a peut-être été déplacé ou supprimé.",
+    "thisTitleHasNoVideo_9dbe9e": "Ce titre n'a pas de fichier vidéo.",
+    "thisTrackCantBeConverted_cd700b": "Ce morceau ne peut pas être converti pour ce navigateur. Le journal du serveur a les détails.",
+    "tmdbKeptSayingThereWere_89c19d": "TMDB a continué de signaler trop de requêtes. Réessaie dans une minute.",
+    "tmdbNeedsAnApiKey_91119a": "TMDB a besoin d'une clé API. Ajoutes-en une dans Réglages › Métadonnées.",
+    "tmdbRejectedTheApiKey_e1ef7d": "TMDB a refusé la clé API. Vérifie-la dans Réglages › Métadonnées.",
+    "tmdbRejectedTheKeyBuilt_eaed67": "TMDB a refusé la clé intégrée à Cinemion. Mets Cinemion à jour, ou ajoute ta propre clé dans Réglages › Métadonnées.",
+    "tmdbRequestFailed_5ee636": "La requête TMDB a échoué : {status} {statusText}",
+    "tooManyGameLookupsIn_b356cf": "Trop de recherches de jeux en peu de temps. Réessaie dans quelques minutes.",
+    "tooManyWrongAddressesTry_0eb1cd": "Trop de mauvaises adresses. Réessaie dans {locked} secondes.",
+    "tooManyWrongAttemptsTry_b9220c": "Trop d'essais ratés. Réessaie dans {seconds} secondes.",
+    "tooManyWrongAttemptsTry_c18c81": "Trop d'essais ratés. Réessaie dans {locked} secondes.",
+    "traktDidntSendTheHistory_779360": "Trakt n'a pas envoyé l'historique ({value}). Réessaie plus tard.",
+    "traktDidntSendTheWatchlist_49a52e": "Trakt n'a pas envoyé la watchlist ({value}).",
+    "traktDidntStartTheSign_89f0f2": "Trakt n'a pas lancé la connexion ({status}). Vérifie le client ID de l'appli dans Réglages › Intégrations.",
+    "traktIsntSetUpOn_1d8e4b": "Trakt n'est pas configuré sur ce serveur. Un admin peut l'ajouter dans Réglages › Intégrations.",
+    "typeTheFullPathOf_36b9b5": "Tape le chemin complet du dossier, comme {roots}.",
+    "unknownHardwareAccelerationMethod_2d598f": "Méthode d'accélération matérielle inconnue.",
+    "unknownImage_0082e9": "Image inconnue.",
+    "unknownLibraryTypeUseMovies_53a763": "Type de bibliothèque « {type} » inconnu. Utilise « movies », « shows », « videos », « music », « audiobooks », « books », « photos » ou « clips ».",
+    "unknownMetadataSource_20a402": "Source de métadonnées « {unknown} » inconnue.",
+    "unknownProfileColour_246686": "Couleur de profil « {color} » inconnue.",
+    "unknownProfilePicture_fd7cbd": "Photo de profil inconnue.",
+    "unknownRole_943e26": "Rôle « {role} » inconnu.",
+    "unknownSubtitleProvider_a0ece2": "Fournisseur de sous-titres « {provider} » inconnu.",
+    "uploadedFilesTo_ae0883": "{name} a envoyé {count} fichiers dans {name2}",
+    "uploadedTo_f7203b": "{name} a envoyé « {file} » dans {name2}",
+    "useAPasswordOfAt_3ce894": "Utilise un mot de passe d'au moins 8 caractères.",
+    "useAtMostTags_2da33c": "Utilise 20 tags au maximum.",
+    "usernameAndPasswordAreRequired_1d1eb1": "Le nom d'utilisateur et le mot de passe sont nécessaires.",
+    "videosWereAddedTo_121219": "{videos} vidéos ont été ajoutées à {place}",
+    "videosWereAddedTo_578606": "{count} vidéos ont été ajoutées à {library}",
+    "videosWereAddedToIn_5f72f7": "{count} vidéos ont été ajoutées à {folder} dans {library}",
+    "waitForTheDownloadTo_2b338d": "Attends d'abord la fin du téléchargement.",
+    "wasAddedTo_18dfcf": "{title} {episodes} a été ajouté à {name}",
+    "wasAddedTo_a24623": "{title} a été ajouté à {place}",
+    "wasAddedTo_aa6be5": "{title} a été ajouté à {name}",
+    "wasAddedTo_ee8223": "{what} a été ajouté à {name}",
+    "youCanOnlyChangeYour_f36d01": "Tu ne peux changer que ta propre photo de profil.",
+    "youCantDeleteTheOnly_b15f13": "Tu ne peux pas supprimer le seul admin.",
+    "youCantDeleteYourOwn_360497": "Tu ne peux pas supprimer ton propre compte.",
+    "youDontHavePermissionTo_cb2c16": "Tu n'as pas le droit de faire ça.",
+    "youNeedToSignIn_7258b2": "Tu dois d'abord te connecter.",
+    "yourCurrentPasswordIsntRight_3d92d2": "Ton mot de passe actuel n'est pas le bon."
+  }
+}

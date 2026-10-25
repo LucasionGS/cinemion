@@ -1,0 +1,3711 @@
+{
+  "common": {
+    "cancel": "Annuleren",
+    "save": "Opslaan",
+    "close": "Sluiten",
+    "remove": "Verwijderen",
+    "delete": "Verwijderen",
+    "edit": "Bewerken",
+    "back": "Terug",
+    "next": "Volgende",
+    "copy": "Kopiëren",
+    "search": "Zoeken",
+    "play": "Afspelen",
+    "resume": "Verder kijken",
+    "download": "Downloaden",
+    "upload": "Uploaden",
+    "open": "Openen",
+    "select": "Kiezen",
+    "tryAgain": "Opnieuw proberen",
+    "loading": "Laden…",
+    "more": "Meer",
+    "off": "Uit",
+    "none": "Geen",
+    "automatic": "Automatisch",
+    "unknown": "Onbekend",
+    "couldntSave": "Opslaan is niet gelukt",
+    "saved": "Opgeslagen",
+    "listSeparator": ", ",
+    "dotSeparator": " · "
+  },
+  "format": {
+    "bytes": {
+      "kb": "{value} kB",
+      "mb": "{value} MB",
+      "gb": "{value} GB",
+      "tb": "{value} TB"
+    },
+    "bitrate": {
+      "kbps": "{value} kbps",
+      "mbps": "{value} Mbps"
+    },
+    "ago": {
+      "justNow": "zojuist",
+      "minutes": "{count} min geleden",
+      "hours": {
+        "one": "{count} uur geleden",
+        "other": "{count} uur geleden"
+      },
+      "days": {
+        "one": "{count} dag geleden",
+        "other": "{count} dagen geleden"
+      }
+    },
+    "until": {
+      "soon": "binnenkort",
+      "minutes": "over {count} min",
+      "hours": {
+        "one": "over {count} uur",
+        "other": "over {count} uur"
+      }
+    },
+    "span": {
+      "underAMinute": "minder dan een minuut",
+      "minutes": {
+        "one": "{count} minuut",
+        "other": "{count} minuten"
+      },
+      "hours": {
+        "one": "{count} uur",
+        "other": "{count} uur"
+      },
+      "days": {
+        "one": "{count} dag",
+        "other": "{count} dagen"
+      }
+    },
+    "dateRange": "{from} – {to}",
+    "dateTime": "{date} {time}"
+  },
+  "app": {
+    "boot": {
+      "loading": "Cinemion laden",
+      "unreachable": "Kan de Cinemion-server niet bereiken."
+    },
+    "toasts": {
+      "region": "Meldingen",
+      "dismiss": "Sluiten"
+    },
+    "errors": {
+      "loadList": "Kon de lijst niet laden"
+    }
+  },
+  "api": {
+    "unreachable": "Kan de Cinemion-server niet bereiken. Kijk of hij aanstaat en of je op hetzelfde netwerk zit."
+  },
+  "setup": {
+    "steps": {
+      "navigation": "Stappen",
+      "account": {
+        "label": "Je account",
+        "sub": "Beheerder en servernaam"
+      },
+      "libraries": {
+        "label": "Bibliotheken",
+        "sub": "Waar je media staan"
+      },
+      "metadata": {
+        "label": "Metadata",
+        "sub": "Posters, verhalen en cast"
+      },
+      "done": {
+        "label": "Klaar",
+        "sub": "Aan de slag met Cinemion"
+      }
+    },
+    "note": "Alles hier kun je later nog aanpassen in Instellingen.",
+    "progress": "Stap {step} van {total}",
+    "account": {
+      "title": "Welkom bij Cinemion",
+      "intro": "Laten we je server klaarmaken. Maak eerst het beheerdersaccount aan. Daarmee beheer je de bibliotheken en voeg je de rest van het huishouden toe.",
+      "serverName": "Servernaam",
+      "serverNameDescription": "Te zien op apparaten als ze verbinding maken met deze server.",
+      "name": "Je naam",
+      "username": "Gebruikersnaam",
+      "usernameDescription": "Om in te loggen met een wachtwoord.",
+      "password": "Wachtwoord",
+      "confirmPassword": "Wachtwoord bevestigen",
+      "pin": "Profielpincode <optional>(optioneel)</optional>",
+      "pinPlaceholder": "4 cijfers",
+      "pinDescription": "Gebruik je op gedeelde schermen zoals de tv, in plaats van je wachtwoord.",
+      "errors": {
+        "name": "Vul je naam in.",
+        "username": "Gebruik 2 tot 32 kleine letters, cijfers, punten, streepjes of underscores.",
+        "password": "Gebruik minstens 6 tekens.",
+        "confirm": "De wachtwoorden zijn niet hetzelfde.",
+        "pin": "De pincode moet precies 4 cijfers zijn.",
+        "serverName": "Geef je server een naam."
+      }
+    },
+    "libraries": {
+      "title": "Voeg je bibliotheken toe",
+      "intro": "Wijs Cinemion de mappen met je films en series, andere video's (zoals thuisvideo's), gameclips, je muziek en je boeken. Een bibliotheek kan meerdere mappen gebruiken.",
+      "remove": "{name} verwijderen",
+      "type": "Soort bibliotheek",
+      "types": {
+        "movies": "Films",
+        "shows": "Series",
+        "videos": "Video's",
+        "music": "Muziek",
+        "photos": "Foto's",
+        "clips": "Clips",
+        "audiobooks": "Luisterboeken",
+        "books": "Boeken"
+      },
+      "name": "Naam",
+      "noFolders": "Open een map en kies \"Deze map gebruiken\".",
+      "removeFolder": "{path} verwijderen",
+      "add": "Bibliotheek toevoegen"
+    },
+    "metadata": {
+      "title": "Posters, verhalen en cast",
+      "intro": "Cinemion zoekt details op voor alles wat het vindt. Bronnen hoger in de lijst winnen als ze het oneens zijn."
+    },
+    "done": {
+      "title": "Helemaal klaar",
+      "intro": "Cinemion is klaar. Je bibliotheken zijn opgeslagen en de rest van het huishouden kan een eigen profiel krijgen via Instellingen.",
+      "noLibraries": "Nog geen bibliotheken. Je kunt ze later toevoegen in Instellingen › Bibliotheken."
+    },
+    "actions": {
+      "finish": "Installatie afronden",
+      "goToCinemion": "Naar Cinemion",
+      "skip": "Nu overslaan",
+      "continue": "Verder"
+    },
+    "failed": "De installatie is niet afgerond",
+    "restore": {
+      "hintTitle": "Verhuizen of opnieuw installeren?",
+      "hint": "Haal een Cinemion terug uit een back-up in plaats van helemaal opnieuw te beginnen.",
+      "open": "Back-up terugzetten",
+      "title": "Back-up terugzetten",
+      "intro": "Alles komt terug zoals het was: profielen, wat iedereen keek, bibliotheken, instellingen en artwork. Je logt in zoals altijd.",
+      "foundLabel": "Back-ups op deze server",
+      "found": "Gevonden in {folder}:",
+      "protected": "Beveiligd",
+      "chooseFile": "Back-upbestand uploaden",
+      "otherFile": "Ander bestand kiezen",
+      "password": "Back-upwachtwoord",
+      "passwordDescription": "Het wachtwoord waarmee de back-up is beveiligd in Instellingen › Back-ups.",
+      "sending": "Back-up versturen… {percent}",
+      "failed": "Het terugzetten is niet gelukt: {error}",
+      "warning": "Staan je media in andere mappen op deze server? Pas dan daarna de mappen van de bibliotheken aan in Instellingen › Bibliotheken.",
+      "instead": "Helemaal opnieuw beginnen",
+      "start": "Terugzetten",
+      "doneTitle": "Welkom terug",
+      "doneText": "{name} is terug zoals het was op {date}. Log in zoals je gewend bent.",
+      "doneTextShort": "De back-up is teruggezet. Log in zoals je gewend bent."
+    }
+  },
+  "profiles": {
+    "loading": "Profielen laden",
+    "title": "Wie kijkt er?",
+    "pinProtected": "Beveiligd met pincode",
+    "passwordProtected": "Beveiligd met wachtwoord",
+    "admin": "Beheerder",
+    "upTo": "Tot {rating}",
+    "add": "Profiel toevoegen",
+    "usePassword": "Liever inloggen met een wachtwoord",
+    "pin": {
+      "title": "Pincode van {name}",
+      "keyboardHint": "Je kunt hem ook op je toetsenbord typen."
+    },
+    "password": {
+      "title": "Wachtwoord van {name}",
+      "intro": "Beheerdersprofielen zonder pincode hebben hun wachtwoord nodig.",
+      "label": "Wachtwoord",
+      "signIn": "Inloggen"
+    },
+    "backToProfiles": "Terug naar profielen",
+    "openFailed": "Kon dat profiel niet openen",
+    "loadFailed": "Kon de profielen niet laden"
+  },
+  "signIn": {
+    "title": "Inloggen",
+    "username": "Gebruikersnaam",
+    "password": "Wachtwoord",
+    "submit": "Inloggen",
+    "backToProfiles": "Terug naar profielen"
+  },
+  "topbar": {
+    "home": "Home",
+    "mainNavigation": "Hoofdmenu",
+    "profile": "Profiel: {name}",
+    "profileWithUpdate": "Profiel: {name}. Er is een nieuwe Cinemion",
+    "admin": "Beheerder",
+    "profileRole": "Profiel",
+    "menu": {
+      "settings": "Profiel en instellingen",
+      "dashboard": "Serverdashboard",
+      "together": "Samen kijken",
+      "downloads": "Downloads",
+      "switchProfile": "Ander profiel",
+      "signOut": "Uitloggen",
+      "myList": "Mijn lijst",
+      "stats": "Je statistieken"
+    },
+    "search": {
+      "default": "Zoek films en series",
+      "videos": "Zoek films, series en video's",
+      "music": "Zoek films, series en muziek",
+      "books": "Zoek films, series en boeken",
+      "albums": "Zoek films, series en albums",
+      "games": "Zoek films, series en games",
+      "everything": "Zoek in je bibliotheken"
+    }
+  },
+  "home": {
+    "greeting": {
+      "night": "Goedenacht, {name}",
+      "morning": "Goedemorgen, {name}",
+      "afternoon": "Goedemiddag, {name}",
+      "evening": "Goedenavond, {name}"
+    },
+    "spotlight": {
+      "upNext": "Hierna",
+      "seasons": {
+        "one": "{count} seizoen",
+        "other": "{count} seizoenen"
+      },
+      "details": "Details"
+    },
+    "rows": {
+      "continueWatching": "Verder kijken",
+      "nextUp": "Volgende afleveringen",
+      "newIn": "Nieuw in {library}",
+      "recentlyAddedIn": "Pas toegevoegd in {library}",
+      "continueBooks": "Lees verder",
+      "becauseYouWatched": "Omdat je {title} keek",
+      "myList": "Mijn lijst"
+    },
+    "empty": {
+      "addFolder": "Voeg een map met films of series toe om te beginnen.",
+      "askAdmin": "Vraag degene die deze server beheert om een bibliotheek toe te voegen.",
+      "addLibrary": "Bibliotheek toevoegen",
+      "scanning": "Cinemion doorzoekt je bibliotheken. Titels verschijnen hier zodra ze gevonden zijn.",
+      "nothingToWatch": "Er is hier nog niets dat dit profiel mag kijken."
+    },
+    "loadFailed": "Kon het beginscherm niet laden"
+  },
+  "library": {
+    "notFound": {
+      "title": "Bibliotheek niet gevonden",
+      "description": "Misschien is hij verwijderd, of heeft je profiel er geen toegang toe."
+    },
+    "count": {
+      "videos": {
+        "one": "{count} video",
+        "other": "{count} video's"
+      },
+      "shows": {
+        "one": "{count} serie",
+        "other": "{count} series"
+      },
+      "movies": {
+        "one": "{count} film",
+        "other": "{count} films"
+      }
+    },
+    "scanning": "Doorzoeken…",
+    "filters": {
+      "show": "Tonen",
+      "all": "Alles",
+      "unwatched": "Niet gekeken",
+      "collections": "Collecties",
+      "tag": "Tag",
+      "genre": "Genre",
+      "allTags": "Alle tags",
+      "allGenres": "Alle genres",
+      "sortBy": "Sorteren op"
+    },
+    "sort": {
+      "title": "Titel",
+      "added": "Pas toegevoegd",
+      "year": "Jaar van uitkomst",
+      "rating": "Beoordeling",
+      "date": "Datum"
+    },
+    "noMatches": {
+      "title": "Niets gevonden",
+      "unwatched": "Je hebt hier alles al gezien.",
+      "unwatchedWithTag": "Je hebt alles met deze tag al gezien.",
+      "unwatchedInGenre": "Je hebt alles in dit genre al gezien.",
+      "tag": "Niets met deze tag.",
+      "genre": "Niets in dit genre."
+    },
+    "empty": {
+      "title": "Hier staat nog niets",
+      "scanning": "Cinemion doorzoekt deze bibliotheek nu. Titels verschijnen zodra ze gevonden zijn.",
+      "movies": "Films uit {paths} verschijnen hier na het doorzoeken.",
+      "shows": "Series uit {paths} verschijnen hier na het doorzoeken.",
+      "videos": "Video's uit {paths} verschijnen hier na het doorzoeken.",
+      "music": "Muziek uit {paths} verschijnt hier na het doorzoeken.",
+      "audiobooks": "Luisterboeken uit {paths} verschijnen hier na het doorzoeken.",
+      "books": "Boeken uit {paths} verschijnen hier na het doorzoeken.",
+      "photos": "Foto's uit {paths} verschijnen hier na het doorzoeken.",
+      "clips": "Clips uit {paths} verschijnen hier na het doorzoeken."
+    },
+    "unmatched": "Niet herkend",
+    "menu": {
+      "moreFor": "Meer voor {title}",
+      "fixMatch": "Herkenning verbeteren",
+      "refresh": "Details vernieuwen"
+    },
+    "refreshing": "{title} vernieuwen…",
+    "upToDate": "{title} is bijgewerkt",
+    "refreshFailed": "Vernieuwen is niet gelukt",
+    "loadFailed": "Kon deze bibliotheek niet laden"
+  },
+  "search": {
+    "placeholder": "Films, series, video's, mensen en muziek",
+    "clear": "Wissen",
+    "nothingFound": "Niets gevonden voor \"{query}\".",
+    "titles": "Films en series",
+    "collections": "Collecties",
+    "episodes": "Afleveringen",
+    "videos": "Video's",
+    "games": "Games",
+    "clips": {
+      "one": "{count} clip",
+      "other": "{count} clips"
+    },
+    "photoAlbums": "Fotoalbums",
+    "artists": "Artiesten",
+    "albums": "Albums",
+    "songs": "Nummers",
+    "books": "Boeken",
+    "people": "Mensen"
+  },
+  "item": {
+    "missing": {
+      "title": "Deze titel is niet beschikbaar",
+      "goHome": "Naar home",
+      "season": "Seizoen {number}",
+      "show": {
+        "one": "{count} ontbrekende aflevering tonen",
+        "other": "{count} ontbrekende afleveringen tonen"
+      },
+      "hide": {
+        "one": "{count} ontbrekende aflevering verbergen",
+        "other": "{count} ontbrekende afleveringen verbergen"
+      },
+      "notHere": "Niet aanwezig",
+      "label": "Aflevering {number}, {title}, niet in je bibliotheek",
+      "untitled": "Aflevering {number}",
+      "aired": "Uitgezonden op {date}"
+    },
+    "meta": {
+      "seasons": {
+        "one": "{count} seizoen",
+        "other": "{count} seizoenen"
+      },
+      "imdbRating": "IMDb-score",
+      "votes": {
+        "one": "{count} stem",
+        "other": "{count} stemmen"
+      },
+      "scoreDetail": "{name}, {detail}"
+    },
+    "collection": {
+      "partOf": "Onderdeel van",
+      "movies": {
+        "one": "{count} film",
+        "other": "{count} films"
+      }
+    },
+    "moreLikeThis": "Meer zoals dit",
+    "details": {
+      "director": "Regie",
+      "directors": "Regie",
+      "writer": "Schrijver",
+      "writers": "Schrijvers",
+      "network": "Zender",
+      "studio": "Studio",
+      "version": "Versie",
+      "audio": "Audio",
+      "subtitles": "Ondertiteling",
+      "forced": "Geforceerd",
+      "picture": "Beeld",
+      "mono": "Mono",
+      "stereo": "Stereo"
+    },
+    "cast": {
+      "title": "Cast en crew",
+      "producer": "Producent",
+      "composer": "Componist",
+      "author": "Auteur",
+      "narrator": "Verteller"
+    },
+    "next": {
+      "continueEpisode": "Verder met {episode} · {title}",
+      "upNextEpisode": "Hierna: {episode} · {title}",
+      "continue": "Verder met {title}",
+      "upNext": "Hierna: {title}"
+    },
+    "seasons": "Seizoenen",
+    "episode": {
+      "moreFrom": "Meer uit {season}",
+      "moreFromThisSeason": "Meer uit dit seizoen"
+    },
+    "folders": "Mappen",
+    "video": {
+      "moreIn": "Meer in {name}",
+      "moreInThisFolder": "Meer in deze map"
+    },
+    "folder": {
+      "folders": {
+        "one": "{count} map",
+        "other": "{count} mappen"
+      },
+      "videos": {
+        "one": "{count} video",
+        "other": "{count} video's"
+      },
+      "newestFrom": "Nieuwste van {date}",
+      "inThisFolder": "In deze map",
+      "sortBy": "Sorteren op",
+      "sortTitle": "Titel",
+      "sortDate": "Datum",
+      "sortAdded": "Pas toegevoegd",
+      "empty": "Hier staat niets dat dit profiel mag kijken."
+    },
+    "deleteSeason": "{season} van schijf verwijderen…"
+  },
+  "itemActions": {
+    "play": "Afspelen",
+    "resume": "Verder kijken",
+    "playEpisode": "S{season} A{episode} afspelen",
+    "resumeEpisode": "Verder met S{season} A{episode}",
+    "fromStart": "Vanaf het begin",
+    "markUnwatched": "Markeren als niet gekeken",
+    "markWatched": "Markeren als gekeken",
+    "moreOptions": "Meer opties",
+    "fixMatch": "Herkenning verbeteren",
+    "editDetails": "Details bewerken",
+    "refresh": "Details vernieuwen",
+    "updateFailed": "Bijwerken is niet gelukt",
+    "refreshing": "{title} vernieuwen…",
+    "upToDate": "{title} is bijgewerkt",
+    "refreshFailed": "Vernieuwen is niet gelukt",
+    "addToList": "Op Mijn lijst zetten",
+    "removeFromList": "Van Mijn lijst halen",
+    "addedToList": "{title} staat op je lijst",
+    "removedFromList": "{title} is van je lijst gehaald",
+    "delete": "Van schijf verwijderen…"
+  },
+  "editDetails": {
+    "videoTitle": "Videodetails bewerken",
+    "folderTitle": "Mapdetails bewerken",
+    "description": "Je wijzigingen blijven bewaard, ook als de bibliotheek wordt doorzocht of vernieuwd.",
+    "thumbnail": {
+      "title": "Miniatuur",
+      "moment": "Moment in de video",
+      "time": "{time} van {duration}",
+      "useFrame": "Dit beeld gebruiken",
+      "byHand": "Zelf gekozen.",
+      "fromVideo": "Automatisch uit de video gekozen.",
+      "fromFolder": "Een afbeelding in de map, of die van de nieuwste video.",
+      "upload": "Afbeelding uploaden",
+      "pickFrame": "Beeld kiezen",
+      "automatic": "Automatisch",
+      "changed": "Miniatuur gewijzigd",
+      "reset": "Terug naar de automatische miniatuur",
+      "failed": "Kon de miniatuur niet wijzigen"
+    },
+    "titleLabel": "Titel",
+    "date": "Datum",
+    "dateDescription": "Wanneer het is opgenomen.",
+    "descriptionLabel": "Beschrijving",
+    "tags": "Tags",
+    "tagsPlaceholder": "Familie, Vakantie",
+    "tagsDescription": "Scheid ze met komma's. Je kunt de bibliotheek filteren op tag.",
+    "rating": "Leeftijdsklasse",
+    "ratingDefault": "Standaard van de bibliotheek ({rating})",
+    "ratingDefaultUnrated": "Standaard van de bibliotheek (geen klasse)",
+    "ratingDescription": "Profielen met een leeftijdsgrens zien alleen video's die daarbinnen vallen.",
+    "saved": "Details opgeslagen"
+  },
+  "fixMatch": {
+    "title": "Herkenning verbeteren",
+    "description": "Kies wat \"{title}\" echt is.",
+    "titleLabel": "Titel",
+    "year": "Jaar",
+    "noResults": "Geen resultaten. Probeer een andere titel, of kijk of er een TMDB- of TheTVDB-sleutel is ingesteld in Instellingen › Metadata.",
+    "resultWithYear": "{title} ({year})",
+    "useThis": "Deze gebruiken",
+    "matched": "Gekoppeld aan {title}",
+    "applyFailed": "Kon de herkenning niet toepassen"
+  },
+  "cards": {
+    "row": {
+      "seeAll": "Alles bekijken",
+      "scrollLeft": "Naar links scrollen",
+      "scrollRight": "Naar rechts scrollen"
+    },
+    "poster": {
+      "movies": {
+        "one": "{count} film",
+        "other": "{count} films"
+      },
+      "seasons": {
+        "one": "{count} seizoen",
+        "other": "{count} seizoenen"
+      },
+      "withYear": "{title} ({year})",
+      "watched": "Gekeken",
+      "unwatched": "{count} niet gekeken"
+    },
+    "wide": {
+      "upNext": "Hierna",
+      "episodeTitle": "{number}. {title}",
+      "videos": {
+        "one": "{count} video",
+        "other": "{count} video's"
+      },
+      "episodeNumber": "A{number}",
+      "watched": "Gekeken"
+    }
+  },
+  "person": {
+    "titles": {
+      "one": "{count} titel in je bibliotheken",
+      "other": "{count} titels in je bibliotheken"
+    },
+    "roles": {
+      "director": "Regie",
+      "writer": "Schrijver",
+      "producer": "Producent",
+      "composer": "Muziek",
+      "author": "Auteur",
+      "narrator": "Verteller"
+    }
+  },
+  "collection": {
+    "movies": {
+      "one": "{count} film",
+      "other": "{count} films"
+    },
+    "watched": "{count} gekeken"
+  },
+  "player": {
+    "loading": "Laden",
+    "joining": "Deelnemen aan de sessie",
+    "onlyPlayable": "Alleen films, afleveringen en video's kunnen worden afgespeeld.",
+    "cantPlayTitle": "Deze titel kan niet worden afgespeeld",
+    "episodeSubtitle": "{episode} · {title}",
+    "error": {
+      "title": "Deze video kan nu niet worden afgespeeld",
+      "keepsStopping": "De stream blijft stoppen. In het serverlog staat misschien waarom.",
+      "unsupported": "Dit apparaat kan de video niet afspelen.",
+      "stoppedLoading": "De video laadt niet meer. Controleer je verbinding en probeer het opnieuw."
+    },
+    "controls": {
+      "back10": "10 seconden terug",
+      "forward10": "10 seconden vooruit",
+      "pause": "Pauze",
+      "playKey": "Afspelen (spatie)",
+      "pauseKey": "Pauze (spatie)",
+      "back10Key": "10 seconden terug (←)",
+      "forward10Key": "10 seconden vooruit (→)",
+      "nextEpisode": "Volgende aflevering",
+      "muteKey": "Geluid uit (M)",
+      "unmuteKey": "Geluid aan (M)",
+      "volume": "Volume",
+      "pictureInPicture": "Beeld-in-beeld",
+      "fullScreenKey": "Volledig scherm (F)",
+      "exitFullScreenKey": "Volledig scherm sluiten (F)",
+      "fullScreen": "Volledig scherm",
+      "exitFullScreen": "Volledig scherm sluiten",
+      "subtitlesAndAudio": "Ondertiteling en audio",
+      "panelToggle": "Ondertiteling, audio en kwaliteit (C)"
+    },
+    "scrubber": {
+      "label": "Spoelen",
+      "value": "{position} van {duration}"
+    },
+    "hints": {
+      "seek": "Spoelen",
+      "jumpHere": "Hierheen springen",
+      "backKey": "Terug"
+    },
+    "badge": {
+      "direct": "Direct",
+      "audioConverted": "Audio omgezet",
+      "auto": "Auto",
+      "converted": "Omgezet"
+    },
+    "skipIntro": "Intro overslaan",
+    "skippedIntro": "Intro overgeslagen",
+    "nextUp": {
+      "label": "Hierna",
+      "episode": "Hierna · {episode}",
+      "countdown": {
+        "one": "Begint over {count} s",
+        "other": "Begint over {count} s"
+      },
+      "playNow": "Nu afspelen",
+      "hide": "Verbergen"
+    },
+    "panel": {
+      "label": "Afspeelopties",
+      "tabsLabel": "Opties",
+      "tabs": {
+        "subtitles": "Ondertiteling",
+        "audio": "Audio",
+        "quality": "Kwaliteit"
+      },
+      "noSubtitles": "Geen ondertiteling",
+      "original": "Origineel",
+      "originalDetail": "Zoals het bestand is",
+      "automatic": "Automatisch",
+      "automaticNow": "Nu {height}p · past zich aan je verbinding aan",
+      "automaticDetail": "Past zich aan je verbinding aan · omgezet",
+      "presetDetail": "Tot {mbps} Mbps · omgezet",
+      "version": "Versie {number}",
+      "versionHeight": "Versie {number} · {height}p",
+      "noAudio": "Dit bestand heeft geen andere audiosporen.",
+      "sectionQuality": "Kwaliteit",
+      "sectionVersion": "Versie",
+      "searchOnline": "Online zoeken",
+      "audio": "{codec} {channels}",
+      "audioConverted": "{from} → {to} {channels}",
+      "bitrate": "{mbps} Mbps",
+      "channels": {
+        "mono": "mono",
+        "stereo": "stereo",
+        "count": "{count} kan."
+      },
+      "mode": {
+        "direct": "Direct afspelen",
+        "remux": "Opnieuw verpakt",
+        "audio": "Audio omzetten",
+        "gpu": "Omzetten op de GPU",
+        "converting": "Omzetten"
+      }
+    },
+    "subtitles": {
+      "fallbackLabel": "Ondertiteling",
+      "downloaded": "Gedownload · Tekst",
+      "downloadedSdh": "Gedownload · SDH · Tekst"
+    },
+    "subtitleSearch": {
+      "title": "Ondertiteling zoeken",
+      "episode": "{show} · {episode}",
+      "movieYear": "{title} ({year})",
+      "language": "Taal",
+      "hearingImpaired": "Alleen ondertiteling voor doven en slechthorenden",
+      "searching": "Zoeken",
+      "nothingFound": "Niets gevonden in {language}. Probeer een andere titel of taal.",
+      "matchesFile": "Past bij je bestand",
+      "sdh": "SDH",
+      "downloads": {
+        "one": "{count} download",
+        "other": "{count} downloads"
+      },
+      "rating": "★ {rating}",
+      "inUse": "In gebruik",
+      "use": "Gebruiken",
+      "footer": "Resultaten van de ondertitelsites uit Instellingen › Ondertiteling. Downloads worden bij de video bewaard, dus volgende keer zijn ze er nog.",
+      "added": "Ondertiteling toegevoegd",
+      "addedDescription": "Ze is ook bewaard voor de volgende keer.",
+      "downloadFailed": "Kon de ondertiteling niet downloaden"
+    },
+    "duration": {
+      "minutes": {
+        "one": "{count} min",
+        "other": "{count} min"
+      },
+      "hoursMinutes": "{hours}u {minutes}m",
+      "left": "nog {duration}"
+    },
+    "episode": {
+      "specials": "Specials",
+      "season": "Seizoen {number}",
+      "special": "Special {number}",
+      "short": "S{season} A{episode}"
+    }
+  },
+  "together": {
+    "ended": "Samen kijken is gestopt",
+    "onlyHost": {
+      "title": "Alleen de host kan pauzeren en spoelen",
+      "description": "Vraag de host om \"Iedereen kan pauzeren en spoelen\" aan te zetten."
+    },
+    "hostPicksNext": {
+      "title": "De host kiest wat er hierna komt",
+      "description": "Iedereen gaat verder als de aflevering voorbij is."
+    },
+    "button": {
+      "watchTogether": "Samen kijken",
+      "watching": {
+        "one": "{count} kijkt mee",
+        "other": "{count} kijken mee"
+      },
+      "unread": {
+        "one": "{count} nieuw bericht",
+        "other": "{count} nieuwe berichten"
+      }
+    },
+    "panel": {
+      "title": "Samen kijken",
+      "intro": "Afspelen, pauzeren en spoelen blijven voor iedereen gelijk.",
+      "pitch": "Start een sessie en deel de code of link. Iedereen kijkt op zijn eigen scherm, vanaf deze server, gelijk met jou.",
+      "connecting": "Verbinden…",
+      "start": "Sessie starten",
+      "startFailed": "Kon de sessie niet starten",
+      "linkCopied": "Uitnodigingslink gekopieerd",
+      "shareLink": "Deel deze link",
+      "tabs": {
+        "chat": "Chat",
+        "people": "Mensen · {count}",
+        "unread": {
+          "one": "{count} nieuw",
+          "other": "{count} nieuw"
+        }
+      },
+      "invite": "Uitnodigen",
+      "code": "Code {code}",
+      "copyLink": "Link kopiëren",
+      "people": "Mensen",
+      "you": "{name} (jij)",
+      "host": "Host",
+      "hostOnDevice": "Host · {device}",
+      "status": {
+        "loading": "Laden",
+        "buffering": "Bufferen",
+        "ready": "Gelijk",
+        "catchingUp": "Inhalen"
+      },
+      "anyoneControls": "Iedereen kan pauzeren en spoelen",
+      "onlyHostNote": "Alleen de host kan pauzeren en spoelen.",
+      "leave": "Verlaten",
+      "endForEveryone": "Stoppen voor iedereen"
+    },
+    "chat": {
+      "messages": "Berichten",
+      "empty": "Zeg hallo. Berichten en reacties zijn voor iedereen in de sessie te zien.",
+      "at": "om {time}",
+      "reactions": "Reacties",
+      "placeholder": "Schrijf een bericht",
+      "message": "Bericht",
+      "send": "Versturen"
+    },
+    "notice": {
+      "joined": "{name} doet mee",
+      "left": "{name} is weg",
+      "played": "{name} speelde af",
+      "paused": "{name} pauzeerde op {time}",
+      "jumped": "{name} sprong naar {time}",
+      "chat": "{name}: {text}"
+    },
+    "errors": {
+      "couldntJoin": "Kon niet deelnemen aan de sessie.",
+      "lostConnection": "De verbinding met de sessie is verbroken."
+    },
+    "device": {
+      "tv": "Tv",
+      "browser": "Browser",
+      "onPhone": "{browser} op een telefoon",
+      "onComputer": "{browser} op een computer"
+    },
+    "page": {
+      "title": "Deelnemen aan een sessie",
+      "intro": "Typ de code op het scherm van de host, of open de uitnodigingslink.",
+      "codeLabel": "Sessiecode",
+      "lookingUp": "Sessie opzoeken",
+      "invited": "{name} nodigt je uit om mee te kijken",
+      "episode": "{episode} · {title}",
+      "playingAt": {
+        "one": "Speelt op {time} · {count} kijkt mee",
+        "other": "Speelt op {time} · {count} kijken mee"
+      },
+      "pausedAt": {
+        "one": "Gepauzeerd op {time} · {count} kijkt mee",
+        "other": "Gepauzeerd op {time} · {count} kijken mee"
+      },
+      "join": "Deelnemen en kijken",
+      "note": "Je eigen voortgang verandert niet als je meekijkt. Je doet mee als {name} (<link>ander profiel</link>)."
+    }
+  },
+  "music": {
+    "trackCount": {
+      "one": "{count} nummer",
+      "other": "{count} nummers"
+    },
+    "albumCount": {
+      "one": "{count} album",
+      "other": "{count} albums"
+    },
+    "actions": {
+      "shuffle": "Shuffle",
+      "addToQueue": "Aan wachtrij toevoegen",
+      "addToPlaylist": "Aan afspeellijst toevoegen"
+    },
+    "library": {
+      "scanning": "Doorzoeken…",
+      "show": "Tonen",
+      "tabs": {
+        "albums": "Albums",
+        "artists": "Artiesten",
+        "songs": "Nummers",
+        "playlists": "Afspeellijsten"
+      },
+      "shuffleAll": "Alles shufflen",
+      "shuffleFailed": "Shufflen is niet gelukt",
+      "emptyTitle": "Hier staat nog niets",
+      "scanningText": "Cinemion doorzoekt deze bibliotheek nu. Albums verschijnen zodra ze gevonden zijn.",
+      "emptyText": "Muziek uit {paths} verschijnt hier na het doorzoeken. De tags worden uit de bestanden gelezen; zonder tags werken mappen als Artiest/Album/01 Titel.mp3 ook.",
+      "playedLately": "Laatst geluisterd",
+      "allAlbums": "Alle albums",
+      "genre": "Genre",
+      "allGenres": "Alle genres",
+      "sortBy": "Sorteren op",
+      "sorts": {
+        "title": "Titel",
+        "artist": "Artiest",
+        "added": "Pas toegevoegd",
+        "year": "Jaar van uitkomst"
+      },
+      "songCount": {
+        "one": "{count} nummer",
+        "other": "{count} nummers"
+      },
+      "songs": "Nummers",
+      "yourPlaylists": "Je afspeellijsten",
+      "newPlaylist": "Nieuwe afspeellijst",
+      "newPlaylistName": "Afspeellijst {number}",
+      "makeFailed": "Kon de afspeellijst niet maken",
+      "noPlaylists": "Nog geen afspeellijsten. Maak er hier een, of kies \"Aan afspeellijst toevoegen\" in het menu van een nummer."
+    },
+    "card": {
+      "play": "{title} afspelen",
+      "playAlbumFailed": "Kon het album niet afspelen"
+    },
+    "album": {
+      "notFound": "Album niet gevonden",
+      "eyebrow": "Album",
+      "tracksOf": "Nummers van {title}",
+      "moreBy": "Meer van {artist}"
+    },
+    "artist": {
+      "notFound": "Artiest niet gevonden",
+      "eyebrow": "Artiest",
+      "appearsOnMore": {
+        "one": "op nog {count}",
+        "other": "op nog {count}"
+      },
+      "playFailed": "Kon de artiest niet afspelen",
+      "mostPlayedTitle": "Deze speel je het vaakst",
+      "mostPlayed": "Meest gespeeld",
+      "albums": "Albums",
+      "appearsOn": "Te horen op"
+    },
+    "playlist": {
+      "notFound": "Afspeellijst niet gevonden",
+      "eyebrow": "Afspeellijst",
+      "name": "Naam van de afspeellijst",
+      "saveName": "Naam opslaan",
+      "rename": "Naam wijzigen",
+      "delete": "Afspeellijst verwijderen",
+      "emptyTitle": "Hier staat nog niets",
+      "emptyText": "Voeg nummers toe via hun menu met \"Aan afspeellijst toevoegen\", of sla op wat er speelt vanuit de wachtrij.",
+      "tracksOf": "Nummers van {name}",
+      "moveUp": "Omhoog",
+      "moveDown": "Omlaag",
+      "removeFromPlaylist": "Uit afspeellijst halen",
+      "confirmTitle": "{name} verwijderen?",
+      "confirmDescription": "De afspeellijst is dan voorgoed weg. De nummers erin blijven in je bibliotheek.",
+      "deleted": "{name} verwijderd",
+      "changeFailed": "Kon de afspeellijst niet wijzigen",
+      "renameFailed": "Kon de naam van de afspeellijst niet wijzigen",
+      "deleteFailed": "Kon de afspeellijst niet verwijderen"
+    },
+    "trackList": {
+      "label": "Nummers",
+      "disc": "Schijf {number}",
+      "play": "{title} afspelen",
+      "pause": "{title} pauzeren",
+      "more": "Meer voor {title}",
+      "playNext": "Hierna afspelen",
+      "addToQueue": "Aan wachtrij toevoegen",
+      "addToPlaylist": "Aan afspeellijst toevoegen…",
+      "goToAlbum": "Naar album",
+      "goToArtist": "Naar artiest"
+    },
+    "addToPlaylist": {
+      "title": "Aan afspeellijst toevoegen",
+      "description": {
+        "one": "Voeg {count} nummer toe aan een van je afspeellijsten, of begin een nieuwe.",
+        "other": "Voeg {count} nummers toe aan een van je afspeellijsten, of begin een nieuwe."
+      },
+      "newPlaylist": "Nieuwe afspeellijst",
+      "namePlaceholder": "Naam",
+      "create": "Maken",
+      "added": {
+        "one": "{count} nummer toegevoegd aan {name}",
+        "other": "{count} nummers toegevoegd aan {name}"
+      },
+      "addFailed": "Kon niet toevoegen aan de afspeellijst",
+      "made": {
+        "one": "{name} gemaakt met {count} nummer",
+        "other": "{name} gemaakt met {count} nummers"
+      },
+      "makeFailed": "Kon de afspeellijst niet maken"
+    },
+    "player": {
+      "region": "Muziekspeler",
+      "cantPlay": "Dit nummer kan nu niet worden afgespeeld.",
+      "previous": "Vorige",
+      "next": "Volgende",
+      "back30": "30 seconden terug",
+      "forward30": "30 seconden vooruit",
+      "pause": "Pauze",
+      "stopAndClose": "Stoppen en sluiten",
+      "position": "Positie",
+      "positionValue": "{position} van {duration}",
+      "mute": "Geluid uit",
+      "unmute": "Geluid aan",
+      "volume": "Volume"
+    },
+    "miniPlayer": {
+      "open": "Speelt nu: {title}, {artist}. Open de speler.",
+      "time": "{position} / {duration}",
+      "chapters": "Hoofdstukken",
+      "lyrics": "Songtekst",
+      "queue": "Wachtrij"
+    },
+    "nowPlaying": {
+      "title": "Speelt nu",
+      "speed": "Snelheid {speed}×. Snelheid wijzigen",
+      "speedValue": "{speed}×",
+      "previousChapter": "Vorig hoofdstuk",
+      "nextChapter": "Volgend hoofdstuk",
+      "shuffle": "Shuffle",
+      "shuffleOn": "Shuffle staat aan",
+      "repeat": "Herhalen",
+      "repeatAll": "De wachtrij wordt herhaald",
+      "repeatOne": "Dit nummer wordt herhaald",
+      "sleep": {
+        "label": "Slaaptimer",
+        "labelSet": "Slaaptimer: {left}",
+        "chapterEnd": "einde hoofdstuk",
+        "minutes": {
+          "one": "{count} minuut",
+          "other": "{count} minuten"
+        },
+        "hours": {
+          "one": "{count} uur",
+          "other": "{count} uur"
+        },
+        "endOfChapter": "Einde van dit hoofdstuk",
+        "turnOff": "Uitzetten"
+      },
+      "tabs": "Tonen",
+      "upNext": "Hierna",
+      "lyrics": "Songtekst",
+      "chapters": {
+        "label": "Hoofdstukken",
+        "count": {
+          "one": "{count} hoofdstuk",
+          "other": "{count} hoofdstukken"
+        }
+      },
+      "queue": {
+        "saveAsPlaylist": "Opslaan als afspeellijst",
+        "remove": "{title} uit de wachtrij halen"
+      },
+      "lyricsPanel": {
+        "failed": "De songtekst kon niet worden geladen.",
+        "none": "Geen songtekst bij dit nummer.",
+        "source": "Cinemion leest songteksten uit de tags van het bestand, of uit een {file}-bestand met dezelfde naam ernaast."
+      }
+    }
+  },
+  "books": {
+    "audiobookCount": {
+      "one": "{count} luisterboek",
+      "other": "{count} luisterboeken"
+    },
+    "bookCount": {
+      "one": "{count} boek",
+      "other": "{count} boeken"
+    },
+    "library": {
+      "scanning": "Doorzoeken…",
+      "show": "Tonen",
+      "filters": {
+        "all": "Alles",
+        "listening": "Aan het luisteren",
+        "reading": "Aan het lezen",
+        "notStarted": "Niet begonnen",
+        "unread": "Ongelezen",
+        "finished": "Uit"
+      },
+      "genre": "Genre",
+      "allGenres": "Alle genres",
+      "sortBy": "Sorteren op",
+      "sorts": {
+        "title": "Titel",
+        "author": "Auteur",
+        "added": "Pas toegevoegd",
+        "year": "Jaar"
+      },
+      "emptyTitle": "Hier staat nog niets",
+      "scanningText": "Cinemion doorzoekt deze bibliotheek nu. Boeken verschijnen zodra ze gevonden zijn.",
+      "emptyAudiobooks": "Luisterboeken uit {paths} verschijnen hier na het doorzoeken: een map met audiobestanden is één boek, en een losse .m4b ook.",
+      "emptyBooks": "EPUB- en PDF-boeken uit {paths} verschijnen hier na het doorzoeken.",
+      "noneListening": "Er wordt nu nergens naar geluisterd.",
+      "noneReading": "Er wordt nu niets gelezen.",
+      "noneFinished": "Nog niets uit.",
+      "noneHere": "Hier staat niets."
+    },
+    "card": {
+      "audiobook": "Luisterboek",
+      "finished": "Uit"
+    },
+    "book": {
+      "notFound": "Boek niet gevonden",
+      "eyebrow": {
+        "audiobook": "Luisterboek",
+        "book": "Boek",
+        "bookPdf": "Boek · PDF"
+      },
+      "readBy": "voorgelezen door {narrators}",
+      "pause": "Pauze",
+      "continueListening": "Verder · nog {left}",
+      "listen": "Luisteren",
+      "continueReading": "Verder lezen",
+      "read": "Lezen",
+      "fromStart": "Vanaf het begin",
+      "markUnfinished": "Markeren als niet uit",
+      "markFinished": "Markeren als uit",
+      "saveFailed": "Kon dat niet opslaan",
+      "done": "{percent}% klaar",
+      "chapters": "Hoofdstukken",
+      "moreBy": "Meer van {author}"
+    },
+    "reader": {
+      "chapter": "Hoofdstuk",
+      "chapterNumber": "Hoofdstuk {number}",
+      "smaller": "Kleinere tekst",
+      "bigger": "Grotere tekst",
+      "themes": {
+        "light": "Lichte pagina",
+        "sepia": "Sepia pagina",
+        "dark": "Donkere pagina"
+      },
+      "markFinished": "Markeren als uit",
+      "markedFinished": "Gemarkeerd als uit",
+      "saveFailed": "Kon dat niet opslaan",
+      "frameTitle": "Boek",
+      "previous": "Vorige",
+      "percent": "{percent}%",
+      "next": "Volgende",
+      "finished": "Uit"
+    }
+  },
+  "photos": {
+    "counts": {
+      "photos": {
+        "one": "{count} foto",
+        "other": "{count} foto's"
+      },
+      "videos": {
+        "one": "{count} video",
+        "other": "{count} video's"
+      },
+      "items": {
+        "one": "{count} item",
+        "other": "{count} items"
+      },
+      "albums": {
+        "one": "{count} album",
+        "other": "{count} albums"
+      },
+      "empty": "Leeg"
+    },
+    "cover": {
+      "changed": "Albumcover gewijzigd",
+      "couldntChange": "Kon de cover niet wijzigen"
+    },
+    "library": {
+      "scanning": "Doorzoeken…",
+      "show": "Tonen",
+      "albums": "Albums",
+      "timeline": "Tijdlijn",
+      "sortAlbums": "Albums sorteren",
+      "sort": {
+        "newest": "Nieuwste eerst",
+        "oldest": "Oudste eerst",
+        "title": "Naam"
+      },
+      "newAlbum": "Nieuw album",
+      "slideshow": "Diavoorstelling",
+      "emptyTitle": "Hier staat nog niets",
+      "emptyScanning": "Cinemion doorzoekt deze bibliotheek nu. Foto's verschijnen zodra ze gevonden zijn.",
+      "emptyHint": "Foto's en video's uit {paths} verschijnen hier na het doorzoeken. Elke map wordt een album, en de datums komen uit de foto's zelf.",
+      "outsideAlbums": "Foto's buiten albums",
+      "photos": "Foto's",
+      "couldntLoadAlbums": "Kon de albums niet laden"
+    },
+    "newAlbum": {
+      "title": "Nieuw album",
+      "description": "Albums verzamelen foto's van overal in deze bibliotheek. De bestanden blijven waar ze zijn.",
+      "name": "Naam",
+      "placeholder": "Het beste van de zomer",
+      "create": "Maken",
+      "couldntMake": "Kon het album niet maken"
+    },
+    "album": {
+      "unavailable": "Dit album is niet beschikbaar",
+      "folders": "Mappen",
+      "madeBy": "Gemaakt door {name}",
+      "slideshow": "Diavoorstelling",
+      "shuffle": "Diavoorstelling in willekeurige volgorde",
+      "select": "Foto's kiezen",
+      "renameAndDescribe": "Naam en beschrijving",
+      "editDetails": "Details bewerken",
+      "automaticCover": "Automatische cover gebruiken",
+      "delete": "Album verwijderen",
+      "emptyAlbum": "Nog geen foto's in dit album",
+      "emptyFolder": "Hier staat niets dat dit profiel mag zien",
+      "emptyAlbumHint": "Open een foto ergens in {library} en kies “Aan album toevoegen” in het menu, of kies er meerdere met Kiezen.",
+      "emptyAlbumHintNoLibrary": "Open een foto ergens in de bibliotheek en kies “Aan album toevoegen” in het menu, of kies er meerdere met Kiezen.",
+      "useAsCover": "Als cover gebruiken",
+      "takeOut": "Eruit halen",
+      "tookOut": {
+        "one": "{count} foto uit het album gehaald",
+        "other": "{count} foto's uit het album gehaald"
+      },
+      "tookOutDescription": "De bestanden zelf staan nog waar ze stonden.",
+      "couldntTakeOut": "Kon ze er niet uit halen",
+      "deleteTitle": "{title} verwijderen?",
+      "deleteDescription": "Het album verdwijnt; de foto's erin blijven in de bibliotheek en op schijf.",
+      "deleted": "{title} verwijderd",
+      "deletedDescription": "De foto's erin staan nog in de bibliotheek.",
+      "couldntDelete": "Kon het album niet verwijderen",
+      "edit": {
+        "albumTitle": "Naam en beschrijving",
+        "folderTitle": "Albumdetails bewerken",
+        "folderDescription": "De map op schijf houdt zijn naam; dit is wat Cinemion laat zien.",
+        "name": "Naam",
+        "description": "Beschrijving"
+      }
+    },
+    "selection": {
+      "label": "Gekozen foto's",
+      "stop": "Stoppen met kiezen",
+      "pick": "Foto's kiezen",
+      "selected": "{count} gekozen",
+      "addToAlbum": "Aan album toevoegen"
+    },
+    "list": {
+      "couldntLoad": "Kon de foto's niet laden"
+    },
+    "grid": {
+      "photo": "Foto, {when}",
+      "video": "Video, {when}",
+      "photoUndated": "Foto, datum onbekend",
+      "videoUndated": "Video, datum onbekend",
+      "noDate": "Geen datum"
+    },
+    "card": {
+      "years": "{from} – {to}"
+    },
+    "addToAlbum": {
+      "title": "Aan album toevoegen",
+      "description": {
+        "one": "Voeg {count} foto toe aan een van je albums, of begin een nieuw album. De bestanden blijven waar ze zijn.",
+        "other": "Voeg {count} foto's toe aan een van je albums, of begin een nieuw album. De bestanden blijven waar ze zijn."
+      },
+      "newAlbum": "Nieuw album",
+      "name": "Naam",
+      "create": "Maken",
+      "alreadyIn": "Staat al in {album}",
+      "added": {
+        "one": "{count} foto toegevoegd aan {album}",
+        "other": "{count} foto's toegevoegd aan {album}"
+      },
+      "couldntAdd": "Kon niet toevoegen aan het album",
+      "made": {
+        "one": "{album} gemaakt met {count} foto",
+        "other": "{album} gemaakt met {count} foto's"
+      },
+      "couldntMake": "Kon het album niet maken"
+    },
+    "viewer": {
+      "label": "Fotoviewer",
+      "dateUnknown": "Datum onbekend",
+      "photo": "Foto, {when}",
+      "video": "Video, {when}",
+      "position": "{context} · {index} van {count}",
+      "pause": "Pauze",
+      "slideshow": "Diavoorstelling",
+      "fullScreen": "Volledig scherm",
+      "leaveFullScreen": "Volledig scherm sluiten",
+      "details": "Details",
+      "download": "Origineel downloaden",
+      "addToAlbum": "Aan album toevoegen…",
+      "useAsCover": "Als albumcover gebruiken",
+      "takeOut": "Uit dit album halen",
+      "openFolder": "Map openen",
+      "previous": "Vorige",
+      "around": "Foto's rond deze",
+      "photoNumber": "Foto {number}",
+      "videoNumber": "Video {number}",
+      "takenOut": "Uit het album gehaald",
+      "takenOutDescription": "Het bestand zelf staat nog waar het stond.",
+      "couldntTakeOut": "Kon het niet uit het album halen",
+      "loadingVideo": "Video laden"
+    },
+    "info": {
+      "title": "Details",
+      "edit": "Details bewerken",
+      "close": "Details sluiten",
+      "dateUnknown": "Datum onbekend",
+      "cameraClock": "Cameraklok op UTC{offset}",
+      "length": "Lengte {length}",
+      "megapixels": "{value} MP",
+      "camera": "Camera",
+      "place": "{latitude}, {longitude}",
+      "north": "{value}° N",
+      "south": "{value}° Z",
+      "east": "{value}° O",
+      "west": "{value}° W",
+      "openMap": "Openen in een kaart",
+      "folder": "Map",
+      "inAlbum": "In een album",
+      "inAlbums": "In albums",
+      "tags": "Tags",
+      "rated": "Klasse {rating}",
+      "caption": "Bijschrift",
+      "captionPlaceholder": "Wat gebeurt hier?",
+      "date": "Datum",
+      "dateDescription": "Het tijdstip blijft zoals het was.",
+      "tagsPlaceholder": "Strand, Mira",
+      "tagsDescription": "Scheid ze met komma's.",
+      "rating": "Leeftijdsklasse",
+      "ratingDefault": "Standaard van de bibliotheek",
+      "saved": "Details opgeslagen"
+    }
+  },
+  "clips": {
+    "counts": {
+      "clips": {
+        "one": "{count} clip",
+        "other": "{count} clips"
+      },
+      "games": {
+        "one": "{count} game",
+        "other": "{count} games"
+      }
+    },
+    "library": {
+      "scanning": "Doorzoeken…",
+      "show": "Tonen",
+      "games": "Games",
+      "allClips": "Alle clips",
+      "sortGames": "Games sorteren",
+      "sort": {
+        "recent": "Nieuwste clips",
+        "title": "Naam",
+        "clips": "Meeste clips"
+      },
+      "emptyTitle": "Hier staat nog niets",
+      "emptyScanning": "Cinemion doorzoekt deze bibliotheek nu. Clips verschijnen zodra ze gevonden zijn.",
+      "emptyHint": "Clips uit {paths} verschijnen hier na het doorzoeken, per game gesorteerd op de namen die je opnameprogramma ze gaf.",
+      "suggestion": {
+        "one": "Cinemion heeft een gok voor {clips} zonder game, op basis van wat erop te zien is.",
+        "other": "Cinemion heeft een gok voor {clips} zonder game, op basis van wat erop te zien is."
+      },
+      "haveALook": "Even kijken",
+      "newest": "Nieuwste clips",
+      "noGame": "Geen game",
+      "noGameLabel": {
+        "one": "Geen game, {count} clip",
+        "other": "Geen game, {count} clips"
+      },
+      "couldntLoad": "Kon de games niet laden"
+    },
+    "browser": {
+      "label": "Clips",
+      "game": "Game",
+      "allGames": "Alle games",
+      "noGame": "Geen game",
+      "tag": "Tag",
+      "allTags": "Alle tags",
+      "show": "Tonen",
+      "all": "Alles",
+      "starred": "Met ster",
+      "sortBy": "Sorteren op",
+      "sort": {
+        "newest": "Nieuwste eerst",
+        "oldest": "Oudste eerst",
+        "longest": "Langste eerst"
+      },
+      "emptyStarred": "Geen clips met een ster",
+      "empty": "Hier staan geen clips",
+      "emptyStarredHint": "Geef een clip een ster met het sterretje op de afbeelding, dan verschijnt hij hier.",
+      "emptyTag": "Geen enkele clip heeft deze tag.",
+      "emptyFilters": "Niets past bij deze filters.",
+      "selectionLabel": "Gekozen clips",
+      "stop": "Stoppen met kiezen",
+      "pick": "Clips kiezen",
+      "selected": "{count} gekozen",
+      "setGame": "Game instellen",
+      "star": "Ster geven",
+      "unstar": "Ster weghalen",
+      "didStar": {
+        "one": "{count} clip heeft een ster",
+        "other": "{count} clips hebben een ster"
+      },
+      "didUnstar": "Sterren weggehaald",
+      "couldntStar": "Kon de clips geen ster geven",
+      "inGame": {
+        "one": "{count} clip staat nu bij {game}",
+        "other": "{count} clips staan nu bij {game}"
+      },
+      "noGameNow": {
+        "one": "{count} clip heeft nu geen game",
+        "other": "{count} clips hebben nu geen game"
+      },
+      "setGameTitle": {
+        "one": "Game van {count} clip instellen",
+        "other": "Game van {count} clips instellen"
+      },
+      "setGameDescription": "Kies een game die je al hebt, zoek op Steam of typ een naam."
+    },
+    "card": {
+      "noGame": "Geen game",
+      "suggestion": "Lijkt op {game}",
+      "suggestionShort": "{game}?",
+      "watched": "Gekeken",
+      "unstar": "Ster weghalen",
+      "star": "Deze clip een ster geven",
+      "starred": "Met ster",
+      "starTitle": "Ster",
+      "couldntStar": "Kon de clip geen ster geven"
+    },
+    "view": {
+      "library": "Bibliotheek",
+      "noGame": "Geen game",
+      "unstar": "Ster weghalen",
+      "star": "Deze clip een ster geven",
+      "setGame": "Game instellen",
+      "cut": "Clip inkorten",
+      "share": "Kleine kopie maken om te delen",
+      "suggested": "Voorgestelde game",
+      "suggestionSimilar": "Lijkt op {game}, op basis van clips die erop lijken ({percent}% zeker).",
+      "suggestionPicture": "Lijkt op {game}, op basis van het beeld ({percent}% zeker).",
+      "useIt": "Gebruiken",
+      "notThis": "Niet deze game",
+      "found": {
+        "folder": "Game uit de naam van de map",
+        "file": "Game uit de naam van het bestand",
+        "tags": "Game uit de tags van het bestand",
+        "steam": "Game uit de naam van de Steam-opname",
+        "upload": "Game van de app die hem uploadde",
+        "manual": "Game zelf gekozen"
+      },
+      "moreFrom": "Meer van {game}",
+      "moreWithout": "Meer clips zonder game",
+      "setGameTitle": "Game instellen",
+      "setGameDescription": "Kies een game die je al hebt, zoek op Steam of typ een naam.",
+      "couldntStar": "Kon de clip geen ster geven",
+      "inGame": "Hij staat nu bij {game}",
+      "noGameNow": "Hij heeft nu geen game",
+      "couldntChange": "Kon de game niet wijzigen"
+    },
+    "game": {
+      "library": "Bibliotheek",
+      "released": "Uitgekomen in {year}",
+      "notFound": "Online niet gevonden",
+      "playNewest": "Nieuwste afspelen",
+      "moreOptions": "Meer opties",
+      "change": "Game wijzigen",
+      "lookUp": "Opnieuw opzoeken",
+      "remove": "Game verwijderen",
+      "changeTitle": "Game wijzigen",
+      "changeDescription": "Kies de juiste game voor de naam en artwork, of typ een nieuwe naam. Kies je een andere game die je al hebt, dan komen deze clips daarbij.",
+      "removeTitle": "{title} verwijderen?",
+      "removeDescription": "De clips blijven in de bibliotheek, onder Geen game. De bestanden blijven onaangeroerd.",
+      "renamed": "Hij heet nu {title}",
+      "moved": "De clips staan nu bij {title}",
+      "lookingUp": "{title} opzoeken…",
+      "upToDate": "{title} is bijgewerkt",
+      "couldntLookUp": "Kon het niet opzoeken",
+      "removed": "{title} is verwijderd",
+      "removedDescription": "De clips staan nu onder Geen game.",
+      "couldntRemove": "Kon de game niet verwijderen"
+    },
+    "range": {
+      "pause": "Pauze",
+      "play": "Gekozen stuk afspelen",
+      "start": "Begin van het stuk",
+      "end": "Einde van het stuk",
+      "from": "Vanaf {time}",
+      "keeps": "Houdt {time} over",
+      "to": "Tot {time}"
+    },
+    "setGame": {
+      "game": "Game",
+      "placeholder": "Zoek een game",
+      "searching": "Zoeken",
+      "inLibrary": {
+        "one": "In deze bibliotheek · {count} clip",
+        "other": "In deze bibliotheek · {count} clips"
+      },
+      "typed": "Noem hem “{name}”",
+      "typedHint": "Een game met alleen deze naam, zonder artwork",
+      "typeToSearch": "Typ de naam van een game om ernaar te zoeken.",
+      "none": "Geen game",
+      "noneHint": "Zoals opnames van het bureaublad",
+      "couldntSet": "Kon de game niet instellen"
+    },
+    "trim": {
+      "title": "Clip inkorten",
+      "description": "Sleep de grepen naar het stuk dat je wilt houden. Er wordt niets omgezet, dus de kwaliteit blijft hetzelfde; daarom springt het begin naar het dichtstbijzijnde keyframe (de streepjes op de balk) vóór waar je het zette.",
+      "cutOriginal": "Origineel inkorten",
+      "saveCut": "Inkorting opslaan",
+      "reading": "Clip lezen",
+      "where": "Waar de inkorting heen gaat",
+      "copy": "Opslaan als nieuwe clip",
+      "replace": "Origineel vervangen",
+      "copyNote": "De inkorting komt naast het originele bestand, met dezelfde game en details. Het origineel blijft zoals het is.",
+      "replaceNote": "Het originele bestand wordt vervangen door de inkorting. Wat eraf gaat, is voorgoed weg.",
+      "confirmTitle": "Origineel vervangen?",
+      "confirmDescription": "Het bestand van de clip wordt voorgoed ingekort. Wat eraf gaat, kan niet terug.",
+      "confirmLabel": "Vervangen",
+      "couldntRead": "Kon de clip niet lezen",
+      "cut": "De clip is ingekort",
+      "savedNew": "De inkorting is opgeslagen als nieuwe clip",
+      "couldntCut": "Kon de clip niet inkorten"
+    },
+    "share": {
+      "title": "Kleine kopie maken",
+      "description": "Een kopie die past binnen de uploadlimiet van een chat-app, omgezet zodat elke app hem afspeelt. De clip zelf blijft zoals hij is.",
+      "make": "Kopie maken",
+      "copyLink": "Link kopiëren",
+      "what": "Wat te kopiëren",
+      "whole": "De hele clip",
+      "part": "Een stuk ervan",
+      "size": "Maximale grootte",
+      "sizeOption": "{size} MB",
+      "sound": "Geluid",
+      "mainTrack": "Het hoofdspoor",
+      "track": "Spoor {number}",
+      "allTracks": "Alle sporen samen",
+      "fits": "Wordt ongeveer {height}p, {fps} beelden per seconde. 10 MB past bij apps met de kleinste limiet, zoals Discord zonder Nitro.",
+      "tooBig": {
+        "one": "{count} seconde past niet in {size} MB. Kies een grotere maat of een korter stuk.",
+        "other": "{count} seconden passen niet in {size} MB. Kies een grotere maat of een korter stuk."
+      },
+      "ready": "Klaar: {size}, {height}p. De downloadlink werkt een dag lang, zonder in te loggen.",
+      "couldntMake": "Kon de kopie niet maken",
+      "linkCopied": "Link gekopieerd",
+      "linkCopiedDescription": "Hij werkt een dag lang, zonder in te loggen."
+    }
+  },
+  "downloads": {
+    "title": "Downloads",
+    "intro": "Opgeslagen op dit apparaat, om zonder verbinding te kijken.",
+    "introOffline": "De server is niet bereikbaar, dus dit is wat er op dit apparaat staat.",
+    "storage": "{used} in gebruik, {free} vrij.",
+    "retryServer": "Server opnieuw proberen",
+    "offline": "Offline",
+    "unsupported": {
+      "title": "Deze browser kan hier geen downloads opslaan",
+      "text": "Offline downloads werken alleen als Cinemion via https is geopend (of als localhost op de server zelf). Via een gewoon http-adres staan browsers het niet toe. Wie de server beheert, kan https aanzetten in Instellingen › HTTPS."
+    },
+    "empty": {
+      "title": "Nog niets opgeslagen",
+      "text": "Open een film of aflevering en gebruik de downloadknop om hem op dit apparaat te bewaren."
+    },
+    "status": {
+      "preparing": "Wordt klaargemaakt op de server…",
+      "preparingPercent": "Wordt klaargemaakt op de server · {percent}%",
+      "downloading": "Downloaden · {received}",
+      "downloadingOf": "Downloaden · {received} van {size}",
+      "paused": "Gepauzeerd · {received}",
+      "pausedOf": "Gepauzeerd · {received} van {size}",
+      "failed": "De download is gestopt."
+    },
+    "quality": {
+      "original": "Origineel",
+      "high": "Hoog (1080p)",
+      "medium": "Gemiddeld (720p)",
+      "small": "Klein (480p)"
+    },
+    "pause": "Pauzeren",
+    "carryOn": "Doorgaan",
+    "deleteFromDevice": "Van dit apparaat verwijderen",
+    "delete": {
+      "title": "{title} verwijderen?",
+      "titleUntitled": "Deze download verwijderen?",
+      "description": "Hij wordt alleen van dit apparaat verwijderd. Op de server blijft hij staan."
+    },
+    "player": {
+      "missing": "Deze download staat niet op dit apparaat. <link>Bekijk je downloads</link>.",
+      "reloadFirst": "Offline afspelen werkt nadat de pagina één keer opnieuw is geladen."
+    },
+    "button": {
+      "label": "Downloaden om offline te kijken",
+      "ready": "Gedownload. Open Downloads",
+      "failed": "Download mislukt. Open Downloads",
+      "progress": "{percent}% gedownload. Open Downloads",
+      "description": "{title} wordt op dit apparaat bewaard, voor als er geen verbinding is. Hoever je gekeken hebt, gaat later terug naar de server.",
+      "size": "Grootte",
+      "about": "Ongeveer {size}",
+      "asIs": "Speelt zoals het is, in volle kwaliteit",
+      "madeOnServer": "Wordt eerst op de server gemaakt",
+      "needsHttps": "Downloads hebben https nodig",
+      "needsHttpsDescription": "Browsers laten sites alleen video's opslaan als ze via https zijn geopend (of als localhost op de server). Het kan aangezet worden in Instellingen › HTTPS.",
+      "sizesFailed": "Kon de downloadgroottes niet ophalen",
+      "started": "Download gestart",
+      "startedDescription": "Volg hem in Downloads, in het profielmenu.",
+      "startFailed": "Kon de download niet starten"
+    },
+    "episodeSubtitle": "{show} · {episode}",
+    "readyToast": "{title} staat klaar om offline te kijken",
+    "readyToastUntitled": "De download staat klaar om offline te kijken",
+    "errors": {
+      "copyFailed": "De server kon de kopie niet maken.",
+      "stopped": "De download is gestopt: {status}"
+    }
+  },
+  "settings": {
+    "tabs": {
+      "you": "Jij",
+      "server": "Server",
+      "profile": "Je profiel",
+      "device": "Dit apparaat",
+      "about": "Over",
+      "dashboard": "Dashboard",
+      "libraries": "Bibliotheken",
+      "users": "Gebruikers",
+      "playback": "Afspelen",
+      "metadata": "Metadata",
+      "subtitles": "Ondertiteling",
+      "integrations": "Koppelingen",
+      "webhooks": "Webhooks",
+      "tasks": "Taken",
+      "logs": "Logs",
+      "navigation": "Instellingen",
+      "running": {
+        "one": "{count} bezig",
+        "other": "{count} bezig"
+      },
+      "backups": "Back-ups",
+      "https": "HTTPS",
+      "upkeep": "Onderhoud"
+    },
+    "about": {
+      "title": "Over",
+      "intro": "Welke Cinemion dit is, en wie helpt om te weten wat er in je bibliotheken staat.",
+      "version": "Cinemion {version}",
+      "versionOn": "Cinemion {version} op {name}",
+      "pitch": "Een zelfgehost thuis voor je films, series, video's, muziek en boeken. Vrije software onder de GNU General Public License, versie 3 of later.",
+      "sourceCode": "Broncode",
+      "releases": "Releases",
+      "credits": "Met dank aan"
+    },
+    "profile": {
+      "title": "Je profiel",
+      "intro": "Hoe je eruitziet in de profielkeuze en overal in Cinemion.",
+      "changePicture": "Profielfoto wijzigen",
+      "picture": "Profielfoto",
+      "pictureShown": "Te zien in plaats van je initiaal.",
+      "pictureNone": "Upload een foto, of houd je initiaal op je kleur.",
+      "changePictureButton": "Foto wijzigen",
+      "uploadPicture": "Foto uploaden",
+      "name": "Naam",
+      "colour": "Kleur",
+      "colourWithPicture": "Kleur (als de foto niet laadt)",
+      "saveChanges": "Wijzigingen opslaan",
+      "saved": "Profiel opgeslagen",
+      "couldntSave": "Kon je profiel niet opslaan",
+      "signIn": "Inloggen",
+      "pin": {
+        "title": "Profielpincode",
+        "on": "Wordt gevraagd als je je profiel kiest op een gedeeld scherm.",
+        "off": "Iedereen kan je profiel openen vanuit de profielkeuze.",
+        "change": "Pincode wijzigen",
+        "set": "Pincode instellen",
+        "removed": "Pincode verwijderd",
+        "couldntRemove": "Kon de pincode niet verwijderen",
+        "dialogDescription": "Vier cijfers, gevraagd als je profiel wordt gekozen op een gedeeld scherm.",
+        "save": "Pincode opslaan",
+        "newPin": "Nieuwe pincode",
+        "saved": "Pincode opgeslagen",
+        "couldntSave": "Kon de pincode niet opslaan"
+      },
+      "password": {
+        "title": "Wachtwoord",
+        "on": "Log in als \"{username}\" op nieuwe apparaten.",
+        "off": "Nog geen wachtwoord, dus dit profiel opent alleen vanuit de profielkeuze.",
+        "change": "Wachtwoord wijzigen",
+        "set": "Wachtwoord instellen",
+        "save": "Wachtwoord opslaan",
+        "current": "Huidig wachtwoord",
+        "new": "Nieuw wachtwoord",
+        "newDescription": "Minstens 6 tekens.",
+        "confirm": "Nieuw wachtwoord bevestigen",
+        "mismatch": "De wachtwoorden zijn niet hetzelfde.",
+        "changed": "Wachtwoord gewijzigd",
+        "couldntChange": "Kon het wachtwoord niet wijzigen"
+      },
+      "subtitles": {
+        "title": "Ondertiteling",
+        "previewLine1": "Hoorde je dat?",
+        "previewLine2": "Er is daar iets.",
+        "size": "Grootte",
+        "sizes": {
+          "small": "Klein",
+          "medium": "Gemiddeld",
+          "large": "Groot",
+          "huge": "Enorm"
+        },
+        "colour": "Kleur",
+        "colours": {
+          "white": "Wit",
+          "yellow": "Geel",
+          "cyan": "Cyaan",
+          "green": "Groen"
+        },
+        "background": "Achtergrond",
+        "backgrounds": {
+          "box": "Donker vlak",
+          "shadow": "Omlijning"
+        },
+        "keepStyling": "Opmaak van vormgegeven ondertiteling behouden",
+        "keepStylingDescription": "ASS-ondertiteling, veel gebruikt bij anime, heeft eigen lettertypes, kleuren en posities. Staat dit uit, dan krijgen ze de stijl hierboven, net als alle andere ondertiteling."
+      },
+      "trakt": {
+        "linked": "Gekoppeld",
+        "linkedAs": "Gekoppeld als {name}",
+        "linkedDescription": "Wat je kijkt gaat tijdens het afspelen naar je Trakt-geschiedenis, en dingen als gekeken markeren ook.",
+        "unlink": "Ontkoppelen",
+        "importTitle": "Haal je geschiedenis binnen",
+        "importDescription": "Markeert alles wat je op Trakt gekeken hebt hier ook als gekeken, voor wat in je bibliotheken staat.",
+        "importButton": "Binnenhalen",
+        "keepUpToDate": "Houd je Trakt-geschiedenis bij",
+        "linkDescription": "Koppel je Trakt-account, dan wordt wat je hier kijkt eraan toegevoegd.",
+        "link": "Trakt koppelen",
+        "goTo": "Ga naar {url} en vul in",
+        "waiting": "Wachten op Trakt…",
+        "isLinked": "Trakt is gekoppeld",
+        "signedInAs": "Ingelogd als {name}.",
+        "declined": "Inloggen bij Trakt is geweigerd",
+        "expired": "De code is verlopen",
+        "startAgain": "Begin opnieuw voor een nieuwe code.",
+        "couldntLink": "Kon Trakt niet koppelen",
+        "couldntStart": "Kon het koppelen niet starten",
+        "imported": "{movies} en {episodes} gemarkeerd als gekeken",
+        "movies": {
+          "one": "{count} film",
+          "other": "{count} films"
+        },
+        "episodes": {
+          "one": "{count} aflevering",
+          "other": "{count} afleveringen"
+        },
+        "upToDate": "Alles was al bijgewerkt",
+        "couldntImport": "Kon de geschiedenis niet binnenhalen",
+        "couldntUnlink": "Kon Trakt niet ontkoppelen"
+      }
+    },
+    "device": {
+      "title": "Dit apparaat",
+      "intro": "Deze instellingen worden alleen in deze browser bewaard.",
+      "layout": "Weergave",
+      "layoutAuto": {
+        "desktop": "Automatisch gekozen. Dit apparaat gebruikt de desktopweergave.",
+        "mobile": "Automatisch gekozen. Dit apparaat gebruikt de mobiele weergave.",
+        "tv": "Automatisch gekozen. Dit apparaat gebruikt de tv-weergave."
+      },
+      "layoutFixed": {
+        "desktop": "Altijd de desktopweergave gebruiken.",
+        "mobile": "Altijd de mobiele weergave gebruiken.",
+        "tv": "Altijd de tv-weergave gebruiken."
+      },
+      "mediahub": "Draait in MediaHub.",
+      "layouts": {
+        "desktop": "Desktop",
+        "mobile": "Mobiel",
+        "tv": "Tv"
+      },
+      "tvHelp": "De tv-weergave is gemaakt voor op de bank: alles is groter, en je beweegt met de pijltjestoetsen, een afstandsbediening of een gamecontroller. Open Cinemion met {param} achter het adres om een tv er meteen op over te zetten.",
+      "theme": "Thema",
+      "themeSystem": {
+        "dark": "Volgt de instelling van dit apparaat, die nu donker is.",
+        "light": "Volgt de instelling van dit apparaat, die nu licht is."
+      },
+      "themeFixed": "Video's spelen altijd op een donker scherm.",
+      "themes": {
+        "dark": "Donker",
+        "light": "Licht",
+        "system": "Zoals apparaat"
+      },
+      "playback": "Afspelen",
+      "speakers": "Speakers",
+      "speakersDescription": "Surround-geluid dat dit apparaat niet kan afspelen, wordt omgezet naar wat het wel kan. Met een receiver of soundbar gaat Dolby Digital onaangeroerd door, zodat die het zelf decodeert.",
+      "speakerOptions": {
+        "auto": "Automatisch (surround op tv's, elders stereo)",
+        "stereo": "Stereo",
+        "surround51": "5.1-surround",
+        "surround71": "7.1-surround",
+        "passthrough": "Receiver of soundbar (Dolby Digital doorgeven)"
+      },
+      "intros": "Intro's",
+      "introsDescription": "Cinemion vindt de intro's van series door hun afleveringen te vergelijken, of via hun hoofdstukken.",
+      "introOptions": {
+        "button": "Overslaan tonen",
+        "auto": "Vanzelf overslaan"
+      }
+    },
+    "playback": {
+      "title": "Afspelen",
+      "intro": "Hoe Cinemion video's omzet voor apparaten die het originele bestand niet kunnen afspelen.",
+      "saveChanges": "Wijzigingen opslaan",
+      "couldntLoad": "Kon de afspeelinstellingen niet laden",
+      "saved": "Afspeelinstellingen opgeslagen",
+      "savedDescription": "Ze gelden voor video's die je vanaf nu start.",
+      "hardware": "Hardwareversnelling",
+      "methods": {
+        "off": "Uit",
+        "noneDescription": "Omzetten op de processor. Werkt overal, maar 4K gaat traag.",
+        "vaapiDescription": "Intel- en AMD-graphics op Linux.",
+        "qsvDescription": "Intel-graphics, vaak iets sneller dan VA-API.",
+        "nvencDescription": "NVIDIA-videokaarten."
+      },
+      "alwaysAvailable": "Altijd beschikbaar",
+      "looking": "Zoeken…",
+      "detected": "Gevonden",
+      "notDetected": "Niet gevonden",
+      "gpu": "GPU",
+      "gpuDescription": "Het renderapparaat. Geef het in Docker door met {flag}.",
+      "decodeOnGpu": "Deze decoderen op de GPU",
+      "decodeDescription": "Zet codecs uit die je GPU niet kan decoderen; die worden op de processor gedecodeerd en nog steeds op de GPU omgezet.",
+      "runTest": "Test uitvoeren",
+      "testing": "Een clip van 5 seconden in 1080p omzetten…",
+      "converting": "Omzetten",
+      "maxConversions": "Tegelijk omzetten",
+      "maxConversionsDescription": "Meer dan dit wordt geweigerd tot er een stopt. Direct afspelen en opnieuw verpakken tellen niet mee.",
+      "preset": "Kwaliteitsinstelling",
+      "presetDescription": "Snellere instellingen gebruiken minder processor, maar zien er bij dezelfde bitrate iets slechter uit.",
+      "presets": {
+        "fast": "Snel",
+        "balanced": "Gebalanceerd",
+        "quality": "Kwaliteit"
+      },
+      "remoteLimit": "Limiet voor kijken op afstand",
+      "remoteLimitDescription": "Per stream, voor kijkers buiten je thuisnetwerk.",
+      "noLimit": "Geen limiet",
+      "toneMapping": "HDR omzetten naar SDR",
+      "toneMappingDescription": "Houdt de kleuren goed op schermen zonder HDR.",
+      "seekThumbnails": "Voorbeeldplaatjes maken",
+      "seekThumbnailsDescription": "Kleine plaatjes boven de tijdbalk. Worden op de achtergrond gemaakt na het doorzoeken, en als een video voor het eerst wordt afgespeeld.",
+      "remoteConversion": "Omzetten toestaan voor kijkers op afstand",
+      "remoteConversionDescription": "Staat dit uit, dan krijgen kijkers buiten je netwerk alleen bestanden die hun apparaat zo kan afspelen.",
+      "cache": "Cache voor omzetten",
+      "cacheDetails": "{folder} · {size} · wordt opgeruimd als het afspelen stopt. Voorbeeldplaatjes gebruiken {thumbnails}.",
+      "checking": "Controleren…",
+      "clearNow": "Nu leegmaken",
+      "cacheCleared": "Cache voor omzetten leeggemaakt",
+      "cacheClearedDescription": "Wie een omgezette video kijkt, moet hem opnieuw starten.",
+      "couldntClear": "Kon de cache niet leegmaken"
+    },
+    "metadata": {
+      "title": "Metadata",
+      "intro": "Waar posters, verhalen en cast vandaan komen. Bronnen hoger in de lijst winnen als ze het oneens zijn.",
+      "saveChanges": "Wijzigingen opslaan",
+      "couldntLoad": "Kon de metadata-instellingen niet laden",
+      "saved": "Metadata-instellingen opgeslagen",
+      "savedDescription": "Gebruik \"Alle details vernieuwen\" op een bibliotheek om ze toe te passen op wat er al staat."
+    },
+    "subtitles": {
+      "title": "Ondertiteling",
+      "intro": "Zoek ondertiteling online vanuit de speler, of laat Cinemion ze ophalen voor nieuwe films en afleveringen. Ondertitelbestanden naast je video's worden vanzelf gevonden.",
+      "saveChanges": "Wijzigingen opslaan",
+      "couldntLoad": "Kon de ondertitelinstellingen niet laden",
+      "saved": "Ondertitelinstellingen opgeslagen",
+      "automatic": "Automatisch downloaden",
+      "autoDownload": "Ondertiteling vanzelf downloaden",
+      "autoDownloadDescription": "Films en afleveringen zonder ondertiteling in een van je talen krijgen de beste die de sites hebben, het liefst gemaakt voor precies dat bestand. Wat niet gevonden wordt, wordt opnieuw gezocht na een dag, drie dagen, een week, enzovoort.",
+      "noSite": "Zet hieronder minstens één ondertitelsite aan, anders wordt er niets gevonden.",
+      "sites": "Ondertitelsites",
+      "openSubtitlesHelp": "Maak een gratis account op <link>opensubtitles.com</link>, voeg dan een API consumer toe onder de API-instellingen van je profiel en plak de sleutel hier. Inloggen is optioneel; dan mag je meer per dag downloaden.",
+      "apiKey": "API-sleutel",
+      "username": "Gebruikersnaam",
+      "optional": "Optioneel",
+      "password": "Wachtwoord",
+      "passwordSaved": "Opgeslagen. Typ een nieuw om het te wijzigen.",
+      "subdlHelp": "Een gratis site met een groot aanbod. Maak een account op <link>subdl.com</link> en kopieer de API-sleutel van je accountpagina.",
+      "podnapisiDescription": "Zoek ook op podnapisi.net. Je hebt geen account nodig; de ondertiteling wordt op titel gevonden, dus de timing kan er iets naast zitten.",
+      "languages": "Talen",
+      "languagesDescription": "Komen als eerste bij het zoeken, en worden vanzelf gedownload.",
+      "saveNextToVideo": "Naast het videobestand opslaan",
+      "saveNextToVideoDescription": "Staat dit uit, of is de mediamap alleen-lezen (zoals in Docker met :ro), dan worden downloads in de configuratiemap bewaard."
+    },
+    "games": {
+      "couldntLoad": "Kon de game-instellingen niet laden",
+      "saved": "Game-instellingen opgeslagen",
+      "title": "Games",
+      "intro": "Clipsbibliotheken sorteren clips per game op hun bestands- en mapnamen, en zoeken de games op voor de juiste namen, covers en artwork.",
+      "lookups": "Games online opzoeken",
+      "lookupsDescription": "In de Steam-winkel, die geen sleutel nodig heeft en de meeste pc-games kent.",
+      "steamGridDbKey": "SteamGridDB-API-sleutel (optioneel)",
+      "steamGridDbDescription": "Vindt games die niet op Steam staan, zoals VALORANT of League of Legends, en artwork die Steam niet heeft. Haal een gratis sleutel op bij je <link>SteamGridDB-voorkeuren</link>.",
+      "saveKey": "Sleutel opslaan",
+      "recognition": {
+        "title": "Beeldherkenning",
+        "intro": "Voor clips waarvan de naam de game niet zegt, zoals OBS-opnames: Cinemion bekijkt een paar beelden van elke clip en stelt een game voor als een clip lijkt op clips die je al een game hebt gegeven (of, als beste gok, op een game die het kent). Voorstellen worden alleen overgenomen als jij dat zegt. Het draait op de processor van deze server, één clip tegelijk, en er gaat niets de server uit.",
+        "checking": "Controleren…",
+        "installed": "Geïnstalleerd",
+        "downloading": "Downloaden… {percent}",
+        "failed": "Het downloaden is niet gelukt",
+        "notInstalled": "Niet geïnstalleerd",
+        "pending": {
+          "one": "{count} clip is nog niet bekeken.",
+          "other": "{count} clips zijn nog niet bekeken."
+        },
+        "allDone": "Elke clip is bekeken.",
+        "downloadSize": "Eenmalig {size} downloaden: een beeldmodel (CLIP) en wat het laat draaien.",
+        "runNow": "Clips nu bekijken",
+        "autoSuggest": "Na elke keer doorzoeken games voorstellen",
+        "autoSuggestDescription": "Nieuwe clips zonder game krijgen vanzelf een voorstel. Staat dit uit, dan gebeurt het alleen met “Clips nu bekijken”.",
+        "removeTitle": "Beeldherkenning verwijderen?",
+        "removeDescription": "De download wordt verwijderd. Voorstellen die al gedaan zijn blijven, en wat het in clips zag wordt bewaard voor als je het opnieuw downloadt.",
+        "couldntDownload": "Kon beeldherkenning niet downloaden",
+        "couldntRemove": "Kon beeldherkenning niet verwijderen",
+        "started": "Clips bekijken",
+        "startedDescription": "Voorstellen verschijnen bij clips zonder game. Bij Taken zie je hoe ver het is.",
+        "couldntStart": "Kon niet starten"
+      }
+    }
+  },
+  "language": {
+    "title": "Taal",
+    "label": "Taal van de interface",
+    "automatic": "Zelfde als deze browser ({language})",
+    "description": "Alleen voor dit profiel. Titels, verhalen en andere details houden de taal uit Instellingen › Metadata.",
+    "helpTranslate": "Staat jouw taal er niet bij? Cinemion kan in elke taal vertaald worden; <link>zo werkt het</link>."
+  },
+  "colors": {
+    "sky": "hemelsblauw",
+    "coral": "koraal",
+    "mint": "mint",
+    "violet": "violet",
+    "amber": "amber",
+    "rose": "roze",
+    "teal": "groenblauw",
+    "slate": "leisteen"
+  },
+  "avatarEditor": {
+    "title": "Profielfoto",
+    "descriptionCrop": "Sleep de foto om hem te verplaatsen.",
+    "descriptionPick": "Kies een foto. Daarna kun je hem bijsnijden.",
+    "choose": "Foto kiezen",
+    "hint": "JPG, PNG of WebP, tot 10 MB",
+    "zoom": "Zoomen",
+    "preview": "Voorbeeld",
+    "previews": {
+      "picker": "Profielkeuze",
+      "topBar": "Bovenbalk",
+      "badges": "Badges"
+    },
+    "sizesHint": "Opgeslagen in elke maat die Cinemion nodig heeft, van de profielkeuze tot de kleine badges bij samen kijken.",
+    "chooseAnother": "Andere foto kiezen",
+    "removePicture": "Foto verwijderen en initialen gebruiken",
+    "save": "Foto opslaan",
+    "cantOpen": "Deze browser kan die afbeelding niet openen",
+    "cantOpenDescription": "Probeer een JPG, PNG of WebP.",
+    "couldntPrepare": "Kon de afbeelding niet klaarmaken.",
+    "saved": "Profielfoto opgeslagen",
+    "couldntSave": "Kon de foto niet opslaan",
+    "removed": "Profielfoto verwijderd",
+    "couldntRemove": "Kon de foto niet verwijderen"
+  },
+  "pinPad": {
+    "entered": {
+      "one": "{entered} van {count} cijfer ingevuld",
+      "other": "{entered} van {count} cijfers ingevuld"
+    },
+    "delete": "Wissen"
+  },
+  "metadataForm": {
+    "sources": "Metadatabronnen, op volgorde van voorrang",
+    "providers": {
+      "local": "Je bestanden",
+      "localDescription": "NFO-bestanden en artwork naast je video's",
+      "tmdbDescription": "Online database voor films en series",
+      "tvdbDescription": "Online database voor series, sterk in anime en afleveringsvolgordes"
+    },
+    "moveUp": "{name} omhoog",
+    "moveDown": "{name} omlaag",
+    "tmdb": {
+      "ownKey": "Je eigen API-sleutel (optioneel)",
+      "apiKey": "API-sleutel",
+      "builtInPlaceholder": "Gebruikt de sleutel die in Cinemion zit",
+      "placeholder": "Plak je TMDB-API-sleutel of read access token",
+      "builtInDescription": "TMDB werkt ook zonder. Voeg je eigen sleutel toe als de ingebouwde niet meer werkt of als je liever je eigen gebruikt. <link>Zo krijg je er een</link>",
+      "description": "Gratis met een TMDB-account. <link>Zo krijg je er een</link>"
+    },
+    "tvdb": {
+      "apiKey": "API-sleutel",
+      "placeholder": "Plak je TheTVDB-project-API-sleutel",
+      "description": "Van een TheTVDB-account. <link>Zo krijg je er een</link>",
+      "pin": "Abonnee-pincode (optioneel)",
+      "pinDescription": "Alleen voor sleutels die bij een TheTVDB-abonnement horen."
+    },
+    "omdb": {
+      "label": "OMDb-API-sleutel, voor scores (optioneel)",
+      "placeholder": "Plak je OMDb-API-sleutel",
+      "description": "Voegt scores van IMDb, Rotten Tomatoes en Metacritic toe aan films en series met een IMDb-id. Met een gratis sleutel kun je 1000 keer per dag iets opzoeken. <link>Zo krijg je er een</link>"
+    },
+    "language": "Taal",
+    "languages": {
+      "en": "Engels",
+      "nl": "Nederlands",
+      "de": "Duits",
+      "fr": "Frans",
+      "es": "Spaans",
+      "it": "Italiaans",
+      "pt": "Portugees",
+      "sv": "Zweeds",
+      "da": "Deens",
+      "no": "Noors",
+      "ja": "Japans"
+    },
+    "country": "Land (voor leeftijdsklassen)",
+    "countries": {
+      "us": "Verenigde Staten",
+      "gb": "Verenigd Koninkrijk",
+      "nl": "Nederland",
+      "de": "Duitsland",
+      "fr": "Frankrijk",
+      "es": "Spanje",
+      "it": "Italië",
+      "se": "Zweden",
+      "dk": "Denemarken",
+      "no": "Noorwegen",
+      "jp": "Japan"
+    }
+  },
+  "ratings": {
+    "g": "G / Alle leeftijden",
+    "pg": "PG",
+    "age12": "12",
+    "pg13": "PG-13",
+    "age16": "16",
+    "r": "R",
+    "age18": "18"
+  },
+  "admin": {
+    "dashboard": {
+      "title": "Dashboard",
+      "serverLine": "{name} · Cinemion {version} · draait al {uptime}",
+      "serverLineUpdate": "{name} · Cinemion {version} ({update}) · draait al {uptime}",
+      "updateOut": "{version} is er",
+      "scanAll": "Alle bibliotheken doorzoeken",
+      "scanStarted": "Alle bibliotheken worden doorzocht",
+      "scanFailed": "Kon het doorzoeken niet starten",
+      "stats": {
+        "streams": "Streams",
+        "maxConversions": {
+          "one": "Maximaal {count} omzetting tegelijk",
+          "other": "Maximaal {count} omzettingen tegelijk"
+        },
+        "streamKinds": "{direct} direct · {converting} omzetten",
+        "cpu": "Processor",
+        "cores": {
+          "one": "{count} kern",
+          "other": "{count} kernen"
+        },
+        "coresMemory": {
+          "one": "{count} kern · {memory} geheugen",
+          "other": "{count} kernen · {memory} geheugen"
+        },
+        "gpu": "GPU ({name})",
+        "hardwareConversions": {
+          "one": "{count} omzetting op hardware",
+          "other": "{count} omzettingen op hardware"
+        },
+        "usageNotReported": "Gebruik wordt niet doorgegeven",
+        "noConversions": "Geen omzettingen",
+        "memory": "Geheugen",
+        "memoryOf": "van {total}",
+        "notReported": "Niet doorgegeven",
+        "storage": "Opslag",
+        "storageOnMount": "van {total} op {mount}",
+        "storageOnDrives": {
+          "one": "van {total} op {count} schijf",
+          "other": "van {total} op {count} schijven"
+        },
+        "drivesUnreadable": "Kon de schijven niet lezen"
+      },
+      "nowPlaying": "Speelt nu",
+      "nothingPlaying": "Er speelt nu niets.",
+      "stream": {
+        "awayFromHome": "{device} · buitenshuis",
+        "paused": "Gepauzeerd"
+      },
+      "tasks": "Taken",
+      "allTasks": "Alle taken",
+      "libraryScan": "Bibliotheek doorzoeken · {library}",
+      "nothingRunning": "Er loopt niets.",
+      "activity": "Activiteit",
+      "noActivity": "Er is nog niets gebeurd."
+    },
+    "tasks": {
+      "title": "Taken",
+      "intro": "Werk dat Cinemion op de achtergrond doet, en wanneer het je bibliotheken vanzelf doorzoekt.",
+      "startFailed": "Kon dat niet starten",
+      "running": "Bezig",
+      "nothingRunning": "Er loopt nu niets.",
+      "runNow": "Nu uitvoeren",
+      "actions": {
+        "scan": {
+          "title": "Alle bibliotheken doorzoeken",
+          "text": "Zoek naar nieuwe, gewijzigde en verwijderde bestanden in elke bibliotheek.",
+          "button": "Nu doorzoeken",
+          "started": "Alle bibliotheken worden doorzocht"
+        },
+        "refresh": {
+          "title": "Alle details vernieuwen",
+          "text": "Haal details en artwork opnieuw op voor elke titel. Bij grote bibliotheken duurt dat even.",
+          "button": "Vernieuwen",
+          "started": "De details van elke titel worden vernieuwd"
+        },
+        "thumbnails": {
+          "title": "Ontbrekende voorbeeldplaatjes maken",
+          "text": "De plaatjes die je ziet als je door een video sleept. Nieuwe video's krijgen ze vanzelf.",
+          "button": "Plaatjes maken",
+          "started": "Ontbrekende voorbeeldplaatjes worden gemaakt"
+        },
+        "markers": {
+          "title": "Intro's en aftiteling opnieuw zoeken",
+          "text": "Vergelijk de afleveringen van elk seizoen en lees de hoofdstukken opnieuw, voor Intro overslaan en het eerder starten van de volgende aflevering. Nieuwe afleveringen worden vanzelf bekeken.",
+          "button": "Opnieuw zoeken",
+          "started": "Intro's en aftiteling worden gezocht"
+        },
+        "subtitles": {
+          "title": "Ontbrekende ondertiteling downloaden",
+          "text": "Zoek ondertiteling in je talen voor elke film en aflevering die er geen heeft, ook als er pas nog is gezocht. Met automatisch downloaden aan gebeurt dit ook één keer per dag.",
+          "button": "Nu zoeken",
+          "started": "Ontbrekende ondertiteling wordt gezocht"
+        },
+        "remake": {
+          "title": "Alle voorbeeldplaatjes opnieuw maken",
+          "text": "Verwijder alle voorbeeldplaatjes en maak ze opnieuw, video voor video.",
+          "button": "Opnieuw maken",
+          "confirmTitle": "Alle voorbeeldplaatjes opnieuw maken?",
+          "confirmDescription": "Elke video krijgt nieuwe plaatjes, de een na de ander. Tot een video aan de beurt is, heeft hij er geen.",
+          "confirm": "Plaatjes opnieuw maken",
+          "started": "Alle voorbeeldplaatjes worden opnieuw gemaakt"
+        }
+      },
+      "schedule": "Planning",
+      "scanEvery": "Bibliotheken doorzoeken elke",
+      "scanEveryDescription": "Nieuwe bestanden verschijnen meestal toch binnen een minuut. Geplande zoekrondes vangen op wat de mapbewaking mist, zoals wijzigingen op netwerkschijven.",
+      "hours": {
+        "one": "{count} uur",
+        "other": "{count} uur"
+      },
+      "intervalSaved": {
+        "one": "Bibliotheken worden elk uur doorzocht",
+        "other": "Bibliotheken worden elke {count} uur doorzocht"
+      },
+      "scanned": "Doorzocht {ago} · volgende {next}",
+      "notScanned": "Nog niet doorzocht · volgende {next}",
+      "recentlyFinished": "Pas afgerond",
+      "nothingFinished": "Er is niets afgerond sinds de server is gestart.",
+      "history": {
+        "failed": "Mislukt",
+        "done": "Klaar",
+        "failedAgo": "{error} · {ago}",
+        "tookAgo": "Duurde {duration} · {ago}",
+        "seconds": "{count} s",
+        "minutes": "{count} min"
+      }
+    },
+    "logs": {
+      "title": "Logs",
+      "intro": {
+        "one": "De laatste regel van het serverlog, nieuwste eerst. Handig als iets niet werkt.",
+        "other": "De laatste {count} regels van het serverlog, nieuwste eerst. Handig als iets niet werkt."
+      },
+      "show": "Tonen",
+      "filters": {
+        "all": "Alles",
+        "info": "Info",
+        "warn": "Waarschuwingen",
+        "error": "Fouten"
+      },
+      "searchPlaceholder": "Woorden in het bericht",
+      "noMatch": "Geen regels gevonden.",
+      "lines": "Logregels",
+      "levels": {
+        "debug": "Debug",
+        "info": "Info",
+        "warn": "Waarschuwing",
+        "error": "Fout"
+      }
+    },
+    "users": {
+      "title": "Gebruikers",
+      "intro": "Iedereen in het huishouden krijgt een eigen profiel, kijkgeschiedenis en instellingen.",
+      "addProfile": "Profiel toevoegen",
+      "you": "{name} (jij)",
+      "roles": {
+        "admin": "Beheerder",
+        "user": "Profiel"
+      },
+      "badges": {
+        "pin": "Pincode",
+        "pickerOnly": "Alleen via profielkeuze",
+        "upTo": "Tot {rating}",
+        "hidden": "Verborgen in profielkeuze"
+      },
+      "edit": "{name} bewerken",
+      "dialog": {
+        "addTitle": "Profiel toevoegen",
+        "editTitle": "{name} bewerken",
+        "addDescription": "Een profiel voor iemand in het huishouden, met een eigen kijkgeschiedenis.",
+        "saveChanges": "Wijzigingen opslaan",
+        "picture": "Profielfoto",
+        "pictureUploaded": "Geüploade foto.",
+        "pictureInitial": "Initiaal op de eigen kleur.",
+        "changePicture": "Wijzigen",
+        "name": "Naam",
+        "username": "Gebruikersnaam",
+        "usernamePlaceholder": "Gemaakt van de naam",
+        "colour": "Kleur",
+        "role": "Rol",
+        "ratingLimit": "Leeftijdsgrens",
+        "noLimit": "Geen grens",
+        "showOnPicker": "Tonen in de profielkeuze",
+        "showOnPickerDescription": "Verborgen profielen loggen in met hun gebruikersnaam en wachtwoord.",
+        "newPin": "Nieuwe pincode",
+        "pin": "Pincode",
+        "keepIt": "Laat leeg om hem te houden",
+        "pinPlaceholder": "Optioneel, 4 cijfers",
+        "pinInvalid": "De pincode moet precies 4 cijfers zijn.",
+        "removePin": "Pincode verwijderen",
+        "newPassword": "Nieuw wachtwoord",
+        "password": "Wachtwoord",
+        "passwordPlaceholder": "Optioneel",
+        "passwordDescription": "Zonder wachtwoord kan dit profiel alleen vanuit de profielkeuze worden geopend.",
+        "passwordInvalid": "Gebruik minstens 6 tekens."
+      },
+      "added": "{name} is toegevoegd",
+      "saved": "Wijzigingen opgeslagen",
+      "pinRemoved": "Pincode verwijderd",
+      "pinRemoveFailed": "Kon de pincode niet verwijderen",
+      "removed": "{name} is verwijderd",
+      "removeFailed": "Kon de gebruiker niet verwijderen",
+      "remove": {
+        "title": "{name} verwijderen?",
+        "description": "Het profiel, de foto en de kijkgeschiedenis worden verwijderd. Dit kan niet ongedaan worden gemaakt."
+      }
+    },
+    "integrations": {
+      "title": "Koppelingen",
+      "intro": "Laat Sonarr en Radarr Cinemion vertellen over nieuwe downloads, zodat ze meteen verschijnen, koppel apps als Seerr en Homepage, en laat profielen hun Trakt-geschiedenis bijhouden.",
+      "saveChanges": "Wijzigingen opslaan",
+      "loadFailed": "Kon de koppelingen niet laden",
+      "copyFailed": "Kopiëren is niet gelukt",
+      "copyItByHand": "Selecteer het en kopieer het zelf.",
+      "arr": {
+        "title": "Sonarr en Radarr",
+        "address": "Webhookadres",
+        "copied": "Adres gekopieerd",
+        "copyByHand": "Selecteer het adres en kopieer het zelf.",
+        "localhostHint": "Je hebt Cinemion geopend als {host}, en dat kunnen Sonarr en Radarr niet bereiken vanaf een andere computer of container. Open Cinemion via het netwerkadres (zoals {example}) en kopieer het adres daar.",
+        "steps": {
+          "connect": "Open in Sonarr of Radarr <strong>Settings → Connect</strong>, klik op <strong>+</strong> en kies <strong>Webhook</strong>.",
+          "paste": "Plak het adres hierboven bij <strong>URL</strong> en laat de methode op <strong>POST</strong> staan.",
+          "events": "Vink <strong>On File Import</strong>, <strong>On File Upgrade</strong>, <strong>On Rename</strong> en de <strong>Delete</strong>-gebeurtenissen aan.",
+          "test": "Klik op <strong>Test</strong>. Cinemion laat hieronder zien dat het is aangekomen."
+        },
+        "lastEvent": "{event}, {ago}. {result}",
+        "eventName": "{app} · {eventType}",
+        "nothingReceived": "Nog niets ontvangen.",
+        "newAddress": {
+          "title": "Nieuw adres",
+          "text": "Is het adres uitgelekt? Maak dan een nieuw. Het oude werkt niet meer, dus plak het nieuwe in Sonarr en Radarr.",
+          "button": "Nieuw adres maken",
+          "made": "Nieuw adres gemaakt",
+          "madeDescription": "Plak het opnieuw in Sonarr en Radarr.",
+          "failed": "Kon geen nieuw adres maken",
+          "confirmTitle": "Nieuw adres maken?",
+          "confirmDescription": "Sonarr en Radarr kunnen Cinemion met het oude adres niet meer bereiken, tot je het nieuwe erin plakt."
+        }
+      },
+      "mappings": {
+        "title": "Padkoppelingen",
+        "text": "Alleen nodig als Sonarr of Radarr je media in een andere map zien dan Cinemion, zoals {theirs} in hun container en {ours} hier. Mappen binnen een gekoppelde map worden ook gekoppeld.",
+        "theirFolder": "Hun map",
+        "ourFolder": "Map van Cinemion",
+        "remove": "Deze koppeling verwijderen",
+        "add": "Koppeling toevoegen",
+        "saved": "Padkoppelingen opgeslagen"
+      },
+      "apps": {
+        "title": "Seerr, Homepage en andere apps",
+        "text": "Apps die voor andere mediaservers gemaakt zijn, kunnen ook Cinemion gebruiken. Kies in Seerr de mediaserver die inlogt met een serveradres, gebruikersnaam en wachtwoord, geef het adres hieronder op en log in met je Cinemion-gegevens: dan ziet hij wat er in je bibliotheken staat en linkt hij hiernaartoe. De mediaserverwidget van Homepage kan laten zien wat er speelt en hoe groot je bibliotheken zijn, met een sleutel die je hieronder maakt.",
+        "serverAddress": "Serveradres",
+        "addressCopied": "Adres gekopieerd",
+        "keyCopied": "Sleutel gekopieerd",
+        "madeBy": "Gemaakt door {name}, {ago}",
+        "madeByRemoved": "{ago} gemaakt door een profiel dat is verwijderd, dus hij werkt niet",
+        "copyKey": "Sleutel voor {app} kopiëren",
+        "removeKey": "Sleutel voor {app} verwijderen",
+        "newKeyFor": "Nieuwe sleutel voor",
+        "makeKey": "Sleutel maken",
+        "makeFailed": "Kon geen sleutel maken",
+        "removed": "Sleutel verwijderd",
+        "removedDescription": "{app} kan Cinemion er niet meer mee bereiken.",
+        "removeFailed": "Kon de sleutel niet verwijderen",
+        "confirmTitle": "Sleutel voor {app} verwijderen?",
+        "confirmDescription": "De app die hem gebruikt, kan Cinemion niet meer bereiken tot hij een nieuwe sleutel krijgt.",
+        "confirm": "Sleutel verwijderen"
+      },
+      "podium": {
+        "title": "Podium",
+        "text": "Podium kan clips direct in een bibliotheek uploaden. Maak een doel voor elke bibliotheek waarnaar je wilt uploaden, en voeg dan in Podium een Podium-compatibele server toe met de server-URL en het token van het doel. Clips houden de game die Podium opnam, hun titel, wanneer ze zijn opgenomen en de namen van hun geluidssporen. Podium uploadt in elke bibliotheek; Clipsbibliotheken halen het meeste uit wat het weet.",
+        "serverUrl": "Server-URL",
+        "serverUrlCopied": "Server-URL gekopieerd",
+        "tokenCopied": "Token gekopieerd",
+        "libraryRemoved": "De bibliotheek is verwijderd, dus het werkt niet",
+        "creatorRemoved": "Gemaakt door een profiel dat is verwijderd, dus het werkt niet",
+        "into": "Naar {where} · laatst gebruikt {ago}",
+        "intoNotUsed": "Naar {where} · nog niet gebruikt",
+        "intoGames": "Naar {where}, een map per game · laatst gebruikt {ago}",
+        "intoGamesNotUsed": "Naar {where}, een map per game · nog niet gebruikt",
+        "copyToken": "Token voor {name} kopiëren",
+        "remove": "{name} verwijderen",
+        "newTargetFor": "Nieuw doel voor",
+        "nameInPodium": "Naam in Podium",
+        "folder": "Map",
+        "folderPlaceholder": "De bibliotheekmap zelf",
+        "makeTarget": "Doel maken",
+        "uploadsInto": "Uploads komen in deze map binnen {path}. Cinemion moet erin kunnen schrijven, net als bij uploads vanuit de browser.",
+        "uploadsIntoFirst": "Uploads komen in deze map binnen de eerste map van de bibliotheek. Cinemion moet erin kunnen schrijven, net als bij uploads vanuit de browser.",
+        "gameFolders": "Een map per game",
+        "gameFoldersDescription": "Zet elke clip in een map met de naam van de game, zoals opnameprogramma's dat doen.",
+        "makeFailed": "Kon het doel niet maken",
+        "removed": "Doel verwijderd",
+        "removedDescription": "Podium kan niet meer uploaden met het token.",
+        "removeFailed": "Kon het doel niet verwijderen",
+        "confirmTitle": "{name} verwijderen?",
+        "confirmDescription": "Podium kan niet meer uploaden met het token. Wat al is geüpload, blijft in de bibliotheek.",
+        "confirm": "Doel verwijderen"
+      },
+      "trakt": {
+        "title": "Trakt",
+        "text": "Met een Trakt-app kan elk profiel een eigen Trakt-account koppelen: wat ze kijken wordt bijgehouden, en wat ze als gekeken markeren verschijnt in hun Trakt-geschiedenis. Maak de app op {link} met {redirect} als redirect-URI, en kopieer de sleutels hierheen.",
+        "clientId": "Client ID",
+        "clientSecret": "Client secret",
+        "secretSaved": "Opgeslagen (typ om te vervangen)",
+        "save": "Trakt-app opslaan",
+        "setUp": "Trakt is ingesteld",
+        "setUpDescription": "Profielen kunnen hun account koppelen in Instellingen › Je profiel."
+      },
+      "email": {
+        "title": "E-mail",
+        "text": "Laat Cinemion e-mails sturen naar profielen die hun meldingen per e-mail willen. Gebruik de SMTP-server van je mailprovider, of een op je netwerk.",
+        "host": "Mailserver",
+        "port": "Poort",
+        "security": "Versleuteling",
+        "starttls": "STARTTLS (meestal poort 587)",
+        "tls": "TLS (meestal poort 465)",
+        "none": "Geen (alleen op je eigen netwerk)",
+        "from": "Afzender",
+        "username": "Gebruikersnaam",
+        "password": "Wachtwoord",
+        "passwordSaved": "Opgeslagen; typ om het te wijzigen",
+        "saved": "E-mailinstellingen opgeslagen",
+        "off": "Cinemion stuurt geen e-mail",
+        "turnOff": "E-mail uitzetten",
+        "testTo": "Test sturen naar",
+        "test": "Test sturen",
+        "testSent": "Test gestuurd naar {to}",
+        "testFailed": "De test-e-mail is niet verstuurd"
+      }
+    },
+    "webhooks": {
+      "title": "Webhooks",
+      "intro": "Stuur gebeurtenissen als \"afspelen gestart\" naar andere apps, zoals Home Assistant of een chatbot.",
+      "add": "Webhook toevoegen",
+      "loadFailed": "Kon de webhooks niet laden",
+      "empty": {
+        "title": "Nog geen webhooks",
+        "text": "Een webhook is een adres waar Cinemion een kort JSON-bericht naartoe stuurt zodra er iets gebeurt dat jij kiest. Dim de lichten als een film begint, of zet nieuwe afleveringen in een chat."
+      },
+      "everyEvent": "Elke gebeurtenis",
+      "sendTest": "Test sturen",
+      "more": "Meer voor {name}",
+      "turnOff": "Uitzetten",
+      "turnOn": "Aanzetten",
+      "testArrived": "De test is aangekomen",
+      "testAnswered": "{name} antwoordde {status}.",
+      "testFailed": "De test is niet aangekomen",
+      "testSendFailed": "Kon de test niet sturen",
+      "toggleFailed": "Kon de webhook niet wijzigen",
+      "removed": "{name} is verwijderd",
+      "removeFailed": "Kon de webhook niet verwijderen",
+      "delivery": {
+        "nothingSent": "Nog niets verstuurd",
+        "test": "Test",
+        "delivered": "{event} afgeleverd {ago} · {status}",
+        "failed": "{event} mislukt {ago}: {error}",
+        "failedRetry": "{event} mislukt {ago}: {error} Nieuwe poging {retry}."
+      },
+      "developers": {
+        "title": "Voor ontwikkelaars",
+        "text": "Elke gebeurtenis is een {method} met een JSON-body: {body}. De header {header} is {prefix} gevolgd door de HMAC-SHA256 van de ruwe body, met het geheim van de webhook als sleutel, zodat de ontvanger kan controleren dat het van deze server komt. Mislukte verzendingen worden opnieuw geprobeerd na 10 seconden, 1 minuut en 5 minuten."
+      },
+      "remove": {
+        "title": "{name} verwijderen?",
+        "description": "Cinemion stuurt geen gebeurtenissen meer naar dit adres.",
+        "confirm": "Webhook verwijderen"
+      },
+      "dialog": {
+        "addTitle": "Webhook toevoegen",
+        "editTitle": "{name} bewerken",
+        "name": "Naam",
+        "nameDescription": "Optioneel. Standaard de host van het adres.",
+        "address": "Adres",
+        "events": "Gebeurtenissen",
+        "clearAll": "Alles wissen",
+        "pickAll": "Alles kiezen",
+        "enabled": "Aan",
+        "enabledDescription": "Staat het uit, dan wordt er niets verstuurd.",
+        "secret": "Geheim",
+        "secretDescription": "Om de header {header} te controleren.",
+        "secretCopied": "Geheim gekopieerd",
+        "newSecret": "Nieuw",
+        "secretLater": "Een geheim om handtekeningen te controleren wordt gemaakt als je de webhook toevoegt.",
+        "add": "Webhook toevoegen",
+        "saved": "Webhook opgeslagen",
+        "added": "Webhook toegevoegd",
+        "addedDescription": "Gebruik Test sturen om te kijken of hij aankomt.",
+        "saveFailed": "Kon de webhook niet opslaan",
+        "newSecretMade": "Nieuw geheim gemaakt",
+        "newSecretDescription": "Pas het ook aan in de ontvangende app.",
+        "newSecretFailed": "Kon geen nieuw geheim maken",
+        "copyFailed": "Kopiëren is niet gelukt",
+        "copyByHand": "Selecteer het en kopieer het zelf."
+      },
+      "events": {
+        "playbackStarted": "Afspelen gestart",
+        "playbackPaused": "Afspelen gepauzeerd",
+        "playbackResumed": "Afspelen hervat",
+        "playbackStopped": "Afspelen gestopt",
+        "itemWatched": "Uitgekeken",
+        "itemAdded": "Nieuwe film of aflevering",
+        "libraryScanned": "Bibliotheek doorzocht",
+        "userSignedIn": "Iemand is ingelogd",
+        "togetherStarted": "Samen kijken gestart",
+        "subtitlesDownloaded": "Ondertiteling gedownload"
+      }
+    }
+  },
+  "libraries": {
+    "title": "Bibliotheken",
+    "intro": "De mappen waarin Cinemion zoekt naar films, series, andere video's, muziek en boeken. Nieuwe bestanden worden vanzelf gevonden.",
+    "addButton": "Bibliotheek toevoegen",
+    "loadFailed": "Kon de bibliotheken niet laden",
+    "empty": "Nog geen bibliotheken.",
+    "conflict": "{conflict} Gebruik “Bibliotheek bewerken” om de mappen te wijzigen.",
+    "uploadProgress": {
+      "adding": {
+        "one": "Een upload wordt aan de bibliotheek toegevoegd",
+        "other": "{count} uploads worden aan de bibliotheek toegevoegd"
+      },
+      "uploading": {
+        "one": "{count} bestand uploaden · {percent}%",
+        "other": "{count} bestanden uploaden · {percent}%"
+      },
+      "needsALook": {
+        "one": "{count} upload moet je even bekijken",
+        "other": "{count} uploads moet je even bekijken"
+      }
+    },
+    "scanProgress": "{status} · {percent}%",
+    "row": {
+      "scanned": "doorzocht {ago}",
+      "notScanned": "nog niet doorzocht",
+      "rated": "klasse {rating}",
+      "unrated": "geen klasse"
+    },
+    "scanNow": "Nu doorzoeken",
+    "scanFailed": "Kon het doorzoeken niet starten",
+    "moreFor": "Meer voor {name}",
+    "menu": {
+      "upload": "Bestanden uploaden",
+      "edit": "Bibliotheek bewerken",
+      "refresh": {
+        "all": "Alle details vernieuwen",
+        "detailsAndThumbnails": "Details en miniaturen vernieuwen",
+        "thumbnailsAndGames": "Miniaturen en games vernieuwen",
+        "covers": "Covers opnieuw zoeken",
+        "bookDetails": "Boekdetails opnieuw lezen"
+      },
+      "remove": "Bibliotheek verwijderen"
+    },
+    "remove": {
+      "title": "{name} verwijderen?",
+      "description": "Cinemion vergeet deze bibliotheek en de kijkgeschiedenis ervan. De bestanden in de mappen blijven onaangeroerd.",
+      "confirm": "Bibliotheek verwijderen",
+      "done": "{name} is verwijderd",
+      "failed": "Kon de bibliotheek niet verwijderen"
+    },
+    "types": {
+      "movies": {
+        "name": "Films",
+        "count": {
+          "one": "{count} film",
+          "other": "{count} films"
+        }
+      },
+      "shows": {
+        "name": "Series",
+        "count": {
+          "one": "{count} serie",
+          "other": "{count} series"
+        }
+      },
+      "videos": {
+        "name": "Video's",
+        "description": "Voor thuisvideo's, opnames en alles wat geen film of serie is. Er wordt niets online opgezocht: titels komen uit de bestandsnamen, en je kunt de details zelf bewerken.",
+        "count": {
+          "one": "{count} video",
+          "other": "{count} video's"
+        }
+      },
+      "music": {
+        "name": "Muziek",
+        "description": "Albums, artiesten en nummers, gesorteerd op de tags in de bestanden (of mappen als Artiest/Album/01 Titel.mp3). Covers komen uit de bestanden of een cover.jpg ernaast, en songteksten uit tags of .lrc-bestanden. Er wordt niets online opgezocht.",
+        "count": {
+          "one": "{count} album",
+          "other": "{count} albums"
+        }
+      },
+      "photos": {
+        "name": "Foto's",
+        "description": "Foto's en telefoonvideo's, met elke map als album. Datums, camera's en plaatsen komen uit de foto's zelf (HEIC van iPhones werkt ook), en er wordt niets online opgezocht. Iedereen kan ook eigen albums maken zonder bestanden te verplaatsen.",
+        "count": {
+          "one": "{count} foto",
+          "other": "{count} foto's"
+        }
+      },
+      "clips": {
+        "name": "Clips",
+        "description": "Gameopnames, gegroepeerd per game. De game komt uit de namen die opnameprogramma's hun bestanden en mappen geven (NVIDIA, AMD, Xbox Game Bar, OBS, Steam en meer), met covers van Steam. Clips zonder game kun je er zelf een geven, of ze krijgen een voorstel van beeldherkenning.",
+        "count": {
+          "one": "{count} clip",
+          "other": "{count} clips"
+        }
+      },
+      "audiobooks": {
+        "name": "Luisterboeken",
+        "description": "Een map met audiobestanden is één boek (ook met delen in mappen als CD1, CD2…), en een losse .m4b ook. Hoofdstukken komen uit de bestanden, details uit hun tags, en iedereen houdt zijn eigen plek.",
+        "count": {
+          "one": "{count} luisterboek",
+          "other": "{count} luisterboeken"
+        }
+      },
+      "books": {
+        "name": "Boeken",
+        "description": "EPUB-boeken lees je direct in Cinemion, en ieders plek wordt bewaard; pdf's openen in de eigen viewer van de browser. Details en covers komen uit de bestanden.",
+        "count": {
+          "one": "{count} boek",
+          "other": "{count} boeken"
+        }
+      }
+    },
+    "form": {
+      "type": "Soort bibliotheek",
+      "name": "Naam",
+      "noFolders": "Open een map en kies \"{button}\"."
+    },
+    "rating": {
+      "videos": {
+        "label": "Klasse voor video's zonder klasse",
+        "description": "Profielen met een leeftijdsgrens zien alleen video's die daarbinnen vallen. Kies “{rating}” voor familievideo's die iedereen mag zien."
+      },
+      "music": {
+        "label": "Klasse voor deze albums",
+        "description": "Profielen met een leeftijdsgrens zien alleen muziek die daarbinnen valt. Kies “{rating}” zodat iedereen kan luisteren."
+      },
+      "photos": {
+        "label": "Klasse voor foto's zonder klasse",
+        "description": "Profielen met een leeftijdsgrens zien alleen foto's en video's die daarbinnen vallen. Kies “{rating}” voor familiefoto's die iedereen mag zien."
+      },
+      "clips": {
+        "label": "Klasse voor clips zonder klasse",
+        "description": "Profielen met een leeftijdsgrens zien alleen clips die daarbinnen vallen. Kies er een die past bij de games die je speelt, zoals “{rating}”."
+      },
+      "books": {
+        "label": "Klasse voor deze boeken",
+        "description": "Profielen met een leeftijdsgrens zien alleen boeken die daarbinnen vallen. Kies “{rating}” zodat iedereen kan lezen en luisteren."
+      },
+      "none": "Geen: verbergen voor profielen met een leeftijdsgrens"
+    },
+    "edit": {
+      "title": "{name} bewerken",
+      "titleFallback": "Bibliotheek bewerken",
+      "rescanNote": "Na het opslaan worden de bibliotheken opnieuw doorzocht. Titels in mappen die je hebt weggehaald, verdwijnen uit deze bibliotheek, samen met hun kijkgeschiedenis hier.",
+      "saved": "Bibliotheek opgeslagen",
+      "failed": "Kon de bibliotheek niet opslaan"
+    },
+    "add": {
+      "title": "Bibliotheek toevoegen",
+      "confirm": "Bibliotheek toevoegen",
+      "added": "{name} is toegevoegd",
+      "scanning": "Cinemion doorzoekt hem nu.",
+      "failed": "Kon de bibliotheek niet toevoegen"
+    }
+  },
+  "folderBrowser": {
+    "path": "Mappad",
+    "drives": "Schijven",
+    "top": "Bovenste map",
+    "typePath": "Pad typen",
+    "useFolder": "Deze map gebruiken",
+    "selected": "Gekozen",
+    "empty": "Hier staan geen mappen.",
+    "stopTyping": "Stoppen met typen"
+  },
+  "uploads": {
+    "dialog": {
+      "title": "Uploaden naar {name}",
+      "description": "Bestanden komen in de map die je kiest. Zipbestanden worden daar uitgepakt, met de mappen erin. Uploads gaan door als je dit sluit.",
+      "newFolder": "Nieuwe map erin (optioneel)",
+      "newFolderDescription": "Gebruik / voor een map in een map. Hij wordt gemaakt als de upload begint.",
+      "goesTo": "Gaat naar {destination}",
+      "openFolder": "Open de map waarin je wilt uploaden.",
+      "drop": "Sleep bestanden, mappen of zipbestanden hierheen",
+      "maxSize": "Tot {size} per stuk.",
+      "chooseFiles": "Bestanden kiezen",
+      "chooseFolder": "Map kiezen",
+      "picked": "Gekozen bestanden",
+      "leftOut": "Weggelaten: {reason}",
+      "replace": "Bestanden vervangen die er al staan",
+      "replaceDescription": "Anders wordt een bestand dat al in de map staat niet geüpload, en laten zipbestanden die bestanden weg.",
+      "uploads": "Uploads",
+      "clearFinished": "Afgeronde wissen",
+      "cantCarryOn": "Kan niet verder met dat bestand",
+      "uploadButton": {
+        "one": "{count} bestand uploaden · {size}",
+        "other": "{count} bestanden uploaden · {size}"
+      }
+    },
+    "accepts": {
+      "video": "Videobestanden, ondertiteling, NFO-bestanden en afbeeldingen, of zipbestanden daarmee.",
+      "music": "Audiobestanden, songteksten en covers, of zipbestanden daarmee.",
+      "audiobooks": "Audiobestanden, cuesheets, beschrijvingen en covers, of zipbestanden daarmee.",
+      "books": "EPUB- en PDF-bestanden en covers, of zipbestanden daarmee.",
+      "photos": "Foto's (JPG, HEIC, PNG en meer) en video's, of zipbestanden daarmee.",
+      "clips": "Videobestanden, ondertiteling en afbeeldingen, of zipbestanden daarmee."
+    },
+    "folderExample": {
+      "movies": "Glass Harbor (2021)",
+      "shows": "Saltwater Kings/Seizoen 1",
+      "videos": "Vakantie 2025",
+      "music": "Artiest/Album",
+      "audiobooks": "Auteur/Titel van het boek",
+      "books": "Auteur",
+      "photos": "Vakantie 2025/Dag 1",
+      "clips": "Counter-Strike 2"
+    },
+    "skip": {
+      "notUsed": "Geen bestand dat deze bibliotheek gebruikt",
+      "empty": "Leeg",
+      "tooBig": "Groter dan de server aanneemt ({size})"
+    },
+    "folderErrors": {
+      "outside": "De nieuwe map moet in de map hierboven staan.",
+      "hidden": "Mapnamen die met een punt beginnen zijn verborgen, dus de bibliotheek zou ze nooit tonen."
+    },
+    "status": {
+      "waitingResumed": "Wachten · {percent}% eerder verstuurd",
+      "waiting": "Wachten · {size}",
+      "percent": "{percent}%",
+      "sentOf": "{sent} van {size}",
+      "speed": "{speed}/s",
+      "retrying": "Opnieuw proberen…",
+      "paused": "Gestopt bij {percent}%. Kies het bestand opnieuw om verder te gaan.",
+      "adding": "Toevoegen aan de bibliotheek",
+      "processingProgress": "{status} · {percent}%",
+      "added": "Toegevoegd",
+      "stopped": "De upload is gestopt."
+    },
+    "timeLeft": {
+      "underAMinute": "nog minder dan een minuut",
+      "minutes": {
+        "one": "nog ongeveer {count} min",
+        "other": "nog ongeveer {count} min"
+      },
+      "hours": "nog ongeveer {hours} u {minutes} min"
+    },
+    "row": {
+      "leftOut": {
+        "one": "{count} weggelaten",
+        "other": "{count} weggelaten"
+      },
+      "pickFile": "Bestand kiezen",
+      "replace": "Vervangen",
+      "clear": "Wissen",
+      "cancel": "Upload annuleren"
+    },
+    "errors": {
+      "tooLarge": "Het stuk was te groot voor de server of een proxy ervoor.",
+      "status": "De server antwoordde {status} {statusText}.",
+      "connectionLost": "De verbinding met de server is verbroken.",
+      "differentFile": {
+        "one": "Dat is een ander bestand. Kies \"{name}\" ({count} byte) om verder te gaan.",
+        "other": "Dat is een ander bestand. Kies \"{name}\" ({count} bytes) om verder te gaan."
+      },
+      "differentContents": "Dat bestand heeft een andere inhoud dan het bestand dat wordt geüpload.",
+      "retrying": "{error} Opnieuw proberen…"
+    },
+    "toasts": {
+      "uploadFailed": "Kon {name} niet uploaden",
+      "added": "{name} is toegevoegd",
+      "addFailed": "Kon {name} niet toevoegen"
+    }
+  },
+  "updates": {
+    "title": "Updates",
+    "isOut": "Cinemion {version} is er",
+    "versions": "Deze server heeft {current}. De nieuwe is uitgekomen op {date}.",
+    "whatsNew": "Wat is er nieuw",
+    "how": {
+      "docker": "Haal om bij te werken de nieuwe image op en start de container opnieuw, bijvoorbeeld met {command}. Je bibliotheken en instellingen blijven zoals ze zijn.",
+      "aur": "Werk om bij te werken het pakket {package} bij (bijvoorbeeld met {upgrade}), en herstart Cinemion met {restart}.",
+      "binary": "Download om bij te werken de nieuwe versie van de releasepagina, zet hem in de plaats van deze en start Cinemion opnieuw. Je bibliotheken en instellingen blijven zoals ze zijn.",
+      "source": "Haal om bij te werken de nieuwe versie op met {command} en start Cinemion opnieuw."
+    },
+    "upToDate": "Je hebt de nieuwste Cinemion",
+    "notChecked": "Nog niet gecontroleerd",
+    "lastCheckFailed": "De laatste controle is niet gelukt: {error}",
+    "checked": "Gecontroleerd {ago}.",
+    "checksSoon": "Cinemion controleert een minuut na het starten.",
+    "checkNow": "Nu controleren",
+    "checkFailed": "Kon niet op updates controleren",
+    "switch": "Op updates controleren",
+    "switchDescription": "Kijkt twee keer per dag naar de releases van Cinemion op GitHub en laat beheerders weten als er een nieuwe is. Er wordt niets over je server of bibliotheken verstuurd, en er wordt niets vanzelf geïnstalleerd.",
+    "disabledByEnv": "Uitgezet voor deze server met {setting}."
+  },
+  "credits": {
+    "tmdb": "Dit product gebruikt TMDB en de TMDB-API's, maar is niet goedgekeurd, gecertificeerd of anderszins erkend door TMDB."
+  },
+  "backups": {
+    "title": "Back-ups",
+    "intro": "Bewaar een kopie van alles wat Cinemion niet zelf terug kan halen: profielen, wat iedereen keek, instellingen, afspeellijsten, albums en de details die je hebt bewerkt.",
+    "makeNow": "Nu een back-up maken",
+    "making": "Back-up maken",
+    "makeFailed": "Kon geen back-up maken",
+    "listTitle": "Je back-ups",
+    "none": "Nog geen back-ups. Maak er nu een, of zet hieronder een planning aan.",
+    "protected": "Beveiligd met een wachtwoord",
+    "downloadOne": "De back-up van {date} downloaden",
+    "deleteOne": "De back-up van {date} verwijderen",
+    "downloadFailed": "Kon de back-up niet downloaden",
+    "deleted": "Back-up verwijderd",
+    "deleteFailed": "Kon de back-up niet verwijderen",
+    "confirmDeleteTitle": "Deze back-up verwijderen?",
+    "confirmDeleteDescription": "De back-up van {date} is dan voorgoed weg.",
+    "folderWithSpace": "Opgeslagen in {folder} · {free} vrij",
+    "folderOnly": "Opgeslagen in {folder}",
+    "kind": {
+      "manual": "Zelf gemaakt",
+      "scheduled": "Gepland",
+      "update": "Voor een update"
+    },
+    "schedule": {
+      "title": "Planning",
+      "label": "Vanzelf een back-up maken",
+      "off": "Nooit",
+      "daily": "Elke nacht",
+      "weekly": "Eén keer per week",
+      "keep": "Bewaren",
+      "keepDescription": "Oudere geplande back-ups worden verwijderd. Back-ups die je zelf maakt, blijven tot je ze verwijdert.",
+      "keepCount": {
+        "one": "De laatste back-up",
+        "other": "De laatste {count} back-ups"
+      },
+      "next": "De volgende staat gepland {when}, 's nachts als dat kan.",
+      "lastFailed": "De laatste geplande back-up is niet gelukt: {error}",
+      "beforeUpdates": "Cinemion maakt ook vanzelf een back-up voordat een update de database wijzigt, zodat je terug kunt. Daarvan bewaart het de laatste drie."
+    },
+    "contents": {
+      "title": "Wat erin zit",
+      "text": "Elke back-up bevat de database, de inlogsleutel, profielfoto's en artwork die je zelf hebt gekozen of geüpload. Omzettingen, voorbeeldplaatjes en andere dingen in de cache worden weggelaten; die worden opnieuw gemaakt als het nodig is.",
+      "artwork": "Gedownloade artwork meenemen",
+      "artworkDescription": "Posters en achtergronden van internet. Back-ups worden groter, maar een teruggezette server ziet er meteen compleet uit in plaats van pas na het vernieuwen van alle details.",
+      "folder": "Back-upmap",
+      "folderDescription": "Een volledig pad op de server. Laat het leeg om de getoonde map te gebruiken. Met een map op een andere schijf blijven je back-ups veilig als deze schijf het begeeft.",
+      "folderSaved": "Back-ups komen in de nieuwe map"
+    },
+    "password": {
+      "on": "Back-ups zijn beveiligd met een wachtwoord",
+      "off": "Back-ups zijn niet beveiligd",
+      "text": "Een back-up bevat de inlogsleutel en de sleutels van de diensten die je hebt gekoppeld, dus iedereen met het bestand kan in deze server komen. Een wachtwoord vergrendelt nieuwe back-ups; zonder kun je ze niet terugzetten, dus bewaar het op een veilige plek.",
+      "set": "Wachtwoord instellen",
+      "change": "Wachtwoord wijzigen",
+      "remove": "Wachtwoord verwijderen",
+      "removeTitle": "Nieuwe back-ups niet meer beveiligen?",
+      "removeDescription": "Nieuwe back-ups hebben geen wachtwoord meer nodig. Back-ups die beveiligd waren, hebben nog steeds het oude nodig.",
+      "removed": "Nieuwe back-ups worden niet beveiligd",
+      "saved": "Nieuwe back-ups worden met dit wachtwoord beveiligd",
+      "dialogTitle": "Back-ups beveiligen met een wachtwoord",
+      "dialogDescription": "Nieuwe back-ups hebben dit wachtwoord nodig om terug te zetten. Eerdere back-ups houden het wachtwoord dat ze hadden.",
+      "new": "Wachtwoord",
+      "confirm": "Typ het nog een keer",
+      "tooShort": "Gebruik minstens 8 tekens.",
+      "mismatch": "De wachtwoorden zijn niet hetzelfde."
+    },
+    "restore": {
+      "title": "Een back-up terugzetten",
+      "text": "Terugzetten vervangt alles op een server door wat in de back-up zit, dus dat doe je als er verder niets gebeurt:",
+      "wizard": "Kies op een nieuwe of opnieuw geïnstalleerde Cinemion “Back-up terugzetten” op de eerste pagina van de installatie. Hij vindt back-ups in de back-upmap, of je kunt er een uploaden.",
+      "cli": "Stop op deze server Cinemion en voer {command} uit, en start hem daarna weer."
+    }
+  },
+  "myList": {
+    "title": "Mijn lijst",
+    "intro": "Films en series die je wilt kijken. Voeg ze toe met de bladwijzerknop op hun pagina.",
+    "here": {
+      "one": "Klaar om te kijken",
+      "other": "Klaar om te kijken · {count}"
+    },
+    "waiting": {
+      "one": "Nog niet hier",
+      "other": "Nog niet hier · {count}"
+    },
+    "waitingText": "Deze staan op je lijst, maar in geen enkele bibliotheek die je kunt zien. Ze schuiven vanzelf op zodra ze zijn toegevoegd.",
+    "notHere": "Nog niet hier",
+    "justArrived": "Net binnen",
+    "kind": {
+      "movie": "Film",
+      "show": "Serie",
+      "video": "Video"
+    },
+    "empty": {
+      "title": "Nog niets op je lijst",
+      "text": "Iets gevonden voor later? Druk op de bladwijzerknop op de pagina, dan verschijnt het hier en op het beginscherm."
+    },
+    "trakt": {
+      "syncNow": "Synchroniseren met Trakt",
+      "synced": "Je lijst is gelijk met Trakt",
+      "syncFailed": "Kon niet synchroniseren met Trakt",
+      "syncedAgo": "Wordt gelijk gehouden met je Trakt-watchlist, in beide richtingen. Laatst gesynchroniseerd {ago}.",
+      "notYet": "Wordt gelijk gehouden met je Trakt-watchlist, in beide richtingen. De eerste synchronisatie gebeurt over een paar minuten.",
+      "failed": "De laatste synchronisatie met Trakt is niet gelukt: {error}",
+      "notLinked": "Koppel Trakt in <link>Instellingen › Je profiel</link> om deze lijst gelijk te houden met je Trakt-watchlist."
+    }
+  },
+  "https": {
+    "title": "HTTPS",
+    "intro": "Een beveiligd adres voor Cinemion, zonder een reverse proxy op te zetten. Browsers hebben het nodig voor offline downloads en voor meldingen op telefoons.",
+    "notStarted": "https is niet gestart",
+    "renewed": "Het certificaat is vernieuwd",
+    "renewFailed": "Kon het certificaat niet vernieuwen",
+    "address": {
+      "title": "Beveiligd adres",
+      "switch": "https aanzetten",
+      "switchDescription": "Cinemion antwoordt ook op een tweede poort, versleuteld. Het gewone http-adres blijft ernaast werken.",
+      "turnedOn": "https staat aan",
+      "turnedOff": "https staat uit",
+      "port": "https-poort",
+      "portDescription": "8443, tenzij iets anders die gebruikt. Publiceer met Docker ook deze poort.",
+      "openAt": "Open Cinemion op:"
+    },
+    "certificate": {
+      "title": "Certificaat",
+      "kind": "Waar het certificaat vandaan komt",
+      "inUse": "In gebruik",
+      "use": "Dit certificaat gebruiken",
+      "switched": "Het nieuwe certificaat wordt gebruikt",
+      "facts": "Van {issuer}, geldig tot {date}. Het wordt vanzelf vernieuwd voordat het verloopt."
+    },
+    "kind": {
+      "cinemion": "Gemaakt door Cinemion",
+      "letsencrypt": "Let's Encrypt",
+      "own": "Je eigen"
+    },
+    "cinemion": {
+      "text": "Werkt op elk thuisnetwerk, zonder domein. Cinemion ondertekent zijn eigen certificaat, dus elk apparaat moet Cinemion één keer vertrouwen (zie hieronder); tot dan waarschuwen browsers voor het adres.",
+      "names": "Extra namen en adressen",
+      "namesDescription": "Cinemion dekt zelf de naam en adressen van deze computer. Voeg andere toe waarop hij bereikt wordt, zoals een naam die je router uitdeelt of het adres van de computer als Cinemion in Docker draait.",
+      "covers": "Geldig voor {names}.",
+      "notCovered": "Je hebt deze pagina geopend op {host}, en dat dekt het certificaat nog niet.",
+      "add": "{host} toevoegen",
+      "added": "Het certificaat dekt dat adres nu",
+      "remake": "Nieuw certificaat maken"
+    },
+    "trust": {
+      "title": "Vertrouw Cinemion op je apparaten",
+      "text": "Doe dit één keer op elk apparaat dat Cinemion via https opent. Het apparaat vertrouwt dan certificaten die deze Cinemion ondertekent, en verder niets.",
+      "download": "Certificaat van Cinemion downloaden",
+      "onPhone": "Open op een telefoon of tablet {address} in de browser om het daar te downloaden.",
+      "windows": {
+        "title": "Windows",
+        "steps": "Open het gedownloade bestand en kies Certificaat installeren.\nKies Lokale computer, dan Alle certificaten in het onderstaande archief opslaan, Bladeren en Vertrouwde basiscertificeringsinstanties.\nRond af en start de browser opnieuw."
+      },
+      "mac": {
+        "title": "Mac",
+        "steps": "Open het gedownloade bestand; Sleutelhangertoegang voegt het toe aan de inlogsleutelhanger.\nDubbelklik daar op het certificaat, open Vertrouw en zet Bij gebruik van dit certificaat op Altijd vertrouwen.\nSluit het venster en vul je wachtwoord in om op te slaan."
+      },
+      "iphone": {
+        "title": "iPhone en iPad",
+        "steps": "Open het downloadadres in Safari en sta toe dat het profiel wordt gedownload.\nGa naar Instellingen › Algemeen › VPN en apparaatbeheer, open het Cinemion-profiel en installeer het.\nGa daarna naar Instellingen › Algemeen › Info › Instellingen certificaatvertrouwen en zet volledig vertrouwen aan voor Cinemion."
+      },
+      "android": {
+        "title": "Android",
+        "steps": "Download het bestand in de browser.\nGa naar Instellingen › Beveiliging › Meer beveiligingsinstellingen (of Versleuteling en inloggegevens) › Een certificaat installeren › CA-certificaat, en kies het bestand.\nDe woorden verschillen een beetje per telefoon; zoek in Instellingen naar \"certificaat\" om het te vinden."
+      },
+      "linux": {
+        "title": "Linux",
+        "steps": "Arch: sudo trust anchor cinemion-ca.crt\nDebian en Ubuntu: kopieer het bestand naar /usr/local/share/ca-certificates/ en voer sudo update-ca-certificates uit.\nChrome op Linux heeft een eigen lijst: Instellingen › Privacy en beveiliging › Beveiliging › Certificaten beheren › Instanties › Importeren."
+      },
+      "firefox": {
+        "title": "Firefox (elke computer)",
+        "steps": "Firefox heeft een eigen lijst. Ga naar Instellingen › Privacy & Beveiliging › Certificaten › Certificaten bekijken › Autoriteiten › Importeren, kies het bestand en vink Deze CA vertrouwen voor het identificeren van websites aan."
+      }
+    },
+    "letsencrypt": {
+      "text": "Een certificaat dat elk apparaat meteen vertrouwt, gratis van Let's Encrypt, voor een eigen domein dat naar deze server wijst.",
+      "stepDomain": "Laat het domein (of een subdomein) naar het internetadres van je huis wijzen.",
+      "stepPort80": "Stuur poort 80 op je router door naar poort {port} op deze computer. Let's Encrypt controleert het domein daarlangs, elke paar maanden opnieuw.",
+      "stepPort443": "Stuur poort 443 door naar de https-poort {port}, zodat het domein Cinemion via https opent.",
+      "domain": "Domein",
+      "email": "E-mailadres (optioneel)",
+      "emailDescription": "Let's Encrypt schrijft hierheen als een certificaat bijna verloopt zonder vernieuwd te zijn.",
+      "terms": "Een certificaat aanvragen betekent dat je akkoord gaat met <link>de abonneeovereenkomst van Let's Encrypt</link>.",
+      "get": "Certificaat aanvragen",
+      "done": "Let's Encrypt heeft een certificaat uitgegeven",
+      "renew": "Nu vernieuwen"
+    },
+    "own": {
+      "text": "Heb je al een certificaat, van je router, je eigen certificaatautoriteit of een wildcard voor je domein? Plak het hier. Je moet het zelf vervangen voordat het verloopt.",
+      "certificate": "Certificaat",
+      "certificateDescription": "PEM-tekst, met de tussencertificaten na je eigen certificaat (de volledige keten).",
+      "key": "Privésleutel",
+      "use": "Dit certificaat gebruiken",
+      "replace": "Certificaat vervangen",
+      "saved": "Je eigen certificaat wordt gebruikt"
+    },
+    "redirect": {
+      "title": "Gewoon http",
+      "switch": "Browsers naar https sturen",
+      "description": "Pagina's die op het http-adres worden geopend, gaan naar het https-adres. Apps, Sonarr, Radarr en webhooks blijven gewoon http gebruiken. Zet dit pas aan als je apparaten het certificaat vertrouwen."
+    }
+  },
+  "notifications": {
+    "bell": "Meldingen",
+    "bellUnread": {
+      "one": "Meldingen, {count} ongelezen",
+      "other": "Meldingen, {count} ongelezen"
+    },
+    "title": "Meldingen",
+    "markAllRead": "Alles als gelezen markeren",
+    "empty": "Nog niets nieuws. Nieuwe films, afleveringen en titels van je lijst verschijnen hier.",
+    "settings": "Meldingsinstellingen",
+    "episodeCode": "S{season} A{episode}",
+    "episode": "{code} staat klaar om te kijken",
+    "episodeWithTitle": "{code} · {title} staat klaar om te kijken",
+    "episodes": {
+      "one": "Een nieuwe aflevering om te kijken",
+      "other": "{count} nieuwe afleveringen om te kijken"
+    },
+    "albumBy": "Een nieuw album van {artist}",
+    "newIn": "Nieuw in {library}",
+    "fromList": "Van je lijst, nu hier om te kijken",
+    "prefs": {
+      "title": "Meldingen",
+      "mode": "Laat me weten over",
+      "modeDescription": "Nieuwe films, afleveringen, albums en boeken in de bibliotheken die je kunt zien. Titels van Mijn lijst tellen altijd mee.",
+      "all": "Alles wat nieuw is",
+      "following": "Series die ik kijk en titels op Mijn lijst",
+      "none": "Niets",
+      "sameAsAbove": "Zelfde als hierboven",
+      "push": "Meldingen op dit apparaat",
+      "pushDescription": "Krijg ze net als berichten van andere apps, ook als Cinemion niet open is.",
+      "pushUnavailable": "Deze server kan nu geen pushmeldingen sturen.",
+      "pushNeedsHttps": "Deze browser kan ze alleen krijgen als Cinemion via https is geopend (Instellingen › HTTPS). Op iPhones en iPads moet Cinemion eerst op het beginscherm worden gezet.",
+      "pushOn": "Dit apparaat krijgt nu meldingen",
+      "pushFailed": "Kon meldingen niet aanzetten",
+      "pushDenied": "De browser heeft te horen gekregen geen meldingen van Cinemion te tonen. Sta ze toe in de site-instellingen van de browser en probeer het opnieuw.",
+      "pushNoWorker": "Laad de pagina één keer opnieuw en probeer het nog eens; het deel dat meldingen ontvangt, draaide nog niet.",
+      "thisDevice": "{name} (dit apparaat)",
+      "since": "Sinds {ago}",
+      "removeDevice": "Meldingen op {name} stoppen",
+      "test": "Test sturen",
+      "testSent": {
+        "one": "Naar 1 apparaat gestuurd",
+        "other": "Naar {count} apparaten gestuurd"
+      },
+      "testNone": "Geen enkel apparaat heeft de test ontvangen. Zet meldingen op het apparaat uit en weer aan.",
+      "email": "E-mail",
+      "emailDescription": "Laat leeg voor geen e-mail. Je krijgt één e-mail per groep nieuwe dingen.",
+      "emailSaved": "Meldingen worden ook gemaild",
+      "emailOff": "Geen meldingsmails meer"
+    },
+    "testBody": "Meldingen werken op dit apparaat.",
+    "email": {
+      "one": "{title}: {text}",
+      "many": {
+        "one": "{count} nieuw ding op {server}",
+        "other": "{count} nieuwe dingen op {server}"
+      },
+      "greeting": "Hoi {name},",
+      "line": "• {title}: {text}",
+      "open": "Open {server}: {link}",
+      "openPlain": "Open {server} om te kijken.",
+      "why": "Je krijgt deze door je meldingsinstellingen in Cinemion (Instellingen › Je profiel)."
+    }
+  },
+  "stats": {
+    "title": "Je statistieken",
+    "intro": "Wat je hebt gekeken, geluisterd en gelezen, en hoe lang.",
+    "everyoneTitle": "Statistieken van iedereen",
+    "everyoneIntro": "De tijd van het hele huishouden, de favorieten, en wat niemand kijkt.",
+    "yearLink": "Jouw {year} in een terugblik",
+    "whose": "Van wie",
+    "you": "Jij",
+    "everyone": "Iedereen",
+    "periodLabel": "Periode",
+    "period": {
+      "week": "Afgelopen 7 dagen",
+      "month": "Afgelopen 30 dagen",
+      "year": "Afgelopen 12 maanden",
+      "all": "Altijd"
+    },
+    "emptyTitle": "Hier staat nog niets",
+    "emptyText": "Kijk, luister of lees iets, dan verschijnt de tijd hier.",
+    "watching": "Kijken",
+    "listening": "Luisteren",
+    "reading": "Lezen",
+    "chartLabel": "Tijd per dag of maand, verdeeld over kijken, luisteren en lezen",
+    "minutes": {
+      "one": "{count} min",
+      "other": "{count} min"
+    },
+    "hours": {
+      "one": "{count} u",
+      "other": "{count} u"
+    },
+    "counts": {
+      "movies": {
+        "one": "{count} film",
+        "other": "{count} films"
+      },
+      "episodes": {
+        "one": "{count} aflevering",
+        "other": "{count} afleveringen"
+      },
+      "tracks": {
+        "one": "{count} nummer",
+        "other": "{count} nummers"
+      },
+      "books": {
+        "one": "{count} boek",
+        "other": "{count} boeken"
+      },
+      "days": {
+        "one": "{count} dag waarop er iets aanstond",
+        "other": "{count} dagen waarop er iets aanstond"
+      },
+      "plays": {
+        "one": "Eén keer gespeeld",
+        "other": "{count} keer gespeeld"
+      },
+      "sittings": {
+        "one": "{count} keer",
+        "other": "{count} keer"
+      }
+    },
+    "topShows": "Topseries",
+    "topMovies": "Topfilms",
+    "topArtists": "Topartiesten",
+    "topBooks": "Topboeken",
+    "genres": "Genres",
+    "streak": {
+      "current": {
+        "one": "{count} dag op rij",
+        "other": "{count} dagen op rij"
+      },
+      "longest": {
+        "one": "Je langste reeks is {count} dag",
+        "other": "Je langste reeks is {count} dagen"
+      },
+      "none": "Op dit moment geen reeks"
+    },
+    "binge": {
+      "title": {
+        "one": "{count} aflevering van {show} op één dag",
+        "other": "{count} afleveringen van {show} op één dag"
+      },
+      "when": "Je grootste bingesessie, op {date}"
+    },
+    "people": "Wie keek het meest",
+    "privateProfiles": {
+      "one": "1 profiel houdt zijn statistieken privé; de tijd telt wel mee in de totalen.",
+      "other": "{count} profielen houden hun statistieken privé; hun tijd telt wel mee in de totalen."
+    },
+    "untouched": {
+      "title": "Wat niemand kijkt",
+      "text": "Films en series die niemand op deze server ooit heeft afgespeeld.",
+      "count": "{count} van {total}",
+      "oldest": "Wacht het langst",
+      "added": "{library} · toegevoegd op {date}"
+    },
+    "private": {
+      "label": "Mijn statistieken privé houden",
+      "description": "Laat je naam weg uit de statistieken van iedereen en de terugblik van het huishouden. Je tijd telt nog steeds mee in de totalen, zonder je naam."
+    }
+  },
+  "review": {
+    "eyebrow": "Jaaroverzicht",
+    "title": "{year} in een terugblik",
+    "whose": "Wiens jaar",
+    "me": "Jij",
+    "household": "Huishouden",
+    "emptyTitle": "Een rustig jaar",
+    "emptyText": "Er is in {year} nog niets gekeken, geluisterd of gelezen.",
+    "youSpent": "Je besteedde",
+    "householdSpent": "Iedereen bij {name} besteedde",
+    "watching": "{time} aan kijken",
+    "listening": "{time} aan luisteren",
+    "reading": "{time} aan lezen",
+    "days": {
+      "one": "Op {count} dag van het jaar",
+      "other": "Op {count} dagen van het jaar"
+    },
+    "topShow": "Topserie",
+    "topMovie": "Topfilm",
+    "topArtist": "Topartiest",
+    "topBook": "Topboek",
+    "months": "Maand voor maand",
+    "busiest": "Drukste maand: {month}",
+    "records": "Records",
+    "streak": {
+      "one": "{count} dag op rij",
+      "other": "{count} dagen op rij"
+    },
+    "binge": {
+      "one": "{count} aflevering van {show} op {date}",
+      "other": "{count} afleveringen van {show} op {date}"
+    },
+    "genres": "Je genres",
+    "first": "Waar het jaar begon",
+    "people": "Wie keek het meest",
+    "share": {
+      "button": "Delen",
+      "copied": "Samenvatting gekopieerd",
+      "heading": "Het {year} van {name} op Cinemion",
+      "hours": "{time} aan kijken, luisteren en lezen",
+      "show": "Topserie: {title}",
+      "movie": "Topfilm: {title}",
+      "artist": "Topartiest: {title}",
+      "streak": {
+        "one": "Langste reeks: {count} dag",
+        "other": "Langste reeks: {count} dagen"
+      }
+    }
+  },
+  "upkeep": {
+    "title": "Onderhoud",
+    "intro": "Houd de bibliotheken netjes: zie waar de ruimte heen gaat, vind titels die er twee keer staan, en bestanden die niet afspelen.",
+    "viewLabel": "Waar je naar kijkt",
+    "views": {
+      "space": "Gebruikte ruimte",
+      "duplicates": "Dubbele",
+      "broken": "Kapotte bestanden",
+      "missing": "Ontbrekende afleveringen"
+    },
+    "notInLibrary": "Niet bij een titel ingedeeld",
+    "modified": "gewijzigd op {date}",
+    "space": {
+      "total": "{size} in totaal",
+      "files": {
+        "one": "{count} bestand",
+        "other": "{count} bestanden"
+      },
+      "free": "{size} vrij op de schijf",
+      "types": "Per soort bestand",
+      "shows": "Grootste series",
+      "biggest": "Grootste bestanden"
+    },
+    "duplicates": {
+      "title": {
+        "one": "{count} titel staat er vaker dan één keer",
+        "other": "{count} titels staan er vaker dan één keer"
+      },
+      "text": "Dezelfde film of aflevering in meerdere bestanden, of dezelfde titel op twee plekken. Soms is dat expres, zoals een 4K-versie naast een kleinere.",
+      "none": "Niets staat twee keer in je bibliotheken.",
+      "extra": "De extra kopieën nemen {size} in"
+    },
+    "broken": {
+      "title": {
+        "one": "{count} kapot bestand",
+        "other": "{count} kapotte bestanden"
+      },
+      "text": "Bestanden die Cinemion niet kan lezen, die afgekapt of beschadigd zijn, of waarbij het omzetten halverwege stopte. Vervang het bestand en doorzoek de bibliotheek, dan verdwijnt het.",
+      "unchecked": {
+        "one": "{count} bestand is nog niet helemaal afgespeeld. Controleren vindt bestanden die afgekapt zijn.",
+        "other": "{count} bestanden zijn nog niet helemaal afgespeeld. Controleren vindt bestanden die afgekapt zijn."
+      },
+      "checkAll": "Alle bestanden controleren",
+      "checkStarted": "Bestanden worden op de achtergrond gecontroleerd",
+      "checkFailed": "Controleren is niet gelukt",
+      "checkAgain": "Opnieuw controleren",
+      "stillBroken": "Nog steeds kapot",
+      "fine": "Het bestand is nu in orde",
+      "none": "Geen kapotte bestanden gevonden."
+    },
+    "missing": {
+      "title": {
+        "one": "{count} serie met ontbrekende afleveringen",
+        "other": "{count} series met ontbrekende afleveringen"
+      },
+      "text": "Afleveringen die volgens TMDB of TheTVDB zijn uitgezonden, maar niet in je bibliotheken staan. Specials worden weggelaten. Seriepagina's tonen ze ook grijs.",
+      "lookedUp": "Afleveringslijsten opgezocht voor {done} van {total} series. Series zoeken hun lijst op als iemand ze opent.",
+      "lookUp": "Alle series opzoeken",
+      "started": "Afleveringslijsten worden op de achtergrond opgezocht",
+      "failed": "Kon ze niet opzoeken",
+      "none": "Geen ontbrekende afleveringen in de series die tot nu toe zijn opgezocht.",
+      "count": "{count} van {aired} ontbreken"
+    },
+    "deleteFile": "{path} verwijderen",
+    "deleteTitle": "Dit bestand verwijderen?",
+    "deleteDescription": "{path} ({size}) gaat voorgoed van de schijf, met de ondertiteling en het NFO-bestand.",
+    "deleted": "Het bestand is verwijderd"
+  },
+  "deleteDialog": {
+    "title": "{title} verwijderen?",
+    "description": "De bestanden gaan voorgoed van de schijf, met hun ondertiteling en NFO-bestanden. Dit kan niet ongedaan worden gemaakt.",
+    "summary": {
+      "one": "{count} bestand, {size}",
+      "other": "{count} bestanden, {size}"
+    },
+    "folder": "De map {folder} gaat ook weg, want er staat verder niets in.",
+    "more": {
+      "one": "en nog {count} bestand",
+      "other": "en nog {count} bestanden"
+    },
+    "readOnly": "Cinemion kan deze map alleen lezen, dus hier kan het niets verwijderen. Sta schrijven toe in de bibliotheekmap (koppel hem in Docker zonder :ro) om vanuit Cinemion te verwijderen.",
+    "confirm": "Voorgoed verwijderen",
+    "deleted": "{title} is verwijderd",
+    "failed": "Verwijderen is niet gelukt"
+  },
+  "server": {
+    "aBackupIsBeingMade_395c69": "Er wordt al een back-up gemaakt.",
+    "aBackupIsBeingRestored_5e6f08": "Er wordt al een back-up teruggezet.",
+    "aClipOfWasAdded_ec878d": "Een clip van {title} is toegevoegd aan {name}",
+    "aClipWasAddedTo_ddd0d4": "Een clip is toegevoegd aan {name}",
+    "addingArtworkOf_bce324": "Artwork toevoegen ({i} van {images})",
+    "addingProfilePictures_59c64b": "Profielfoto's toevoegen",
+    "addingToTheLibrary_954c26": "Toevoegen aan de bibliotheek",
+    "aLibraryFolderPathAnd_716316": "Een bibliotheek, map, pad en grootte zijn nodig.",
+    "aNameIsRequired_6ab24f": "Een naam is nodig.",
+    "aNameTypeAndFolders_ed3d17": "Een naam, soort en mappen zijn nodig.",
+    "aPhotoWasAddedTo_576c1c": "Een foto is toegevoegd aan {library}",
+    "aPhotoWasAddedTo_f8e80d": "Een foto is toegevoegd aan {folder} in {library}",
+    "aPlaylistCanHoldUp_7c5307": "Een afspeellijst kan maximaal {MAX_TRACKS} nummers bevatten.",
+    "aPositionInSecondsIs_392b1d": "Een positie in seconden is nodig.",
+    "asASystemServiceAllow_6afb50": "Draait het als systeemdienst, sta het dan toe met \"systemctl edit cinemion\": [Service] ReadWritePaths={real}",
+    "asASystemServiceAllow_762a40": "Draait het als systeemdienst, sta het dan toe met \"systemctl edit cinemion\": [Service] ReadWritePaths={folder}",
+    "aServerNameAndThe_65331e": "Een servernaam en de naam, gebruikersnaam en het wachtwoord van de beheerder zijn nodig.",
+    "audiobooksAndBooksLibrariesList_905a54": "Luisterboek- en boekenbibliotheken tonen hun boeken onder /api/books.",
+    "audiobooksWereAddedTo_b08eb2": "{count} luisterboeken zijn toegevoegd aan {name}",
+    "aVideoWasAddedTo_4b6524": "Een video is toegevoegd aan {folder} in {library}",
+    "aVideoWasAddedTo_6393b3": "Een video is toegevoegd aan {library}",
+    "booksWereAddedTo_19f1ea": "{count} boeken zijn toegevoegd aan {name}",
+    "checkingFiles_5e84d1": "Bestanden controleren",
+    "checkingFilesOf_e1a5e7": "Bestanden controleren ({i} van {files})",
+    "checkingForUpdatesIsTurned_5432ee": "Controleren op updates is uitgezet met UPDATE_CHECK=false.",
+    "checkingTheBackup_c58a37": "De back-up controleren",
+    "chooseAtLeastOneFolder_4e75bd": "Kies minstens één map voor de bibliotheek \"{name}\".",
+    "cinemionCantDeleteFilesIn_01f4ec": "Cinemion kan in deze map geen bestanden verwijderen: het mag er alleen lezen. Sta schrijven toe in de bibliotheekmap (koppel hem in Docker zonder :ro) en probeer het opnieuw.",
+    "cinemionCantReadHowLong_74c5b2": "Cinemion kan niet lezen hoe lang het is. Waarschijnlijk is het beschadigd of afgekapt.",
+    "cinemionCantReadIt_b53657": "Cinemion kan het niet lezen: {value}",
+    "cinemionCantWriteToPick_a22911": "Cinemion kan niet schrijven in {folder}. Kies een andere map, of geef de gebruiker waaronder Cinemion draait er toegang toe.",
+    "cinemionHasAlreadyBeenSet_b0f537": "Cinemion is al ingesteld.",
+    "cinemionHasntMadeItsCertificate_afd8f3": "Cinemion heeft zijn certificaat nog niet gemaakt. Zet eerst https aan in Instellingen › HTTPS.",
+    "cinemionIsOutThisServer_cafec1": "Cinemion {version} is er. Deze server heeft {VERSION}.",
+    "clipsLibrariesListTheirGames_c7005e": "Clipsbibliotheken tonen hun games en clips onder /api/clips.",
+    "clipsOfWereAddedTo_1c6b52": "{count} clips van {title} zijn toegevoegd aan {name}",
+    "clipsWereAddedTo_510311": "{count} clips zijn toegevoegd aan {name}",
+    "convertedSOfPVideo_2522a9": "{seconds} s aan 1080p-video omgezet in {elapsed} s ({speed}× realtime).",
+    "convertingOnTheGpu_31726d": "Omzetten op de GPU",
+    "convertingOnTheGpuFailed_70f2d5": "Omzetten op de GPU ({kind}) is mislukt, dus de processor wordt gebruikt",
+    "convertingTheVideoTookToo_954b9d": "Het omzetten van de video duurde te lang om te starten.",
+    "couldNotConvertThePicture_e98b3c": "Kon de afbeelding niet omzetten: {stderr}",
+    "couldNotFind_4aa82a": "Kon \"{binary}\" niet vinden. {installHint}",
+    "couldNotReachTheMail_1e5df1": "Kon de mailserver op {host}:{port} niet bereiken: {value}",
+    "couldNotReadTheFile_18cc93": "Kon het bestand niet als media lezen: {trim}",
+    "couldNotReadTheImage_e16cd4": "Kon de afbeelding niet lezen: {stderr}",
+    "couldNotReadTheSubtitles_41b913": "Kon de ondertiteling niet lezen: {value}",
+    "couldntBeFoundCheckThe_4a1085": "{value} is niet gevonden. Controleer het adres.",
+    "couldntBeFoundOnlineAnymore_35af30": "\"{title}\" is online niet meer te vinden. Probeer opnieuw te zoeken.",
+    "couldntConnectTo_cf197e": "Kon geen verbinding maken met {host}: {pop}",
+    "couldntDownloadFromOpensubtitles_6feeae": "Kon niet downloaden van OpenSubtitles: {status} {detail}",
+    "couldntDownloadFromPodnapisi_9f382a": "Kon niet downloaden van Podnapisi: {status} {statusText}",
+    "couldntDownloadFromSubdl_0abb09": "Kon niet downloaden van SubDL: {status} {statusText}",
+    "couldntDownloadTheSubtitleFile_7bb2aa": "Kon het ondertitelbestand niet downloaden: {status} {statusText}",
+    "couldntSearchOnPodnapisi_5016b5": "Kon niet zoeken op Podnapisi: {status} {statusText}",
+    "couldntSearchOnSubdl_6e9714": "Kon niet zoeken op SubDL: {status} {statusText}",
+    "couldntSearchOpensubtitles_f83ebc": "Kon niet zoeken op OpenSubtitles: {status} {detail}",
+    "couldntSignInToOpensubtitles_e13991": "Kon niet inloggen bij OpenSubtitles: {status} {detail}",
+    "cuttingAClip_6ce1bf": "Een clip inkorten",
+    "decodingOnTheGpuFailed_5dd260": "Decoderen op de GPU ({kind}) is mislukt, dus alleen het coderen gebruikt hem",
+    "deletedFrom_e64eed": "{name} heeft {what} verwijderd uit {name2}",
+    "didntDownloadCorrectlyItsChecksum_6b7674": "{name} is niet goed gedownload (de checksum klopt niet). Probeer het opnieuw.",
+    "dolbyVision_7b8bf0": "Dolby Vision",
+    "downloadingFailed_caa02d": "Downloaden van {name} is mislukt: {status} {statusText}",
+    "downloadingSubtitles_5da4f5": "Ondertiteling downloaden",
+    "downloadPictureRecognitionFirstIn_9de9d6": "Download eerst beeldherkenning, in Instellingen › Metadata.",
+    "eachPathMappingNeedsBoth_0eaed7": "Elke padkoppeling heeft beide mappen nodig.",
+    "emailIsntSetUpOn_2a344f": "E-mail is niet ingesteld op deze server. Een beheerder kan het instellen in Instellingen › Koppelingen.",
+    "enterTheAddressEmailsCome_11c4c4": "Vul het adres in waar e-mails vandaan komen, zoals cinemion@example.com.",
+    "enterTheAddressOfThe_e68e0b": "Vul het adres van de mailserver in, zoals smtp.example.com.",
+    "enterTheAddressToSend_a2d4ea": "Vul het adres in waar de test naartoe moet.",
+    "enterTheDomainThatPoints_4c7d3d": "Vul eerst het domein in dat naar deze server wijst.",
+    "enterTheFullAddressStarting_5d7e58": "Vul het volledige adres in, beginnend met http:// of https://.",
+    "episodesOfWereAddedTo_13f334": "{episodes} afleveringen van {title} zijn toegevoegd aan {name}",
+    "everythingInTheZipFile_204424": "Alles in het zipbestand staat al in die map. Probeer het opnieuw met \"Bestanden vervangen die er al staan\" aan.",
+    "fetchingDetails_acc92a": "Details ophalen",
+    "filesAreBeingCheckedAlready_f4eb25": "Bestanden worden al gecontroleerd.",
+    "findingAlbumCovers_fef1c4": "Albumcovers zoeken",
+    "fromWasAddedTo_122599": "{title} van {what} is toegevoegd aan {name}",
+    "githubAnswered_391401": "GitHub antwoordde {status} {statusText}.",
+    "githubAskedToSlowDown_960c7e": "GitHub vroeg om het rustiger aan te doen. Cinemion probeert het later opnieuw.",
+    "giveTheAlbumAName_768d35": "Geef het album een naam.",
+    "giveTheFolderAsA_79550c": "Geef de map op als volledig pad, zoals /backups of D:\\Backups.",
+    "giveTheGameAName_dc4cb4": "Geef de game een naam.",
+    "giveTheKeyAName_48fdfb": "Geef de sleutel een naam, zoals de app die hem gaat gebruiken.",
+    "giveThePlaylistAName_6f4394": "Geef de afspeellijst een naam.",
+    "hasCharactersAFileName_4f2ac0": "\"{path}\" bevat tekens die een bestandsnaam niet mag hebben.",
+    "inDockerMountTheMedia_4ad860": "Koppel in Docker de mediamap zonder :ro.",
+    "installFfmpegOrSetFfmpeg_a3394e": "Installeer ffmpeg, of zet FFMPEG_PATH en FFPROBE_PATH op de plek waar het staat.",
+    "installItWithSudoApt_88763c": "Installeer het met: sudo apt install ffmpeg",
+    "installItWithSudoPacman_e85f7e": "Installeer het met: sudo pacman -S ffmpeg",
+    "installTheDriverWithSudo_199431": "Installeer de driver met: sudo pacman -S intel-media-driver vpl-gpu-rt",
+    "installTheDriverWithSudo_a08672": "Installeer de driver met: sudo apt install intel-media-va-driver-non-free",
+    "installTheDriverWithSudo_a8164d": "Installeer de driver met: sudo apt install mesa-va-drivers",
+    "installTheDriverWithSudo_d876ad": "Installeer de driver met: sudo pacman -S libva-mesa-driver",
+    "installTheVaApiDriver_cc41d4": "Installeer de VA-API-driver voor je GPU.",
+    "inTheZipFileIs_29bb35": "\"{name}\" in het zipbestand is beschadigd: de checksum klopt niet.",
+    "inTheZipFileIs_2ef996": "\"{name}\" in het zipbestand is beschadigd: het wordt bij uitpakken groter dan het hoort.",
+    "invalidUsernameUseToLetters_0d6217": "Ongeldige gebruikersnaam \"{username}\". Gebruik 2 tot 32 letters, cijfers, punten, streepjes of underscores.",
+    "isAFileNotA_36ac02": "\"{wanted}\" is een bestand, geen map.",
+    "isAlreadyInThatFolder_28eab9": "\"{path}\" staat al in die map. Probeer het opnieuw met \"Bestanden vervangen die er al staan\" aan.",
+    "isHiddenANameStarts_79b64e": "\"{path}\" is verborgen (een naam begint met een punt), dus de bibliotheek zou het nooit tonen.",
+    "isntADomainNameEnter_6630ed": "\"{domain}\" is geen domeinnaam. Vul er een in zoals cinemion.example.com.",
+    "isntAHostNameOr_b6d32a": "\"{bad}\" is geen hostnaam of adres.",
+    "isntALanguageCinemionKnows_13297e": "\"{unknown}\" is geen taal die Cinemion kent.",
+    "isntAnEventCinemionSends_589e2b": "\"{unknown}\" is geen gebeurtenis die Cinemion verstuurt.",
+    "isntARatingCinemionKnows_05c3bd": "\"{rating}\" is geen leeftijdsklasse die Cinemion kent. Gebruik er een zoals \"G\", \"PG\", \"12\" of \"16\".",
+    "isntARatingCinemionKnows_0605d6": "\"{contentRating}\" is geen leeftijdsklasse die Cinemion kent. Gebruik er een zoals \"G\", \"PG\", \"12\" of \"16\".",
+    "isPackedInAWay_37e5df": "\"{name}\" is ingepakt op een manier die Cinemion niet kan uitpakken (methode {method}). Zip het opnieuw met normale compressie.",
+    "isPasswordProtected_c6edd3": "\"{name}\" is beveiligd met een wachtwoord.",
+    "isReadyWithAlbum_0de6d0": "{name} is klaar, met 1 album",
+    "isReadyWithAlbums_6d834b": "{name} is klaar, met {count} albums",
+    "isReadyWithAudiobook_a54ba0": "{name} is klaar, met 1 luisterboek",
+    "isReadyWithAudiobooks_22a47b": "{name} is klaar, met {count} luisterboeken",
+    "isReadyWithBook_3ac268": "{name} is klaar, met 1 boek",
+    "isReadyWithBooks_fa6663": "{name} is klaar, met {count} boeken",
+    "isReadyWithClip_3b2acf": "{name} is klaar, met 1 clip",
+    "isReadyWithClips_070adc": "{name} is klaar, met {count} clips",
+    "isReadyWithMovie_b8a791": "{name} is klaar, met 1 film",
+    "isReadyWithMovies_1adaaa": "{name} is klaar, met {count} films",
+    "isReadyWithPhotosAnd_6376a8": "{name} is klaar, met {items} foto's en video's",
+    "isReadyWithShow_42627c": "{name} is klaar, met 1 serie",
+    "isReadyWithShows_e6c8cf": "{name} is klaar, met {count} series",
+    "isReadyWithVideo_347cdc": "{name} is klaar, met 1 video",
+    "isReadyWithVideos_19aebf": "{name} is klaar, met {count} video's",
+    "isTooLongForA_47e3c6": "\"{part}\" is te lang voor een bestandsnaam.",
+    "itsCutShortOrDamaged_a7add9": "Het is afgekapt of beschadigd vlak voor het einde: {error}",
+    "itWontPlayFromThe_d01c33": "Het speelt niet af vanaf het begin: {error}",
+    "joinARoomFirst_906cce": "Doe eerst mee aan een sessie.",
+    "keepBetweenAndBackups_c988d7": "Bewaar tussen 1 en 100 back-ups.",
+    "keepEachTagUnderCharacters_50c072": "Houd elke tag onder de 40 tekens.",
+    "keepTheNameUnderCharacters_e25b35": "Houd de naam onder de 64 tekens.",
+    "letsEncryptCouldntReachOn_60e570": "Let's Encrypt kon {value} niet bereiken op poort 80{reason}. Zorg dat het domein naar deze server wijst en dat poort 80 naar Cinemion wordt doorgestuurd.",
+    "letsEncryptDidntOfferA_e254cc": "Let's Encrypt bood geen manier om {value} via http te controleren.",
+    "letsEncryptRefusedTheRequest_9a636d": "Let's Encrypt heeft de aanvraag geweigerd{detail}",
+    "letsEncryptSentSomethingThat_870464": "Let's Encrypt stuurde iets dat geen certificaat is.",
+    "limitedTo_4ad376": "Beperkt tot {maxBitrate}.",
+    "limitedToForViewersOutside_7c3ff9": "Beperkt tot {maxBitrate} voor kijkers buiten het thuisnetwerk.",
+    "lookingAtClips_80cfb3": "Clips bekijken",
+    "lookingForFiles_9f1d43": "Bestanden zoeken",
+    "lookingForSubtitles_c45427": "Ondertiteling zoeken",
+    "lookingUpEpisodes_27a1e0": "Afleveringen opzoeken",
+    "lookingUpEpisodesOf_910797": "Afleveringen opzoeken ({i} van {shows})",
+    "makingABackup_e1f796": "Back-up maken",
+    "makingASmallCopyOf_fcba3a": "Kleine kopie van een clip maken",
+    "makingSeekThumbnails_0d2cda": "Voorbeeldplaatjes maken",
+    "makingThumbnails_e26cfc": "Miniaturen maken",
+    "mariadbAt_01738a": "MariaDB op {DB_HOST}:{DB_PORT}",
+    "matchingByHandWorksWith_e7a2d3": "Zelf koppelen werkt met TMDB en TheTVDB, niet met \"{providerId}\".",
+    "moviesWereAddedTo_9a53e3": "{count} films zijn toegevoegd aan {name}",
+    "musicLibrariesListTheirAlbums_bd2ac8": "Muziekbibliotheken tonen hun albums, artiesten en nummers onder /api/music.",
+    "mustBeAFullPath_f4ffe7": "\"{to}\" moet een volledig pad zijn, zoals /media/shows.",
+    "noneOfTheFilesCould_996fa6": "Geen van de bestanden kon worden uitgepakt. {reason}",
+    "noneOfThoseClipsAre_507fd7": "Geen van die clips staat in deze bibliotheek.",
+    "noNvidiaGpuFoundIn_5f7a12": "Geen NVIDIA-GPU gevonden. In Docker is de NVIDIA container runtime nodig.",
+    "noSubtitleSiteIsSet_d27750": "Er is geen ondertitelsite ingesteld. Zet er een aan in Instellingen › Ondertiteling.",
+    "nothingAnsweredAtCheckThe_b3601f": "Er kwam geen antwoord van {host}. Controleer het adres, en of de ontvangende app draait.",
+    "nothingInTheZipFile_967a9c": "Niets in het zipbestand is iets wat {name} gebruikt ({type}).",
+    "nothingToChange_ce9c2c": "Niets te wijzigen.",
+    "nvidiaGpuFound_525a49": "NVIDIA-GPU gevonden",
+    "omdbRejectedTheApiKey_1f4b98": "OMDb heeft de API-sleutel geweigerd. Controleer hem in Instellingen › Metadata.",
+    "omdbRequestFailed_83c4bb": "OMDb-aanvraag mislukt: {status} {statusText}",
+    "omdbsDailyLimitIsUsed_d7e82e": "De daglimiet van OMDb is op. Scores worden morgen opnieuw opgehaald.",
+    "onlyAdminsCanChangeRoles_63fae9": "Alleen beheerders kunnen rollen wijzigen.",
+    "onlyAdminsCanCreateOther_91e80e": "Alleen beheerders kunnen andere beheerders aanmaken.",
+    "onlyAdminsCanDeleteAdmins_c349cd": "Alleen beheerders kunnen beheerders verwijderen.",
+    "onlyAdminsCanDoThis_286d13": "Alleen beheerders kunnen dit doen.",
+    "onlyAssAndSsaSubtitles_0ef47b": "Alleen ASS- en SSA-ondertiteling houdt een eigen opmaak.",
+    "onlyLibraryManagersCanBrowse_7dafee": "Alleen bibliotheekbeheerders kunnen door mappen bladeren.",
+    "onlyMoviesAndShowsCan_2ed91b": "Alleen films en series kunnen worden gekoppeld.",
+    "onlyMoviesEpisodesAndVideos_b6c177": "Alleen films, afleveringen en video's kun je samen kijken.",
+    "onlyMoviesEpisodesAndVideos_ba8e30": "Alleen films, afleveringen en video's kunnen worden afgespeeld.",
+    "onlyMoviesEpisodesAndVideos_cf1ddc": "Alleen films, afleveringen en video's kunnen worden gedownload.",
+    "onlyMoviesEpisodesAndVideos_db09eb": "Alleen films, afleveringen en video's hebben voortgang.",
+    "onlyMoviesShowsAndVideos_7e5e26": "Alleen films, series en video's kunnen op je lijst.",
+    "onlyMoviesShowsSeasonsEpisodes_3d2986": "Alleen films, series, seizoenen, afleveringen en video's kunnen worden verwijderd.",
+    "onlyShowsHaveMissingEpisodes_f63c82": "Alleen series hebben ontbrekende afleveringen.",
+    "onlyShowsSeasonsEpisodesVideos_a27187": "Alleen series, seizoenen, afleveringen, video's, mappen en games hebben een volgende.",
+    "onlyTheHostCanChange_f2c4e5": "Alleen de host kan dit wijzigen.",
+    "onlyTheHostCanEnd_b456a9": "Alleen de host kan de sessie voor iedereen stoppen.",
+    "onlyTheHostCanPause_e6b92f": "Alleen de host kan pauzeren en spoelen in deze sessie.",
+    "onlyTheHostCanPick_ada439": "Alleen de host kan kiezen wat er speelt.",
+    "onlyTheOneWhoMade_6940be": "Alleen wie dit album heeft gemaakt, of iemand die bibliotheken beheert, kan het wijzigen.",
+    "onlyTheOneWhoMade_a93d39": "Alleen wie dit album heeft gemaakt, of iemand die bibliotheken beheert, kan het verwijderen.",
+    "onlyTheOneWhoMade_fe0668": "Alleen wie dit album heeft gemaakt, of iemand die bibliotheken beheert, kan er iets aan toevoegen.",
+    "onlyVideosAndFoldersCan_0198db": "Alleen video's en mappen kunnen zelf een miniatuur krijgen.",
+    "onlyVideosAndFoldersHave_db0207": "Alleen video's en mappen hebben een zelf gekozen miniatuur.",
+    "onlyVideosPhotosAndFolders_25ef1b": "Alleen video's, foto's en mappen kunnen worden bewerkt.",
+    "opensubtitlesDidntAcceptTheApi_9189b6": "OpenSubtitles accepteerde de API-sleutel of het inloggen niet ({detail}). Controleer ze in Instellingen › Ondertiteling.",
+    "opensubtitlesDidntSendADownload_31846a": "OpenSubtitles stuurde geen downloadlink. De daglimiet is bereikt; die wordt {reset} gereset.",
+    "opensubtitlesDidntSendADownload_910e04": "OpenSubtitles stuurde geen downloadlink. De daglimiet is bereikt; die wordt morgen gereset.",
+    "opensubtitlesDidntSendADownload_946ade": "OpenSubtitles stuurde geen downloadlink.",
+    "opensubtitlesIsGettingTooMany_5b85a7": "OpenSubtitles krijgt te veel verzoeken. Wacht een paar seconden en probeer het opnieuw.",
+    "pasteBothTheCertificateAnd_545257": "Plak zowel het certificaat als de privésleutel.",
+    "pasteYourCertificateAndIts_594086": "Plak eerst je certificaat en de privésleutel.",
+    "photosAndVideosWereAdded_1f9620": "{count} foto's en video's zijn toegevoegd aan {library}",
+    "photosAndVideosWereAdded_de2c11": "{count} foto's en video's zijn toegevoegd aan {folder} in {library}",
+    "photosLibrariesListTheirAlbums_a880cd": "Fotobibliotheken tonen hun albums en foto's onder /api/photos.",
+    "photosWereAddedTo_b6e82f": "{count} foto's zijn toegevoegd aan {library}",
+    "photosWereAddedToIn_b7dfa0": "{count} foto's zijn toegevoegd aan {folder} in {library}",
+    "pickALanguageToSearch_e3f5c2": "Kies een taal om in te zoeken.",
+    "pickAPhotoFromInside_cbf104": "Kies een foto uit dit album als cover.",
+    "pickAPhotoOrVideo_17011d": "Kies een foto of video uit dit album.",
+    "pickAPhotosLibraryFor_c6aeeb": "Kies een fotobibliotheek voor het album.",
+    "pickASearchResultTo_171c8a": "Kies een zoekresultaat om te downloaden.",
+    "pickASearchResultTo_1f98f1": "Kies een zoekresultaat om mee te koppelen.",
+    "pickATitleAndA_395012": "Kies een titel en een grootte om te downloaden.",
+    "pickAtLeastOneEvent_9ad686": "Kies minstens één gebeurtenis om te versturen.",
+    "pickAtLeastOneSubtitle_2ad24d": "Kies minstens één ondertiteltaal.",
+    "pickAtLeastOneTrack_c1087e": "Kies minstens één nummer om toe te voegen.",
+    "pickAYearUpTo_4ee805": "Kies een jaar tot en met dit jaar.",
+    "pickHowTheConnectionIs_af287c": "Kies hoe de verbinding wordt versleuteld.",
+    "pickOffVaApiQuick_35f1f6": "Kies Uit, VA-API, Quick Sync of NVENC voor hardwareversnelling.",
+    "pickOneOfHours_36e597": "Kies een van {join} uur.",
+    "pickPhotosOrVideosFrom_997c6f": "Kies foto's of video's uit de bibliotheek van dit album.",
+    "pickTheLibraryPodiumUploads_83b934": "Kies de bibliotheek waarnaar Podium uploadt.",
+    "pickWhereTheCertificateComes_5490c3": "Kies waar het certificaat vandaan komt.",
+    "pictureSubtitlesCantBeTurned_28a314": "Ondertiteling als afbeelding kan niet in tekst worden omgezet. Die wordt in plaats daarvan in de video getekend.",
+    "pictureSubtitlesDrawnIntoThe_2012cf": "Ondertiteling als afbeelding, in de video getekend",
+    "playbackWasStopped_da411d": "Het afspelen is gestopt.",
+    "podnapisiIsGettingTooMany_285d10": "Podnapisi krijgt te veel verzoeken. Wacht een minuut en probeer het opnieuw.",
+    "pointsOutsideTheFolder_387a56": "\"{path}\" wijst naar buiten de map.",
+    "portIsAlreadyInUse_018337": "Poort {port} wordt al door een ander programma gebruikt. Kies een andere poort.",
+    "portIsThePlainHttp_c0716c": "Poort {port} is de gewone http-poort. Kies een andere voor https, zoals 8443.",
+    "preparingADownload_1a4e9b": "Download klaarmaken: {label}",
+    "readingBookDetails_05093f": "Boekdetails lezen",
+    "readingChapters_4100fa": "Hoofdstukken lezen",
+    "readingFiles_44b3c3": "Bestanden lezen",
+    "recognisingGamesInClips_febdb5": "Games in clips herkennen",
+    "refreshingDetailsOfEveryLibrary_5e5f04": "De details van elke bibliotheek worden vernieuwd",
+    "restoredABackupMadeOn_c4323c": "Een back-up teruggezet, gemaakt op {slice} door Cinemion {version}",
+    "restoringProfilePicturesAndArtwork_59d8ac": "Profielfoto's en artwork terugzetten",
+    "restoringTheDatabase_4cda9f": "De database terugzetten",
+    "samsungInternet_22e8e7": "Samsung Internet",
+    "savedToWatchOffline_752902": "{name} heeft {inline} opgeslagen om offline te kijken",
+    "savingTheDatabase_216b90": "De database opslaan",
+    "sayWhereTheCutStarts_b80ae1": "Geef aan waar de inkorting begint en eindigt, in seconden: { \"start\": 2.5, \"end\": 30, \"replace\": false }.",
+    "sayWhetherItsWatchedWatched_cd4397": "Geef aan of het gekeken is: { \"watched\": true }.",
+    "sayWhetherToTakeThe_ca5f53": "Geef aan of het voorstel wordt overgenomen: { \"accept\": true }.",
+    "sayWhichClipsAndWhether_e31e37": "Geef aan welke clips en of ze een ster krijgen: { \"ids\": [1], \"favorite\": true }.",
+    "sayWhichClipsAndWhich_a8a2d0": "Geef aan welke clips en welke game: { \"ids\": [1, 2], \"game\": { \"gameId\": 3 } }.",
+    "sayWhichPhotosToTake_596f15": "Geef aan welke foto's eruit moeten: { \"itemIds\": [1, 2] }.",
+    "scanningEveryLibrary_fd17a7": "Alle bibliotheken worden doorzocht",
+    "seasonOf_128c67": "Seizoen {done} van {size}",
+    "seekThumbnailsAreTurnedOff_2b23b3": "Voorbeeldplaatjes staan uit in Instellingen › Afspelen.",
+    "sendANewTitleOr_e9f4d0": "Stuur een nieuwe titel, of een online gevonden game om mee te koppelen.",
+    "sendAPictureOrFor_a4df0f": "Stuur een afbeelding, of voor een video het moment dat je wilt gebruiken: { \"time\": 12.5 }.",
+    "sendEnabledAsTrueOr_acfd2b": "Stuur `enabled` als true of false.",
+    "sendTheBackupFileAs_8a8eab": "Stuur het back-upbestand als body van het verzoek.",
+    "sendTheFullListOf_23809f": "Stuur de volledige lijst met padkoppelingen.",
+    "sendThePictureAsA_b1e8ba": "Stuur de afbeelding als \"file\"-veld in een multipart-formulier.",
+    "sendTheSettingsAsJson_c699ce": "Stuur de instellingen als JSON.",
+    "sendTheSettingsToChange_604519": "Stuur de te wijzigen instellingen als JSON.",
+    "signedIn_a91315": "{name} is ingelogd ({device})",
+    "signedInAwayFromHome_223d32": "{name} is buitenshuis ingelogd ({device})",
+    "signInOrUseAn_d49227": "Log in of gebruik een app-sleutel uit Instellingen › Koppelingen van Cinemion.",
+    "simultaneousConversionsMustBeBetween_396df1": "Het aantal omzettingen tegelijk moet tussen 1 en 32 liggen.",
+    "slowDownALittleWait_0abb02": "Rustig aan: wacht even voordat je meer stuurt.",
+    "somethingWentWrongInCinemion_9bd9c1": "Er ging iets mis in Cinemion. In het log staan de details.",
+    "somethingWentWrongOnThe_9a755f": "Er ging iets mis op de server. In het serverlog staan de details.",
+    "somethingWentWrongWithThe_70b01c": "Er ging iets mis met de upload. In het serverlog staan de details.",
+    "sortingFiles_7f20bb": "Bestanden sorteren",
+    "startedWatchingTogether_0d922c": "{name} is samen {inline} gaan kijken",
+    "startingHttps_b5992b": "https starten",
+    "styledText_37d03a": "Opgemaakte tekst",
+    "subdlDidntAcceptTheApi_68f488": "SubDL accepteerde de API-sleutel niet. Controleer hem in Instellingen › Ondertiteling.",
+    "subdlIsGettingTooMany_d1ea6f": "SubDL krijgt te veel verzoeken. Wacht een minuut en probeer het opnieuw.",
+    "subtitlesDownloadedAutomaticallyForVideos_f0d1d0": "{downloaded} ondertitels automatisch gedownload, voor {value} video's",
+    "subtitlesDownloadedFor_fe8ac3": "Ondertiteling gedownload voor {inline} ({language})",
+    "subtitleSearchIsntSetUp_d7894b": "Ondertiteling zoeken is nog niet ingesteld. Een beheerder kan een ondertitelsite aanzetten in Instellingen › Ondertiteling.",
+    "suggestingGames_88f61f": "Games voorstellen",
+    "thatAlbumDoesntExist_6b337f": "Dat album bestaat niet.",
+    "thatArtistDoesntExist_d1dd55": "Die artiest bestaat niet.",
+    "thatBackupIsntInThe_8c68f8": "Die back-up staat niet in de back-upmap.",
+    "thatBackupIsntThereAny_0a53f5": "Die back-up is er niet meer.",
+    "thatBookDoesntExist_9bf733": "Dat boek bestaat niet.",
+    "thatCertificateCantBeRead_b98ea0": "Dat certificaat kan niet worden gelezen.",
+    "thatCertificateRanOutOn_df2674": "Dat certificaat is verlopen op {slice}.",
+    "thatClipDoesntExist_6ed3ec": "Die clip bestaat niet.",
+    "thatClipHasNoSuggested_4fe61d": "Die clip heeft geen voorgestelde game.",
+    "thatCollectionDoesntExist_da099e": "Die collectie bestaat niet.",
+    "thatCopyDoesntExistAnymore_77b83f": "Die kopie bestaat niet meer. Maak een nieuwe.",
+    "thatDownloadDoesntExist_102c34": "Die download bestaat niet.",
+    "thatEmailAddressDoesntLook_16ab4c": "Dat e-mailadres ziet er niet goed uit.",
+    "thatFileIsntAnImage_bf8c1b": "Dat bestand is geen afbeelding die Cinemion kan lezen. Probeer een JPG, PNG of WebP.",
+    "thatFileIsntAPicture_210789": "Dat bestand is geen afbeelding die Cinemion kan lezen. Gebruik een JPG-, PNG- of WebP-afbeelding.",
+    "thatFileIsntInA_7a6e00": "Dat bestand staat niet meer in een bibliotheek.",
+    "thatFileIsntInThis_d1a6a4": "Dat bestand hoort niet bij dit boek.",
+    "thatFilesLibraryIsGone_1ffcdd": "De bibliotheek van dat bestand is weg.",
+    "thatFontIsntAttachedTo_cb0925": "Dat lettertype zit niet bij deze video.",
+    "thatGameCouldntBeFound_644589": "Die game is online niet meer te vinden. Probeer opnieuw te zoeken.",
+    "thatGameDoesntExist_36930a": "Die game bestaat niet.",
+    "thatGameIsntInThis_b8d6fe": "Die game staat niet in deze bibliotheek.",
+    "thatIsntASonarrOr_a1b9b8": "Dat is geen webhook van Sonarr of Radarr.",
+    "thatIsntASubdlDownload_f23a67": "Dat is geen download van SubDL.",
+    "thatIsntOnYourList_f148fc": "Dat staat niet op je lijst.",
+    "thatIsntPartOfThe_f3cbfb": "Dat hoort niet bij de stream.",
+    "thatItemDoesntExist_9f1dc9": "Dat item bestaat niet.",
+    "thatKeyDoesntExist_c40fcf": "Die sleutel bestaat niet.",
+    "thatLibraryDoesntExist_946173": "Die bibliotheek bestaat niet.",
+    "thatMomentOfTheVideo_54778b": "Dat moment van de video kon niet worden gelezen.",
+    "thatPartOfTheAudiobook_81047a": "Dat deel van het luisterboek bestaat niet.",
+    "thatPartOfTheStream_cfa256": "Dat deel van de stream is nog niet klaar.",
+    "thatPasswordIsntRight_d9c3ad": "Dat wachtwoord klopt niet.",
+    "thatPersonDoesntExist_dbc387": "Die persoon bestaat niet.",
+    "thatPhotoDoesntExist_1f955c": "Die foto bestaat niet.",
+    "thatPhotosFileIsGone_dccfc2": "Het bestand van die foto is weg.",
+    "thatPinIsntRight_d4a9e5": "Die pincode klopt niet.",
+    "thatPlaybackSessionHasEnded_b8a810": "Die afspeelsessie is afgelopen.",
+    "thatPlaylistDoesntExist_4575aa": "Die afspeellijst bestaat niet.",
+    "thatPrivateKeyDoesntBelong_24b35f": "Die privésleutel hoort niet bij het certificaat.",
+    "thatProfileDoesntExist_75c2c5": "Dat profiel bestaat niet.",
+    "thatShowDoesntExist_c5ac9f": "Die serie bestaat niet.",
+    "thatSubtitleTrackDoesntExist_710ed9": "Dat ondertitelspoor bestaat niet.",
+    "thatThumbnailSheetDoesntExist_1f2e03": "Dat vel met miniaturen bestaat niet.",
+    "thatTitleDoesntExist_292076": "Die titel bestaat niet.",
+    "thatTitlesLibraryIsGone_92ae13": "De bibliotheek van die titel is weg.",
+    "thatTrackDoesntExist_c52d23": "Dat nummer bestaat niet.",
+    "thatUploadDoesntExistAnymore_3a8f5a": "Die upload bestaat niet meer.",
+    "thatUploadTargetDoesntExist_140a3e": "Dat uploaddoel bestaat niet.",
+    "thatUserDoesntExist_e32611": "Die gebruiker bestaat niet.",
+    "thatUserHasNoProfile_ecefe4": "Die gebruiker heeft geen profielfoto.",
+    "thatUsernameAndPasswordDont_283d84": "Die gebruikersnaam en dat wachtwoord horen niet bij elkaar.",
+    "thatVideoDoesntExist_5c43f3": "Die video bestaat niet.",
+    "thatViewingHasEnded_4330d6": "Dat kijken is afgelopen.",
+    "thatWebhookDoesntExist_4a6037": "Die webhook bestaat niet.",
+    "theAddressMustStartWith_615b70": "Het adres moet beginnen met http:// of https://.",
+    "theArchiveIsCutShort_a570b7": "Het archief is afgekapt; \"{name}\" is niet compleet.",
+    "theArchiveIsCutShort_ee4219": "Het archief is afgekapt.",
+    "theBackupDidntArriveIn_f1921d": "De back-up is niet heel aangekomen: {error}",
+    "theBookFileCantBe_b91bcc": "Het boekbestand is niet te vinden op schijf.",
+    "theBrowserDidntHandOver_c1b3fb": "De browser gaf geen volledig pushabonnement door.",
+    "theCertificateAndKeyCant_0718c6": "Het certificaat en de sleutel kunnen niet samen worden gebruikt: {message}",
+    "theCertificateAuthorityAnswered_4cc590": "De certificaatautoriteit antwoordde {status}.",
+    "theCertificateAuthorityDidntAnswer_308aca": "De certificaatautoriteit antwoordde niet ({status}).",
+    "theCertificateAuthorityDidntHand_8bc292": "De certificaatautoriteit gaf geen nonce.",
+    "theCertificateAuthorityDidntSay_443125": "De certificaatautoriteit zei niet waar het account is.",
+    "theCertificateAuthoritySaid_8b6295": "De certificaatautoriteit zei: {detail}",
+    "theCertificateAuthorityTookToo_758f22": "De certificaatautoriteit deed er te lang over om het domein te controleren.",
+    "theCertificateAuthorityTookToo_8f2837": "De certificaatautoriteit deed er te lang over om het certificaat te maken.",
+    "theCertificateIsCutShort_4fe9ae": "Het certificaat is afgekapt.",
+    "theCopyCouldntBeMade_465759": "De kopie kon niet worden gemaakt: {value}",
+    "theCopyIsntReadyYet_f9342e": "De kopie is nog niet klaar.",
+    "theDateMustLookLike_c72438": "De datum moet eruitzien als 2024-07-12.",
+    "theDownloadedSubtitleFileIs_cfe3d1": "Het gedownloade ondertitelbestand is leeg.",
+    "theDownloadHadNoSubtitle_ddbb45": "Er zat geen ondertitelbestand in de download.",
+    "theFileIsCutShort_943411": "Het bestand is afgekapt.",
+    "theFileIsDamagedPart_225c7b": "Het bestand is beschadigd: een deel ervan klopt niet met de checksum.",
+    "theFileIsDamagedTheres_cab6fb": "Het bestand is beschadigd: er staan gegevens na het einde.",
+    "theFileIsntThereAny_2f39a5": "Het bestand is er niet meer.",
+    "theFileNeedsAName_0f3c8c": "Het bestand heeft een naam nodig.",
+    "theFolderHoldsAFolder_64c23b": "De map \"{path}\" bevat een map die al in de bibliotheek \"{name}\" staat. Een video kan maar in één bibliotheek staan, dus geef elke bibliotheek zijn eigen mappen.",
+    "theFolderIsAlreadyIn_1795d7": "De map \"{path}\" staat al in de bibliotheek \"{name}\". Een video kan maar in één bibliotheek staan, dus geef elke bibliotheek zijn eigen mappen.",
+    "theFolderIsInsideA_74965d": "De map \"{path}\" zit in een map die al in de bibliotheek \"{name}\" staat. Een video kan maar in één bibliotheek staan, dus geef elke bibliotheek zijn eigen mappen.",
+    "theFolderIsntAvailableOnly_2fe2c5": "De map \"{path}\" is niet beschikbaar. Alleen mappen binnen {join} kunnen worden gebruikt.",
+    "theFolderIsntAvailableOnly_71dcfb": "De map \"{wanted}\" is niet beschikbaar. Alleen mappen binnen {join} kunnen worden gebruikt.",
+    "theFolderIsntThereAnymore_44e169": "De map \"{folder}\" is er niet meer.",
+    "theFoldersAndOverlapPick_ff7eab": "De mappen \"{path}\" en \"{other}\" overlappen. Kies er maar één voor \"{name}\".",
+    "theGameLookupFailed_d64ee9": "Het opzoeken van de game is mislukt: {status} {statusText}",
+    "theGpuDecodeListMust_a93f2f": "De lijst om op de GPU te decoderen moet een lijst met codecnamen zijn.",
+    "theGpuDeviceMustBe_f74de0": "Het GPU-apparaat moet een pad onder /dev zijn, zoals /dev/dri/renderD128.",
+    "theLibraryNameMustBe_d6d24b": "De naam van de bibliotheek moet tussen 1 en 60 tekens lang zijn.",
+    "theLibrarysDriveRanOut_a75b14": "De schijf van de bibliotheek is vol. Maak wat ruimte vrij en probeer het opnieuw.",
+    "theLibraryWasRemovedWhile_081d8c": "De bibliotheek is verwijderd terwijl dit werd geüpload.",
+    "theMailServerAtPort_dd1fd1": "De mailserver op poort {port} begint niet met versleuteling. Kies STARTTLS, of de poort voor TLS (meestal 465).",
+    "theMailServerClosedThe_10d030": "De mailserver heeft de verbinding gesloten.",
+    "theMailServerDidntSay_4e5e9e": "De mailserver zei geen hallo: {code} {text}",
+    "theMailServerDoesntOffer_421444": "De mailserver biedt geen STARTTLS. Kies een andere soort versleuteling of poort.",
+    "theMailServerRefusedThe_075155": "De mailserver weigerde het bericht: {code} {text}",
+    "theMailServerRefusedThe_2bd1fc": "De mailserver weigerde de gebruikersnaam: {code} {text}",
+    "theMailServerRefusedThe_5253e4": "De mailserver weigerde de gebruikersnaam of het wachtwoord: {code} {text}",
+    "theMailServerRefusedThe_5514a5": "De mailserver weigerde het adres {to}: {code} {text}",
+    "theMailServerRefusedThe_ec2e5f": "De mailserver weigerde de begroeting: {code} {text}",
+    "theMailServerRefusedThe_f3c90f": "De mailserver weigerde het afzenderadres: {code} {text}",
+    "theMailServerRefusedTo_2add84": "De mailserver weigerde in te loggen: {code} {text}",
+    "theMailServerRefusedTo_876280": "De mailserver weigerde de verbinding te versleutelen: {code} {text}",
+    "theMailServerStoppedAnswering_850600": "De mailserver antwoordt niet meer.",
+    "theMusicFileCantBe_3f904e": "Het muziekbestand is niet te vinden op schijf.",
+    "theNameMustBeBetween_3ccbc4": "De naam moet tussen 1 en 40 tekens lang zijn.",
+    "theNewestReleaseHasA_0bfe70": "De nieuwste release heeft een naam die Cinemion niet begrijpt: {tag_name}",
+    "theOffsetIsMissing_483de0": "De offset ontbreekt.",
+    "theOpensubtitlesDownloadLimitFor_984034": "De downloadlimiet van OpenSubtitles voor vandaag is bereikt. {detail}",
+    "thePasswordIsWrong_85bcc1": "Het wachtwoord is verkeerd.",
+    "thePasswordMustBeAt_e9240e": "Het wachtwoord moet minstens 6 tekens lang zijn.",
+    "thePhotoCantBeFound_ddf92b": "De foto is niet te vinden op schijf.",
+    "thePictureCouldntBeSaved_83751a": "De afbeelding kon niet worden opgeslagen. In het serverlog staan de details.",
+    "thePictureIsTooLarge_82507e": "De afbeelding is te groot. De limiet is 10 MB.",
+    "thePictureIsTooLarge_c8c603": "De afbeelding is te groot. De limiet is 15 MB.",
+    "thePictureIsTooLarge_db1e82": "De afbeelding is te groot. Afbeeldingen mogen maximaal {MAX_DIMENSION} pixels breed of hoog zijn.",
+    "thePictureRecognitionIsntLoaded_eaf700": "De beeldherkenning is niet geladen.",
+    "thePinMustBeExactly_d86e68": "De pincode moet precies 4 cijfers zijn.",
+    "thePlayerHasToSay_7ba7ca": "De speler moet aangeven wat dit apparaat kan afspelen.",
+    "thePortMustBeA_483ab8": "De poort moet een getal van 1 tot 65535 zijn.",
+    "theQualityPresetMustBe_1db7db": "De kwaliteitsinstelling moet Snel, Gebalanceerd of Kwaliteit zijn.",
+    "thereAreNoFilesTo_09e35e": "Er zijn geen bestanden om te verwijderen.",
+    "theReceiverDidntAnswerWithin_763efb": "De ontvanger antwoordde niet binnen 10 seconden.",
+    "thereIsntEnoughFreeSpace_1c5b5f": "Er is niet genoeg vrije ruimte in {dir} voor de back-up.",
+    "theRemoteStreamLimitMust_dcf6c7": "De limiet voor kijken op afstand moet 0 (geen limiet) of meer zijn.",
+    "theresNoApiEndpointAt_f4e2a9": "Er is geen API-endpoint op {method} {path}.",
+    "theresNoCertificateInThat_e97dc3": "Er staat geen certificaat in die tekst. Het hoort te beginnen met -----BEGIN CERTIFICATE-----.",
+    "theresNoFolder_de0a5e": "Er is geen map \"{wanted}\".",
+    "theresNoPrivateKeyIn_ae5776": "Er staat geen privésleutel in die tekst.",
+    "theresNoPrivateKeyIn_c286b9": "Er staat geen privésleutel in die tekst. Hij hoort te beginnen met -----BEGIN PRIVATE KEY-----.",
+    "theresNoSessionWithThat_ab19e5": "Er is geen sessie met die code. Misschien is hij afgelopen; vraag om een nieuwe.",
+    "theresNoVideoInIt_e8447c": "Er zit geen video in.",
+    "theScheduledBackupFailed_3b6d72": "De geplande back-up is mislukt: {message}",
+    "theScheduleMustBeOff_11651a": "De planning moet uit, dagelijks of wekelijks zijn.",
+    "theSeasonPackHasNo_b75c62": "Het seizoenspakket heeft geen ondertitelbestand voor deze aflevering.",
+    "theSecureConnectionToFailed_e6d973": "De beveiligde verbinding met {host} is mislukt: het certificaat wordt niet vertrouwd.",
+    "theServerIsAlreadyConverting_f80cb7": "De server zet al {maxConversions} video's om. Probeer het opnieuw als er een stopt, of kies Originele kwaliteit op een apparaat dat het bestand kan afspelen.",
+    "theSqliteDatabaseIsNot_9b4b21": "De SQLite-database is niet geopend.",
+    "theSteamgriddbKeyWasRefused_4f6f49": "De SteamGridDB-sleutel is geweigerd. Controleer hem in Instellingen › Metadata.",
+    "theSubtitlesWereSavedBut_8a7ef2": "De ondertiteling is opgeslagen, maar kon niet worden teruggevonden. Doorzoek de bibliotheek om ze op te pikken.",
+    "theTitleIsGone_dbc170": "De titel is weg.",
+    "theTitleMustBeBetween_432657": "De titel moet tussen 1 en 200 tekens lang zijn.",
+    "thetvdbDidntSendASign_864953": "TheTVDB stuurde geen inlogtoken terug.",
+    "thetvdbKeptRefusingRequestsTry_6e8957": "TheTVDB bleef verzoeken weigeren. Probeer het over een minuut opnieuw.",
+    "thetvdbNeedsAnApiKey_8b90b4": "TheTVDB heeft een API-sleutel nodig. Voeg er een toe in Instellingen › Metadata.",
+    "thetvdbRejectedTheApiKey_9e923e": "TheTVDB heeft de API-sleutel (of de pincode) geweigerd. Controleer ze in Instellingen › Metadata.",
+    "thetvdbRequestFailed_9bbc50": "TheTVDB-verzoek mislukt: {status} {statusText}",
+    "thetvdbSignInFailed_624676": "Inloggen bij TheTVDB mislukt: {status} {statusText}",
+    "theUsernameIsAlreadyTaken_468954": "De gebruikersnaam \"{username}\" is al in gebruik.",
+    "theVideoFileCantBe_d5ed86": "Het videobestand is niet te vinden op schijf. Controleer of de mediamap gekoppeld is en doorzoek de bibliotheek opnieuw.",
+    "theVideoFileCantBe_e1d1b8": "Het videobestand is niet te vinden op schijf.",
+    "theVideosLengthIsntKnown_bc1d93": "De lengte van de video is onbekend, dus de miniaturen kunnen niet worden verdeeld.",
+    "theZipFileIsCut_0d41bc": "Het zipbestand is afgekapt. Controleer of de upload klaar was en of het bestand op je computer opent.",
+    "theZipFileIsCut_ba27f0": "Het zipbestand is afgekapt.",
+    "theZipFileIsCut_e3018e": "Het zipbestand is afgekapt; \"{name}\" is niet compleet.",
+    "theZipFileIsDamaged_74c3c5": "Het zipbestand is beschadigd: het zip64-eindrecord is onleesbaar.",
+    "theZipFileIsDamaged_76ff88": "Het zipbestand is beschadigd: het zip64-eindrecord ontbreekt.",
+    "theZipFileIsDamaged_c92c38": "Het zipbestand is beschadigd rond \"{name}\".",
+    "theZipFilesListOf_46667a": "De inhoudsopgave van het zipbestand is beschadigd.",
+    "thisAddressIsntValidAnymore_e7c93b": "Dit adres is niet meer geldig. Kopieer het huidige uit Instellingen › Koppelingen van Cinemion.",
+    "thisBackupWasMadeBy_07b4a4": "Deze back-up is gemaakt door Cinemion {version}, die nieuwer is dan deze ({VERSION}). Werk Cinemion eerst bij en zet hem daarna terug.",
+    "thisBackupWasMadeBy_f9c554": "Deze back-up is gemaakt door een nieuwere Cinemion. Werk Cinemion eerst bij en zet hem daarna terug.",
+    "thisBookCantBeOpened_5a111c": "Dit boek kan niet worden geopend: {error}",
+    "thisBookLinkHasExpired_31f620": "Deze boeklink is verlopen. Open het boek opnieuw.",
+    "thisDeviceCantPlayThe_7aaff8": "Dit apparaat kan het originele bestand niet afspelen. Kies een van de andere groottes.",
+    "thisDownloadLinkHasRun_5d0360": "Deze downloadlink is verlopen. Start de download opnieuw vanuit Instellingen › Back-ups.",
+    "thisEpubHasNoChapters_11cdf3": "Deze EPUB heeft geen hoofdstukken om te tonen.",
+    "thisEpubHasNoPackage_987f8c": "Deze EPUB heeft geen package-bestand, dus hij kan niet worden gelezen.",
+    "thisFileHasToBe_4e1ed1": "Dit bestand moet voor dit apparaat worden omgezet, en je profiel mag geen video's omzetten. Vraag het een beheerder, of probeer een ander apparaat.",
+    "thisFileHasToBe_c712e2": "Dit bestand moet voor dit apparaat worden omgezet, en de server zet geen video's om voor kijkers buiten het thuisnetwerk.",
+    "thisFileIsntMatchedTo_6bd4e1": "Dit bestand is nog niet gekoppeld aan een film of aflevering.",
+    "thisFileIsntPasswordProtected_a142f4": "Dit bestand is niet beveiligd met een wachtwoord.",
+    "thisFileWasProtectedBy_af1e07": "Dit bestand is beveiligd door een nieuwere Cinemion. Werk Cinemion bij om het te openen.",
+    "thisIsATestFrom_3c0162": "Dit is een test van {APP_NAME}. Het werkt!",
+    "thisIsntACinemionBackup_55cb33": "Dit is geen Cinemion-back-up, of hij is beschadigd.",
+    "thisIsntATarArchive_28a910": "Dit is geen tar-archief, of het is beschadigd.",
+    "thisIsntAZipFile_f58271": "Dit is geen zipbestand, of het is afgekapt. Controleer of de upload klaar was en of het bestand op je computer opent.",
+    "thisIsntAZipFile_f5b1a3": "Dit is geen zipbestand.",
+    "thisIsTheOnlyAdmin_cebaeb": "Dit is de enige beheerder. Maak eerst iemand anders beheerder.",
+    "thisLinkHasExpiredOpen_91da54": "Deze link is verlopen. Open de foto opnieuw.",
+    "thisProfileCantWatchWhats_1f674b": "Dit profiel mag niet kijken wat er in die sessie speelt.",
+    "thisProfileIsntLinkedTo_158063": "Dit profiel is niet gekoppeld aan Trakt. Koppel het in Instellingen › Je profiel.",
+    "thisProfileIsntLinkedTo_6659a5": "Dit profiel is niet gekoppeld aan Trakt. Koppel het eerst.",
+    "thisProfileIsntLinkedTo_797508": "Dit profiel is niet gekoppeld aan Trakt.",
+    "thisStreamHasExpiredPlay_48c8ab": "Deze stream is verlopen. Speel het nummer opnieuw af.",
+    "thisStreamHasExpiredStart_62c362": "Deze stream is verlopen. Start het afspelen opnieuw.",
+    "thisTitleHasNoVideo_8f175b": "Deze titel heeft geen videobestand. Misschien is het verplaatst of verwijderd.",
+    "thisTitleHasNoVideo_9dbe9e": "Deze titel heeft geen videobestand.",
+    "thisTrackCantBeConverted_cd700b": "Dit nummer kan niet worden omgezet voor deze browser. In het serverlog staan de details.",
+    "tmdbKeptSayingThereWere_89c19d": "TMDB bleef zeggen dat er te veel verzoeken waren. Probeer het over een minuut opnieuw.",
+    "tmdbNeedsAnApiKey_91119a": "TMDB heeft een API-sleutel nodig. Voeg er een toe in Instellingen › Metadata.",
+    "tmdbRejectedTheApiKey_e1ef7d": "TMDB heeft de API-sleutel geweigerd. Controleer hem in Instellingen › Metadata.",
+    "tmdbRejectedTheKeyBuilt_eaed67": "TMDB heeft de sleutel die in Cinemion zit geweigerd. Werk Cinemion bij, of voeg je eigen sleutel toe in Instellingen › Metadata.",
+    "tmdbRequestFailed_5ee636": "TMDB-verzoek mislukt: {status} {statusText}",
+    "tooManyGameLookupsIn_b356cf": "Te veel games opgezocht in korte tijd. Probeer het over een paar minuten opnieuw.",
+    "tooManyWrongAddressesTry_0eb1cd": "Te veel verkeerde adressen. Probeer het over {locked} seconden opnieuw.",
+    "tooManyWrongAttemptsTry_b9220c": "Te veel verkeerde pogingen. Probeer het over {seconds} seconden opnieuw.",
+    "tooManyWrongAttemptsTry_c18c81": "Te veel verkeerde pogingen. Probeer het over {locked} seconden opnieuw.",
+    "traktDidntSendTheHistory_779360": "Trakt stuurde de geschiedenis niet ({value}). Probeer het later opnieuw.",
+    "traktDidntSendTheWatchlist_49a52e": "Trakt stuurde de watchlist niet ({value}).",
+    "traktDidntStartTheSign_89f0f2": "Trakt is niet begonnen met inloggen ({status}). Controleer de client ID van de app in Instellingen › Koppelingen.",
+    "traktIsntSetUpOn_1d8e4b": "Trakt is niet ingesteld op deze server. Een beheerder kan het toevoegen in Instellingen › Koppelingen.",
+    "typeTheFullPathOf_36b9b5": "Typ het volledige pad van de map, zoals {roots}.",
+    "unknownHardwareAccelerationMethod_2d598f": "Onbekende manier van hardwareversnelling.",
+    "unknownImage_0082e9": "Onbekende afbeelding.",
+    "unknownLibraryTypeUseMovies_53a763": "Onbekende soort bibliotheek \"{type}\". Gebruik \"movies\", \"shows\", \"videos\", \"music\", \"audiobooks\", \"books\", \"photos\" of \"clips\".",
+    "unknownMetadataSource_20a402": "Onbekende metadatabron \"{unknown}\".",
+    "unknownProfileColour_246686": "Onbekende profielkleur \"{color}\".",
+    "unknownProfilePicture_fd7cbd": "Onbekende profielfoto.",
+    "unknownRole_943e26": "Onbekende rol \"{role}\".",
+    "unknownSubtitleProvider_a0ece2": "Onbekende ondertitelbron \"{provider}\".",
+    "uploadedFilesTo_ae0883": "{name} heeft {count} bestanden geüpload naar {name2}",
+    "uploadedTo_f7203b": "{name} heeft \"{file}\" geüpload naar {name2}",
+    "useAPasswordOfAt_3ce894": "Gebruik een wachtwoord van minstens 8 tekens.",
+    "useAtMostTags_2da33c": "Gebruik maximaal 20 tags.",
+    "usernameAndPasswordAreRequired_1d1eb1": "Gebruikersnaam en wachtwoord zijn nodig.",
+    "videosWereAddedTo_121219": "{videos} video's zijn toegevoegd aan {place}",
+    "videosWereAddedTo_578606": "{count} video's zijn toegevoegd aan {library}",
+    "videosWereAddedToIn_5f72f7": "{count} video's zijn toegevoegd aan {folder} in {library}",
+    "waitForTheDownloadTo_2b338d": "Wacht eerst tot de download klaar is.",
+    "wasAddedTo_18dfcf": "{title} {episodes} is toegevoegd aan {name}",
+    "wasAddedTo_a24623": "{title} is toegevoegd aan {place}",
+    "wasAddedTo_aa6be5": "{title} is toegevoegd aan {name}",
+    "wasAddedTo_ee8223": "{what} is toegevoegd aan {name}",
+    "youCanOnlyChangeYour_f36d01": "Je kunt alleen je eigen profielfoto wijzigen.",
+    "youCantDeleteTheOnly_b15f13": "Je kunt de enige beheerder niet verwijderen.",
+    "youCantDeleteYourOwn_360497": "Je kunt je eigen account niet verwijderen.",
+    "youDontHavePermissionTo_cb2c16": "Je hebt geen toestemming om dit te doen.",
+    "youNeedToSignIn_7258b2": "Je moet eerst inloggen.",
+    "yourCurrentPasswordIsntRight_3d92d2": "Je huidige wachtwoord klopt niet."
+  }
+}

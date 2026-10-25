@@ -4,8 +4,8 @@ Planned, but not part of the first version. Roughly in the order they're likely 
 
 ## Server & household
 
-- **More translations**: the interface can be translated (see `docs/translating.md`) but only English exists. Next:
-  actual languages, and the server's own messages (errors, the activity feed, task names) as translatable lines too.
+- **More translations**: Danish, German, Spanish, French and Dutch were drafted by Claude and want a native
+  speaker's read; more languages are welcome (see `docs/translating.md`).
 
 ## Library upkeep
 

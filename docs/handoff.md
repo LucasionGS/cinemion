@@ -285,6 +285,7 @@ and on amd64 Intel's non-free VA driver + Quick Sync runtime), `docker/entrypoin
 | 27 | done | Statistics: time per profile and for everyone, top titles, streaks, binges, a year in review (below) |
 | 28 | done | Library upkeep: space used, duplicates, broken files, missing episodes, deleting files (below) |
 | 29 | done | Server messages translatable: collected into `en.json`, matched on the client, push and email in the profile's language (below) |
+| 30 | done | Languages: Danish, German, Spanish, French and Dutch (below) |
 
 Not planned in these rounds: **built-in remote access** (needs a relay service on ionnet.io that doesn't exist yet).
 Photos were asked for on 2026-10-21 and became milestone 20. The owner asked for each milestone to be committed and pushed, and
@@ -998,6 +999,16 @@ Migration `20261107090000-upkeep`: `media_files.problem` and `checkedAt`, `media
   reads the client's locale files (`client/src/i18n/locales`, staged and `--include`d by `scripts/compile.sh`).
 - **Tested** with a made-up bracketed language: API errors, task names, the dashboard's activity lines and its next
   scan all came out in brackets; `test.ts` checks the server's notification words.
+
+### Milestone 30: Languages
+- `da`, `de`, `es`, `fr` and `nl` in `client/src/i18n/locales/`, listed in `LANGUAGES` with their names in
+  themselves. Drafted by five Claude agents in parallel, one per language, group by group with a merge script, then
+  checked with `deno task i18n` (100%, no problems). They use the informal "you" and keep product names, commands
+  and API values in English. Episode codes follow the language (Danish and Dutch "S1 A2", German "S1 F2", Spanish
+  "T1 E2"). None has been read by a native speaker yet.
+- The agents found server messages built from English pieces ("was"/"were", "movies", "is already", ", away from
+  home"); those were rewritten as whole sentences (one per case) in the server, and the collector now also takes both
+  sides of `cond ? "…" : "…"`. Write new server messages the same way: never glue English words into a message.
 
 ## 6. Design decisions
 

@@ -1,0 +1,3711 @@
+{
+  "common": {
+    "cancel": "Annuller",
+    "save": "Gem",
+    "close": "Luk",
+    "remove": "Fjern",
+    "delete": "Slet",
+    "edit": "Rediger",
+    "back": "Tilbage",
+    "next": "Næste",
+    "copy": "Kopiér",
+    "search": "Søg",
+    "play": "Afspil",
+    "resume": "Fortsæt",
+    "download": "Download",
+    "upload": "Upload",
+    "open": "Åbn",
+    "select": "Vælg",
+    "tryAgain": "Prøv igen",
+    "loading": "Indlæser…",
+    "more": "Mere",
+    "off": "Fra",
+    "none": "Ingen",
+    "automatic": "Automatisk",
+    "unknown": "Ukendt",
+    "couldntSave": "Kunne ikke gemme",
+    "saved": "Gemt",
+    "listSeparator": ", ",
+    "dotSeparator": " · "
+  },
+  "format": {
+    "bytes": {
+      "kb": "{value} kB",
+      "mb": "{value} MB",
+      "gb": "{value} GB",
+      "tb": "{value} TB"
+    },
+    "bitrate": {
+      "kbps": "{value} kbit/s",
+      "mbps": "{value} Mbit/s"
+    },
+    "ago": {
+      "justNow": "lige nu",
+      "minutes": "for {count} min. siden",
+      "hours": {
+        "one": "for {count} time siden",
+        "other": "for {count} timer siden"
+      },
+      "days": {
+        "one": "for {count} dag siden",
+        "other": "for {count} dage siden"
+      }
+    },
+    "until": {
+      "soon": "snart",
+      "minutes": "om {count} min.",
+      "hours": {
+        "one": "om {count} time",
+        "other": "om {count} timer"
+      }
+    },
+    "span": {
+      "underAMinute": "under et minut",
+      "minutes": {
+        "one": "{count} minut",
+        "other": "{count} minutter"
+      },
+      "hours": {
+        "one": "{count} time",
+        "other": "{count} timer"
+      },
+      "days": {
+        "one": "{count} dag",
+        "other": "{count} dage"
+      }
+    },
+    "dateRange": "{from} – {to}",
+    "dateTime": "{date} kl. {time}"
+  },
+  "app": {
+    "boot": {
+      "loading": "Indlæser Cinemion",
+      "unreachable": "Kan ikke få forbindelse til Cinemion-serveren."
+    },
+    "toasts": {
+      "region": "Notifikationer",
+      "dismiss": "Luk"
+    },
+    "errors": {
+      "loadList": "Kunne ikke indlæse listen"
+    }
+  },
+  "api": {
+    "unreachable": "Kan ikke få forbindelse til Cinemion-serveren. Tjek, at den kører, og at du er på samme netværk."
+  },
+  "setup": {
+    "steps": {
+      "navigation": "Opsætningstrin",
+      "account": {
+        "label": "Din konto",
+        "sub": "Administrator og servernavn"
+      },
+      "libraries": {
+        "label": "Biblioteker",
+        "sub": "Hvor dine medier ligger"
+      },
+      "metadata": {
+        "label": "Metadata",
+        "sub": "Plakater, handling og medvirkende"
+      },
+      "done": {
+        "label": "Færdig",
+        "sub": "Begynd at bruge Cinemion"
+      }
+    },
+    "note": "Alt her kan ændres senere under Indstillinger.",
+    "progress": "Trin {step} af {total}",
+    "account": {
+      "title": "Velkommen til Cinemion",
+      "intro": "Lad os gøre din server klar. Først skal du oprette administratorkontoen. Den bruger du til at styre biblioteker og tilføje resten af husstanden.",
+      "serverName": "Servernavn",
+      "serverNameDescription": "Vises på enheder, når de forbinder til serveren.",
+      "name": "Dit navn",
+      "username": "Brugernavn",
+      "usernameDescription": "Bruges til at logge ind med adgangskode.",
+      "password": "Adgangskode",
+      "confirmPassword": "Bekræft adgangskode",
+      "pin": "Profil-PIN <optional>(valgfri)</optional>",
+      "pinPlaceholder": "4 cifre",
+      "pinDescription": "Bruges på fælles skærme som tv'et i stedet for din adgangskode.",
+      "errors": {
+        "name": "Skriv dit navn.",
+        "username": "Brug 2 til 32 små bogstaver, tal, punktummer, bindestreger eller understreger.",
+        "password": "Brug mindst 6 tegn.",
+        "confirm": "Adgangskoderne er ikke ens.",
+        "pin": "PIN-koden skal være præcis 4 cifre.",
+        "serverName": "Giv din server et navn."
+      }
+    },
+    "libraries": {
+      "title": "Tilføj dine biblioteker",
+      "intro": "Vis Cinemion de mapper, der rummer dine film og serier, andre videoer (som hjemmevideoer), spilklip, din musik og dine bøger. Et bibliotek kan bruge flere mapper.",
+      "remove": "Fjern {name}",
+      "type": "Bibliotekstype",
+      "types": {
+        "movies": "Film",
+        "shows": "Serier",
+        "videos": "Videoer",
+        "music": "Musik",
+        "photos": "Billeder",
+        "clips": "Klip",
+        "audiobooks": "Lydbøger",
+        "books": "Bøger"
+      },
+      "name": "Navn",
+      "noFolders": "Åbn en mappe, og vælg \"Brug denne mappe\".",
+      "removeFolder": "Fjern {path}",
+      "add": "Tilføj bibliotek"
+    },
+    "metadata": {
+      "title": "Plakater, handling og medvirkende",
+      "intro": "Cinemion slår detaljer op for alt, den finder. Kilder højere oppe på listen vinder, når de er uenige."
+    },
+    "done": {
+      "title": "Så er du klar",
+      "intro": "Cinemion er klar. Dine biblioteker er gemt, og resten af husstanden kan få deres egne profiler under Indstillinger.",
+      "noLibraries": "Ingen biblioteker endnu. Du kan tilføje dem senere under Indstillinger › Biblioteker."
+    },
+    "actions": {
+      "finish": "Afslut opsætning",
+      "goToCinemion": "Gå til Cinemion",
+      "skip": "Spring over for nu",
+      "continue": "Fortsæt"
+    },
+    "failed": "Opsætningen blev ikke færdig",
+    "restore": {
+      "hintTitle": "Flytter du eller geninstallerer?",
+      "hint": "Hent en Cinemion tilbage fra en sikkerhedskopi i stedet for at starte forfra.",
+      "open": "Gendan en sikkerhedskopi",
+      "title": "Gendan en sikkerhedskopi",
+      "intro": "Alt kommer tilbage, som det var: profiler, hvad alle har set, biblioteker, indstillinger og billeder. Du logger ind som før.",
+      "foundLabel": "Sikkerhedskopier fundet på denne server",
+      "found": "Fundet i {folder}:",
+      "protected": "Beskyttet",
+      "chooseFile": "Upload en sikkerhedskopi",
+      "otherFile": "Vælg en anden fil",
+      "password": "Adgangskode til sikkerhedskopi",
+      "passwordDescription": "Den adgangskode, sikkerhedskopien blev beskyttet med under Indstillinger › Sikkerhedskopier.",
+      "sending": "Sender sikkerhedskopien… {percent}",
+      "failed": "Gendannelsen blev ikke færdig: {error}",
+      "warning": "Hvis dine medier ligger i andre mapper på denne server, så ret bibliotekernes mapper under Indstillinger › Biblioteker bagefter.",
+      "instead": "Start forfra",
+      "start": "Gendan",
+      "doneTitle": "Velkommen tilbage",
+      "doneText": "{name} er tilbage, som den var den {date}. Log ind, som du plejer.",
+      "doneTextShort": "Sikkerhedskopien er gendannet. Log ind, som du plejer."
+    }
+  },
+  "profiles": {
+    "loading": "Indlæser profiler",
+    "title": "Hvem ser med?",
+    "pinProtected": "Beskyttet med PIN",
+    "passwordProtected": "Beskyttet med adgangskode",
+    "admin": "Administrator",
+    "upTo": "Op til {rating}",
+    "add": "Tilføj profil",
+    "usePassword": "Log ind med adgangskode i stedet",
+    "pin": {
+      "title": "Indtast PIN for {name}",
+      "keyboardHint": "Du kan også skrive den på dit tastatur."
+    },
+    "password": {
+      "title": "Indtast adgangskode for {name}",
+      "intro": "Administratorprofiler uden PIN skal bruge deres adgangskode.",
+      "label": "Adgangskode",
+      "signIn": "Log ind"
+    },
+    "backToProfiles": "Tilbage til profiler",
+    "openFailed": "Kunne ikke åbne profilen",
+    "loadFailed": "Kunne ikke indlæse profiler"
+  },
+  "signIn": {
+    "title": "Log ind",
+    "username": "Brugernavn",
+    "password": "Adgangskode",
+    "submit": "Log ind",
+    "backToProfiles": "Tilbage til profiler"
+  },
+  "topbar": {
+    "home": "Hjem",
+    "mainNavigation": "Hovedmenu",
+    "profile": "Profil: {name}",
+    "profileWithUpdate": "Profil: {name}. En ny Cinemion er ude",
+    "admin": "Administrator",
+    "profileRole": "Profil",
+    "menu": {
+      "settings": "Profil og indstillinger",
+      "dashboard": "Serveroversigt",
+      "together": "Se sammen",
+      "downloads": "Downloads",
+      "switchProfile": "Skift profil",
+      "signOut": "Log ud",
+      "myList": "Min liste",
+      "stats": "Din statistik"
+    },
+    "search": {
+      "default": "Søg i film og serier",
+      "videos": "Søg i film, serier og videoer",
+      "music": "Søg i film, serier og musik",
+      "books": "Søg i film, serier og bøger",
+      "albums": "Søg i film, serier og albums",
+      "games": "Søg i film, serier og spil",
+      "everything": "Søg i dine biblioteker"
+    }
+  },
+  "home": {
+    "greeting": {
+      "night": "Godnat, {name}",
+      "morning": "Godmorgen, {name}",
+      "afternoon": "God eftermiddag, {name}",
+      "evening": "Godaften, {name}"
+    },
+    "spotlight": {
+      "upNext": "Næste",
+      "seasons": {
+        "one": "{count} sæson",
+        "other": "{count} sæsoner"
+      },
+      "details": "Detaljer"
+    },
+    "rows": {
+      "continueWatching": "Se videre",
+      "nextUp": "Næste afsnit",
+      "newIn": "Nyt i {library}",
+      "recentlyAddedIn": "Senest tilføjet i {library}",
+      "continueBooks": "Læs videre i din bog",
+      "becauseYouWatched": "Fordi du så {title}",
+      "myList": "Min liste"
+    },
+    "empty": {
+      "addFolder": "Tilføj en mappe med film eller serier for at komme i gang.",
+      "askAdmin": "Bed den, der står for serveren, om at tilføje et bibliotek.",
+      "addLibrary": "Tilføj et bibliotek",
+      "scanning": "Cinemion gennemgår dine biblioteker. Titler dukker op her, efterhånden som de bliver fundet.",
+      "nothingToWatch": "Der er ikke noget her endnu, som denne profil kan se."
+    },
+    "loadFailed": "Kunne ikke indlæse forsiden"
+  },
+  "library": {
+    "notFound": {
+      "title": "Biblioteket blev ikke fundet",
+      "description": "Det er måske blevet fjernet, eller din profil har ikke adgang til det."
+    },
+    "count": {
+      "videos": {
+        "one": "{count} video",
+        "other": "{count} videoer"
+      },
+      "shows": {
+        "one": "{count} serie",
+        "other": "{count} serier"
+      },
+      "movies": {
+        "one": "{count} film",
+        "other": "{count} film"
+      }
+    },
+    "scanning": "Gennemgår…",
+    "filters": {
+      "show": "Vis",
+      "all": "Alle",
+      "unwatched": "Ikke set",
+      "collections": "Samlinger",
+      "tag": "Mærke",
+      "genre": "Genre",
+      "allTags": "Alle mærker",
+      "allGenres": "Alle genrer",
+      "sortBy": "Sortér efter"
+    },
+    "sort": {
+      "title": "Titel",
+      "added": "Senest tilføjet",
+      "year": "Udgivelsesår",
+      "rating": "Bedømmelse",
+      "date": "Dato"
+    },
+    "noMatches": {
+      "title": "Ingen resultater",
+      "unwatched": "Du har set alt her.",
+      "unwatchedWithTag": "Du har set alt her med dette mærke.",
+      "unwatchedInGenre": "Du har set alt her i denne genre.",
+      "tag": "Intet med dette mærke.",
+      "genre": "Intet i denne genre."
+    },
+    "empty": {
+      "title": "Her er intet endnu",
+      "scanning": "Cinemion gennemgår dette bibliotek lige nu. Titler dukker op, efterhånden som de bliver fundet.",
+      "movies": "Film fra {paths} dukker op her efter en gennemgang.",
+      "shows": "Serier fra {paths} dukker op her efter en gennemgang.",
+      "videos": "Videoer fra {paths} dukker op her efter en gennemgang.",
+      "music": "Musik fra {paths} dukker op her efter en gennemgang.",
+      "audiobooks": "Lydbøger fra {paths} dukker op her efter en gennemgang.",
+      "books": "Bøger fra {paths} dukker op her efter en gennemgang.",
+      "photos": "Billeder fra {paths} dukker op her efter en gennemgang.",
+      "clips": "Klip fra {paths} dukker op her efter en gennemgang."
+    },
+    "unmatched": "Ikke genkendt",
+    "menu": {
+      "moreFor": "Mere for {title}",
+      "fixMatch": "Ret match",
+      "refresh": "Opdater detaljer"
+    },
+    "refreshing": "Opdaterer {title}…",
+    "upToDate": "{title} er opdateret",
+    "refreshFailed": "Kunne ikke opdatere",
+    "loadFailed": "Kunne ikke indlæse biblioteket"
+  },
+  "search": {
+    "placeholder": "Film, serier, videoer, personer og musik",
+    "clear": "Ryd",
+    "nothingFound": "Intet fundet for \"{query}\".",
+    "titles": "Film og serier",
+    "collections": "Samlinger",
+    "episodes": "Afsnit",
+    "videos": "Videoer",
+    "games": "Spil",
+    "clips": {
+      "one": "{count} klip",
+      "other": "{count} klip"
+    },
+    "photoAlbums": "Fotoalbums",
+    "artists": "Kunstnere",
+    "albums": "Albums",
+    "songs": "Sange",
+    "books": "Bøger",
+    "people": "Personer"
+  },
+  "item": {
+    "missing": {
+      "title": "Denne titel er ikke tilgængelig",
+      "goHome": "Gå til forsiden",
+      "season": "Sæson {number}",
+      "show": {
+        "one": "Vis {count} manglende afsnit",
+        "other": "Vis {count} manglende afsnit"
+      },
+      "hide": {
+        "one": "Skjul {count} manglende afsnit",
+        "other": "Skjul {count} manglende afsnit"
+      },
+      "notHere": "Mangler",
+      "label": "Afsnit {number}, {title}, ikke i dit bibliotek",
+      "untitled": "Afsnit {number}",
+      "aired": "Vist {date}"
+    },
+    "meta": {
+      "seasons": {
+        "one": "{count} sæson",
+        "other": "{count} sæsoner"
+      },
+      "imdbRating": "IMDb-bedømmelse",
+      "votes": {
+        "one": "{count} stemme",
+        "other": "{count} stemmer"
+      },
+      "scoreDetail": "{name}, {detail}"
+    },
+    "collection": {
+      "partOf": "Del af",
+      "movies": {
+        "one": "{count} film",
+        "other": "{count} film"
+      }
+    },
+    "moreLikeThis": "Mere i samme stil",
+    "details": {
+      "director": "Instruktør",
+      "directors": "Instruktører",
+      "writer": "Manuskript",
+      "writers": "Manuskript",
+      "network": "Kanal",
+      "studio": "Studie",
+      "version": "Version",
+      "audio": "Lyd",
+      "subtitles": "Undertekster",
+      "forced": "Tvungne",
+      "picture": "Billede",
+      "mono": "Mono",
+      "stereo": "Stereo"
+    },
+    "cast": {
+      "title": "Medvirkende og hold",
+      "producer": "Producer",
+      "composer": "Komponist",
+      "author": "Forfatter",
+      "narrator": "Oplæser"
+    },
+    "next": {
+      "continueEpisode": "Fortsæt med {episode} · {title}",
+      "upNextEpisode": "Næste: {episode} · {title}",
+      "continue": "Fortsæt med {title}",
+      "upNext": "Næste: {title}"
+    },
+    "seasons": "Sæsoner",
+    "episode": {
+      "moreFrom": "Mere fra {season}",
+      "moreFromThisSeason": "Mere fra denne sæson"
+    },
+    "folders": "Mapper",
+    "video": {
+      "moreIn": "Mere i {name}",
+      "moreInThisFolder": "Mere i denne mappe"
+    },
+    "folder": {
+      "folders": {
+        "one": "{count} mappe",
+        "other": "{count} mapper"
+      },
+      "videos": {
+        "one": "{count} video",
+        "other": "{count} videoer"
+      },
+      "newestFrom": "Nyeste fra {date}",
+      "inThisFolder": "I denne mappe",
+      "sortBy": "Sortér efter",
+      "sortTitle": "Titel",
+      "sortDate": "Dato",
+      "sortAdded": "Senest tilføjet",
+      "empty": "Der er intet her, som denne profil kan se."
+    },
+    "deleteSeason": "Slet {season} fra disken…"
+  },
+  "itemActions": {
+    "play": "Afspil",
+    "resume": "Fortsæt",
+    "playEpisode": "Afspil S{season} A{episode}",
+    "resumeEpisode": "Fortsæt S{season} A{episode}",
+    "fromStart": "Fra start",
+    "markUnwatched": "Markér som ikke set",
+    "markWatched": "Markér som set",
+    "moreOptions": "Flere muligheder",
+    "fixMatch": "Ret match",
+    "editDetails": "Rediger detaljer",
+    "refresh": "Opdater detaljer",
+    "updateFailed": "Kunne ikke opdatere",
+    "refreshing": "Opdaterer {title}…",
+    "upToDate": "{title} er opdateret",
+    "refreshFailed": "Kunne ikke opdatere",
+    "addToList": "Føj til Min liste",
+    "removeFromList": "Fjern fra Min liste",
+    "addedToList": "{title} er på din liste",
+    "removedFromList": "{title} er fjernet fra din liste",
+    "delete": "Slet fra disken…"
+  },
+  "editDetails": {
+    "videoTitle": "Rediger videodetaljer",
+    "folderTitle": "Rediger mappedetaljer",
+    "description": "Dine ændringer bliver ved, også når biblioteket gennemgås eller opdateres.",
+    "thumbnail": {
+      "title": "Miniature",
+      "moment": "Øjeblik i videoen",
+      "time": "{time} af {duration}",
+      "useFrame": "Brug dette billede",
+      "byHand": "Valgt i hånden.",
+      "fromVideo": "Valgt automatisk fra videoen.",
+      "fromFolder": "Et billede i mappen eller fra dens nyeste video.",
+      "upload": "Upload billede",
+      "pickFrame": "Vælg et billede",
+      "automatic": "Automatisk",
+      "changed": "Miniaturen er ændret",
+      "reset": "Tilbage til den automatiske miniature",
+      "failed": "Kunne ikke ændre miniaturen"
+    },
+    "titleLabel": "Titel",
+    "date": "Dato",
+    "dateDescription": "Hvornår den blev optaget.",
+    "descriptionLabel": "Beskrivelse",
+    "tags": "Mærker",
+    "tagsPlaceholder": "Familie, Ferie",
+    "tagsDescription": "Adskil dem med kommaer. Biblioteket kan filtreres efter mærke.",
+    "rating": "Aldersgrænse",
+    "ratingDefault": "Bibliotekets standard ({rating})",
+    "ratingDefaultUnrated": "Bibliotekets standard (ingen grænse)",
+    "ratingDescription": "Profiler med en aldersgrænse ser kun videoer inden for den.",
+    "saved": "Detaljer gemt"
+  },
+  "fixMatch": {
+    "title": "Ret match",
+    "description": "Vælg, hvad \"{title}\" egentlig er.",
+    "titleLabel": "Titel",
+    "year": "År",
+    "noResults": "Ingen resultater. Prøv en anden titel, eller tjek, at der er sat en TMDB- eller TheTVDB-nøgle under Indstillinger › Metadata.",
+    "resultWithYear": "{title} ({year})",
+    "useThis": "Brug denne",
+    "matched": "Matchet med {title}",
+    "applyFailed": "Kunne ikke bruge matchet"
+  },
+  "cards": {
+    "row": {
+      "seeAll": "Se alle",
+      "scrollLeft": "Rul til venstre",
+      "scrollRight": "Rul til højre"
+    },
+    "poster": {
+      "movies": {
+        "one": "{count} film",
+        "other": "{count} film"
+      },
+      "seasons": {
+        "one": "{count} sæson",
+        "other": "{count} sæsoner"
+      },
+      "withYear": "{title} ({year})",
+      "watched": "Set",
+      "unwatched": "{count} ikke set"
+    },
+    "wide": {
+      "upNext": "Næste",
+      "episodeTitle": "{number}. {title}",
+      "videos": {
+        "one": "{count} video",
+        "other": "{count} videoer"
+      },
+      "episodeNumber": "A{number}",
+      "watched": "Set"
+    }
+  },
+  "person": {
+    "titles": {
+      "one": "{count} titel i dine biblioteker",
+      "other": "{count} titler i dine biblioteker"
+    },
+    "roles": {
+      "director": "Instruktør",
+      "writer": "Manuskript",
+      "producer": "Producer",
+      "composer": "Musik",
+      "author": "Forfatter",
+      "narrator": "Oplæser"
+    }
+  },
+  "collection": {
+    "movies": {
+      "one": "{count} film",
+      "other": "{count} film"
+    },
+    "watched": "{count} set"
+  },
+  "player": {
+    "loading": "Indlæser",
+    "joining": "Deltager i sessionen",
+    "onlyPlayable": "Kun film, afsnit og videoer kan afspilles.",
+    "cantPlayTitle": "Denne titel kan ikke afspilles",
+    "episodeSubtitle": "{episode} · {title}",
+    "error": {
+      "title": "Videoen kan ikke afspilles lige nu",
+      "keepsStopping": "Afspilningen bliver ved med at stoppe. Serverloggen kan måske sige hvorfor.",
+      "unsupported": "Denne enhed kan ikke afspille videoen.",
+      "stoppedLoading": "Videoen holdt op med at indlæse. Tjek din forbindelse, og prøv igen."
+    },
+    "controls": {
+      "back10": "10 sekunder tilbage",
+      "forward10": "10 sekunder frem",
+      "pause": "Pause",
+      "playKey": "Afspil (Space)",
+      "pauseKey": "Pause (Space)",
+      "back10Key": "10 sekunder tilbage (←)",
+      "forward10Key": "10 sekunder frem (→)",
+      "nextEpisode": "Næste afsnit",
+      "muteKey": "Slå lyd fra (M)",
+      "unmuteKey": "Slå lyd til (M)",
+      "volume": "Lydstyrke",
+      "pictureInPicture": "Billede i billede",
+      "fullScreenKey": "Fuld skærm (F)",
+      "exitFullScreenKey": "Afslut fuld skærm (F)",
+      "fullScreen": "Fuld skærm",
+      "exitFullScreen": "Afslut fuld skærm",
+      "subtitlesAndAudio": "Undertekster og lyd",
+      "panelToggle": "Undertekster, lyd og kvalitet (C)"
+    },
+    "scrubber": {
+      "label": "Spol",
+      "value": "{position} af {duration}"
+    },
+    "hints": {
+      "seek": "Spol",
+      "jumpHere": "Hop hertil",
+      "backKey": "Tilbage"
+    },
+    "badge": {
+      "direct": "Direkte",
+      "audioConverted": "Lyd konverteret",
+      "auto": "Auto",
+      "converted": "Konverteret"
+    },
+    "skipIntro": "Spring intro over",
+    "skippedIntro": "Sprang introen over",
+    "nextUp": {
+      "label": "Næste",
+      "episode": "Næste · {episode}",
+      "countdown": {
+        "one": "Starter om {count} s",
+        "other": "Starter om {count} s"
+      },
+      "playNow": "Afspil nu",
+      "hide": "Skjul"
+    },
+    "panel": {
+      "label": "Afspilningsindstillinger",
+      "tabsLabel": "Indstillinger",
+      "tabs": {
+        "subtitles": "Undertekster",
+        "audio": "Lyd",
+        "quality": "Kvalitet"
+      },
+      "noSubtitles": "Ingen undertekster",
+      "original": "Original",
+      "originalDetail": "Som filen er",
+      "automatic": "Automatisk",
+      "automaticNow": "Nu {height}p · skifter med din forbindelse",
+      "automaticDetail": "Skifter med din forbindelse · konverteret",
+      "presetDetail": "Op til {mbps} Mbit/s · konverteret",
+      "version": "Version {number}",
+      "versionHeight": "Version {number} · {height}p",
+      "noAudio": "Filen har ingen andre lydspor.",
+      "sectionQuality": "Kvalitet",
+      "sectionVersion": "Version",
+      "searchOnline": "Søg online",
+      "audio": "{codec} {channels}",
+      "audioConverted": "{from} → {to} {channels}",
+      "bitrate": "{mbps} Mbit/s",
+      "channels": {
+        "mono": "mono",
+        "stereo": "stereo",
+        "count": "{count} kanaler"
+      },
+      "mode": {
+        "direct": "Direkte afspilning",
+        "remux": "Ompakket",
+        "audio": "Konverterer lyd",
+        "gpu": "Konverterer på grafikkortet",
+        "converting": "Konverterer"
+      }
+    },
+    "subtitles": {
+      "fallbackLabel": "Undertekster",
+      "downloaded": "Downloadet · Tekst",
+      "downloadedSdh": "Downloadet · SDH · Tekst"
+    },
+    "subtitleSearch": {
+      "title": "Find undertekster",
+      "episode": "{show} · {episode}",
+      "movieYear": "{title} ({year})",
+      "language": "Sprog",
+      "hearingImpaired": "Kun undertekster for hørehæmmede",
+      "searching": "Søger",
+      "nothingFound": "Intet fundet på {language}. Prøv en anden titel eller et andet sprog.",
+      "matchesFile": "Passer til din fil",
+      "sdh": "SDH",
+      "downloads": {
+        "one": "{count} download",
+        "other": "{count} downloads"
+      },
+      "rating": "★ {rating}",
+      "inUse": "I brug",
+      "use": "Brug",
+      "footer": "Resultater fra de undertekstsider, der er sat op under Indstillinger › Undertekster. Downloads gemmes sammen med videoen, så de er der næste gang.",
+      "added": "Undertekster tilføjet",
+      "addedDescription": "De er også gemt til næste gang.",
+      "downloadFailed": "Kunne ikke downloade underteksterne"
+    },
+    "duration": {
+      "minutes": {
+        "one": "{count} min.",
+        "other": "{count} min."
+      },
+      "hoursMinutes": "{hours} t {minutes} min.",
+      "left": "{duration} tilbage"
+    },
+    "episode": {
+      "specials": "Ekstra",
+      "season": "Sæson {number}",
+      "special": "Ekstra {number}",
+      "short": "S{season} A{episode}"
+    }
+  },
+  "together": {
+    "ended": "Se sammen er slut",
+    "onlyHost": {
+      "title": "Kun værten kan sætte på pause og spole",
+      "description": "Bed værten om at slå \"Alle kan sætte på pause og spole\" til."
+    },
+    "hostPicksNext": {
+      "title": "Værten vælger, hvad der kommer nu",
+      "description": "Alle går videre, når deres afsnit slutter."
+    },
+    "button": {
+      "watchTogether": "Se sammen",
+      "watching": {
+        "one": "{count} ser med",
+        "other": "{count} ser med"
+      },
+      "unread": {
+        "one": "{count} ny besked",
+        "other": "{count} nye beskeder"
+      }
+    },
+    "panel": {
+      "title": "Se sammen",
+      "intro": "Afspil, pause og spoling følges ad for alle.",
+      "pitch": "Start en session, og del koden eller linket. Alle ser på deres egen skærm, fra denne server, i takt med dig.",
+      "connecting": "Forbinder…",
+      "start": "Start en session",
+      "startFailed": "Kunne ikke starte sessionen",
+      "linkCopied": "Invitationslink kopieret",
+      "shareLink": "Del dette link",
+      "tabs": {
+        "chat": "Chat",
+        "people": "Personer · {count}",
+        "unread": {
+          "one": "{count} ny",
+          "other": "{count} nye"
+        }
+      },
+      "invite": "Invitér",
+      "code": "Kode {code}",
+      "copyLink": "Kopiér link",
+      "people": "Personer",
+      "you": "{name} (dig)",
+      "host": "Vært",
+      "hostOnDevice": "Vært · {device}",
+      "status": {
+        "loading": "Indlæser",
+        "buffering": "Henter",
+        "ready": "I takt",
+        "catchingUp": "Indhenter"
+      },
+      "anyoneControls": "Alle kan sætte på pause og spole",
+      "onlyHostNote": "Kun værten kan sætte på pause og spole.",
+      "leave": "Forlad",
+      "endForEveryone": "Afslut for alle"
+    },
+    "chat": {
+      "messages": "Beskeder",
+      "empty": "Sig hej. Beskeder og reaktioner vises for alle i sessionen.",
+      "at": "kl. {time}",
+      "reactions": "Reaktioner",
+      "placeholder": "Skriv en besked",
+      "message": "Besked",
+      "send": "Send"
+    },
+    "notice": {
+      "joined": "{name} kom med",
+      "left": "{name} gik",
+      "played": "{name} trykkede afspil",
+      "paused": "{name} satte på pause ved {time}",
+      "jumped": "{name} hoppede til {time}",
+      "chat": "{name}: {text}"
+    },
+    "errors": {
+      "couldntJoin": "Kunne ikke deltage i sessionen.",
+      "lostConnection": "Mistede forbindelsen til sessionen."
+    },
+    "device": {
+      "tv": "Tv",
+      "browser": "Browser",
+      "onPhone": "{browser} på en telefon",
+      "onComputer": "{browser} på en computer"
+    },
+    "page": {
+      "title": "Deltag i en session",
+      "intro": "Skriv koden, der vises på værtens skærm, eller åbn værtens invitationslink.",
+      "codeLabel": "Sessionskode",
+      "lookingUp": "Finder sessionen",
+      "invited": "{name} har inviteret dig til at se med",
+      "episode": "{episode} · {title}",
+      "playingAt": {
+        "one": "Spiller ved {time} · {count} ser med",
+        "other": "Spiller ved {time} · {count} ser med"
+      },
+      "pausedAt": {
+        "one": "På pause ved {time} · {count} ser med",
+        "other": "På pause ved {time} · {count} ser med"
+      },
+      "join": "Deltag og se med",
+      "note": "Dine egne fremskridt ændres ikke, når du ser med. Du deltager som {name} (<link>skift profil</link>)."
+    }
+  },
+  "music": {
+    "trackCount": {
+      "one": "{count} nummer",
+      "other": "{count} numre"
+    },
+    "albumCount": {
+      "one": "{count} album",
+      "other": "{count} albums"
+    },
+    "actions": {
+      "shuffle": "Bland",
+      "addToQueue": "Føj til kø",
+      "addToPlaylist": "Føj til playliste"
+    },
+    "library": {
+      "scanning": "Gennemgår…",
+      "show": "Vis",
+      "tabs": {
+        "albums": "Albums",
+        "artists": "Kunstnere",
+        "songs": "Sange",
+        "playlists": "Playlister"
+      },
+      "shuffleAll": "Bland alle",
+      "shuffleFailed": "Kunne ikke blande",
+      "emptyTitle": "Her er intet endnu",
+      "scanningText": "Cinemion gennemgår dette bibliotek lige nu. Albums dukker op, efterhånden som de bliver fundet.",
+      "emptyText": "Musik fra {paths} dukker op her efter en gennemgang. Mærkerne læses fra filerne; uden dem virker mapper som Kunstner/Album/01 Titel.mp3 også.",
+      "playedLately": "Spillet for nylig",
+      "allAlbums": "Alle albums",
+      "genre": "Genre",
+      "allGenres": "Alle genrer",
+      "sortBy": "Sortér efter",
+      "sorts": {
+        "title": "Titel",
+        "artist": "Kunstner",
+        "added": "Senest tilføjet",
+        "year": "Udgivelsesår"
+      },
+      "songCount": {
+        "one": "{count} sang",
+        "other": "{count} sange"
+      },
+      "songs": "Sange",
+      "yourPlaylists": "Dine playlister",
+      "newPlaylist": "Ny playliste",
+      "newPlaylistName": "Playliste {number}",
+      "makeFailed": "Kunne ikke lave playlisten",
+      "noPlaylists": "Ingen playlister endnu. Lav en her, eller vælg \"Føj til playliste\" i et nummers menu."
+    },
+    "card": {
+      "play": "Afspil {title}",
+      "playAlbumFailed": "Kunne ikke afspille albummet"
+    },
+    "album": {
+      "notFound": "Albummet blev ikke fundet",
+      "eyebrow": "Album",
+      "tracksOf": "Numre på {title}",
+      "moreBy": "Mere af {artist}"
+    },
+    "artist": {
+      "notFound": "Kunstneren blev ikke fundet",
+      "eyebrow": "Kunstner",
+      "appearsOnMore": {
+        "one": "på {count} mere",
+        "other": "på {count} mere"
+      },
+      "playFailed": "Kunne ikke afspille kunstneren",
+      "mostPlayedTitle": "Dem spiller du mest",
+      "mostPlayed": "Mest spillet",
+      "albums": "Albums",
+      "appearsOn": "Medvirker på"
+    },
+    "playlist": {
+      "notFound": "Playlisten blev ikke fundet",
+      "eyebrow": "Playliste",
+      "name": "Playlistens navn",
+      "saveName": "Gem navn",
+      "rename": "Omdøb",
+      "delete": "Slet playliste",
+      "emptyTitle": "Her er intet endnu",
+      "emptyText": "Tilføj numre fra deres menu med \"Føj til playliste\", eller gem det, der spiller, fra køen.",
+      "tracksOf": "Numre på {name}",
+      "moveUp": "Flyt op",
+      "moveDown": "Flyt ned",
+      "removeFromPlaylist": "Fjern fra playliste",
+      "confirmTitle": "Slet {name}?",
+      "confirmDescription": "Playlisten forsvinder for altid. Numrene i den bliver i dit bibliotek.",
+      "deleted": "{name} er slettet",
+      "changeFailed": "Kunne ikke ændre playlisten",
+      "renameFailed": "Kunne ikke omdøbe playlisten",
+      "deleteFailed": "Kunne ikke slette playlisten"
+    },
+    "trackList": {
+      "label": "Numre",
+      "disc": "Disk {number}",
+      "play": "Afspil {title}",
+      "pause": "Sæt {title} på pause",
+      "more": "Mere for {title}",
+      "playNext": "Afspil som næste",
+      "addToQueue": "Føj til kø",
+      "addToPlaylist": "Føj til playliste…",
+      "goToAlbum": "Gå til album",
+      "goToArtist": "Gå til kunstner"
+    },
+    "addToPlaylist": {
+      "title": "Føj til playliste",
+      "description": {
+        "one": "Føj {count} nummer til en af dine playlister, eller start en ny.",
+        "other": "Føj {count} numre til en af dine playlister, eller start en ny."
+      },
+      "newPlaylist": "Ny playliste",
+      "namePlaceholder": "Navn",
+      "create": "Opret",
+      "added": {
+        "one": "Føjede {count} nummer til {name}",
+        "other": "Føjede {count} numre til {name}"
+      },
+      "addFailed": "Kunne ikke føje til playlisten",
+      "made": {
+        "one": "Lavede {name} med {count} nummer",
+        "other": "Lavede {name} med {count} numre"
+      },
+      "makeFailed": "Kunne ikke lave playlisten"
+    },
+    "player": {
+      "region": "Musikafspiller",
+      "cantPlay": "Dette nummer kan ikke afspilles lige nu.",
+      "previous": "Forrige",
+      "next": "Næste",
+      "back30": "30 sekunder tilbage",
+      "forward30": "30 sekunder frem",
+      "pause": "Pause",
+      "stopAndClose": "Stop og luk",
+      "position": "Position",
+      "positionValue": "{position} af {duration}",
+      "mute": "Slå lyd fra",
+      "unmute": "Slå lyd til",
+      "volume": "Lydstyrke"
+    },
+    "miniPlayer": {
+      "open": "Spiller nu: {title}, {artist}. Åbn afspilleren.",
+      "time": "{position} / {duration}",
+      "chapters": "Kapitler",
+      "lyrics": "Sangtekst",
+      "queue": "Kø"
+    },
+    "nowPlaying": {
+      "title": "Spiller nu",
+      "speed": "Hastighed {speed}×. Skift hastighed",
+      "speedValue": "{speed}×",
+      "previousChapter": "Forrige kapitel",
+      "nextChapter": "Næste kapitel",
+      "shuffle": "Bland",
+      "shuffleOn": "Bland er slået til",
+      "repeat": "Gentag",
+      "repeatAll": "Gentager køen",
+      "repeatOne": "Gentager dette nummer",
+      "sleep": {
+        "label": "Sovetimer",
+        "labelSet": "Sovetimer: {left}",
+        "chapterEnd": "kapitlets slutning",
+        "minutes": {
+          "one": "{count} minut",
+          "other": "{count} minutter"
+        },
+        "hours": {
+          "one": "{count} time",
+          "other": "{count} timer"
+        },
+        "endOfChapter": "Slutningen af dette kapitel",
+        "turnOff": "Slå fra"
+      },
+      "tabs": "Vis",
+      "upNext": "Næste",
+      "lyrics": "Sangtekst",
+      "chapters": {
+        "label": "Kapitler",
+        "count": {
+          "one": "{count} kapitel",
+          "other": "{count} kapitler"
+        }
+      },
+      "queue": {
+        "saveAsPlaylist": "Gem som playliste",
+        "remove": "Fjern {title} fra køen"
+      },
+      "lyricsPanel": {
+        "failed": "Sangteksten kunne ikke indlæses.",
+        "none": "Ingen sangtekst til dette nummer.",
+        "source": "Cinemion læser sangtekster fra filens mærker eller fra en {file}-fil med samme navn ved siden af."
+      }
+    }
+  },
+  "books": {
+    "audiobookCount": {
+      "one": "{count} lydbog",
+      "other": "{count} lydbøger"
+    },
+    "bookCount": {
+      "one": "{count} bog",
+      "other": "{count} bøger"
+    },
+    "library": {
+      "scanning": "Gennemgår…",
+      "show": "Vis",
+      "filters": {
+        "all": "Alle",
+        "listening": "Lytter til",
+        "reading": "Læser",
+        "notStarted": "Ikke startet",
+        "unread": "Ikke læst",
+        "finished": "Færdige"
+      },
+      "genre": "Genre",
+      "allGenres": "Alle genrer",
+      "sortBy": "Sortér efter",
+      "sorts": {
+        "title": "Titel",
+        "author": "Forfatter",
+        "added": "Senest tilføjet",
+        "year": "År"
+      },
+      "emptyTitle": "Her er intet endnu",
+      "scanningText": "Cinemion gennemgår dette bibliotek lige nu. Bøger dukker op, efterhånden som de bliver fundet.",
+      "emptyAudiobooks": "Lydbøger fra {paths} dukker op her efter en gennemgang: en mappe med lydfiler er én bog, og det er en enkelt .m4b også.",
+      "emptyBooks": "EPUB- og PDF-bøger fra {paths} dukker op her efter en gennemgang.",
+      "noneListening": "Der bliver ikke lyttet til noget lige nu.",
+      "noneReading": "Der bliver ikke læst noget lige nu.",
+      "noneFinished": "Intet er færdigt endnu.",
+      "noneHere": "Intet her."
+    },
+    "card": {
+      "audiobook": "Lydbog",
+      "finished": "Færdig"
+    },
+    "book": {
+      "notFound": "Bogen blev ikke fundet",
+      "eyebrow": {
+        "audiobook": "Lydbog",
+        "book": "Bog",
+        "bookPdf": "Bog · PDF"
+      },
+      "readBy": "læst af {narrators}",
+      "pause": "Pause",
+      "continueListening": "Fortsæt · {left} tilbage",
+      "listen": "Lyt",
+      "continueReading": "Læs videre",
+      "read": "Læs",
+      "fromStart": "Fra starten",
+      "markUnfinished": "Markér som ikke færdig",
+      "markFinished": "Markér som færdig",
+      "saveFailed": "Kunne ikke gemme det",
+      "done": "{percent} % færdig",
+      "chapters": "Kapitler",
+      "moreBy": "Mere af {author}"
+    },
+    "reader": {
+      "chapter": "Kapitel",
+      "chapterNumber": "Kapitel {number}",
+      "smaller": "Mindre tekst",
+      "bigger": "Større tekst",
+      "themes": {
+        "light": "Lys side",
+        "sepia": "Sepia-side",
+        "dark": "Mørk side"
+      },
+      "markFinished": "Markér som færdig",
+      "markedFinished": "Markeret som færdig",
+      "saveFailed": "Kunne ikke gemme det",
+      "frameTitle": "Bog",
+      "previous": "Forrige",
+      "percent": "{percent} %",
+      "next": "Næste",
+      "finished": "Færdig"
+    }
+  },
+  "photos": {
+    "counts": {
+      "photos": {
+        "one": "{count} billede",
+        "other": "{count} billeder"
+      },
+      "videos": {
+        "one": "{count} video",
+        "other": "{count} videoer"
+      },
+      "items": {
+        "one": "{count} element",
+        "other": "{count} elementer"
+      },
+      "albums": {
+        "one": "{count} album",
+        "other": "{count} albums"
+      },
+      "empty": "Tomt"
+    },
+    "cover": {
+      "changed": "Albumforsiden er ændret",
+      "couldntChange": "Kunne ikke ændre forsiden"
+    },
+    "library": {
+      "scanning": "Gennemgår…",
+      "show": "Vis",
+      "albums": "Albums",
+      "timeline": "Tidslinje",
+      "sortAlbums": "Sortér albums",
+      "sort": {
+        "newest": "Nyeste først",
+        "oldest": "Ældste først",
+        "title": "Navn"
+      },
+      "newAlbum": "Nyt album",
+      "slideshow": "Diasshow",
+      "emptyTitle": "Her er intet endnu",
+      "emptyScanning": "Cinemion gennemgår dette bibliotek lige nu. Billeder dukker op, efterhånden som de bliver fundet.",
+      "emptyHint": "Billeder og videoer fra {paths} dukker op her efter en gennemgang. Hver mappe bliver et album, og datoerne kommer fra selve billederne.",
+      "outsideAlbums": "Billeder uden for albums",
+      "photos": "Billeder",
+      "couldntLoadAlbums": "Kunne ikke indlæse albummene"
+    },
+    "newAlbum": {
+      "title": "Nyt album",
+      "description": "Albums samler billeder fra hele dette bibliotek. Filerne bliver, hvor de er.",
+      "name": "Navn",
+      "placeholder": "Sommerens bedste",
+      "create": "Opret",
+      "couldntMake": "Kunne ikke lave albummet"
+    },
+    "album": {
+      "unavailable": "Dette album er ikke tilgængeligt",
+      "folders": "Mapper",
+      "madeBy": "Lavet af {name}",
+      "slideshow": "Diasshow",
+      "shuffle": "Blandet diasshow",
+      "select": "Vælg billeder",
+      "renameAndDescribe": "Omdøb og beskriv",
+      "editDetails": "Rediger detaljer",
+      "automaticCover": "Brug den automatiske forside",
+      "delete": "Slet album",
+      "emptyAlbum": "Ingen billeder i dette album endnu",
+      "emptyFolder": "Der er intet her, som denne profil kan se",
+      "emptyAlbumHint": "Åbn et billede hvor som helst i {library}, og vælg “Føj til album” i dets menu, eller vælg flere med Vælg.",
+      "emptyAlbumHintNoLibrary": "Åbn et billede hvor som helst i biblioteket, og vælg “Føj til album” i dets menu, eller vælg flere med Vælg.",
+      "useAsCover": "Brug som forside",
+      "takeOut": "Tag ud",
+      "tookOut": {
+        "one": "Tog {count} billede ud af albummet",
+        "other": "Tog {count} billeder ud af albummet"
+      },
+      "tookOutDescription": "Selve filerne ligger stadig, hvor de lå.",
+      "couldntTakeOut": "Kunne ikke tage dem ud",
+      "deleteTitle": "Slet {title}?",
+      "deleteDescription": "Albummet forsvinder; billederne i det bliver i biblioteket og på disken.",
+      "deleted": "{title} er slettet",
+      "deletedDescription": "Billederne i det er stadig i biblioteket.",
+      "couldntDelete": "Kunne ikke slette albummet",
+      "edit": {
+        "albumTitle": "Omdøb og beskriv",
+        "folderTitle": "Rediger albumdetaljer",
+        "folderDescription": "Mappen på disken beholder sit navn; det her er, hvad Cinemion viser.",
+        "name": "Navn",
+        "description": "Beskrivelse"
+      }
+    },
+    "selection": {
+      "label": "Valgte billeder",
+      "stop": "Stop med at vælge",
+      "pick": "Vælg billeder",
+      "selected": "{count} valgt",
+      "addToAlbum": "Føj til album"
+    },
+    "list": {
+      "couldntLoad": "Kunne ikke indlæse billederne"
+    },
+    "grid": {
+      "photo": "Billede, {when}",
+      "video": "Video, {when}",
+      "photoUndated": "Billede, ukendt dato",
+      "videoUndated": "Video, ukendt dato",
+      "noDate": "Ingen dato"
+    },
+    "card": {
+      "years": "{from} – {to}"
+    },
+    "addToAlbum": {
+      "title": "Føj til album",
+      "description": {
+        "one": "Føj {count} billede til et af dine albums, eller start et nyt. Filerne bliver, hvor de er.",
+        "other": "Føj {count} billeder til et af dine albums, eller start et nyt. Filerne bliver, hvor de er."
+      },
+      "newAlbum": "Nyt album",
+      "name": "Navn",
+      "create": "Opret",
+      "alreadyIn": "Allerede i {album}",
+      "added": {
+        "one": "Føjede {count} billede til {album}",
+        "other": "Føjede {count} billeder til {album}"
+      },
+      "couldntAdd": "Kunne ikke føje til albummet",
+      "made": {
+        "one": "Lavede {album} med {count} billede",
+        "other": "Lavede {album} med {count} billeder"
+      },
+      "couldntMake": "Kunne ikke lave albummet"
+    },
+    "viewer": {
+      "label": "Billedfremviser",
+      "dateUnknown": "Ukendt dato",
+      "photo": "Billede, {when}",
+      "video": "Video, {when}",
+      "position": "{context} · {index} af {count}",
+      "pause": "Pause",
+      "slideshow": "Diasshow",
+      "fullScreen": "Fuld skærm",
+      "leaveFullScreen": "Afslut fuld skærm",
+      "details": "Detaljer",
+      "download": "Download originalen",
+      "addToAlbum": "Føj til album…",
+      "useAsCover": "Brug som albumforside",
+      "takeOut": "Tag ud af dette album",
+      "openFolder": "Åbn dens mappe",
+      "previous": "Forrige",
+      "around": "Billeder omkring dette",
+      "photoNumber": "Billede {number}",
+      "videoNumber": "Video {number}",
+      "takenOut": "Taget ud af albummet",
+      "takenOutDescription": "Selve filen ligger stadig, hvor den lå.",
+      "couldntTakeOut": "Kunne ikke tage det ud af albummet",
+      "loadingVideo": "Indlæser videoen"
+    },
+    "info": {
+      "title": "Detaljer",
+      "edit": "Rediger detaljer",
+      "close": "Luk detaljer",
+      "dateUnknown": "Ukendt dato",
+      "cameraClock": "Kameraets ur på UTC{offset}",
+      "length": "Længde {length}",
+      "megapixels": "{value} MP",
+      "camera": "Kamera",
+      "place": "{latitude}, {longitude}",
+      "north": "{value}° N",
+      "south": "{value}° S",
+      "east": "{value}° Ø",
+      "west": "{value}° V",
+      "openMap": "Åbn på et kort",
+      "folder": "Mappe",
+      "inAlbum": "I et album",
+      "inAlbums": "I albums",
+      "tags": "Mærker",
+      "rated": "Aldersgrænse {rating}",
+      "caption": "Billedtekst",
+      "captionPlaceholder": "Hvad sker der her?",
+      "date": "Dato",
+      "dateDescription": "Klokkeslættet forbliver det samme.",
+      "tagsPlaceholder": "Strand, Mira",
+      "tagsDescription": "Adskil dem med kommaer.",
+      "rating": "Aldersgrænse",
+      "ratingDefault": "Bibliotekets standard",
+      "saved": "Detaljer gemt"
+    }
+  },
+  "clips": {
+    "counts": {
+      "clips": {
+        "one": "{count} klip",
+        "other": "{count} klip"
+      },
+      "games": {
+        "one": "{count} spil",
+        "other": "{count} spil"
+      }
+    },
+    "library": {
+      "scanning": "Gennemgår…",
+      "show": "Vis",
+      "games": "Spil",
+      "allClips": "Alle klip",
+      "sortGames": "Sortér spil",
+      "sort": {
+        "recent": "Nyeste klip",
+        "title": "Navn",
+        "clips": "Flest klip"
+      },
+      "emptyTitle": "Her er intet endnu",
+      "emptyScanning": "Cinemion gennemgår dette bibliotek lige nu. Klip dukker op, efterhånden som de bliver fundet.",
+      "emptyHint": "Klip fra {paths} dukker op her efter en gennemgang, sorteret i spil efter de navne, din optager gav dem.",
+      "suggestion": {
+        "one": "Cinemion har et gæt på {clips} uden spil, ud fra hvad det viser.",
+        "other": "Cinemion har et gæt på {clips} uden spil, ud fra hvad de viser."
+      },
+      "haveALook": "Tag et kig",
+      "newest": "Nyeste klip",
+      "noGame": "Intet spil",
+      "noGameLabel": {
+        "one": "Intet spil, {count} klip",
+        "other": "Intet spil, {count} klip"
+      },
+      "couldntLoad": "Kunne ikke indlæse spillene"
+    },
+    "browser": {
+      "label": "Klip",
+      "game": "Spil",
+      "allGames": "Alle spil",
+      "noGame": "Intet spil",
+      "tag": "Mærke",
+      "allTags": "Alle mærker",
+      "show": "Vis",
+      "all": "Alle",
+      "starred": "Med stjerne",
+      "sortBy": "Sortér efter",
+      "sort": {
+        "newest": "Nyeste først",
+        "oldest": "Ældste først",
+        "longest": "Længste først"
+      },
+      "emptyStarred": "Ingen klip med stjerne",
+      "empty": "Ingen klip her",
+      "emptyStarredHint": "Giv et klip en stjerne med stjernen på dets billede, så dukker det op her.",
+      "emptyTag": "Ingen klip har dette mærke.",
+      "emptyFilters": "Intet passer til disse filtre.",
+      "selectionLabel": "Valgte klip",
+      "stop": "Stop med at vælge",
+      "pick": "Vælg klip",
+      "selected": "{count} valgt",
+      "setGame": "Vælg spil",
+      "star": "Giv stjerne",
+      "unstar": "Fjern stjerne",
+      "didStar": {
+        "one": "Gav {count} klip en stjerne",
+        "other": "Gav {count} klip en stjerne"
+      },
+      "didUnstar": "Stjernerne er fjernet",
+      "couldntStar": "Kunne ikke give klippene en stjerne",
+      "inGame": {
+        "one": "{count} klip er nu i {game}",
+        "other": "{count} klip er nu i {game}"
+      },
+      "noGameNow": {
+        "one": "{count} klip har nu intet spil",
+        "other": "{count} klip har nu intet spil"
+      },
+      "setGameTitle": {
+        "one": "Vælg spil for {count} klip",
+        "other": "Vælg spil for {count} klip"
+      },
+      "setGameDescription": "Vælg et spil, du har, søg på Steam, eller skriv et navn."
+    },
+    "card": {
+      "noGame": "Intet spil",
+      "suggestion": "Ligner {game}",
+      "suggestionShort": "{game}?",
+      "watched": "Set",
+      "unstar": "Fjern stjernen",
+      "star": "Giv klippet en stjerne",
+      "starred": "Med stjerne",
+      "starTitle": "Stjerne",
+      "couldntStar": "Kunne ikke give klippet en stjerne"
+    },
+    "view": {
+      "library": "Bibliotek",
+      "noGame": "Intet spil",
+      "unstar": "Fjern stjernen",
+      "star": "Giv klippet en stjerne",
+      "setGame": "Vælg spil",
+      "cut": "Klip klippet til",
+      "share": "Lav en lille kopi til deling",
+      "suggested": "Foreslået spil",
+      "suggestionSimilar": "Ligner {game}, ud fra klip der ligner det ({percent} % sikker).",
+      "suggestionPicture": "Ligner {game}, ud fra billedet ({percent} % sikker).",
+      "useIt": "Brug det",
+      "notThis": "Ikke dette spil",
+      "found": {
+        "folder": "Spil fra mappens navn",
+        "file": "Spil fra filens navn",
+        "tags": "Spil fra filens mærker",
+        "steam": "Spil fra Steam-optagelsens navn",
+        "upload": "Spil fra den app, der uploadede det",
+        "manual": "Spil valgt i hånden"
+      },
+      "moreFrom": "Mere fra {game}",
+      "moreWithout": "Flere klip uden spil",
+      "setGameTitle": "Vælg spillet",
+      "setGameDescription": "Vælg et spil, du har, søg på Steam, eller skriv et navn.",
+      "couldntStar": "Kunne ikke give klippet en stjerne",
+      "inGame": "Det er nu i {game}",
+      "noGameNow": "Det har nu intet spil",
+      "couldntChange": "Kunne ikke ændre spillet"
+    },
+    "game": {
+      "library": "Bibliotek",
+      "released": "Udgivet {year}",
+      "notFound": "Ikke fundet online",
+      "playNewest": "Afspil nyeste",
+      "moreOptions": "Flere muligheder",
+      "change": "Skift spil",
+      "lookUp": "Slå det op igen",
+      "remove": "Fjern spil",
+      "changeTitle": "Skift spil",
+      "changeDescription": "Vælg det rigtige spil for at få dets navn og billeder, eller skriv et nyt navn. Vælger du et andet spil, du har, flyttes klippene derind.",
+      "removeTitle": "Fjern {title}?",
+      "removeDescription": "Klippene bliver i biblioteket under Intet spil. Filerne bliver ikke rørt.",
+      "renamed": "Det hedder nu {title}",
+      "moved": "Klippene er nu i {title}",
+      "lookingUp": "Slår {title} op…",
+      "upToDate": "{title} er opdateret",
+      "couldntLookUp": "Kunne ikke slå det op",
+      "removed": "{title} blev fjernet",
+      "removedDescription": "Klippene ligger nu under Intet spil.",
+      "couldntRemove": "Kunne ikke fjerne spillet"
+    },
+    "range": {
+      "pause": "Pause",
+      "play": "Afspil den valgte del",
+      "start": "Start på delen",
+      "end": "Slut på delen",
+      "from": "Fra {time}",
+      "keeps": "Beholder {time}",
+      "to": "Til {time}"
+    },
+    "setGame": {
+      "game": "Spil",
+      "placeholder": "Søg efter et spil",
+      "searching": "Søger",
+      "inLibrary": {
+        "one": "I dette bibliotek · {count} klip",
+        "other": "I dette bibliotek · {count} klip"
+      },
+      "typed": "Kald det “{name}”",
+      "typedHint": "Et spil med kun dette navn, uden billeder",
+      "typeToSearch": "Skriv et spils navn for at søge efter det.",
+      "none": "Intet spil",
+      "noneHint": "Som optagelser af skrivebordet",
+      "couldntSet": "Kunne ikke vælge spillet"
+    },
+    "trim": {
+      "title": "Klip klippet til",
+      "description": "Træk i håndtagene til den del, du vil beholde. Intet bliver konverteret, så kvaliteten er den samme; derfor rykker starten til det nærmeste nøglebillede (stregerne på bjælken) før der, hvor du satte den.",
+      "cutOriginal": "Klip originalen til",
+      "saveCut": "Gem udklippet",
+      "reading": "Læser klippet",
+      "where": "Hvor udklippet skal hen",
+      "copy": "Gem som nyt klip",
+      "replace": "Erstat originalen",
+      "copyNote": "Udklippet lægges ved siden af den originale fil, med samme spil og detaljer. Originalen forbliver som den er.",
+      "replaceNote": "Den originale fil erstattes af udklippet. Det, der klippes væk, er væk for altid.",
+      "confirmTitle": "Erstat originalen?",
+      "confirmDescription": "Klippets fil bliver klippet til for altid. Det, der klippes væk, kan ikke hentes tilbage.",
+      "confirmLabel": "Erstat den",
+      "couldntRead": "Kunne ikke læse klippet",
+      "cut": "Klippet blev klippet til",
+      "savedNew": "Udklippet blev gemt som et nyt klip",
+      "couldntCut": "Kunne ikke klippe klippet til"
+    },
+    "share": {
+      "title": "Lav en lille kopi",
+      "description": "En kopi, der passer til en chat-apps uploadgrænse, konverteret så alle apps kan afspille den. Selve klippet forbliver som det er.",
+      "make": "Lav kopien",
+      "copyLink": "Kopiér link",
+      "what": "Hvad skal kopieres",
+      "whole": "Hele klippet",
+      "part": "En del af det",
+      "size": "Størrelsesgrænse",
+      "sizeOption": "{size} MB",
+      "sound": "Lyd",
+      "mainTrack": "Hovedsporet",
+      "track": "Spor {number}",
+      "allTracks": "Alle spor sammen",
+      "fits": "Bliver cirka {height}p med {fps} billeder i sekundet. 10 MB passer til apps med de mindste grænser, som Discord uden Nitro.",
+      "tooBig": {
+        "one": "{count} sekund kan ikke være i {size} MB. Vælg en større størrelse eller en kortere del.",
+        "other": "{count} sekunder kan ikke være i {size} MB. Vælg en større størrelse eller en kortere del."
+      },
+      "ready": "Klar: {size}, {height}p. Downloadlinket virker i et døgn, uden at man skal logge ind.",
+      "couldntMake": "Kunne ikke lave kopien",
+      "linkCopied": "Link kopieret",
+      "linkCopiedDescription": "Det virker i et døgn, uden at man skal logge ind."
+    }
+  },
+  "downloads": {
+    "title": "Downloads",
+    "intro": "Gemt på denne enhed, så du kan se uden forbindelse.",
+    "introOffline": "Serveren kan ikke nås, så her er det, der er gemt på denne enhed.",
+    "storage": "Bruger {used}, {free} ledig.",
+    "retryServer": "Prøv serveren igen",
+    "offline": "Offline",
+    "unsupported": {
+      "title": "Denne browser kan ikke gemme downloads her",
+      "text": "Offline-downloads kræver, at Cinemion er åbnet over https (eller som localhost på selve serveren). Over en almindelig http-adresse tillader browsere det ikke. Den, der styrer serveren, kan slå https til under Indstillinger › HTTPS."
+    },
+    "empty": {
+      "title": "Intet gemt endnu",
+      "text": "Åbn en film eller et afsnit, og brug dens downloadknap for at gemme den på denne enhed."
+    },
+    "status": {
+      "preparing": "Gøres klar på serveren…",
+      "preparingPercent": "Gøres klar på serveren · {percent} %",
+      "downloading": "Downloader · {received}",
+      "downloadingOf": "Downloader · {received} af {size}",
+      "paused": "På pause · {received}",
+      "pausedOf": "På pause · {received} af {size}",
+      "failed": "Downloaden stoppede."
+    },
+    "quality": {
+      "original": "Original",
+      "high": "Høj (1080p)",
+      "medium": "Mellem (720p)",
+      "small": "Lille (480p)"
+    },
+    "pause": "Pause",
+    "carryOn": "Fortsæt",
+    "deleteFromDevice": "Slet fra denne enhed",
+    "delete": {
+      "title": "Slet {title}?",
+      "titleUntitled": "Slet denne download?",
+      "description": "Den fjernes kun fra denne enhed. Den bliver på serveren."
+    },
+    "player": {
+      "missing": "Denne download er ikke på denne enhed. <link>Se dine downloads</link>.",
+      "reloadFirst": "Offline-afspilning virker, når siden er blevet genindlæst én gang."
+    },
+    "button": {
+      "label": "Download til offline-visning",
+      "ready": "Downloadet. Åbn Downloads",
+      "failed": "Download mislykkedes. Åbn Downloads",
+      "progress": "Downloader {percent} %. Åbn Downloads",
+      "description": "{title} gemmes på denne enhed til når der ikke er forbindelse. Hvor langt du er nået, sendes til serveren senere.",
+      "size": "Størrelse",
+      "about": "Cirka {size}",
+      "asIs": "Afspilles som den er, i fuld kvalitet",
+      "madeOnServer": "Laves først på serveren",
+      "needsHttps": "Downloads kræver https",
+      "needsHttpsDescription": "Browsere lader kun sider gemme videoer, når de er åbnet over https (eller som localhost på serveren). Det kan slås til under Indstillinger › HTTPS.",
+      "sizesFailed": "Kunne ikke hente downloadstørrelserne",
+      "started": "Download startet",
+      "startedDescription": "Følg den under Downloads i profilmenuen.",
+      "startFailed": "Kunne ikke starte downloaden"
+    },
+    "episodeSubtitle": "{show} · {episode}",
+    "readyToast": "{title} er klar til offline-visning",
+    "readyToastUntitled": "Downloaden er klar til offline-visning",
+    "errors": {
+      "copyFailed": "Serveren kunne ikke lave kopien.",
+      "stopped": "Downloaden stoppede: {status}"
+    }
+  },
+  "settings": {
+    "tabs": {
+      "you": "Dig",
+      "server": "Server",
+      "profile": "Din profil",
+      "device": "Denne enhed",
+      "about": "Om",
+      "dashboard": "Oversigt",
+      "libraries": "Biblioteker",
+      "users": "Brugere",
+      "playback": "Afspilning",
+      "metadata": "Metadata",
+      "subtitles": "Undertekster",
+      "integrations": "Integrationer",
+      "webhooks": "Webhooks",
+      "tasks": "Opgaver",
+      "logs": "Logge",
+      "navigation": "Indstillinger",
+      "running": {
+        "one": "{count} kører",
+        "other": "{count} kører"
+      },
+      "backups": "Sikkerhedskopier",
+      "https": "HTTPS",
+      "upkeep": "Vedligehold"
+    },
+    "about": {
+      "title": "Om",
+      "intro": "Hvilken Cinemion det her er, og hvem der hjælper den med at vide, hvad der er i dine biblioteker.",
+      "version": "Cinemion {version}",
+      "versionOn": "Cinemion {version} på {name}",
+      "pitch": "Et selvhostet hjem til dine film, serier, videoer, musik og bøger. Fri software under GNU General Public License, version 3 eller senere.",
+      "sourceCode": "Kildekode",
+      "releases": "Udgivelser",
+      "credits": "Tak til"
+    },
+    "profile": {
+      "title": "Din profil",
+      "intro": "Hvordan du ser ud i profilvalget og rundt omkring i Cinemion.",
+      "changePicture": "Skift profilbillede",
+      "picture": "Profilbillede",
+      "pictureShown": "Vises i stedet for dit forbogstav.",
+      "pictureNone": "Upload et billede, eller behold dit forbogstav på din farve.",
+      "changePictureButton": "Skift billede",
+      "uploadPicture": "Upload billede",
+      "name": "Navn",
+      "colour": "Farve",
+      "colourWithPicture": "Farve (bruges, når billedet ikke kan indlæses)",
+      "saveChanges": "Gem ændringer",
+      "saved": "Profil gemt",
+      "couldntSave": "Kunne ikke gemme din profil",
+      "signIn": "Login",
+      "pin": {
+        "title": "Profil-PIN",
+        "on": "Spørges om, når du vælger din profil på en fælles skærm.",
+        "off": "Alle kan åbne din profil fra profilvalget.",
+        "change": "Skift PIN",
+        "set": "Vælg en PIN",
+        "removed": "PIN fjernet",
+        "couldntRemove": "Kunne ikke fjerne PIN-koden",
+        "dialogDescription": "Fire cifre, som du bliver spurgt om, når din profil vælges på en fælles skærm.",
+        "save": "Gem PIN",
+        "newPin": "Ny PIN",
+        "saved": "PIN gemt",
+        "couldntSave": "Kunne ikke gemme PIN-koden"
+      },
+      "password": {
+        "title": "Adgangskode",
+        "on": "Log ind som \"{username}\" på nye enheder.",
+        "off": "Ingen adgangskode endnu, så denne profil kan kun åbnes fra profilvalget.",
+        "change": "Skift adgangskode",
+        "set": "Vælg en adgangskode",
+        "save": "Gem adgangskode",
+        "current": "Nuværende adgangskode",
+        "new": "Ny adgangskode",
+        "newDescription": "Mindst 6 tegn.",
+        "confirm": "Bekræft ny adgangskode",
+        "mismatch": "Adgangskoderne er ikke ens.",
+        "changed": "Adgangskoden er ændret",
+        "couldntChange": "Kunne ikke ændre adgangskoden"
+      },
+      "subtitles": {
+        "title": "Undertekster",
+        "previewLine1": "Hørte du det?",
+        "previewLine2": "Der er noget derude.",
+        "size": "Størrelse",
+        "sizes": {
+          "small": "Lille",
+          "medium": "Mellem",
+          "large": "Stor",
+          "huge": "Kæmpe"
+        },
+        "colour": "Farve",
+        "colours": {
+          "white": "Hvid",
+          "yellow": "Gul",
+          "cyan": "Cyan",
+          "green": "Grøn"
+        },
+        "background": "Baggrund",
+        "backgrounds": {
+          "box": "Mørk boks",
+          "shadow": "Kontur"
+        },
+        "keepStyling": "Bevar udseendet på stylede undertekster",
+        "keepStylingDescription": "ASS-undertekster, som er almindelige til anime, har deres egne skrifttyper, farver og placeringer. Slået fra bruger de stilen ovenfor som alle andre undertekster."
+      },
+      "trakt": {
+        "linked": "Forbundet",
+        "linkedAs": "Forbundet som {name}",
+        "linkedDescription": "Det, du ser, sendes til din Trakt-historik, mens det spiller, og det samme gør det, du markerer som set.",
+        "unlink": "Afbryd",
+        "importTitle": "Hent din historik ind",
+        "importDescription": "Markerer alt, du har set på Trakt, som set her også, for det der er i dine biblioteker.",
+        "importButton": "Hent den ind",
+        "keepUpToDate": "Hold din Trakt-historik opdateret",
+        "linkDescription": "Forbind din Trakt-konto, så bliver det, du ser her, tilføjet til den.",
+        "link": "Forbind Trakt",
+        "goTo": "Gå til {url}, og indtast",
+        "waiting": "Venter på Trakt…",
+        "isLinked": "Trakt er forbundet",
+        "signedInAs": "Logget ind som {name}.",
+        "declined": "Trakt-login blev afvist",
+        "expired": "Koden er udløbet",
+        "startAgain": "Start forfra for at få en ny kode.",
+        "couldntLink": "Kunne ikke forbinde Trakt",
+        "couldntStart": "Kunne ikke starte forbindelsen",
+        "imported": "Markerede {movies} og {episodes} som set",
+        "movies": {
+          "one": "{count} film",
+          "other": "{count} film"
+        },
+        "episodes": {
+          "one": "{count} afsnit",
+          "other": "{count} afsnit"
+        },
+        "upToDate": "Alt var allerede opdateret",
+        "couldntImport": "Kunne ikke hente historikken ind",
+        "couldntUnlink": "Kunne ikke afbryde Trakt"
+      }
+    },
+    "device": {
+      "title": "Denne enhed",
+      "intro": "Disse indstillinger gemmes kun i denne browser.",
+      "layout": "Layout",
+      "layoutAuto": {
+        "desktop": "Valgt automatisk. Denne enhed bruger computerlayoutet.",
+        "mobile": "Valgt automatisk. Denne enhed bruger mobillayoutet.",
+        "tv": "Valgt automatisk. Denne enhed bruger tv-layoutet."
+      },
+      "layoutFixed": {
+        "desktop": "Brug altid computerlayoutet.",
+        "mobile": "Brug altid mobillayoutet.",
+        "tv": "Brug altid tv-layoutet."
+      },
+      "mediahub": "Kører inde i MediaHub.",
+      "layouts": {
+        "desktop": "Computer",
+        "mobile": "Mobil",
+        "tv": "Tv"
+      },
+      "tvHelp": "Tv-layoutet er lavet til sofaen: alt er større, og du bevæger dig rundt med piletasterne, en fjernbetjening eller en spilcontroller. Åbn Cinemion med {param} i slutningen af adressen for at skifte et tv direkte til det.",
+      "theme": "Tema",
+      "themeSystem": {
+        "dark": "Følger enhedens indstilling, som er mørk lige nu.",
+        "light": "Følger enhedens indstilling, som er lys lige nu."
+      },
+      "themeFixed": "Videoer afspilles altid på en mørk skærm.",
+      "themes": {
+        "dark": "Mørk",
+        "light": "Lys",
+        "system": "Som enheden"
+      },
+      "playback": "Afspilning",
+      "speakers": "Højttalere",
+      "speakersDescription": "Surroundlyd, som denne enhed ikke kan afspille, konverteres til noget, den kan. Med en receiver eller soundbar sendes Dolby Digital uændret videre, så den selv kan afkode det.",
+      "speakerOptions": {
+        "auto": "Automatisk (surround på tv, stereo andre steder)",
+        "stereo": "Stereo",
+        "surround51": "5.1 surround",
+        "surround71": "7.1 surround",
+        "passthrough": "Receiver eller soundbar (send Dolby Digital videre)"
+      },
+      "intros": "Intros",
+      "introsDescription": "Cinemion finder seriers intros ved at sammenligne afsnittene eller ud fra deres kapitler.",
+      "introOptions": {
+        "button": "Vis Spring over",
+        "auto": "Spring over af sig selv"
+      }
+    },
+    "playback": {
+      "title": "Afspilning",
+      "intro": "Hvordan Cinemion konverterer videoer til enheder, der ikke kan afspille den originale fil.",
+      "saveChanges": "Gem ændringer",
+      "couldntLoad": "Kunne ikke indlæse afspilningsindstillinger",
+      "saved": "Afspilningsindstillinger gemt",
+      "savedDescription": "De gælder for videoer, der startes fra nu af.",
+      "hardware": "Hardwareacceleration",
+      "methods": {
+        "off": "Fra",
+        "noneDescription": "Konvertér på processoren. Virker overalt, men 4K går langsomt.",
+        "vaapiDescription": "Intel- og AMD-grafik på Linux.",
+        "qsvDescription": "Intel-grafik, ofte lidt hurtigere end VA-API.",
+        "nvencDescription": "NVIDIA-grafikkort."
+      },
+      "alwaysAvailable": "Altid tilgængelig",
+      "looking": "Leder…",
+      "detected": "Fundet",
+      "notDetected": "Ikke fundet",
+      "gpu": "Grafikkort",
+      "gpuDescription": "Render-enheden. I Docker skal den sendes med {flag}.",
+      "decodeOnGpu": "Afkod disse på grafikkortet",
+      "decodeDescription": "Slå codecs fra, som dit grafikkort ikke kan afkode; de afkodes på processoren og konverteres stadig på grafikkortet.",
+      "runTest": "Kør en test",
+      "testing": "Konverterer et 5 sekunders 1080p-klip…",
+      "converting": "Konverterer",
+      "maxConversions": "Samtidige konverteringer",
+      "maxConversionsDescription": "Flere end dette bliver afvist, indtil en stopper. Direkte afspilning og ompakning tæller ikke med.",
+      "preset": "Kvalitetsindstilling",
+      "presetDescription": "Hurtigere indstillinger bruger mindre processorkraft, men ser lidt dårligere ud ved samme bitrate.",
+      "presets": {
+        "fast": "Hurtig",
+        "balanced": "Balanceret",
+        "quality": "Kvalitet"
+      },
+      "remoteLimit": "Grænse for fjernstreams",
+      "remoteLimitDescription": "Pr. stream, for seere uden for dit hjemmenetværk.",
+      "noLimit": "Ingen grænse",
+      "toneMapping": "Omsæt HDR til SDR",
+      "toneMappingDescription": "Holder farverne rigtige på skærme uden HDR.",
+      "seekThumbnails": "Lav miniaturer til spoling",
+      "seekThumbnailsDescription": "Små billeder over spolebjælken. Laves i baggrunden efter en gennemgang, og når en video afspilles første gang.",
+      "remoteConversion": "Tillad konvertering for fjernseere",
+      "remoteConversionDescription": "Slået fra får seere uden for dit netværk kun filer, som deres enhed kan afspille, som de er.",
+      "cache": "Konverteringscache",
+      "cacheDetails": "{folder} · {size} · ryddes op, når afspilningen stopper. Miniaturer til spoling bruger {thumbnails}.",
+      "checking": "Tjekker…",
+      "clearNow": "Ryd nu",
+      "cacheCleared": "Konverteringscachen er ryddet",
+      "cacheClearedDescription": "Alle, der ser en konverteret video, skal starte den igen.",
+      "couldntClear": "Kunne ikke rydde cachen"
+    },
+    "metadata": {
+      "title": "Metadata",
+      "intro": "Hvor plakater, handling og medvirkende kommer fra. Kilder højere oppe på listen vinder, når de er uenige.",
+      "saveChanges": "Gem ændringer",
+      "couldntLoad": "Kunne ikke indlæse metadataindstillinger",
+      "saved": "Metadataindstillinger gemt",
+      "savedDescription": "Brug \"Opdater alle detaljer\" på et bibliotek for at bruge dem på det, der allerede er der."
+    },
+    "subtitles": {
+      "title": "Undertekster",
+      "intro": "Søg efter undertekster online fra afspilleren, eller lad Cinemion hente dem til nye film og afsnit. Undertekstfiler ved siden af dine videoer bliver fundet af sig selv.",
+      "saveChanges": "Gem ændringer",
+      "couldntLoad": "Kunne ikke indlæse undertekstindstillinger",
+      "saved": "Undertekstindstillinger gemt",
+      "automatic": "Automatiske downloads",
+      "autoDownload": "Download undertekster af sig selv",
+      "autoDownloadDescription": "Film og afsnit uden undertekster på et af dine sprog får de bedste, siderne har, helst nogle lavet til netop den fil. Det, der ikke bliver fundet, ledes efter igen efter en dag, tre dage, en uge og så videre.",
+      "noSite": "Slå mindst én undertekstside til nedenfor, for at det kan finde noget.",
+      "sites": "Undertekstsider",
+      "openSubtitlesHelp": "Opret en gratis konto på <link>opensubtitles.com</link>, tilføj så en API consumer under din profils API-indstillinger, og indsæt dens nøgle her. Login er valgfrit; det giver flere downloads om dagen.",
+      "apiKey": "API-nøgle",
+      "username": "Brugernavn",
+      "optional": "Valgfri",
+      "password": "Adgangskode",
+      "passwordSaved": "Gemt. Skriv en ny for at ændre den.",
+      "subdlHelp": "En gratis side med et stort udvalg. Opret en konto på <link>subdl.com</link>, og kopiér API-nøglen fra din kontoside.",
+      "podnapisiDescription": "Søg også på podnapisi.net. Det kræver ingen konto; underteksterne findes ud fra titlen, så timingen kan være lidt ved siden af.",
+      "languages": "Sprog",
+      "languagesDescription": "Vises først, når du søger, og er dem, der downloades af sig selv.",
+      "saveNextToVideo": "Gem ved siden af videofilen",
+      "saveNextToVideoDescription": "Slået fra, eller når mediemappen er skrivebeskyttet (som i Docker med :ro), gemmes downloads i stedet i konfigurationsmappen."
+    },
+    "games": {
+      "couldntLoad": "Kunne ikke indlæse spilindstillingerne",
+      "saved": "Spilindstillinger gemt",
+      "title": "Spil",
+      "intro": "Klipbiblioteker sorterer klip i spil efter deres fil- og mappenavne og slår spillene op for at få deres rigtige navne, forsider og billeder.",
+      "lookups": "Slå spil op online",
+      "lookupsDescription": "I Steams butik, som ikke kræver nøgle og kender de fleste pc-spil.",
+      "steamGridDbKey": "SteamGridDB API-nøgle (valgfri)",
+      "steamGridDbDescription": "Finder spil, der ikke er på Steam, som VALORANT eller League of Legends, og billeder, Steam ikke har. Få en gratis nøgle under dine <link>SteamGridDB-indstillinger</link>.",
+      "saveKey": "Gem nøgle",
+      "recognition": {
+        "title": "Billedgenkendelse",
+        "intro": "Til klip, hvis navne ikke siger, hvilket spil det er, som OBS-optagelser: Cinemion kigger på nogle få billeder fra hvert klip og foreslår et spil, når et klip ligner nogle, du allerede har givet et spil (eller som et bedste gæt et spil, den kender). Forslag bruges kun, når du siger ja. Det kører på serverens processor, ét klip ad gangen, og intet forlader serveren.",
+        "checking": "Tjekker…",
+        "installed": "Installeret",
+        "downloading": "Downloader… {percent}",
+        "failed": "Downloaden virkede ikke",
+        "notInstalled": "Ikke installeret",
+        "pending": {
+          "one": "{count} klip er ikke blevet kigget på endnu.",
+          "other": "{count} klip er ikke blevet kigget på endnu."
+        },
+        "allDone": "Alle klip er blevet kigget på.",
+        "downloadSize": "En engangsdownload på {size}: en billedmodel (CLIP) og det, der kører den.",
+        "runNow": "Kig på klip nu",
+        "autoSuggest": "Foreslå spil efter hver gennemgang",
+        "autoSuggestDescription": "Nye klip uden spil får et forslag af sig selv. Slået fra kører det kun med “Kig på klip nu”.",
+        "removeTitle": "Fjern billedgenkendelse?",
+        "removeDescription": "Downloaden slettes. Forslag, der allerede er lavet, bliver, og det, den så i klippene, gemmes til den downloades igen.",
+        "couldntDownload": "Kunne ikke downloade billedgenkendelse",
+        "couldntRemove": "Kunne ikke fjerne billedgenkendelse",
+        "started": "Kigger på klip",
+        "startedDescription": "Forslag dukker op på klip uden spil. Opgaver viser, hvor langt det er nået.",
+        "couldntStart": "Kunne ikke starte"
+      }
+    }
+  },
+  "language": {
+    "title": "Sprog",
+    "label": "Sprog i brugerfladen",
+    "automatic": "Samme som denne browser ({language})",
+    "description": "Kun for denne profil. Titler, handlinger og andre detaljer beholder sproget fra Indstillinger › Metadata.",
+    "helpTranslate": "Mangler dit sprog? Cinemion kan oversættes til ethvert sprog; <link>sådan gør du</link>."
+  },
+  "colors": {
+    "sky": "himmelblå",
+    "coral": "koral",
+    "mint": "mint",
+    "violet": "violet",
+    "amber": "rav",
+    "rose": "rosa",
+    "teal": "blågrøn",
+    "slate": "skifer"
+  },
+  "avatarEditor": {
+    "title": "Profilbillede",
+    "descriptionCrop": "Træk i billedet for at flytte det.",
+    "descriptionPick": "Vælg et billede. Du kan beskære det bagefter.",
+    "choose": "Vælg et billede",
+    "hint": "JPG, PNG eller WebP, op til 10 MB",
+    "zoom": "Zoom",
+    "preview": "Forhåndsvisning",
+    "previews": {
+      "picker": "Profilvalg",
+      "topBar": "Topbjælke",
+      "badges": "Mærkater"
+    },
+    "sizesHint": "Gemmes i alle de størrelser, Cinemion skal bruge, fra profilvalget ned til de små mærkater i Se sammen.",
+    "chooseAnother": "Vælg et andet billede",
+    "removePicture": "Fjern billede, og brug initialer",
+    "save": "Gem billede",
+    "cantOpen": "Denne browser kan ikke åbne det billede",
+    "cantOpenDescription": "Prøv en JPG, PNG eller WebP.",
+    "couldntPrepare": "Kunne ikke gøre billedet klar.",
+    "saved": "Profilbillede gemt",
+    "couldntSave": "Kunne ikke gemme billedet",
+    "removed": "Profilbillede fjernet",
+    "couldntRemove": "Kunne ikke fjerne billedet"
+  },
+  "pinPad": {
+    "entered": {
+      "one": "{entered} af {count} ciffer indtastet",
+      "other": "{entered} af {count} cifre indtastet"
+    },
+    "delete": "Slet"
+  },
+  "metadataForm": {
+    "sources": "Metadatakilder i prioriteret rækkefølge",
+    "providers": {
+      "local": "Dine filer",
+      "localDescription": "NFO-filer og billeder ved siden af dine videoer",
+      "tmdbDescription": "Onlinedatabase for film og serier",
+      "tvdbDescription": "Onlinedatabase for serier, stærk til anime og afsnitsrækkefølger"
+    },
+    "moveUp": "Flyt {name} op",
+    "moveDown": "Flyt {name} ned",
+    "tmdb": {
+      "ownKey": "Din egen API-nøgle (valgfri)",
+      "apiKey": "API-nøgle",
+      "builtInPlaceholder": "Bruger nøglen, der er indbygget i Cinemion",
+      "placeholder": "Indsæt din TMDB API-nøgle eller read access token",
+      "builtInDescription": "TMDB virker uden. Tilføj din egen nøgle, hvis den indbyggede holder op med at virke, eller hvis du hellere vil bruge din egen. <link>Sådan får du en</link>",
+      "description": "Gratis med en TMDB-konto. <link>Sådan får du en</link>"
+    },
+    "tvdb": {
+      "apiKey": "API-nøgle",
+      "placeholder": "Indsæt din TheTVDB projekt-API-nøgle",
+      "description": "Fra en TheTVDB-konto. <link>Sådan får du en</link>",
+      "pin": "Abonnent-PIN (valgfri)",
+      "pinDescription": "Kun for nøgler, der følger med et TheTVDB-abonnement."
+    },
+    "omdb": {
+      "label": "OMDb API-nøgle til bedømmelser (valgfri)",
+      "placeholder": "Indsæt din OMDb API-nøgle",
+      "description": "Tilføjer IMDb-, Rotten Tomatoes- og Metacritic-score til film og serier, der har et IMDb-id. Gratis nøgler giver 1000 opslag om dagen. <link>Sådan får du en</link>"
+    },
+    "language": "Sprog",
+    "languages": {
+      "en": "Engelsk",
+      "nl": "Hollandsk",
+      "de": "Tysk",
+      "fr": "Fransk",
+      "es": "Spansk",
+      "it": "Italiensk",
+      "pt": "Portugisisk",
+      "sv": "Svensk",
+      "da": "Dansk",
+      "no": "Norsk",
+      "ja": "Japansk"
+    },
+    "country": "Land (for aldersgrænser)",
+    "countries": {
+      "us": "USA",
+      "gb": "Storbritannien",
+      "nl": "Holland",
+      "de": "Tyskland",
+      "fr": "Frankrig",
+      "es": "Spanien",
+      "it": "Italien",
+      "se": "Sverige",
+      "dk": "Danmark",
+      "no": "Norge",
+      "jp": "Japan"
+    }
+  },
+  "ratings": {
+    "g": "G / Alle aldre",
+    "pg": "PG",
+    "age12": "12",
+    "pg13": "PG-13",
+    "age16": "16",
+    "r": "R",
+    "age18": "18"
+  },
+  "admin": {
+    "dashboard": {
+      "title": "Oversigt",
+      "serverLine": "{name} · Cinemion {version} · oppe i {uptime}",
+      "serverLineUpdate": "{name} · Cinemion {version} ({update}) · oppe i {uptime}",
+      "updateOut": "{version} er ude",
+      "scanAll": "Gennemgå alle biblioteker",
+      "scanStarted": "Gennemgår alle biblioteker",
+      "scanFailed": "Kunne ikke starte gennemgangen",
+      "stats": {
+        "streams": "Streams",
+        "maxConversions": {
+          "one": "Op til {count} konvertering ad gangen",
+          "other": "Op til {count} konverteringer ad gangen"
+        },
+        "streamKinds": "{direct} direkte · {converting} konverteres",
+        "cpu": "Processor",
+        "cores": {
+          "one": "{count} kerne",
+          "other": "{count} kerner"
+        },
+        "coresMemory": {
+          "one": "{count} kerne · {memory} hukommelse",
+          "other": "{count} kerner · {memory} hukommelse"
+        },
+        "gpu": "Grafikkort ({name})",
+        "hardwareConversions": {
+          "one": "{count} hardwarekonvertering",
+          "other": "{count} hardwarekonverteringer"
+        },
+        "usageNotReported": "Forbruget oplyses ikke",
+        "noConversions": "Ingen konverteringer",
+        "memory": "Hukommelse",
+        "memoryOf": "af {total}",
+        "notReported": "Oplyses ikke",
+        "storage": "Lagerplads",
+        "storageOnMount": "af {total} på {mount}",
+        "storageOnDrives": {
+          "one": "af {total} på {count} drev",
+          "other": "af {total} på {count} drev"
+        },
+        "drivesUnreadable": "Kunne ikke læse drevene"
+      },
+      "nowPlaying": "Spiller nu",
+      "nothingPlaying": "Der spiller ikke noget lige nu.",
+      "stream": {
+        "awayFromHome": "{device} · væk hjemmefra",
+        "paused": "På pause"
+      },
+      "tasks": "Opgaver",
+      "allTasks": "Alle opgaver",
+      "libraryScan": "Gennemgang af bibliotek · {library}",
+      "nothingRunning": "Intet kører.",
+      "activity": "Aktivitet",
+      "noActivity": "Der er ikke sket noget endnu."
+    },
+    "tasks": {
+      "title": "Opgaver",
+      "intro": "Arbejde, Cinemion laver i baggrunden, og hvornår den gennemgår dine biblioteker af sig selv.",
+      "startFailed": "Kunne ikke starte det",
+      "running": "Kører",
+      "nothingRunning": "Intet kører lige nu.",
+      "runNow": "Kør nu",
+      "actions": {
+        "scan": {
+          "title": "Gennemgå alle biblioteker",
+          "text": "Led efter nye, ændrede og fjernede filer i alle biblioteker.",
+          "button": "Gennemgå nu",
+          "started": "Gennemgår alle biblioteker"
+        },
+        "refresh": {
+          "title": "Opdater alle detaljer",
+          "text": "Hent detaljer og billeder igen for alle titler. Det tager et stykke tid på store biblioteker.",
+          "button": "Opdater",
+          "started": "Opdaterer detaljerne for alle titler"
+        },
+        "thumbnails": {
+          "title": "Lav manglende miniaturer til spoling",
+          "text": "Billederne, der vises, mens du trækker gennem en video. Nye videoer får dem af sig selv.",
+          "button": "Lav miniaturer",
+          "started": "Laver manglende miniaturer til spoling"
+        },
+        "markers": {
+          "title": "Find intros og rulletekster igen",
+          "text": "Sammenlign hver sæsons afsnit, og læs kapitler igen, til Spring intro over og til at starte næste afsnit tidligt. Nye afsnit bliver kigget på af sig selv.",
+          "button": "Find igen",
+          "started": "Leder efter intros og rulletekster"
+        },
+        "subtitles": {
+          "title": "Download manglende undertekster",
+          "text": "Led efter undertekster på dine sprog til alle film og afsnit, der ikke har nogen, også dem, der er søgt efter for nylig. Med automatiske downloads slået til sker det også en gang om dagen.",
+          "button": "Led nu",
+          "started": "Leder efter manglende undertekster"
+        },
+        "remake": {
+          "title": "Lav alle miniaturer til spoling forfra",
+          "text": "Slet alle miniaturer til spoling, og lav dem igen, én video ad gangen.",
+          "button": "Lav forfra",
+          "confirmTitle": "Lav alle miniaturer til spoling forfra?",
+          "confirmDescription": "Alle videoer får nye miniaturer, den ene efter den anden. Indtil det er en videos tur, har den ingen.",
+          "confirm": "Lav miniaturer forfra",
+          "started": "Laver alle miniaturer til spoling forfra"
+        }
+      },
+      "schedule": "Tidsplan",
+      "scanEvery": "Hvor tit bibliotekerne gennemgås",
+      "scanEveryDescription": "Nye filer dukker som regel op inden for et minut alligevel. Planlagte gennemgange fanger det, som mappeovervågningen overser, som ændringer på netværksdrev.",
+      "hours": {
+        "one": "Hver time",
+        "other": "Hver {count}. time"
+      },
+      "intervalSaved": {
+        "one": "Bibliotekerne gennemgås hver time",
+        "other": "Bibliotekerne gennemgås hver {count}. time"
+      },
+      "scanned": "Gennemgået {ago} · næste {next}",
+      "notScanned": "Ikke gennemgået endnu · næste {next}",
+      "recentlyFinished": "Færdige for nylig",
+      "nothingFinished": "Intet er blevet færdigt, siden serveren startede.",
+      "history": {
+        "failed": "Mislykkedes",
+        "done": "Færdig",
+        "failedAgo": "{error} · {ago}",
+        "tookAgo": "Tog {duration} · {ago}",
+        "seconds": "{count} s",
+        "minutes": "{count} min."
+      }
+    },
+    "logs": {
+      "title": "Logge",
+      "intro": {
+        "one": "Den sidste linje i serverloggen. Praktisk, når noget ikke virker.",
+        "other": "De sidste {count} linjer i serverloggen, nyeste først. Praktisk, når noget ikke virker."
+      },
+      "show": "Vis",
+      "filters": {
+        "all": "Alle",
+        "info": "Info",
+        "warn": "Advarsler",
+        "error": "Fejl"
+      },
+      "searchPlaceholder": "Ord i beskeden",
+      "noMatch": "Ingen linjer passer.",
+      "lines": "Loglinjer",
+      "levels": {
+        "debug": "Fejlsøgning",
+        "info": "Info",
+        "warn": "Advarsel",
+        "error": "Fejl"
+      }
+    },
+    "users": {
+      "title": "Brugere",
+      "intro": "Alle i husstanden får deres egen profil, historik og indstillinger.",
+      "addProfile": "Tilføj profil",
+      "you": "{name} (dig)",
+      "roles": {
+        "admin": "Administrator",
+        "user": "Profil"
+      },
+      "badges": {
+        "pin": "PIN",
+        "pickerOnly": "Kun profilvalg",
+        "upTo": "Op til {rating}",
+        "hidden": "Skjult i profilvalget"
+      },
+      "edit": "Rediger {name}",
+      "dialog": {
+        "addTitle": "Tilføj profil",
+        "editTitle": "Rediger {name}",
+        "addDescription": "En profil til en i husstanden. Vedkommende får sin egen historik.",
+        "saveChanges": "Gem ændringer",
+        "picture": "Profilbillede",
+        "pictureUploaded": "Uploadet billede.",
+        "pictureInitial": "Forbogstav på deres farve.",
+        "changePicture": "Skift",
+        "name": "Navn",
+        "username": "Brugernavn",
+        "usernamePlaceholder": "Laves ud fra navnet",
+        "colour": "Farve",
+        "role": "Rolle",
+        "ratingLimit": "Aldersgrænse",
+        "noLimit": "Ingen grænse",
+        "showOnPicker": "Vis i profilvalget",
+        "showOnPickerDescription": "Skjulte profiler logger ind med brugernavn og adgangskode.",
+        "newPin": "Ny PIN",
+        "pin": "PIN",
+        "keepIt": "Lad stå tomt for at beholde den",
+        "pinPlaceholder": "Valgfri, 4 cifre",
+        "pinInvalid": "PIN-koden skal være præcis 4 cifre.",
+        "removePin": "Fjern PIN",
+        "newPassword": "Ny adgangskode",
+        "password": "Adgangskode",
+        "passwordPlaceholder": "Valgfri",
+        "passwordDescription": "Uden adgangskode kan denne profil kun åbnes fra profilvalget.",
+        "passwordInvalid": "Brug mindst 6 tegn."
+      },
+      "added": "{name} blev tilføjet",
+      "saved": "Ændringer gemt",
+      "pinRemoved": "PIN fjernet",
+      "pinRemoveFailed": "Kunne ikke fjerne PIN-koden",
+      "removed": "{name} blev fjernet",
+      "removeFailed": "Kunne ikke fjerne brugeren",
+      "remove": {
+        "title": "Fjern {name}?",
+        "description": "Deres profil, billede og historik slettes. Det kan ikke fortrydes."
+      }
+    },
+    "integrations": {
+      "title": "Integrationer",
+      "intro": "Lad Sonarr og Radarr fortælle Cinemion om nye downloads, så de dukker op med det samme, forbind apps som Seerr og Homepage, og lad profiler holde deres Trakt-historik opdateret.",
+      "saveChanges": "Gem ændringer",
+      "loadFailed": "Kunne ikke indlæse integrationer",
+      "copyFailed": "Kunne ikke kopiere",
+      "copyItByHand": "Markér det, og kopiér det i hånden.",
+      "arr": {
+        "title": "Sonarr og Radarr",
+        "address": "Webhook-adresse",
+        "copied": "Adresse kopieret",
+        "copyByHand": "Markér adressen, og kopiér den i hånden.",
+        "localhostHint": "Du åbnede Cinemion som {host}, som Sonarr og Radarr ikke kan nå fra en anden computer eller container. Åbn Cinemion via dens netværksadresse (som {example}), og kopiér adressen derfra.",
+        "steps": {
+          "connect": "Åbn <strong>Settings → Connect</strong> i Sonarr eller Radarr, klik på <strong>+</strong>, og vælg <strong>Webhook</strong>.",
+          "paste": "Indsæt adressen ovenfor i <strong>URL</strong>, og lad metoden stå på <strong>POST</strong>.",
+          "events": "Sæt flueben ved <strong>On File Import</strong>, <strong>On File Upgrade</strong>, <strong>On Rename</strong> og <strong>Delete</strong>-hændelserne.",
+          "test": "Klik på <strong>Test</strong>. Cinemion viser nedenfor, at den er kommet frem."
+        },
+        "lastEvent": "{event}, {ago}. {result}",
+        "eventName": "{app} · {eventType}",
+        "nothingReceived": "Intet modtaget endnu.",
+        "newAddress": {
+          "title": "Ny adresse",
+          "text": "Hvis adressen er sluppet ud, så lav en ny. Den gamle holder op med at virke, så indsæt den nye i Sonarr og Radarr.",
+          "button": "Lav ny adresse",
+          "made": "Ny adresse lavet",
+          "madeDescription": "Indsæt den i Sonarr og Radarr igen.",
+          "failed": "Kunne ikke lave en ny adresse",
+          "confirmTitle": "Lav en ny adresse?",
+          "confirmDescription": "Sonarr og Radarr kan ikke længere nå Cinemion med den gamle adresse, før du indsætter den nye i dem."
+        }
+      },
+      "mappings": {
+        "title": "Stioversættelser",
+        "text": "Kun nødvendigt, når Sonarr eller Radarr ser dine medier i en anden mappe end Cinemion, som {theirs} i deres container og {ours} her. Mapper inde i en oversat mappe bliver også oversat.",
+        "theirFolder": "Deres mappe",
+        "ourFolder": "Cinemions mappe",
+        "remove": "Fjern denne oversættelse",
+        "add": "Tilføj oversættelse",
+        "saved": "Stioversættelser gemt"
+      },
+      "apps": {
+        "title": "Seerr, Homepage og andre apps",
+        "text": "Apps lavet til andre medieservere kan bruge Cinemion i stedet. I Seerr skal du vælge den medieserver, der logger ind med serveradresse, brugernavn og adgangskode, give den adressen nedenfor og logge ind med dit Cinemion-login: så ser den, hvad der er i dine biblioteker, og linker tilbage hertil. Homepages medieserver-widget kan vise, hvad der spiller, og hvor store dine biblioteker er, med en nøgle lavet nedenfor.",
+        "serverAddress": "Serveradresse",
+        "addressCopied": "Adresse kopieret",
+        "keyCopied": "Nøgle kopieret",
+        "madeBy": "Lavet af {name}, {ago}",
+        "madeByRemoved": "Lavet {ago} af en profil, der er blevet fjernet, så den virker ikke",
+        "copyKey": "Kopiér nøglen til {app}",
+        "removeKey": "Fjern nøglen til {app}",
+        "newKeyFor": "Ny nøgle til",
+        "makeKey": "Lav nøgle",
+        "makeFailed": "Kunne ikke lave en nøgle",
+        "removed": "Nøgle fjernet",
+        "removedDescription": "{app} kan ikke længere nå Cinemion med den.",
+        "removeFailed": "Kunne ikke fjerne nøglen",
+        "confirmTitle": "Fjern nøglen til {app}?",
+        "confirmDescription": "Appen, der bruger den, kan ikke længere nå Cinemion, før den får en ny nøgle.",
+        "confirm": "Fjern nøgle"
+      },
+      "podium": {
+        "title": "Podium",
+        "text": "Podium kan uploade klip direkte til et bibliotek. Lav et mål for hvert bibliotek, der skal uploades til, og tilføj så en Podium-kompatibel server i Podium med serverens URL og målets token. Klip beholder det spil, Podium optog, deres titel, hvornår de blev optaget, og navnene på deres lydspor. Podium uploader til alle biblioteker; klipbiblioteker får mest ud af det, den ved.",
+        "serverUrl": "Serverens URL",
+        "serverUrlCopied": "Serverens URL kopieret",
+        "tokenCopied": "Token kopieret",
+        "libraryRemoved": "Dets bibliotek blev fjernet, så det virker ikke",
+        "creatorRemoved": "Lavet af en profil, der er blevet fjernet, så det virker ikke",
+        "into": "Til {where} · sidst brugt {ago}",
+        "intoNotUsed": "Til {where} · ikke brugt endnu",
+        "intoGames": "Til {where}, en mappe pr. spil · sidst brugt {ago}",
+        "intoGamesNotUsed": "Til {where}, en mappe pr. spil · ikke brugt endnu",
+        "copyToken": "Kopiér token til {name}",
+        "remove": "Fjern {name}",
+        "newTargetFor": "Nyt mål til",
+        "nameInPodium": "Navn i Podium",
+        "folder": "Mappe",
+        "folderPlaceholder": "Selve biblioteksmappen",
+        "makeTarget": "Lav mål",
+        "uploadsInto": "Uploads havner i denne mappe inde i {path}. Cinemion skal have skriveadgang til den, ligesom for uploads fra browseren.",
+        "uploadsIntoFirst": "Uploads havner i denne mappe inde i bibliotekets første mappe. Cinemion skal have skriveadgang til den, ligesom for uploads fra browseren.",
+        "gameFolders": "En mappe pr. spil",
+        "gameFoldersDescription": "Lægger hvert klip i en mappe opkaldt efter dets spil, sådan som optagere gør.",
+        "makeFailed": "Kunne ikke lave målet",
+        "removed": "Mål fjernet",
+        "removedDescription": "Podium kan ikke længere uploade med dets token.",
+        "removeFailed": "Kunne ikke fjerne målet",
+        "confirmTitle": "Fjern {name}?",
+        "confirmDescription": "Podium kan ikke længere uploade med dets token. Det, der er uploadet, bliver i biblioteket.",
+        "confirm": "Fjern mål"
+      },
+      "trakt": {
+        "title": "Trakt",
+        "text": "Med en Trakt-app kan hver profil forbinde sin egen Trakt-konto: det, de ser, bliver registreret, og det, de markerer som set, dukker op i deres Trakt-historik. Lav appen på {link} med {redirect} som redirect URI, og kopiér så dens nøgler hertil.",
+        "clientId": "Client ID",
+        "clientSecret": "Client secret",
+        "secretSaved": "Gemt (skriv for at erstatte)",
+        "save": "Gem Trakt-app",
+        "setUp": "Trakt er sat op",
+        "setUpDescription": "Profiler kan forbinde deres konti under Indstillinger › Din profil."
+      },
+      "email": {
+        "title": "E-mail",
+        "text": "Lader Cinemion sende e-mail til profiler, der vil have deres notifikationer på e-mail. Brug din mailudbyders SMTP-server eller en på dit netværk.",
+        "host": "Mailserver",
+        "port": "Port",
+        "security": "Kryptering",
+        "starttls": "STARTTLS (som regel port 587)",
+        "tls": "TLS (som regel port 465)",
+        "none": "Ingen (kun på dit eget netværk)",
+        "from": "Fra",
+        "username": "Brugernavn",
+        "password": "Adgangskode",
+        "passwordSaved": "Gemt; skriv for at ændre den",
+        "saved": "E-mailindstillinger gemt",
+        "off": "Cinemion sender ikke e-mail",
+        "turnOff": "Slå e-mail fra",
+        "testTo": "Send en test til",
+        "test": "Send test",
+        "testSent": "Sendte en test til {to}",
+        "testFailed": "Test-e-mailen blev ikke sendt"
+      }
+    },
+    "webhooks": {
+      "title": "Webhooks",
+      "intro": "Send hændelser som \"afspilning startet\" til andre apps, som Home Assistant eller en chatbot.",
+      "add": "Tilføj webhook",
+      "loadFailed": "Kunne ikke indlæse webhooks",
+      "empty": {
+        "title": "Ingen webhooks endnu",
+        "text": "En webhook er en adresse, Cinemion sender en kort JSON-besked til, hver gang noget, du vælger, sker. Dæmp lyset, når en film starter, eller del nye afsnit i en chat."
+      },
+      "everyEvent": "Alle hændelser",
+      "sendTest": "Send test",
+      "more": "Mere for {name}",
+      "turnOff": "Slå fra",
+      "turnOn": "Slå til",
+      "testArrived": "Testen kom frem",
+      "testAnswered": "{name} svarede {status}.",
+      "testFailed": "Testen kom ikke frem",
+      "testSendFailed": "Kunne ikke sende testen",
+      "toggleFailed": "Kunne ikke ændre webhooken",
+      "removed": "{name} blev fjernet",
+      "removeFailed": "Kunne ikke fjerne webhooken",
+      "delivery": {
+        "nothingSent": "Intet sendt endnu",
+        "test": "Test",
+        "delivered": "{event} leveret {ago} · {status}",
+        "failed": "{event} mislykkedes {ago}: {error}",
+        "failedRetry": "{event} mislykkedes {ago}: {error} Prøver igen {retry}."
+      },
+      "developers": {
+        "title": "Til udviklere",
+        "text": "Hver hændelse er en {method} med en JSON-krop: {body}. {header}-headeren er {prefix} efterfulgt af HMAC-SHA256 af den rå krop, nøglet med webhookens hemmelighed, så modtageren kan tjekke, at den kom fra denne server. Mislykkede afsendelser prøves igen efter 10 sekunder, 1 minut og 5 minutter."
+      },
+      "remove": {
+        "title": "Fjern {name}?",
+        "description": "Cinemion holder op med at sende hændelser til denne adresse.",
+        "confirm": "Fjern webhook"
+      },
+      "dialog": {
+        "addTitle": "Tilføj webhook",
+        "editTitle": "Rediger {name}",
+        "name": "Navn",
+        "nameDescription": "Valgfri. Standard er adressens vært.",
+        "address": "Adresse",
+        "events": "Hændelser",
+        "clearAll": "Ryd alle",
+        "pickAll": "Vælg alle",
+        "enabled": "Til",
+        "enabledDescription": "Slået fra sendes der intet.",
+        "secret": "Hemmelighed",
+        "secretDescription": "Til at tjekke {header}-headeren.",
+        "secretCopied": "Hemmelighed kopieret",
+        "newSecret": "Ny",
+        "secretLater": "En hemmelighed til at tjekke signaturer laves, når du tilføjer webhooken.",
+        "add": "Tilføj webhook",
+        "saved": "Webhook gemt",
+        "added": "Webhook tilføjet",
+        "addedDescription": "Brug Send test for at tjekke, at den kommer frem.",
+        "saveFailed": "Kunne ikke gemme webhooken",
+        "newSecretMade": "Ny hemmelighed lavet",
+        "newSecretDescription": "Opdater den også i den modtagende app.",
+        "newSecretFailed": "Kunne ikke lave en ny hemmelighed",
+        "copyFailed": "Kunne ikke kopiere",
+        "copyByHand": "Markér det, og kopiér det i hånden."
+      },
+      "events": {
+        "playbackStarted": "Afspilning startet",
+        "playbackPaused": "Afspilning sat på pause",
+        "playbackResumed": "Afspilning genoptaget",
+        "playbackStopped": "Afspilning stoppet",
+        "itemWatched": "Set færdig",
+        "itemAdded": "Ny film eller nyt afsnit",
+        "libraryScanned": "Bibliotek gennemgået",
+        "userSignedIn": "Nogen loggede ind",
+        "togetherStarted": "Se sammen startet",
+        "subtitlesDownloaded": "Undertekster downloadet"
+      }
+    }
+  },
+  "libraries": {
+    "title": "Biblioteker",
+    "intro": "De mapper, Cinemion kigger i efter film, serier, andre videoer, musik og bøger. Nye filer bliver fundet af sig selv.",
+    "addButton": "Tilføj bibliotek",
+    "loadFailed": "Kunne ikke indlæse biblioteker",
+    "empty": "Ingen biblioteker endnu.",
+    "conflict": "{conflict} Brug “Rediger bibliotek” for at ændre mapperne.",
+    "uploadProgress": {
+      "adding": {
+        "one": "Føjer en upload til biblioteket",
+        "other": "Føjer {count} uploads til biblioteket"
+      },
+      "uploading": {
+        "one": "Uploader {count} fil · {percent} %",
+        "other": "Uploader {count} filer · {percent} %"
+      },
+      "needsALook": {
+        "one": "{count} upload skal lige ses på",
+        "other": "{count} uploads skal lige ses på"
+      }
+    },
+    "scanProgress": "{status} · {percent} %",
+    "row": {
+      "scanned": "gennemgået {ago}",
+      "notScanned": "ikke gennemgået endnu",
+      "rated": "aldersgrænse {rating}",
+      "unrated": "uden aldersgrænse"
+    },
+    "scanNow": "Gennemgå nu",
+    "scanFailed": "Kunne ikke starte gennemgangen",
+    "moreFor": "Mere for {name}",
+    "menu": {
+      "upload": "Upload filer",
+      "edit": "Rediger bibliotek",
+      "refresh": {
+        "all": "Opdater alle detaljer",
+        "detailsAndThumbnails": "Opdater detaljer og miniaturer",
+        "thumbnailsAndGames": "Opdater miniaturer og spil",
+        "covers": "Find forsider igen",
+        "bookDetails": "Læs bogdetaljer igen"
+      },
+      "remove": "Fjern bibliotek"
+    },
+    "remove": {
+      "title": "Fjern {name}?",
+      "description": "Cinemion glemmer dette bibliotek og dets historik. Filerne i mapperne bliver ikke rørt.",
+      "confirm": "Fjern bibliotek",
+      "done": "{name} blev fjernet",
+      "failed": "Kunne ikke fjerne biblioteket"
+    },
+    "types": {
+      "movies": {
+        "name": "Film",
+        "count": {
+          "one": "{count} film",
+          "other": "{count} film"
+        }
+      },
+      "shows": {
+        "name": "Serier",
+        "count": {
+          "one": "{count} serie",
+          "other": "{count} serier"
+        }
+      },
+      "videos": {
+        "name": "Videoer",
+        "description": "Til hjemmevideoer, optagelser og alt andet, der ikke er en film eller serie. Intet slås op online: titlerne kommer fra filnavnene, og du kan rette detaljerne i hånden.",
+        "count": {
+          "one": "{count} video",
+          "other": "{count} videoer"
+        }
+      },
+      "music": {
+        "name": "Musik",
+        "description": "Albums, kunstnere og numre, sorteret efter mærkerne i filerne (eller mapper som Kunstner/Album/01 Titel.mp3). Forsider kommer fra filerne eller en cover.jpg ved siden af dem, og sangtekster fra mærker eller .lrc-filer. Intet slås op online.",
+        "count": {
+          "one": "{count} album",
+          "other": "{count} albums"
+        }
+      },
+      "photos": {
+        "name": "Billeder",
+        "description": "Billeder og telefonvideoer, hvor hver mappe er et album. Datoer, kameraer og steder kommer fra selve billederne (HEIC fra iPhones virker også), og intet slås op online. Alle kan også lave deres egne albums uden at flytte filer.",
+        "count": {
+          "one": "{count} billede",
+          "other": "{count} billeder"
+        }
+      },
+      "clips": {
+        "name": "Klip",
+        "description": "Spiloptagelser, samlet efter spil. Spillet kommer fra de navne, optagere giver deres filer og mapper (NVIDIA, AMD, Xbox Game Bar, OBS, Steam og flere), med forsider fra Steam. Klip uden spil kan få et i hånden eller få et forslag fra billedgenkendelse.",
+        "count": {
+          "one": "{count} klip",
+          "other": "{count} klip"
+        }
+      },
+      "audiobooks": {
+        "name": "Lydbøger",
+        "description": "En mappe med lydfiler er én bog (også med dele i CD1-, CD2…-mapper), og det er en enkelt .m4b også. Kapitler kommer fra filerne, detaljer fra deres mærker, og alle har deres eget sted.",
+        "count": {
+          "one": "{count} lydbog",
+          "other": "{count} lydbøger"
+        }
+      },
+      "books": {
+        "name": "Bøger",
+        "description": "EPUB-bøger læses direkte i Cinemion, og alles sted bliver gemt; PDF'er åbnes i browserens egen fremviser. Detaljer og forsider kommer fra filerne.",
+        "count": {
+          "one": "{count} bog",
+          "other": "{count} bøger"
+        }
+      }
+    },
+    "form": {
+      "type": "Bibliotekstype",
+      "name": "Navn",
+      "noFolders": "Åbn en mappe, og vælg \"{button}\"."
+    },
+    "rating": {
+      "videos": {
+        "label": "Aldersgrænse for videoer uden en",
+        "description": "Profiler med en aldersgrænse ser kun videoer inden for den. Vælg “{rating}” til familievideoer, som alle må se."
+      },
+      "music": {
+        "label": "Aldersgrænse for disse albums",
+        "description": "Profiler med en aldersgrænse ser kun musik inden for den. Vælg “{rating}”, så alle kan lytte."
+      },
+      "photos": {
+        "label": "Aldersgrænse for billeder uden en",
+        "description": "Profiler med en aldersgrænse ser kun billeder og videoer inden for den. Vælg “{rating}” til familiebilleder, som alle må se."
+      },
+      "clips": {
+        "label": "Aldersgrænse for klip uden en",
+        "description": "Profiler med en aldersgrænse ser kun klip inden for den. Vælg en, der passer til de spil, du spiller, som “{rating}”."
+      },
+      "books": {
+        "label": "Aldersgrænse for disse bøger",
+        "description": "Profiler med en aldersgrænse ser kun bøger inden for den. Vælg “{rating}”, så alle kan læse og lytte."
+      },
+      "none": "Ingen: skjul dem for profiler med aldersgrænse"
+    },
+    "edit": {
+      "title": "Rediger {name}",
+      "titleFallback": "Rediger bibliotek",
+      "rescanNote": "Når du har gemt, gennemgås bibliotekerne igen. Titler i mapper, du har fjernet, forlader dette bibliotek sammen med deres historik her.",
+      "saved": "Bibliotek gemt",
+      "failed": "Kunne ikke gemme biblioteket"
+    },
+    "add": {
+      "title": "Tilføj bibliotek",
+      "confirm": "Tilføj bibliotek",
+      "added": "{name} blev tilføjet",
+      "scanning": "Cinemion gennemgår det nu.",
+      "failed": "Kunne ikke tilføje biblioteket"
+    }
+  },
+  "folderBrowser": {
+    "path": "Mappesti",
+    "drives": "Drev",
+    "top": "Øverst",
+    "typePath": "Skriv en sti",
+    "useFolder": "Brug denne mappe",
+    "selected": "Valgt",
+    "empty": "Ingen mapper her.",
+    "stopTyping": "Stop med at skrive"
+  },
+  "uploads": {
+    "dialog": {
+      "title": "Upload til {name}",
+      "description": "Filerne havner i den mappe, du vælger. Zip-filer pakkes ud der, med mapperne inden i dem. Uploads fortsætter, når du lukker dette.",
+      "newFolder": "Ny mappe inden i den (valgfri)",
+      "newFolderDescription": "Brug / til en mappe inden i en mappe. Den laves, når uploaden starter.",
+      "goesTo": "Havner i {destination}",
+      "openFolder": "Åbn den mappe, der skal uploades til.",
+      "drop": "Slip filer, mapper eller zip-filer her",
+      "maxSize": "Op til {size} hver.",
+      "chooseFiles": "Vælg filer",
+      "chooseFolder": "Vælg en mappe",
+      "picked": "Valgte filer",
+      "leftOut": "Udeladt: {reason}",
+      "replace": "Erstat filer, der allerede er der",
+      "replaceDescription": "Ellers uploades en fil, der allerede er i mappen, ikke, og zip-filer springer de filer over.",
+      "uploads": "Uploads",
+      "clearFinished": "Ryd færdige",
+      "cantCarryOn": "Kan ikke fortsætte med den fil",
+      "uploadButton": {
+        "one": "Upload {count} fil · {size}",
+        "other": "Upload {count} filer · {size}"
+      }
+    },
+    "accepts": {
+      "video": "Videofiler, undertekster, NFO-filer og billeder eller zip-filer med dem.",
+      "music": "Lydfiler, sangtekster og forsider eller zip-filer med dem.",
+      "audiobooks": "Lydfiler, cue sheets, beskrivelser og forsider eller zip-filer med dem.",
+      "books": "EPUB- og PDF-filer og forsider eller zip-filer med dem.",
+      "photos": "Billeder (JPG, HEIC, PNG og flere) og videoer eller zip-filer med dem.",
+      "clips": "Videofiler, undertekster og billeder eller zip-filer med dem."
+    },
+    "folderExample": {
+      "movies": "Glass Harbor (2021)",
+      "shows": "Saltwater Kings/Season 1",
+      "videos": "Ferie 2025",
+      "music": "Kunstner/Album",
+      "audiobooks": "Forfatter/Bogtitel",
+      "books": "Forfatter",
+      "photos": "Ferie 2025/Dag 1",
+      "clips": "Counter-Strike 2"
+    },
+    "skip": {
+      "notUsed": "Ikke en fil, dette bibliotek bruger",
+      "empty": "Tom",
+      "tooBig": "Større end serveren tager imod ({size})"
+    },
+    "folderErrors": {
+      "outside": "Den nye mappe skal ligge inden i mappen ovenfor.",
+      "hidden": "Mappenavne, der starter med et punktum, er skjulte, så biblioteket ville aldrig vise dem."
+    },
+    "status": {
+      "waitingResumed": "Venter · {percent} % sendt før",
+      "waiting": "Venter · {size}",
+      "percent": "{percent} %",
+      "sentOf": "{sent} af {size}",
+      "speed": "{speed}/s",
+      "retrying": "Prøver igen…",
+      "paused": "Stoppede ved {percent} %. Vælg filen igen for at fortsætte.",
+      "adding": "Føjes til biblioteket",
+      "processingProgress": "{status} · {percent} %",
+      "added": "Tilføjet",
+      "stopped": "Uploaden stoppede."
+    },
+    "timeLeft": {
+      "underAMinute": "under et minut tilbage",
+      "minutes": {
+        "one": "cirka {count} min. tilbage",
+        "other": "cirka {count} min. tilbage"
+      },
+      "hours": "cirka {hours} t {minutes} min. tilbage"
+    },
+    "row": {
+      "leftOut": {
+        "one": "{count} udeladt",
+        "other": "{count} udeladt"
+      },
+      "pickFile": "Vælg filen",
+      "replace": "Erstat den",
+      "clear": "Ryd",
+      "cancel": "Annuller upload"
+    },
+    "errors": {
+      "tooLarge": "Stykket var for stort til serveren eller en proxy foran den.",
+      "status": "Serveren svarede {status} {statusText}.",
+      "connectionLost": "Mistede forbindelsen til serveren.",
+      "differentFile": {
+        "one": "Det er en anden fil. Vælg \"{name}\" ({count} byte) for at fortsætte.",
+        "other": "Det er en anden fil. Vælg \"{name}\" ({count} bytes) for at fortsætte."
+      },
+      "differentContents": "Den fil har et andet indhold end den, der bliver uploadet.",
+      "retrying": "{error} Prøver igen…"
+    },
+    "toasts": {
+      "uploadFailed": "Kunne ikke uploade {name}",
+      "added": "{name} blev tilføjet",
+      "addFailed": "Kunne ikke tilføje {name}"
+    }
+  },
+  "updates": {
+    "title": "Opdateringer",
+    "isOut": "Cinemion {version} er ude",
+    "versions": "Denne server har {current}. Den nye kom ud {date}.",
+    "whatsNew": "Hvad er nyt",
+    "how": {
+      "docker": "For at opdatere skal du hente det nye image og starte containeren igen, for eksempel med {command}. Dine biblioteker og indstillinger forbliver som de er.",
+      "aur": "For at opdatere skal du opgradere pakken {package} (for eksempel med {upgrade}) og så genstarte Cinemion med {restart}.",
+      "binary": "For at opdatere skal du downloade den nye version fra udgivelsessiden, lægge den i stedet for denne og starte Cinemion igen. Dine biblioteker og indstillinger forbliver som de er.",
+      "source": "For at opdatere skal du hente den nye version med {command} og starte Cinemion igen."
+    },
+    "upToDate": "Du har den nyeste Cinemion",
+    "notChecked": "Ikke tjekket endnu",
+    "lastCheckFailed": "Det sidste tjek virkede ikke: {error}",
+    "checked": "Tjekket {ago}.",
+    "checksSoon": "Cinemion tjekker et minut efter, den starter.",
+    "checkNow": "Tjek nu",
+    "checkFailed": "Kunne ikke tjekke for opdateringer",
+    "switch": "Tjek for opdateringer",
+    "switchDescription": "Kigger efter Cinemions udgivelser på GitHub to gange om dagen og fortæller administratorer, når der er en ny. Intet om din server eller dine biblioteker bliver sendt, og intet bliver installeret af sig selv.",
+    "disabledByEnv": "Slået fra for denne server med {setting}."
+  },
+  "credits": {
+    "tmdb": "Dette produkt bruger TMDB og TMDB's API'er, men er ikke godkendt, certificeret eller på anden måde anbefalet af TMDB."
+  },
+  "backups": {
+    "title": "Sikkerhedskopier",
+    "intro": "Gem en kopi af alt det, Cinemion ikke selv kan hente tilbage: profiler, hvad alle har set, indstillinger, playlister, albums og de detaljer, du har rettet.",
+    "makeNow": "Lav en sikkerhedskopi nu",
+    "making": "Laver en sikkerhedskopi",
+    "makeFailed": "Kunne ikke lave en sikkerhedskopi",
+    "listTitle": "Dine sikkerhedskopier",
+    "none": "Ingen sikkerhedskopier endnu. Lav en nu, eller slå en tidsplan til nedenfor.",
+    "protected": "Beskyttet med adgangskode",
+    "downloadOne": "Download sikkerhedskopien fra {date}",
+    "deleteOne": "Slet sikkerhedskopien fra {date}",
+    "downloadFailed": "Kunne ikke downloade sikkerhedskopien",
+    "deleted": "Sikkerhedskopi slettet",
+    "deleteFailed": "Kunne ikke slette sikkerhedskopien",
+    "confirmDeleteTitle": "Slet denne sikkerhedskopi?",
+    "confirmDeleteDescription": "Sikkerhedskopien fra {date} forsvinder for altid.",
+    "folderWithSpace": "Gemt i {folder} · {free} ledig",
+    "folderOnly": "Gemt i {folder}",
+    "kind": {
+      "manual": "Lavet i hånden",
+      "scheduled": "Planlagt",
+      "update": "Før en opdatering"
+    },
+    "schedule": {
+      "title": "Tidsplan",
+      "label": "Lav en sikkerhedskopi af sig selv",
+      "off": "Aldrig",
+      "daily": "Hver nat",
+      "weekly": "En gang om ugen",
+      "keep": "Behold",
+      "keepDescription": "Ældre planlagte sikkerhedskopier slettes. Dem, du laver i hånden, beholdes, til du sletter dem.",
+      "keepCount": {
+        "one": "Den seneste sikkerhedskopi",
+        "other": "De seneste {count} sikkerhedskopier"
+      },
+      "next": "Den næste er planlagt {when}, om natten når det er muligt.",
+      "lastFailed": "Den seneste planlagte sikkerhedskopi virkede ikke: {error}",
+      "beforeUpdates": "Cinemion laver også selv en sikkerhedskopi, før en opdatering ændrer databasen, så du kan gå tilbage. Den beholder de seneste tre af dem."
+    },
+    "contents": {
+      "title": "Hvad kommer med",
+      "text": "Hver sikkerhedskopi har databasen, login-nøglen, profilbilleder og billeder, du har valgt eller uploadet i hånden. Konverteringer, miniaturer til spoling og andet i cachen er udeladt; de laves igen, når der er brug for dem.",
+      "artwork": "Tag downloadede billeder med",
+      "artworkDescription": "Plakater og baggrunde fra internettet. Sikkerhedskopierne bliver større, men en gendannet server ser færdig ud med det samme i stedet for efter en opdatering af alle detaljer.",
+      "folder": "Mappe til sikkerhedskopier",
+      "folderDescription": "En fuld sti på serveren. Lad den stå tom for at bruge den viste mappe. En mappe på et andet drev holder dine sikkerhedskopier sikre, hvis dette drev svigter.",
+      "folderSaved": "Sikkerhedskopier havner i den nye mappe"
+    },
+    "password": {
+      "on": "Sikkerhedskopier er beskyttet med adgangskode",
+      "off": "Sikkerhedskopier er ikke beskyttet",
+      "text": "En sikkerhedskopi indeholder login-nøglen og nøglerne til de tjenester, du har forbundet, så alle med filen kan komme ind på denne server. En adgangskode låser nye sikkerhedskopier; uden den kan de ikke gendannes, så gem den et sikkert sted.",
+      "set": "Vælg en adgangskode",
+      "change": "Skift adgangskoden",
+      "remove": "Fjern adgangskoden",
+      "removeTitle": "Stop med at beskytte nye sikkerhedskopier?",
+      "removeDescription": "Nye sikkerhedskopier kræver ikke adgangskode. Sikkerhedskopier, der var beskyttet, kræver stadig den gamle.",
+      "removed": "Nye sikkerhedskopier bliver ikke beskyttet",
+      "saved": "Nye sikkerhedskopier bliver beskyttet med denne adgangskode",
+      "dialogTitle": "Beskyt sikkerhedskopier med en adgangskode",
+      "dialogDescription": "Nye sikkerhedskopier skal bruge denne adgangskode for at blive gendannet. Sikkerhedskopier lavet før beholder deres adgangskode.",
+      "new": "Adgangskode",
+      "confirm": "Skriv den igen",
+      "tooShort": "Brug mindst 8 tegn.",
+      "mismatch": "Adgangskoderne er ikke ens."
+    },
+    "restore": {
+      "title": "Gendan en sikkerhedskopi",
+      "text": "En gendannelse erstatter alt på serveren med det, der er i sikkerhedskopien, så det gøres, mens der ikke sker andet:",
+      "wizard": "På en ny eller geninstalleret Cinemion skal du vælge “Gendan en sikkerhedskopi” på opsætningens første side. Den finder sikkerhedskopier i mappen til sikkerhedskopier, eller du kan uploade en.",
+      "cli": "På denne server skal du stoppe Cinemion og køre {command} og så starte den igen."
+    }
+  },
+  "myList": {
+    "title": "Min liste",
+    "intro": "Film og serier, du gerne vil se. Tilføj dem med bogmærkeknappen på deres side.",
+    "here": {
+      "one": "Klar til at se",
+      "other": "Klar til at se · {count}"
+    },
+    "waiting": {
+      "one": "Ikke her endnu",
+      "other": "Ikke her endnu · {count}"
+    },
+    "waitingText": "De er på din liste, men ikke i noget bibliotek, du kan se. De rykker op af sig selv, når de bliver tilføjet.",
+    "notHere": "Ikke her endnu",
+    "justArrived": "Lige kommet",
+    "kind": {
+      "movie": "Film",
+      "show": "Serie",
+      "video": "Video"
+    },
+    "empty": {
+      "title": "Intet på din liste endnu",
+      "text": "Fundet noget til senere? Tryk på bogmærkeknappen på dens side, så dukker den op her og på forsiden."
+    },
+    "trakt": {
+      "syncNow": "Synkronisér med Trakt",
+      "synced": "Din liste er i takt med Trakt",
+      "syncFailed": "Kunne ikke synkronisere med Trakt",
+      "syncedAgo": "Holdes i takt med din Trakt-watchlist, begge veje. Sidst synkroniseret {ago}.",
+      "notYet": "Holdes i takt med din Trakt-watchlist, begge veje. Den første synkronisering sker om få minutter.",
+      "failed": "Den seneste synkronisering med Trakt virkede ikke: {error}",
+      "notLinked": "Forbind Trakt under <link>Indstillinger › Din profil</link> for at holde denne liste i takt med din Trakt-watchlist."
+    }
+  },
+  "https": {
+    "title": "HTTPS",
+    "intro": "En sikker adresse til Cinemion, uden at du skal sætte en reverse proxy op. Browsere kræver det til offline-downloads og til notifikationer på telefoner.",
+    "notStarted": "https startede ikke",
+    "renewed": "Certifikatet er fornyet",
+    "renewFailed": "Kunne ikke forny certifikatet",
+    "address": {
+      "title": "Sikker adresse",
+      "switch": "Slå https til",
+      "switchDescription": "Cinemion svarer også på en anden port, krypteret. Den almindelige http-adresse virker stadig ved siden af.",
+      "turnedOn": "https er slået til",
+      "turnedOff": "https er slået fra",
+      "port": "https-port",
+      "portDescription": "8443, medmindre noget andet bruger den. Med Docker skal du også udgive denne port.",
+      "openAt": "Åbn Cinemion på:"
+    },
+    "certificate": {
+      "title": "Certifikat",
+      "kind": "Hvor certifikatet kommer fra",
+      "inUse": "I brug",
+      "use": "Brug dette certifikat",
+      "switched": "Bruger det nye certifikat",
+      "facts": "Fra {issuer}, gyldigt til {date}. Det fornyes af sig selv, før det udløber."
+    },
+    "kind": {
+      "cinemion": "Lavet af Cinemion",
+      "letsencrypt": "Let's Encrypt",
+      "own": "Dit eget"
+    },
+    "cinemion": {
+      "text": "Virker på ethvert hjemmenetværk, uden domæne. Cinemion underskriver sit eget certifikat, så hver enhed skal stole på Cinemion én gang (se nedenfor); indtil da advarer browsere om adressen.",
+      "names": "Ekstra navne og adresser",
+      "namesDescription": "Cinemion dækker selv denne computers navn og adresser. Tilføj andre, den kan nås på, som et navn din router deler ud, eller computerens adresse, når Cinemion kører i Docker.",
+      "covers": "Gyldigt for {names}.",
+      "notCovered": "Du åbnede denne side på {host}, som certifikatet ikke dækker endnu.",
+      "add": "Tilføj {host}",
+      "added": "Certifikatet dækker nu den adresse",
+      "remake": "Lav et nyt certifikat"
+    },
+    "trust": {
+      "title": "Stol på Cinemion på dine enheder",
+      "text": "Gør det én gang på hver enhed, der åbner Cinemion over https. Det får enheden til at stole på certifikater, som denne Cinemion underskriver, og intet andet.",
+      "download": "Download Cinemions certifikat",
+      "onPhone": "På en telefon eller tablet skal du åbne {address} i dens browser for at downloade det der.",
+      "windows": {
+        "title": "Windows",
+        "steps": "Åbn den downloadede fil, og vælg Installer certifikat.\nVælg Lokal computer, derefter Placer alle certifikater i følgende lager, Gennemse og Rodnøglecentre, der er tillid til.\nAfslut, og genstart browseren."
+      },
+      "mac": {
+        "title": "Mac",
+        "steps": "Åbn den downloadede fil; Nøgleringsadgang føjer den til login-nøgleringen.\nDobbeltklik på certifikatet der, åbn Tillid, og sæt Ved brug af dette certifikat til Hav altid tillid.\nLuk vinduet, og skriv din adgangskode for at gemme."
+      },
+      "iphone": {
+        "title": "iPhone og iPad",
+        "steps": "Åbn downloadadressen i Safari, og tillad, at profilen downloades.\nGå til Indstillinger › Generelt › VPN og enhedsadministration, åbn Cinemion-profilen, og installer den.\nGå så til Indstillinger › Generelt › Om › Indstillinger for certifikattillid, og slå fuld tillid til for Cinemion."
+      },
+      "android": {
+        "title": "Android",
+        "steps": "Download filen i browseren.\nGå til Indstillinger › Sikkerhed › Flere sikkerhedsindstillinger (eller Kryptering og loginoplysninger) › Installer et certifikat › CA-certifikat, og vælg filen.\nOrdlyden er lidt forskellig fra telefon til telefon; søg efter \"certifikat\" i Indstillinger for at finde det."
+      },
+      "linux": {
+        "title": "Linux",
+        "steps": "Arch: sudo trust anchor cinemion-ca.crt\nDebian og Ubuntu: kopiér filen til /usr/local/share/ca-certificates/, og kør sudo update-ca-certificates.\nChrome på Linux har sin egen liste: Indstillinger › Privatliv og sikkerhed › Sikkerhed › Administrer certifikater › Autoriteter › Importér."
+      },
+      "firefox": {
+        "title": "Firefox (alle computere)",
+        "steps": "Firefox har sin egen liste. Gå til Indstillinger › Privatliv & sikkerhed › Certifikater › Vis certifikater › Autoriteter › Importer, vælg filen, og sæt flueben ved Stol på denne CA ved identificering af websteder."
+      }
+    },
+    "letsencrypt": {
+      "text": "Et certifikat, som alle enheder stoler på med det samme, gratis fra Let's Encrypt, til dit eget domæne, der peger på denne server.",
+      "stepDomain": "Peg domænet (eller et underdomæne) på dit hjems internetadresse.",
+      "stepPort80": "Viderestil port 80 på din router til port {port} på denne computer. Let's Encrypt tjekker domænet igennem den, igen med et par måneders mellemrum.",
+      "stepPort443": "Viderestil port 443 til https-porten {port}, så domænet åbner Cinemion over https.",
+      "domain": "Domæne",
+      "email": "E-mailadresse (valgfri)",
+      "emailDescription": "Let's Encrypt skriver hertil, hvis et certifikat er ved at udløbe uden at være blevet fornyet.",
+      "terms": "Når du henter et certifikat, accepterer du <link>Let's Encrypts abonnentaftale</link>.",
+      "get": "Hent et certifikat",
+      "done": "Let's Encrypt har udstedt et certifikat",
+      "renew": "Forny nu"
+    },
+    "own": {
+      "text": "Har du allerede et certifikat fra din router, din egen certifikatudsteder eller et wildcard til dit domæne? Indsæt det her. Du skal selv erstatte det, før det udløber.",
+      "certificate": "Certifikat",
+      "certificateDescription": "PEM-tekst med mellemcertifikaterne efter dit eget (hele kæden).",
+      "key": "Privat nøgle",
+      "use": "Brug dette certifikat",
+      "replace": "Erstat certifikatet",
+      "saved": "Bruger dit certifikat"
+    },
+    "redirect": {
+      "title": "Almindelig http",
+      "switch": "Send browsere til https",
+      "description": "Sider, der åbnes på http-adressen, flytter til https-adressen. Apps, Sonarr, Radarr og webhooks bruger http som før. Slå det kun til, når dine enheder stoler på certifikatet."
+    }
+  },
+  "notifications": {
+    "bell": "Notifikationer",
+    "bellUnread": {
+      "one": "Notifikationer, {count} ulæst",
+      "other": "Notifikationer, {count} ulæste"
+    },
+    "title": "Notifikationer",
+    "markAllRead": "Markér alle som læst",
+    "empty": "Intet nyt endnu. Nye film, afsnit og titler fra din liste dukker op her.",
+    "settings": "Notifikationsindstillinger",
+    "episodeCode": "S{season} A{episode}",
+    "episode": "{code} er klar til at se",
+    "episodeWithTitle": "{code} · {title} er klar til at se",
+    "episodes": {
+      "one": "Et nyt afsnit at se",
+      "other": "{count} nye afsnit at se"
+    },
+    "albumBy": "Et nyt album af {artist}",
+    "newIn": "Nyt i {library}",
+    "fromList": "Fra din liste, nu klar til at se",
+    "prefs": {
+      "title": "Notifikationer",
+      "mode": "Fortæl mig om",
+      "modeDescription": "Nye film, afsnit, albums og bøger i de biblioteker, du kan se. Titler fra Min liste tæller altid med.",
+      "all": "Alt nyt",
+      "following": "Serier, jeg ser, og titler på Min liste",
+      "none": "Intet",
+      "sameAsAbove": "Samme som ovenfor",
+      "push": "Notifikationer på denne enhed",
+      "pushDescription": "Få dem som beskeder fra andre apps, også når Cinemion ikke er åben.",
+      "pushUnavailable": "Denne server kan ikke sende push-notifikationer lige nu.",
+      "pushNeedsHttps": "Denne browser kan kun få dem, når Cinemion er åbnet over https (Indstillinger › HTTPS). iPhones og iPads skal først have Cinemion føjet til hjemmeskærmen.",
+      "pushOn": "Denne enhed får nu notifikationer",
+      "pushFailed": "Kunne ikke slå notifikationer til",
+      "pushDenied": "Browseren har fået besked på ikke at vise notifikationer fra Cinemion. Tillad dem i browserens indstillinger for siden, og prøv igen.",
+      "pushNoWorker": "Genindlæs siden én gang, og prøv igen; den del, der modtager notifikationer, kørte ikke endnu.",
+      "thisDevice": "{name} (denne enhed)",
+      "since": "Siden {ago}",
+      "removeDevice": "Stop notifikationer på {name}",
+      "test": "Send en test",
+      "testSent": {
+        "one": "Sendt til 1 enhed",
+        "other": "Sendt til {count} enheder"
+      },
+      "testNone": "Ingen enhed modtog testen. Slå notifikationer fra og til igen på enheden.",
+      "email": "E-mail",
+      "emailDescription": "Lad stå tomt for ingen e-mail. Du får én e-mail pr. omgang nye ting.",
+      "emailSaved": "Notifikationer bliver også sendt på e-mail",
+      "emailOff": "Ikke flere notifikationsmails"
+    },
+    "testBody": "Notifikationer virker på denne enhed.",
+    "email": {
+      "one": "{title}: {text}",
+      "many": {
+        "one": "{count} ny ting på {server}",
+        "other": "{count} nye ting på {server}"
+      },
+      "greeting": "Hej {name}",
+      "line": "• {title}: {text}",
+      "open": "Åbn {server}: {link}",
+      "openPlain": "Åbn {server} for at se med.",
+      "why": "Du får disse på grund af dine notifikationsindstillinger i Cinemion (Indstillinger › Din profil)."
+    }
+  },
+  "stats": {
+    "title": "Din statistik",
+    "intro": "Hvad du har set, lyttet til og læst, og hvor længe.",
+    "everyoneTitle": "Alles statistik",
+    "everyoneIntro": "Hele husstandens tid, favoritterne, og det ingen ser.",
+    "yearLink": "Dit {year} i tilbageblik",
+    "whose": "Hvis statistik",
+    "you": "Dig",
+    "everyone": "Alle",
+    "periodLabel": "Periode",
+    "period": {
+      "week": "Sidste 7 dage",
+      "month": "Sidste 30 dage",
+      "year": "Sidste 12 måneder",
+      "all": "Hele tiden"
+    },
+    "emptyTitle": "Her er intet endnu",
+    "emptyText": "Se, lyt til eller læs noget, så dukker tiden op her.",
+    "watching": "Set",
+    "listening": "Lyttet",
+    "reading": "Læst",
+    "chartLabel": "Tid pr. dag eller måned, delt op i set, lyttet og læst",
+    "minutes": {
+      "one": "{count} min.",
+      "other": "{count} min."
+    },
+    "hours": {
+      "one": "{count} t",
+      "other": "{count} t"
+    },
+    "counts": {
+      "movies": {
+        "one": "{count} film",
+        "other": "{count} film"
+      },
+      "episodes": {
+        "one": "{count} afsnit",
+        "other": "{count} afsnit"
+      },
+      "tracks": {
+        "one": "{count} sang",
+        "other": "{count} sange"
+      },
+      "books": {
+        "one": "{count} bog",
+        "other": "{count} bøger"
+      },
+      "days": {
+        "one": "{count} dag med noget på",
+        "other": "{count} dage med noget på"
+      },
+      "plays": {
+        "one": "Spillet én gang",
+        "other": "Spillet {count} gange"
+      },
+      "sittings": {
+        "one": "{count} gang",
+        "other": "{count} gange"
+      }
+    },
+    "topShows": "Topserier",
+    "topMovies": "Topfilm",
+    "topArtists": "Topkunstnere",
+    "topBooks": "Topbøger",
+    "genres": "Genrer",
+    "streak": {
+      "current": {
+        "one": "{count} dag i træk",
+        "other": "{count} dage i træk"
+      },
+      "longest": {
+        "one": "Din længste stribe er {count} dag",
+        "other": "Din længste stribe er {count} dage"
+      },
+      "none": "Ingen stribe lige nu"
+    },
+    "binge": {
+      "title": {
+        "one": "{count} afsnit af {show} på én dag",
+        "other": "{count} afsnit af {show} på én dag"
+      },
+      "when": "Dit største maraton, den {date}"
+    },
+    "people": "Hvem så mest",
+    "privateProfiles": {
+      "one": "1 profil holder sin statistik privat; dens tid tæller med i det samlede.",
+      "other": "{count} profiler holder deres statistik privat; deres tid tæller med i det samlede."
+    },
+    "untouched": {
+      "title": "Det ingen ser",
+      "text": "Film og serier, som ingen på denne server nogensinde har afspillet.",
+      "count": "{count} af {total}",
+      "oldest": "Har ventet længst",
+      "added": "{library} · tilføjet {date}"
+    },
+    "private": {
+      "label": "Hold min statistik privat",
+      "description": "Udelader dit navn fra alles statistik og husstandens årlige tilbageblik. Din tid tæller stadig med i det samlede, uden dit navn."
+    }
+  },
+  "review": {
+    "eyebrow": "Året i tilbageblik",
+    "title": "{year} i tilbageblik",
+    "whose": "Hvis år",
+    "me": "Dig",
+    "household": "Husstand",
+    "emptyTitle": "Et stille år",
+    "emptyText": "Der er ikke set, hørt eller læst noget i {year} endnu.",
+    "youSpent": "Du brugte",
+    "householdSpent": "Alle på {name} brugte",
+    "watching": "{time} på at se",
+    "listening": "{time} på at lytte",
+    "reading": "{time} på at læse",
+    "days": {
+      "one": "På {count} af årets dage",
+      "other": "På {count} af årets dage"
+    },
+    "topShow": "Topserie",
+    "topMovie": "Topfilm",
+    "topArtist": "Topkunstner",
+    "topBook": "Topbog",
+    "months": "Måned for måned",
+    "busiest": "Travleste måned: {month}",
+    "records": "Rekorder",
+    "streak": {
+      "one": "{count} dag i træk",
+      "other": "{count} dage i træk"
+    },
+    "binge": {
+      "one": "{count} afsnit af {show} den {date}",
+      "other": "{count} afsnit af {show} den {date}"
+    },
+    "genres": "Dine genrer",
+    "first": "Hvor året begyndte",
+    "people": "Hvem så mest",
+    "share": {
+      "button": "Del",
+      "copied": "Opsummering kopieret",
+      "heading": "{name}s {year} på Cinemion",
+      "hours": "{time} med at se, lytte og læse",
+      "show": "Topserie: {title}",
+      "movie": "Topfilm: {title}",
+      "artist": "Topkunstner: {title}",
+      "streak": {
+        "one": "Længste stribe: {count} dag",
+        "other": "Længste stribe: {count} dage"
+      }
+    }
+  },
+  "upkeep": {
+    "title": "Vedligehold",
+    "intro": "Hold bibliotekerne ryddelige: se, hvor pladsen går hen, find titler, der er der to gange, og filer, der ikke kan afspilles.",
+    "viewLabel": "Hvad vil du se på",
+    "views": {
+      "space": "Brugt plads",
+      "duplicates": "Dubletter",
+      "broken": "Ødelagte filer",
+      "missing": "Manglende afsnit"
+    },
+    "notInLibrary": "Ikke sorteret under en titel",
+    "modified": "ændret {date}",
+    "space": {
+      "total": "{size} i alt",
+      "files": {
+        "one": "{count} fil",
+        "other": "{count} filer"
+      },
+      "free": "{size} ledig på drevet",
+      "types": "Efter filtype",
+      "shows": "Største serier",
+      "biggest": "Største filer"
+    },
+    "duplicates": {
+      "title": {
+        "one": "{count} titel mere end én gang",
+        "other": "{count} titler mere end én gang"
+      },
+      "text": "Den samme film eller det samme afsnit i flere filer, eller den samme titel to steder. Nogle gange er det med vilje, som en 4K-version ved siden af en mindre.",
+      "none": "Intet er i dine biblioteker to gange.",
+      "extra": "De ekstra kopier fylder {size}"
+    },
+    "broken": {
+      "title": {
+        "one": "{count} ødelagt fil",
+        "other": "{count} ødelagte filer"
+      },
+      "text": "Filer, Cinemion ikke kan læse, som er afkortede eller beskadigede, eller som holdt op med at konvertere undervejs. Det forsvinder, når du erstatter filen og gennemgår biblioteket.",
+      "unchecked": {
+        "one": "{count} fil er ikke blevet afspillet helt igennem endnu. Et tjek finder filer, der er afkortede.",
+        "other": "{count} filer er ikke blevet afspillet helt igennem endnu. Et tjek finder filer, der er afkortede."
+      },
+      "checkAll": "Tjek alle filer",
+      "checkStarted": "Tjekker filer i baggrunden",
+      "checkFailed": "Kunne ikke tjekke",
+      "checkAgain": "Tjek igen",
+      "stillBroken": "Stadig ødelagt",
+      "fine": "Filen er i orden nu",
+      "none": "Ingen ødelagte filer fundet."
+    },
+    "missing": {
+      "title": {
+        "one": "{count} serie med manglende afsnit",
+        "other": "{count} serier med manglende afsnit"
+      },
+      "text": "Afsnit, der er blevet vist ifølge TMDB eller TheTVDB, men som ikke er i dine biblioteker. Ekstramateriale er udeladt. Seriesider viser dem også nedtonet.",
+      "lookedUp": "Afsnitslister slået op for {done} af {total} serier. Serier slår deres op, når nogen åbner dem.",
+      "lookUp": "Slå alle serier op",
+      "started": "Slår afsnitslister op i baggrunden",
+      "failed": "Kunne ikke slå dem op",
+      "none": "Ingen manglende afsnit i de serier, der er slået op indtil nu.",
+      "count": "{count} af {aired} mangler"
+    },
+    "deleteFile": "Slet {path}",
+    "deleteTitle": "Slet denne fil?",
+    "deleteDescription": "{path} ({size}) forsvinder fra disken for altid sammen med dens undertekster og NFO-fil.",
+    "deleted": "Filen er slettet"
+  },
+  "deleteDialog": {
+    "title": "Slet {title}?",
+    "description": "Filerne forsvinder fra disken for altid sammen med deres undertekster og NFO-filer. Det kan ikke fortrydes.",
+    "summary": {
+      "one": "{count} fil, {size}",
+      "other": "{count} filer, {size}"
+    },
+    "folder": "Mappen {folder} forsvinder også, da der ikke er andet i den.",
+    "more": {
+      "one": "og {count} fil mere",
+      "other": "og {count} filer mere"
+    },
+    "readOnly": "Cinemion kan kun læse denne mappe, så den kan ikke slette noget her. Tillad skrivning til biblioteksmappen (i Docker skal den monteres uden :ro) for at slette fra Cinemion.",
+    "confirm": "Slet for altid",
+    "deleted": "{title} er slettet",
+    "failed": "Kunne ikke slette"
+  },
+  "server": {
+    "aBackupIsBeingMade_395c69": "Der bliver allerede lavet en sikkerhedskopi.",
+    "aBackupIsBeingRestored_5e6f08": "Der bliver allerede gendannet en sikkerhedskopi.",
+    "aClipOfWasAdded_ec878d": "Et klip fra {title} blev føjet til {name}",
+    "aClipWasAddedTo_ddd0d4": "Et klip blev føjet til {name}",
+    "addingArtworkOf_bce324": "Tilføjer billeder ({i} af {images})",
+    "addingProfilePictures_59c64b": "Tilføjer profilbilleder",
+    "addingToTheLibrary_954c26": "Føjer til biblioteket",
+    "aLibraryFolderPathAnd_716316": "Et bibliotek, en mappe, en sti og en størrelse er påkrævet.",
+    "aNameIsRequired_6ab24f": "Et navn er påkrævet.",
+    "aNameTypeAndFolders_ed3d17": "Et navn, en type og mapper er påkrævet.",
+    "aPhotoWasAddedTo_576c1c": "Et billede blev føjet til {library}",
+    "aPhotoWasAddedTo_f8e80d": "Et billede blev føjet til {folder} i {library}",
+    "aPlaylistCanHoldUp_7c5307": "En playliste kan rumme op til {MAX_TRACKS} numre.",
+    "aPositionInSecondsIs_392b1d": "En position i sekunder er påkrævet.",
+    "asASystemServiceAllow_6afb50": "Som systemtjeneste kan du tillade det med \"systemctl edit cinemion\": [Service] ReadWritePaths={real}",
+    "asASystemServiceAllow_762a40": "Som systemtjeneste kan du tillade det med \"systemctl edit cinemion\": [Service] ReadWritePaths={folder}",
+    "aServerNameAndThe_65331e": "Et servernavn og administratorens navn, brugernavn og adgangskode er påkrævet.",
+    "audiobooksAndBooksLibrariesList_905a54": "Lydbogs- og bogbiblioteker viser deres bøger under /api/books.",
+    "audiobooksWereAddedTo_b08eb2": "{count} lydbøger blev føjet til {name}",
+    "aVideoWasAddedTo_4b6524": "En video blev føjet til {folder} i {library}",
+    "aVideoWasAddedTo_6393b3": "En video blev føjet til {library}",
+    "booksWereAddedTo_19f1ea": "{count} bøger blev føjet til {name}",
+    "checkingFiles_5e84d1": "Tjekker filer",
+    "checkingFilesOf_e1a5e7": "Tjekker filer ({i} af {files})",
+    "checkingForUpdatesIsTurned_5432ee": "Tjek for opdateringer er slået fra med UPDATE_CHECK=false.",
+    "checkingTheBackup_c58a37": "Tjekker sikkerhedskopien",
+    "chooseAtLeastOneFolder_4e75bd": "Vælg mindst én mappe til biblioteket \"{name}\".",
+    "cinemionCantDeleteFilesIn_01f4ec": "Cinemion kan ikke slette filer i denne mappe: den har kun læseadgang. Tillad skrivning til biblioteksmappen (i Docker skal den monteres uden :ro), og prøv igen.",
+    "cinemionCantReadHowLong_74c5b2": "Cinemion kan ikke læse, hvor lang den er. Den er nok beskadiget eller afkortet.",
+    "cinemionCantReadIt_b53657": "Cinemion kan ikke læse den: {value}",
+    "cinemionCantWriteToPick_a22911": "Cinemion kan ikke skrive til {folder}. Vælg en anden mappe, eller giv den bruger, Cinemion kører som, adgang til den.",
+    "cinemionHasAlreadyBeenSet_b0f537": "Cinemion er allerede sat op.",
+    "cinemionHasntMadeItsCertificate_afd8f3": "Cinemion har ikke lavet sit certifikat endnu. Slå først https til under Indstillinger › HTTPS.",
+    "cinemionIsOutThisServer_cafec1": "Cinemion {version} er ude. Denne server har {VERSION}.",
+    "clipsLibrariesListTheirGames_c7005e": "Klipbiblioteker viser deres spil og klip under /api/clips.",
+    "clipsOfWereAddedTo_1c6b52": "{count} klip fra {title} blev føjet til {name}",
+    "clipsWereAddedTo_510311": "{count} klip blev føjet til {name}",
+    "convertedSOfPVideo_2522a9": "Konverterede {seconds} s 1080p-video på {elapsed} s ({speed}× realtid).",
+    "convertingOnTheGpu_31726d": "Konverterer på grafikkortet",
+    "convertingOnTheGpuFailed_70f2d5": "Konvertering på grafikkortet ({kind}) mislykkedes, så processoren bruges i stedet",
+    "convertingTheVideoTookToo_954b9d": "Det tog for lang tid at starte konverteringen af videoen.",
+    "couldNotConvertThePicture_e98b3c": "Kunne ikke konvertere billedet: {stderr}",
+    "couldNotFind_4aa82a": "Kunne ikke finde \"{binary}\". {installHint}",
+    "couldNotReachTheMail_1e5df1": "Kunne ikke nå mailserveren på {host}:{port}: {value}",
+    "couldNotReadTheFile_18cc93": "Kunne ikke læse filen som medie: {trim}",
+    "couldNotReadTheImage_e16cd4": "Kunne ikke læse billedet: {stderr}",
+    "couldNotReadTheSubtitles_41b913": "Kunne ikke læse underteksterne: {value}",
+    "couldntBeFoundCheckThe_4a1085": "{value} kunne ikke findes. Tjek adressen.",
+    "couldntBeFoundOnlineAnymore_35af30": "\"{title}\" kan ikke længere findes online. Prøv at søge igen.",
+    "couldntConnectTo_cf197e": "Kunne ikke forbinde til {host}: {pop}",
+    "couldntDownloadFromOpensubtitles_6feeae": "Kunne ikke downloade fra OpenSubtitles: {status} {detail}",
+    "couldntDownloadFromPodnapisi_9f382a": "Kunne ikke downloade fra Podnapisi: {status} {statusText}",
+    "couldntDownloadFromSubdl_0abb09": "Kunne ikke downloade fra SubDL: {status} {statusText}",
+    "couldntDownloadTheSubtitleFile_7bb2aa": "Kunne ikke downloade undertekstfilen: {status} {statusText}",
+    "couldntSearchOnPodnapisi_5016b5": "Kunne ikke søge på Podnapisi: {status} {statusText}",
+    "couldntSearchOnSubdl_6e9714": "Kunne ikke søge på SubDL: {status} {statusText}",
+    "couldntSearchOpensubtitles_f83ebc": "Kunne ikke søge på OpenSubtitles: {status} {detail}",
+    "couldntSignInToOpensubtitles_e13991": "Kunne ikke logge ind på OpenSubtitles: {status} {detail}",
+    "cuttingAClip_6ce1bf": "Klipper et klip til",
+    "decodingOnTheGpuFailed_5dd260": "Afkodning på grafikkortet ({kind}) mislykkedes, så kun kodningen bruger det",
+    "deletedFrom_e64eed": "{name} slettede {what} fra {name2}",
+    "didntDownloadCorrectlyItsChecksum_6b7674": "{name} blev ikke downloadet korrekt (kontrolsummen er forkert). Prøv igen.",
+    "dolbyVision_7b8bf0": "Dolby Vision",
+    "downloadingFailed_caa02d": "Download af {name} mislykkedes: {status} {statusText}",
+    "downloadingSubtitles_5da4f5": "Downloader undertekster",
+    "downloadPictureRecognitionFirstIn_9de9d6": "Download først billedgenkendelse under Indstillinger › Metadata.",
+    "eachPathMappingNeedsBoth_0eaed7": "Hver stioversættelse skal have begge mapper.",
+    "emailIsntSetUpOn_2a344f": "E-mail er ikke sat op på denne server. En administrator kan sætte det op under Indstillinger › Integrationer.",
+    "enterTheAddressEmailsCome_11c4c4": "Skriv den adresse, e-mails kommer fra, som cinemion@example.com.",
+    "enterTheAddressOfThe_e68e0b": "Skriv mailserverens adresse, som smtp.example.com.",
+    "enterTheAddressToSend_a2d4ea": "Skriv den adresse, testen skal sendes til.",
+    "enterTheDomainThatPoints_4c7d3d": "Skriv først det domæne, der peger på denne server.",
+    "enterTheFullAddressStarting_5d7e58": "Skriv hele adressen, startende med http:// eller https://.",
+    "episodesOfWereAddedTo_13f334": "{episodes} afsnit af {title} blev føjet til {name}",
+    "everythingInTheZipFile_204424": "Alt i zip-filen er allerede i den mappe. Prøv igen med \"Erstat filer, der allerede er der\" slået til.",
+    "fetchingDetails_acc92a": "Henter detaljer",
+    "filesAreBeingCheckedAlready_f4eb25": "Filerne bliver allerede tjekket.",
+    "findingAlbumCovers_fef1c4": "Finder albumforsider",
+    "fromWasAddedTo_122599": "{title} fra {what} blev føjet til {name}",
+    "githubAnswered_391401": "GitHub svarede {status} {statusText}.",
+    "githubAskedToSlowDown_960c7e": "GitHub bad om at sætte tempoet ned. Cinemion prøver igen senere.",
+    "giveTheAlbumAName_768d35": "Giv albummet et navn.",
+    "giveTheFolderAsA_79550c": "Angiv mappen som en fuld sti, som /backups eller D:\\Backups.",
+    "giveTheGameAName_dc4cb4": "Giv spillet et navn.",
+    "giveTheKeyAName_48fdfb": "Giv nøglen et navn, som den app, der skal bruge den.",
+    "giveThePlaylistAName_6f4394": "Giv playlisten et navn.",
+    "hasCharactersAFileName_4f2ac0": "\"{path}\" har tegn, et filnavn ikke kan have.",
+    "inDockerMountTheMedia_4ad860": "I Docker skal mediemappen monteres uden :ro.",
+    "installFfmpegOrSetFfmpeg_a3394e": "Installer ffmpeg, eller sæt FFMPEG_PATH og FFPROBE_PATH til, hvor det er installeret.",
+    "installItWithSudoApt_88763c": "Installer det med: sudo apt install ffmpeg",
+    "installItWithSudoPacman_e85f7e": "Installer det med: sudo pacman -S ffmpeg",
+    "installTheDriverWithSudo_199431": "Installer driveren med: sudo pacman -S intel-media-driver vpl-gpu-rt",
+    "installTheDriverWithSudo_a08672": "Installer driveren med: sudo apt install intel-media-va-driver-non-free",
+    "installTheDriverWithSudo_a8164d": "Installer driveren med: sudo apt install mesa-va-drivers",
+    "installTheDriverWithSudo_d876ad": "Installer driveren med: sudo pacman -S libva-mesa-driver",
+    "installTheVaApiDriver_cc41d4": "Installer VA-API-driveren til dit grafikkort.",
+    "inTheZipFileIs_29bb35": "\"{name}\" i zip-filen er beskadiget: kontrolsummen passer ikke.",
+    "inTheZipFileIs_2ef996": "\"{name}\" i zip-filen er beskadiget: den pakkes ud større, end den burde.",
+    "invalidUsernameUseToLetters_0d6217": "Ugyldigt brugernavn \"{username}\". Brug 2 til 32 bogstaver, tal, punktummer, bindestreger eller understreger.",
+    "isAFileNotA_36ac02": "\"{wanted}\" er en fil, ikke en mappe.",
+    "isAlreadyInThatFolder_28eab9": "\"{path}\" er allerede i den mappe. Prøv igen med \"Erstat filer, der allerede er der\" slået til.",
+    "isHiddenANameStarts_79b64e": "\"{path}\" er skjult (et navn starter med et punktum), så biblioteket ville aldrig vise den.",
+    "isntADomainNameEnter_6630ed": "\"{domain}\" er ikke et domænenavn. Skriv et som cinemion.example.com.",
+    "isntAHostNameOr_b6d32a": "\"{bad}\" er ikke et værtsnavn eller en adresse.",
+    "isntALanguageCinemionKnows_13297e": "\"{unknown}\" er ikke et sprog, Cinemion kender.",
+    "isntAnEventCinemionSends_589e2b": "\"{unknown}\" er ikke en hændelse, Cinemion sender.",
+    "isntARatingCinemionKnows_05c3bd": "\"{rating}\" er ikke en aldersgrænse, Cinemion kender. Brug en som \"G\", \"PG\", \"12\" eller \"16\".",
+    "isntARatingCinemionKnows_0605d6": "\"{contentRating}\" er ikke en aldersgrænse, Cinemion kender. Brug en som \"G\", \"PG\", \"12\" eller \"16\".",
+    "isPackedInAWay_37e5df": "\"{name}\" er pakket på en måde, Cinemion ikke kan pakke ud (metode {method}). Zip den igen med normal komprimering.",
+    "isPasswordProtected_c6edd3": "\"{name}\" er beskyttet med adgangskode.",
+    "isReadyWithAlbum_0de6d0": "{name} er klar med 1 album",
+    "isReadyWithAlbums_6d834b": "{name} er klar med {count} albums",
+    "isReadyWithAudiobook_a54ba0": "{name} er klar med 1 lydbog",
+    "isReadyWithAudiobooks_22a47b": "{name} er klar med {count} lydbøger",
+    "isReadyWithBook_3ac268": "{name} er klar med 1 bog",
+    "isReadyWithBooks_fa6663": "{name} er klar med {count} bøger",
+    "isReadyWithClip_3b2acf": "{name} er klar med 1 klip",
+    "isReadyWithClips_070adc": "{name} er klar med {count} klip",
+    "isReadyWithMovie_b8a791": "{name} er klar med 1 film",
+    "isReadyWithMovies_1adaaa": "{name} er klar med {count} film",
+    "isReadyWithPhotosAnd_6376a8": "{name} er klar med {items} billeder og videoer",
+    "isReadyWithShow_42627c": "{name} er klar med 1 serie",
+    "isReadyWithShows_e6c8cf": "{name} er klar med {count} serier",
+    "isReadyWithVideo_347cdc": "{name} er klar med 1 video",
+    "isReadyWithVideos_19aebf": "{name} er klar med {count} videoer",
+    "isTooLongForA_47e3c6": "\"{part}\" er for langt til et filnavn.",
+    "itsCutShortOrDamaged_a7add9": "Den er afkortet eller beskadiget nær slutningen: {error}",
+    "itWontPlayFromThe_d01c33": "Den vil ikke afspille fra starten: {error}",
+    "joinARoomFirst_906cce": "Deltag først i et rum.",
+    "keepBetweenAndBackups_c988d7": "Behold mellem 1 og 100 sikkerhedskopier.",
+    "keepEachTagUnderCharacters_50c072": "Hold hvert mærke under 40 tegn.",
+    "keepTheNameUnderCharacters_e25b35": "Hold navnet under 64 tegn.",
+    "letsEncryptCouldntReachOn_60e570": "Let's Encrypt kunne ikke nå {value} på port 80{reason}. Sørg for, at domænet peger på denne server, og at port 80 er viderestillet til Cinemion.",
+    "letsEncryptDidntOfferA_e254cc": "Let's Encrypt tilbød ikke en måde at tjekke {value} over http.",
+    "letsEncryptRefusedTheRequest_9a636d": "Let's Encrypt afviste anmodningen{detail}",
+    "letsEncryptSentSomethingThat_870464": "Let's Encrypt sendte noget, der ikke er et certifikat.",
+    "limitedTo_4ad376": "Begrænset til {maxBitrate}.",
+    "limitedToForViewersOutside_7c3ff9": "Begrænset til {maxBitrate} for seere uden for hjemmenetværket.",
+    "lookingAtClips_80cfb3": "Kigger på klip",
+    "lookingForFiles_9f1d43": "Leder efter filer",
+    "lookingForSubtitles_c45427": "Leder efter undertekster",
+    "lookingUpEpisodes_27a1e0": "Slår afsnit op",
+    "lookingUpEpisodesOf_910797": "Slår afsnit op ({i} af {shows})",
+    "makingABackup_e1f796": "Laver en sikkerhedskopi",
+    "makingASmallCopyOf_fcba3a": "Laver en lille kopi af et klip",
+    "makingSeekThumbnails_0d2cda": "Laver miniaturer til spoling",
+    "makingThumbnails_e26cfc": "Laver miniaturer",
+    "mariadbAt_01738a": "MariaDB på {DB_HOST}:{DB_PORT}",
+    "matchingByHandWorksWith_e7a2d3": "Matchning i hånden virker med TMDB og TheTVDB, ikke \"{providerId}\".",
+    "moviesWereAddedTo_9a53e3": "{count} film blev føjet til {name}",
+    "musicLibrariesListTheirAlbums_bd2ac8": "Musikbiblioteker viser deres albums, kunstnere og numre under /api/music.",
+    "mustBeAFullPath_f4ffe7": "\"{to}\" skal være en fuld sti, som /media/shows.",
+    "noneOfTheFilesCould_996fa6": "Ingen af filerne kunne pakkes ud. {reason}",
+    "noneOfThoseClipsAre_507fd7": "Ingen af de klip er i dette bibliotek.",
+    "noNvidiaGpuFoundIn_5f7a12": "Intet NVIDIA-grafikkort fundet. I Docker kræver det NVIDIA container runtime.",
+    "noSubtitleSiteIsSet_d27750": "Ingen undertekstside er sat op. Slå en til under Indstillinger › Undertekster.",
+    "nothingAnsweredAtCheckThe_b3601f": "Intet svarede på {host}. Tjek adressen, og at den modtagende app kører.",
+    "nothingInTheZipFile_967a9c": "Intet i zip-filen er noget, {name} bruger ({type}).",
+    "nothingToChange_ce9c2c": "Intet at ændre.",
+    "nvidiaGpuFound_525a49": "NVIDIA-grafikkort fundet",
+    "omdbRejectedTheApiKey_1f4b98": "OMDb afviste API-nøglen. Tjek den under Indstillinger › Metadata.",
+    "omdbRequestFailed_83c4bb": "OMDb-forespørgslen mislykkedes: {status} {statusText}",
+    "omdbsDailyLimitIsUsed_d7e82e": "OMDb's daglige grænse er brugt op. Bedømmelserne hentes igen i morgen.",
+    "onlyAdminsCanChangeRoles_63fae9": "Kun administratorer kan ændre roller.",
+    "onlyAdminsCanCreateOther_91e80e": "Kun administratorer kan oprette andre administratorer.",
+    "onlyAdminsCanDeleteAdmins_c349cd": "Kun administratorer kan slette administratorer.",
+    "onlyAdminsCanDoThis_286d13": "Kun administratorer kan gøre dette.",
+    "onlyAssAndSsaSubtitles_0ef47b": "Kun ASS- og SSA-undertekster beholder deres egen stil.",
+    "onlyLibraryManagersCanBrowse_7dafee": "Kun dem, der styrer biblioteker, kan gennemse mapper.",
+    "onlyMoviesAndShowsCan_2ed91b": "Kun film og serier kan matches.",
+    "onlyMoviesEpisodesAndVideos_b6c177": "Kun film, afsnit og videoer kan ses sammen.",
+    "onlyMoviesEpisodesAndVideos_ba8e30": "Kun film, afsnit og videoer kan afspilles.",
+    "onlyMoviesEpisodesAndVideos_cf1ddc": "Kun film, afsnit og videoer kan downloades.",
+    "onlyMoviesEpisodesAndVideos_db09eb": "Kun film, afsnit og videoer har fremskridt.",
+    "onlyMoviesShowsAndVideos_7e5e26": "Kun film, serier og videoer kan komme på din liste.",
+    "onlyMoviesShowsSeasonsEpisodes_3d2986": "Kun film, serier, sæsoner, afsnit og videoer kan slettes.",
+    "onlyShowsHaveMissingEpisodes_f63c82": "Kun serier har manglende afsnit.",
+    "onlyShowsSeasonsEpisodesVideos_a27187": "Kun serier, sæsoner, afsnit, videoer, mapper og spil har en næste.",
+    "onlyTheHostCanChange_f2c4e5": "Kun værten kan ændre dette.",
+    "onlyTheHostCanEnd_b456a9": "Kun værten kan afslutte sessionen for alle.",
+    "onlyTheHostCanPause_e6b92f": "Kun værten kan sætte på pause og spole i denne session.",
+    "onlyTheHostCanPick_ada439": "Kun værten kan vælge, hvad der kører.",
+    "onlyTheOneWhoMade_6940be": "Kun den, der lavede dette album, eller nogen, der styrer biblioteker, kan ændre det.",
+    "onlyTheOneWhoMade_a93d39": "Kun den, der lavede dette album, eller nogen, der styrer biblioteker, kan slette det.",
+    "onlyTheOneWhoMade_fe0668": "Kun den, der lavede dette album, eller nogen, der styrer biblioteker, kan føje til det.",
+    "onlyVideosAndFoldersCan_0198db": "Kun videoer og mapper kan få en miniature i hånden.",
+    "onlyVideosAndFoldersHave_db0207": "Kun videoer og mapper har en miniature valgt i hånden.",
+    "onlyVideosPhotosAndFolders_25ef1b": "Kun videoer, billeder og mapper kan redigeres.",
+    "opensubtitlesDidntAcceptTheApi_9189b6": "OpenSubtitles godtog ikke API-nøglen eller login ({detail}). Tjek dem under Indstillinger › Undertekster.",
+    "opensubtitlesDidntSendADownload_31846a": "OpenSubtitles sendte ikke et downloadlink. Den daglige grænse er nået; den nulstilles {reset}.",
+    "opensubtitlesDidntSendADownload_910e04": "OpenSubtitles sendte ikke et downloadlink. Den daglige grænse er nået; den nulstilles i morgen.",
+    "opensubtitlesDidntSendADownload_946ade": "OpenSubtitles sendte ikke et downloadlink.",
+    "opensubtitlesIsGettingTooMany_5b85a7": "OpenSubtitles får for mange forespørgsler. Vent et par sekunder, og prøv igen.",
+    "pasteBothTheCertificateAnd_545257": "Indsæt både certifikatet og dets private nøgle.",
+    "pasteYourCertificateAndIts_594086": "Indsæt først dit certifikat og dets private nøgle.",
+    "photosAndVideosWereAdded_1f9620": "{count} billeder og videoer blev føjet til {library}",
+    "photosAndVideosWereAdded_de2c11": "{count} billeder og videoer blev føjet til {folder} i {library}",
+    "photosLibrariesListTheirAlbums_a880cd": "Billedbiblioteker viser deres albums og billeder under /api/photos.",
+    "photosWereAddedTo_b6e82f": "{count} billeder blev føjet til {library}",
+    "photosWereAddedToIn_b7dfa0": "{count} billeder blev føjet til {folder} i {library}",
+    "pickALanguageToSearch_e3f5c2": "Vælg et sprog at søge efter.",
+    "pickAPhotoFromInside_cbf104": "Vælg et billede fra dette album som dets forside.",
+    "pickAPhotoOrVideo_17011d": "Vælg et billede eller en video fra dette album.",
+    "pickAPhotosLibraryFor_c6aeeb": "Vælg et billedbibliotek til albummet.",
+    "pickASearchResultTo_171c8a": "Vælg et søgeresultat at downloade.",
+    "pickASearchResultTo_1f98f1": "Vælg et søgeresultat at matche med.",
+    "pickATitleAndA_395012": "Vælg en titel og en størrelse at downloade.",
+    "pickAtLeastOneEvent_9ad686": "Vælg mindst én hændelse at sende.",
+    "pickAtLeastOneSubtitle_2ad24d": "Vælg mindst ét undertekstsprog.",
+    "pickAtLeastOneTrack_c1087e": "Vælg mindst ét nummer at tilføje.",
+    "pickAYearUpTo_4ee805": "Vælg et år op til i år.",
+    "pickHowTheConnectionIs_af287c": "Vælg, hvordan forbindelsen krypteres.",
+    "pickOffVaApiQuick_35f1f6": "Vælg Fra, VA-API, Quick Sync eller NVENC til hardwareacceleration.",
+    "pickOneOfHours_36e597": "Vælg en af {join} timer.",
+    "pickPhotosOrVideosFrom_997c6f": "Vælg billeder eller videoer fra dette albums bibliotek.",
+    "pickTheLibraryPodiumUploads_83b934": "Vælg det bibliotek, Podium uploader til.",
+    "pickWhereTheCertificateComes_5490c3": "Vælg, hvor certifikatet kommer fra.",
+    "pictureSubtitlesCantBeTurned_28a314": "Billedundertekster kan ikke laves om til tekst. De tegnes i stedet ind i videoen.",
+    "pictureSubtitlesDrawnIntoThe_2012cf": "Billedundertekster, tegnet ind i videoen",
+    "playbackWasStopped_da411d": "Afspilningen blev stoppet.",
+    "podnapisiIsGettingTooMany_285d10": "Podnapisi får for mange forespørgsler. Vent et minut, og prøv igen.",
+    "pointsOutsideTheFolder_387a56": "\"{path}\" peger uden for mappen.",
+    "portIsAlreadyInUse_018337": "Port {port} bruges allerede af et andet program. Vælg en anden port.",
+    "portIsThePlainHttp_c0716c": "Port {port} er den almindelige http-port. Vælg en anden til https, som 8443.",
+    "preparingADownload_1a4e9b": "Gør en download klar: {label}",
+    "readingBookDetails_05093f": "Læser bogdetaljer",
+    "readingChapters_4100fa": "Læser kapitler",
+    "readingFiles_44b3c3": "Læser filer",
+    "recognisingGamesInClips_febdb5": "Genkender spil i klip",
+    "refreshingDetailsOfEveryLibrary_5e5f04": "Opdaterer detaljerne i alle biblioteker",
+    "restoredABackupMadeOn_c4323c": "Gendannede en sikkerhedskopi lavet den {slice} af Cinemion {version}",
+    "restoringProfilePicturesAndArtwork_59d8ac": "Gendanner profilbilleder og billeder",
+    "restoringTheDatabase_4cda9f": "Gendanner databasen",
+    "samsungInternet_22e8e7": "Samsung Internet",
+    "savedToWatchOffline_752902": "{name} gemte {inline} til offline-visning",
+    "savingTheDatabase_216b90": "Gemmer databasen",
+    "sayWhereTheCutStarts_b80ae1": "Angiv, hvor udklippet starter og slutter, i sekunder: { \"start\": 2.5, \"end\": 30, \"replace\": false }.",
+    "sayWhetherItsWatchedWatched_cd4397": "Angiv, om det er set: { \"watched\": true }.",
+    "sayWhetherToTakeThe_ca5f53": "Angiv, om forslaget skal bruges: { \"accept\": true }.",
+    "sayWhichClipsAndWhether_e31e37": "Angiv hvilke klip, og om de skal have en stjerne: { \"ids\": [1], \"favorite\": true }.",
+    "sayWhichClipsAndWhich_a8a2d0": "Angiv hvilke klip og hvilket spil: { \"ids\": [1, 2], \"game\": { \"gameId\": 3 } }.",
+    "sayWhichPhotosToTake_596f15": "Angiv, hvilke billeder der skal tages ud: { \"itemIds\": [1, 2] }.",
+    "scanningEveryLibrary_fd17a7": "Gennemgår alle biblioteker",
+    "seasonOf_128c67": "Sæson {done} af {size}",
+    "seekThumbnailsAreTurnedOff_2b23b3": "Miniaturer til spoling er slået fra under Indstillinger › Afspilning.",
+    "sendANewTitleOr_e9f4d0": "Send en ny titel eller et spil fundet online at matche med.",
+    "sendAPictureOrFor_a4df0f": "Send et billede, eller for en video det øjeblik, der skal bruges: { \"time\": 12.5 }.",
+    "sendEnabledAsTrueOr_acfd2b": "Send `enabled` som true eller false.",
+    "sendTheBackupFileAs_8a8eab": "Send sikkerhedskopien som forespørgslens krop.",
+    "sendTheFullListOf_23809f": "Send hele listen af stioversættelser.",
+    "sendThePictureAsA_b1e8ba": "Send billedet som et \"file\"-felt i en multipart-formular.",
+    "sendTheSettingsAsJson_c699ce": "Send indstillingerne som JSON.",
+    "sendTheSettingsToChange_604519": "Send de indstillinger, der skal ændres, som JSON.",
+    "signedIn_a91315": "{name} loggede ind ({device})",
+    "signedInAwayFromHome_223d32": "{name} loggede ind væk hjemmefra ({device})",
+    "signInOrUseAn_d49227": "Log ind, eller brug en app-nøgle fra Cinemions Indstillinger › Integrationer.",
+    "simultaneousConversionsMustBeBetween_396df1": "Samtidige konverteringer skal være mellem 1 og 32.",
+    "slowDownALittleWait_0abb02": "Sæt tempoet lidt ned: vent et øjeblik, før du sender mere.",
+    "somethingWentWrongInCinemion_9bd9c1": "Noget gik galt i Cinemion. Loggen har detaljerne.",
+    "somethingWentWrongOnThe_9a755f": "Noget gik galt på serveren. Serverloggen har detaljerne.",
+    "somethingWentWrongWithThe_70b01c": "Noget gik galt med uploaden. Serverens log har detaljerne.",
+    "sortingFiles_7f20bb": "Sorterer filer",
+    "startedWatchingTogether_0d922c": "{name} begyndte at se {inline} sammen",
+    "startingHttps_b5992b": "Starter https",
+    "styledText_37d03a": "Stylet tekst",
+    "subdlDidntAcceptTheApi_68f488": "SubDL godtog ikke API-nøglen. Tjek den under Indstillinger › Undertekster.",
+    "subdlIsGettingTooMany_d1ea6f": "SubDL får for mange forespørgsler. Vent et minut, og prøv igen.",
+    "subtitlesDownloadedAutomaticallyForVideos_f0d1d0": "{downloaded} undertekster downloadet automatisk til {value} videoer",
+    "subtitlesDownloadedFor_fe8ac3": "Undertekster downloadet til {inline} ({language})",
+    "subtitleSearchIsntSetUp_d7894b": "Søgning efter undertekster er ikke sat op endnu. En administrator kan slå en undertekstside til under Indstillinger › Undertekster.",
+    "suggestingGames_88f61f": "Foreslår spil",
+    "thatAlbumDoesntExist_6b337f": "Det album findes ikke.",
+    "thatArtistDoesntExist_d1dd55": "Den kunstner findes ikke.",
+    "thatBackupIsntInThe_8c68f8": "Den sikkerhedskopi er ikke i mappen til sikkerhedskopier.",
+    "thatBackupIsntThereAny_0a53f5": "Den sikkerhedskopi er der ikke længere.",
+    "thatBookDoesntExist_9bf733": "Den bog findes ikke.",
+    "thatCertificateCantBeRead_b98ea0": "Det certifikat kan ikke læses.",
+    "thatCertificateRanOutOn_df2674": "Det certifikat udløb den {slice}.",
+    "thatClipDoesntExist_6ed3ec": "Det klip findes ikke.",
+    "thatClipHasNoSuggested_4fe61d": "Det klip har intet foreslået spil.",
+    "thatCollectionDoesntExist_da099e": "Den samling findes ikke.",
+    "thatCopyDoesntExistAnymore_77b83f": "Den kopi findes ikke længere. Lav en ny.",
+    "thatDownloadDoesntExist_102c34": "Den download findes ikke.",
+    "thatEmailAddressDoesntLook_16ab4c": "Den e-mailadresse ser ikke rigtig ud.",
+    "thatFileIsntAnImage_bf8c1b": "Den fil er ikke et billede, Cinemion kan læse. Prøv en JPG, PNG eller WebP.",
+    "thatFileIsntAPicture_210789": "Den fil er ikke et billede, Cinemion kan læse. Brug et JPG-, PNG- eller WebP-billede.",
+    "thatFileIsntInA_7a6e00": "Den fil er ikke længere i et bibliotek.",
+    "thatFileIsntInThis_d1a6a4": "Den fil er ikke i denne bog.",
+    "thatFilesLibraryIsGone_1ffcdd": "Den fils bibliotek er væk.",
+    "thatFontIsntAttachedTo_cb0925": "Den skrifttype hører ikke til denne video.",
+    "thatGameCouldntBeFound_644589": "Det spil kan ikke længere findes online. Prøv at søge igen.",
+    "thatGameDoesntExist_36930a": "Det spil findes ikke.",
+    "thatGameIsntInThis_b8d6fe": "Det spil er ikke i dette bibliotek.",
+    "thatIsntASonarrOr_a1b9b8": "Det er ikke en webhook fra Sonarr eller Radarr.",
+    "thatIsntASubdlDownload_f23a67": "Det er ikke en download fra SubDL.",
+    "thatIsntOnYourList_f148fc": "Det er ikke på din liste.",
+    "thatIsntPartOfThe_f3cbfb": "Det er ikke en del af streamen.",
+    "thatItemDoesntExist_9f1dc9": "Det element findes ikke.",
+    "thatKeyDoesntExist_c40fcf": "Den nøgle findes ikke.",
+    "thatLibraryDoesntExist_946173": "Det bibliotek findes ikke.",
+    "thatMomentOfTheVideo_54778b": "Det øjeblik i videoen kunne ikke læses.",
+    "thatPartOfTheAudiobook_81047a": "Den del af lydbogen findes ikke.",
+    "thatPartOfTheStream_cfa256": "Den del af streamen er ikke klar.",
+    "thatPasswordIsntRight_d9c3ad": "Den adgangskode er forkert.",
+    "thatPersonDoesntExist_dbc387": "Den person findes ikke.",
+    "thatPhotoDoesntExist_1f955c": "Det billede findes ikke.",
+    "thatPhotosFileIsGone_dccfc2": "Det billedes fil er væk.",
+    "thatPinIsntRight_d4a9e5": "Den PIN-kode er forkert.",
+    "thatPlaybackSessionHasEnded_b8a810": "Den afspilning er slut.",
+    "thatPlaylistDoesntExist_4575aa": "Den playliste findes ikke.",
+    "thatPrivateKeyDoesntBelong_24b35f": "Den private nøgle hører ikke til certifikatet.",
+    "thatProfileDoesntExist_75c2c5": "Den profil findes ikke.",
+    "thatShowDoesntExist_c5ac9f": "Den serie findes ikke.",
+    "thatSubtitleTrackDoesntExist_710ed9": "Det undertekstspor findes ikke.",
+    "thatThumbnailSheetDoesntExist_1f2e03": "Det ark med miniaturer findes ikke.",
+    "thatTitleDoesntExist_292076": "Den titel findes ikke.",
+    "thatTitlesLibraryIsGone_92ae13": "Den titels bibliotek er væk.",
+    "thatTrackDoesntExist_c52d23": "Det nummer findes ikke.",
+    "thatUploadDoesntExistAnymore_3a8f5a": "Den upload findes ikke længere.",
+    "thatUploadTargetDoesntExist_140a3e": "Det uploadmål findes ikke.",
+    "thatUserDoesntExist_e32611": "Den bruger findes ikke.",
+    "thatUserHasNoProfile_ecefe4": "Den bruger har intet profilbillede.",
+    "thatUsernameAndPasswordDont_283d84": "Brugernavnet og adgangskoden passer ikke sammen.",
+    "thatVideoDoesntExist_5c43f3": "Den video findes ikke.",
+    "thatViewingHasEnded_4330d6": "Den visning er slut.",
+    "thatWebhookDoesntExist_4a6037": "Den webhook findes ikke.",
+    "theAddressMustStartWith_615b70": "Adressen skal starte med http:// eller https://.",
+    "theArchiveIsCutShort_a570b7": "Arkivet er afkortet; \"{name}\" er ufuldstændig.",
+    "theArchiveIsCutShort_ee4219": "Arkivet er afkortet.",
+    "theBackupDidntArriveIn_f1921d": "Sikkerhedskopien kom ikke frem i ét stykke: {error}",
+    "theBookFileCantBe_b91bcc": "Bogfilen kan ikke findes på disken.",
+    "theBrowserDidntHandOver_c1b3fb": "Browseren afleverede ikke et komplet push-abonnement.",
+    "theCertificateAndKeyCant_0718c6": "Certifikatet og nøglen kan ikke bruges sammen: {message}",
+    "theCertificateAuthorityAnswered_4cc590": "Certifikatudstederen svarede {status}.",
+    "theCertificateAuthorityDidntAnswer_308aca": "Certifikatudstederen svarede ikke ({status}).",
+    "theCertificateAuthorityDidntHand_8bc292": "Certifikatudstederen udleverede ikke en nonce.",
+    "theCertificateAuthorityDidntSay_443125": "Certifikatudstederen sagde ikke, hvor kontoen er.",
+    "theCertificateAuthoritySaid_8b6295": "Certifikatudstederen sagde: {detail}",
+    "theCertificateAuthorityTookToo_758f22": "Certifikatudstederen var for længe om at tjekke domænet.",
+    "theCertificateAuthorityTookToo_8f2837": "Certifikatudstederen var for længe om at lave certifikatet.",
+    "theCertificateIsCutShort_4fe9ae": "Certifikatet er afkortet.",
+    "theCopyCouldntBeMade_465759": "Kopien kunne ikke laves: {value}",
+    "theCopyIsntReadyYet_f9342e": "Kopien er ikke klar endnu.",
+    "theDateMustLookLike_c72438": "Datoen skal se ud som 2024-07-12.",
+    "theDownloadedSubtitleFileIs_cfe3d1": "Den downloadede undertekstfil er tom.",
+    "theDownloadHadNoSubtitle_ddbb45": "Downloaden indeholdt ingen undertekstfil.",
+    "theFileIsCutShort_943411": "Filen er afkortet.",
+    "theFileIsDamagedPart_225c7b": "Filen er beskadiget: en del af den passer ikke med kontrolsummen.",
+    "theFileIsDamagedTheres_cab6fb": "Filen er beskadiget: der er data efter dens slutning.",
+    "theFileIsntThereAny_2f39a5": "Filen er der ikke længere.",
+    "theFileNeedsAName_0f3c8c": "Filen skal have et navn.",
+    "theFolderHoldsAFolder_64c23b": "Mappen \"{path}\" indeholder en mappe, der allerede er i biblioteket \"{name}\". En video kan kun være i ét bibliotek, så giv hvert bibliotek sine egne mapper.",
+    "theFolderIsAlreadyIn_1795d7": "Mappen \"{path}\" er allerede i biblioteket \"{name}\". En video kan kun være i ét bibliotek, så giv hvert bibliotek sine egne mapper.",
+    "theFolderIsInsideA_74965d": "Mappen \"{path}\" ligger inde i en mappe, der allerede er i biblioteket \"{name}\". En video kan kun være i ét bibliotek, så giv hvert bibliotek sine egne mapper.",
+    "theFolderIsntAvailableOnly_2fe2c5": "Mappen \"{path}\" er ikke tilgængelig. Kun mapper inde i {join} kan bruges.",
+    "theFolderIsntAvailableOnly_71dcfb": "Mappen \"{wanted}\" er ikke tilgængelig. Kun mapper inde i {join} kan bruges.",
+    "theFolderIsntThereAnymore_44e169": "Mappen \"{folder}\" er der ikke længere.",
+    "theFoldersAndOverlapPick_ff7eab": "Mapperne \"{path}\" og \"{other}\" overlapper. Vælg kun en af dem til \"{name}\".",
+    "theGameLookupFailed_d64ee9": "Opslaget af spillet mislykkedes: {status} {statusText}",
+    "theGpuDecodeListMust_a93f2f": "Listen over afkodning på grafikkortet skal være en liste af codec-navne.",
+    "theGpuDeviceMustBe_f74de0": "Grafikkortet skal være en sti under /dev, som /dev/dri/renderD128.",
+    "theLibraryNameMustBe_d6d24b": "Bibliotekets navn skal være mellem 1 og 60 tegn langt.",
+    "theLibrarysDriveRanOut_a75b14": "Bibliotekets drev løb tør for plads. Frigør noget plads, og prøv igen.",
+    "theLibraryWasRemovedWhile_081d8c": "Biblioteket blev fjernet, mens dette blev uploadet.",
+    "theMailServerAtPort_dd1fd1": "Mailserveren på port {port} starter ikke med kryptering. Vælg STARTTLS eller porten til TLS (som regel 465).",
+    "theMailServerClosedThe_10d030": "Mailserveren lukkede forbindelsen.",
+    "theMailServerDidntSay_4e5e9e": "Mailserveren sagde ikke goddag: {code} {text}",
+    "theMailServerDoesntOffer_421444": "Mailserveren tilbyder ikke STARTTLS. Vælg en anden slags kryptering eller port.",
+    "theMailServerRefusedThe_075155": "Mailserveren afviste beskeden: {code} {text}",
+    "theMailServerRefusedThe_2bd1fc": "Mailserveren afviste brugernavnet: {code} {text}",
+    "theMailServerRefusedThe_5253e4": "Mailserveren afviste brugernavnet eller adgangskoden: {code} {text}",
+    "theMailServerRefusedThe_5514a5": "Mailserveren afviste adressen {to}: {code} {text}",
+    "theMailServerRefusedThe_ec2e5f": "Mailserveren afviste hilsenen: {code} {text}",
+    "theMailServerRefusedThe_f3c90f": "Mailserveren afviste afsenderadressen: {code} {text}",
+    "theMailServerRefusedTo_2add84": "Mailserveren nægtede at logge ind: {code} {text}",
+    "theMailServerRefusedTo_876280": "Mailserveren nægtede at kryptere forbindelsen: {code} {text}",
+    "theMailServerStoppedAnswering_850600": "Mailserveren holdt op med at svare.",
+    "theMusicFileCantBe_3f904e": "Musikfilen kan ikke findes på disken.",
+    "theNameMustBeBetween_3ccbc4": "Navnet skal være mellem 1 og 40 tegn langt.",
+    "theNewestReleaseHasA_0bfe70": "Den nyeste udgivelse har et navn, Cinemion ikke forstår: {tag_name}",
+    "theOffsetIsMissing_483de0": "Forskydningen mangler.",
+    "theOpensubtitlesDownloadLimitFor_984034": "OpenSubtitles' downloadgrænse for i dag er nået. {detail}",
+    "thePasswordIsWrong_85bcc1": "Adgangskoden er forkert.",
+    "thePasswordMustBeAt_e9240e": "Adgangskoden skal være mindst 6 tegn lang.",
+    "thePhotoCantBeFound_ddf92b": "Billedet kan ikke findes på disken.",
+    "thePictureCouldntBeSaved_83751a": "Billedet kunne ikke gemmes. Serverloggen har detaljerne.",
+    "thePictureIsTooLarge_82507e": "Billedet er for stort. Grænsen er 10 MB.",
+    "thePictureIsTooLarge_c8c603": "Billedet er for stort. Grænsen er 15 MB.",
+    "thePictureIsTooLarge_db1e82": "Billedet er for stort. Billeder må højst være {MAX_DIMENSION} pixels brede eller høje.",
+    "thePictureRecognitionIsntLoaded_eaf700": "Billedgenkendelsen er ikke indlæst.",
+    "thePinMustBeExactly_d86e68": "PIN-koden skal være præcis 4 cifre.",
+    "thePlayerHasToSay_7ba7ca": "Afspilleren skal sige, hvad denne enhed kan afspille.",
+    "thePortMustBeA_483ab8": "Porten skal være et tal fra 1 til 65535.",
+    "theQualityPresetMustBe_1db7db": "Kvalitetsindstillingen skal være Hurtig, Balanceret eller Kvalitet.",
+    "thereAreNoFilesTo_09e35e": "Der er ingen filer at slette.",
+    "theReceiverDidntAnswerWithin_763efb": "Modtageren svarede ikke inden for 10 sekunder.",
+    "thereIsntEnoughFreeSpace_1c5b5f": "Der er ikke nok ledig plads i {dir} til sikkerhedskopien.",
+    "theRemoteStreamLimitMust_dcf6c7": "Grænsen for fjernstreams skal være 0 (ingen grænse) eller mere.",
+    "theresNoApiEndpointAt_f4e2a9": "Der er intet API-endpoint på {method} {path}.",
+    "theresNoCertificateInThat_e97dc3": "Der er intet certifikat i den tekst. Den skal starte med -----BEGIN CERTIFICATE-----.",
+    "theresNoFolder_de0a5e": "Der er ingen mappe \"{wanted}\".",
+    "theresNoPrivateKeyIn_ae5776": "Der er ingen privat nøgle i den tekst.",
+    "theresNoPrivateKeyIn_c286b9": "Der er ingen privat nøgle i den tekst. Den skal starte med -----BEGIN PRIVATE KEY-----.",
+    "theresNoSessionWithThat_ab19e5": "Der er ingen session med den kode. Den er måske slut; bed om en ny.",
+    "theresNoVideoInIt_e8447c": "Der er ingen video i den.",
+    "theScheduledBackupFailed_3b6d72": "Den planlagte sikkerhedskopi mislykkedes: {message}",
+    "theScheduleMustBeOff_11651a": "Tidsplanen skal være fra, daglig eller ugentlig.",
+    "theSeasonPackHasNo_b75c62": "Sæsonpakken har ingen undertekstfil til dette afsnit.",
+    "theSecureConnectionToFailed_e6d973": "Den sikre forbindelse til {host} mislykkedes: dens certifikat er ikke til at stole på.",
+    "theServerIsAlreadyConverting_f80cb7": "Serveren konverterer allerede {maxConversions} videoer. Prøv igen, når en af dem stopper, eller vælg Original kvalitet på en enhed, der kan afspille filen.",
+    "theSqliteDatabaseIsNot_9b4b21": "SQLite-databasen er ikke åben.",
+    "theSteamgriddbKeyWasRefused_4f6f49": "SteamGridDB-nøglen blev afvist. Tjek den under Indstillinger › Metadata.",
+    "theSubtitlesWereSavedBut_8a7ef2": "Underteksterne blev gemt, men kunne ikke findes igen. Gennemgå biblioteket for at få dem med.",
+    "theTitleIsGone_dbc170": "Titlen er væk.",
+    "theTitleMustBeBetween_432657": "Titlen skal være mellem 1 og 200 tegn lang.",
+    "thetvdbDidntSendASign_864953": "TheTVDB sendte ikke et login-token tilbage.",
+    "thetvdbKeptRefusingRequestsTry_6e8957": "TheTVDB blev ved med at afvise forespørgsler. Prøv igen om et minut.",
+    "thetvdbNeedsAnApiKey_8b90b4": "TheTVDB kræver en API-nøgle. Tilføj en under Indstillinger › Metadata.",
+    "thetvdbRejectedTheApiKey_9e923e": "TheTVDB afviste API-nøglen (eller PIN-koden). Tjek dem under Indstillinger › Metadata.",
+    "thetvdbRequestFailed_9bbc50": "TheTVDB-forespørgslen mislykkedes: {status} {statusText}",
+    "thetvdbSignInFailed_624676": "Login hos TheTVDB mislykkedes: {status} {statusText}",
+    "theUsernameIsAlreadyTaken_468954": "Brugernavnet \"{username}\" er allerede taget.",
+    "theVideoFileCantBe_d5ed86": "Videofilen kan ikke findes på disken. Tjek, at mediemappen er monteret, og gennemgå så biblioteket igen.",
+    "theVideoFileCantBe_e1d1b8": "Videofilen kan ikke findes på disken.",
+    "theVideosLengthIsntKnown_bc1d93": "Videoens længde er ukendt, så miniaturerne kan ikke fordeles.",
+    "theZipFileIsCut_0d41bc": "Zip-filen er afkortet. Tjek, at uploaden blev færdig, og at filen kan åbnes på din computer.",
+    "theZipFileIsCut_ba27f0": "Zip-filen er afkortet.",
+    "theZipFileIsCut_e3018e": "Zip-filen er afkortet; \"{name}\" er ufuldstændig.",
+    "theZipFileIsDamaged_74c3c5": "Zip-filen er beskadiget: dens zip64-slutpost kan ikke læses.",
+    "theZipFileIsDamaged_76ff88": "Zip-filen er beskadiget: dens zip64-slutpost mangler.",
+    "theZipFileIsDamaged_c92c38": "Zip-filen er beskadiget nær \"{name}\".",
+    "theZipFilesListOf_46667a": "Zip-filens indholdsliste er beskadiget.",
+    "thisAddressIsntValidAnymore_e7c93b": "Denne adresse er ikke gyldig længere. Kopiér den nuværende fra Cinemions Indstillinger › Integrationer.",
+    "thisBackupWasMadeBy_07b4a4": "Denne sikkerhedskopi blev lavet af Cinemion {version}, som er nyere end denne ({VERSION}). Opdater Cinemion først, og gendan den så.",
+    "thisBackupWasMadeBy_f9c554": "Denne sikkerhedskopi blev lavet af en nyere Cinemion. Opdater Cinemion først, og gendan den så.",
+    "thisBookCantBeOpened_5a111c": "Denne bog kan ikke åbnes: {error}",
+    "thisBookLinkHasExpired_31f620": "Dette boglink er udløbet. Åbn bogen igen.",
+    "thisDeviceCantPlayThe_7aaff8": "Denne enhed kan ikke afspille den originale fil. Vælg en af de andre størrelser.",
+    "thisDownloadLinkHasRun_5d0360": "Dette downloadlink er udløbet. Start downloaden igen under Indstillinger › Sikkerhedskopier.",
+    "thisEpubHasNoChapters_11cdf3": "Denne EPUB har ingen kapitler at vise.",
+    "thisEpubHasNoPackage_987f8c": "Denne EPUB har ingen pakkefil, så den kan ikke læses.",
+    "thisFileHasToBe_4e1ed1": "Denne fil skal konverteres til denne enhed, og din profil må ikke konvertere videoer. Spørg en administrator, eller prøv en anden enhed.",
+    "thisFileHasToBe_c712e2": "Denne fil skal konverteres til denne enhed, og serveren konverterer ikke videoer for seere uden for hjemmenetværket.",
+    "thisFileIsntMatchedTo_6bd4e1": "Denne fil er ikke matchet med en film eller et afsnit endnu.",
+    "thisFileIsntPasswordProtected_a142f4": "Denne fil er ikke beskyttet med adgangskode.",
+    "thisFileWasProtectedBy_af1e07": "Denne fil blev beskyttet af en nyere Cinemion. Opdater Cinemion for at åbne den.",
+    "thisIsATestFrom_3c0162": "Dette er en test fra {APP_NAME}. Det virkede!",
+    "thisIsntACinemionBackup_55cb33": "Dette er ikke en sikkerhedskopi fra Cinemion, eller den er beskadiget.",
+    "thisIsntATarArchive_28a910": "Dette er ikke et tar-arkiv, eller det er beskadiget.",
+    "thisIsntAZipFile_f58271": "Dette er ikke en zip-fil, eller den er afkortet. Tjek, at uploaden blev færdig, og at filen kan åbnes på din computer.",
+    "thisIsntAZipFile_f5b1a3": "Dette er ikke en zip-fil.",
+    "thisIsTheOnlyAdmin_cebaeb": "Dette er den eneste administrator. Gør først en anden til administrator.",
+    "thisLinkHasExpiredOpen_91da54": "Dette link er udløbet. Åbn billedet igen.",
+    "thisProfileCantWatchWhats_1f674b": "Denne profil kan ikke se det, der spiller i den session.",
+    "thisProfileIsntLinkedTo_158063": "Denne profil er ikke forbundet med Trakt. Forbind den under Indstillinger › Din profil.",
+    "thisProfileIsntLinkedTo_6659a5": "Denne profil er ikke forbundet med Trakt. Forbind den først.",
+    "thisProfileIsntLinkedTo_797508": "Denne profil er ikke forbundet med Trakt.",
+    "thisStreamHasExpiredPlay_48c8ab": "Denne stream er udløbet. Afspil nummeret igen.",
+    "thisStreamHasExpiredStart_62c362": "Denne stream er udløbet. Start afspilningen igen.",
+    "thisTitleHasNoVideo_8f175b": "Denne titel har ingen videofil. Den er måske blevet flyttet eller slettet.",
+    "thisTitleHasNoVideo_9dbe9e": "Denne titel har ingen videofil.",
+    "thisTrackCantBeConverted_cd700b": "Dette nummer kan ikke konverteres til denne browser. Serverloggen har detaljerne.",
+    "tmdbKeptSayingThereWere_89c19d": "TMDB blev ved med at sige, at der var for mange forespørgsler. Prøv igen om et minut.",
+    "tmdbNeedsAnApiKey_91119a": "TMDB kræver en API-nøgle. Tilføj en under Indstillinger › Metadata.",
+    "tmdbRejectedTheApiKey_e1ef7d": "TMDB afviste API-nøglen. Tjek den under Indstillinger › Metadata.",
+    "tmdbRejectedTheKeyBuilt_eaed67": "TMDB afviste nøglen, der er indbygget i Cinemion. Opdater Cinemion, eller tilføj din egen nøgle under Indstillinger › Metadata.",
+    "tmdbRequestFailed_5ee636": "TMDB-forespørgslen mislykkedes: {status} {statusText}",
+    "tooManyGameLookupsIn_b356cf": "For mange spilopslag på kort tid. Prøv igen om et par minutter.",
+    "tooManyWrongAddressesTry_0eb1cd": "For mange forkerte adresser. Prøv igen om {locked} sekunder.",
+    "tooManyWrongAttemptsTry_b9220c": "For mange forkerte forsøg. Prøv igen om {seconds} sekunder.",
+    "tooManyWrongAttemptsTry_c18c81": "For mange forkerte forsøg. Prøv igen om {locked} sekunder.",
+    "traktDidntSendTheHistory_779360": "Trakt sendte ikke historikken ({value}). Prøv igen senere.",
+    "traktDidntSendTheWatchlist_49a52e": "Trakt sendte ikke watchlisten ({value}).",
+    "traktDidntStartTheSign_89f0f2": "Trakt startede ikke login ({status}). Tjek appens client ID under Indstillinger › Integrationer.",
+    "traktIsntSetUpOn_1d8e4b": "Trakt er ikke sat op på denne server. En administrator kan tilføje det under Indstillinger › Integrationer.",
+    "typeTheFullPathOf_36b9b5": "Skriv mappens fulde sti, som {roots}.",
+    "unknownHardwareAccelerationMethod_2d598f": "Ukendt metode til hardwareacceleration.",
+    "unknownImage_0082e9": "Ukendt billede.",
+    "unknownLibraryTypeUseMovies_53a763": "Ukendt bibliotekstype \"{type}\". Brug \"movies\", \"shows\", \"videos\", \"music\", \"audiobooks\", \"books\", \"photos\" eller \"clips\".",
+    "unknownMetadataSource_20a402": "Ukendt metadatakilde \"{unknown}\".",
+    "unknownProfileColour_246686": "Ukendt profilfarve \"{color}\".",
+    "unknownProfilePicture_fd7cbd": "Ukendt profilbillede.",
+    "unknownRole_943e26": "Ukendt rolle \"{role}\".",
+    "unknownSubtitleProvider_a0ece2": "Ukendt underteksttjeneste \"{provider}\".",
+    "uploadedFilesTo_ae0883": "{name} uploadede {count} filer til {name2}",
+    "uploadedTo_f7203b": "{name} uploadede \"{file}\" til {name2}",
+    "useAPasswordOfAt_3ce894": "Brug en adgangskode på mindst 8 tegn.",
+    "useAtMostTags_2da33c": "Brug højst 20 mærker.",
+    "usernameAndPasswordAreRequired_1d1eb1": "Brugernavn og adgangskode er påkrævet.",
+    "videosWereAddedTo_121219": "{videos} videoer blev føjet til {place}",
+    "videosWereAddedTo_578606": "{count} videoer blev føjet til {library}",
+    "videosWereAddedToIn_5f72f7": "{count} videoer blev føjet til {folder} i {library}",
+    "waitForTheDownloadTo_2b338d": "Vent først på, at downloaden bliver færdig.",
+    "wasAddedTo_18dfcf": "{title} {episodes} blev føjet til {name}",
+    "wasAddedTo_a24623": "{title} blev føjet til {place}",
+    "wasAddedTo_aa6be5": "{title} blev føjet til {name}",
+    "wasAddedTo_ee8223": "{what} blev føjet til {name}",
+    "youCanOnlyChangeYour_f36d01": "Du kan kun ændre dit eget profilbillede.",
+    "youCantDeleteTheOnly_b15f13": "Du kan ikke slette den eneste administrator.",
+    "youCantDeleteYourOwn_360497": "Du kan ikke slette din egen konto.",
+    "youDontHavePermissionTo_cb2c16": "Du har ikke tilladelse til at gøre dette.",
+    "youNeedToSignIn_7258b2": "Du skal logge ind først.",
+    "yourCurrentPasswordIsntRight_3d92d2": "Din nuværende adgangskode er forkert."
+  }
+}
