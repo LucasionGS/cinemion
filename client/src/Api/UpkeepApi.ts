@@ -1,4 +1,4 @@
-import type { SpaceUsage, UpkeepOverview } from "@shared/upkeep.ts";
+import type { MissingOverview, SpaceUsage, UpkeepOverview } from "@shared/upkeep.ts";
 import BaseApi from "./BaseApi.ts";
 
 /**
@@ -18,6 +18,17 @@ export namespace UpkeepApi {
    */
   export function checkAll(onlyNew = false) {
     return BaseApi.POST<UpkeepOverview>("/upkeep/check", { onlyNew });
+  }
+
+  export function missing() {
+    return BaseApi.GET<MissingOverview>("/upkeep/missing");
+  }
+
+  /**
+   * Look up every show's episode list, in the background.
+   */
+  export function lookUpMissing() {
+    return BaseApi.POST<{ started: boolean }>("/upkeep/missing/lookup");
   }
 
   export function checkFile(fileId: number) {

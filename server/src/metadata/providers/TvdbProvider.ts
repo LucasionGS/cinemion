@@ -1,8 +1,9 @@
-import type { ItemType, MatchCandidate } from "@shared/media.ts";
+import type { ExternalIds, ItemType, MatchCandidate } from "@shared/media.ts";
 import type { MetadataSettings } from "@shared/api.ts";
 import { findLanguage } from "@shared/languages.ts";
 import MetadataProvider from "../MetadataProvider.ts";
 import { Setting } from "../../models/index.ts";
+import type MediaItem from "../../models/MediaItem.ts";
 
 const API = Deno.env.get("TVDB_API_URL") || "https://api4.thetvdb.com/v4";
 const MAX_CAST = 20;
@@ -268,6 +269,31 @@ export class TvdbProvider extends MetadataProvider {
         .map((c, i) => ({ name: c.personName, kind: "cast" as const, character: c.name || null, order: i, photo: c.personImgURL ? { url: c.personImgURL } : null })),
       seasons,
     };
+  }
+
+  /**
+   * Every season and episode of a show in aired order, for showing the episodes that aren't in the library. Specials
+   * are left out.
+   * @returns `null` when TheTVDB doesn't know the show.
+   */
+  public async episodeGuide(ids: ExternalIds): Promise<MediaItem.EpisodeGuide | null> {
+    const language = TvdbProvider.languageCode((await this.settings()).language);
+    // Only by id: a guess by name could list another show's episodes as missing
+    let id = ids.tvdb ?? null;
+    if (!id && ids.imdb) id = (await this.request<{ series?: { id: number } }[]>(`/search/remoteid/${ids.imdb}`))?.find((f) => f.series)?.series?.id.toString() ?? null;
+    if (!id) return null;
+    const bySeason = new Map<number, MediaItem.EpisodeGuide["seasons"][number]["episodes"]>();
+    for (let page = 0; page < 40; page++) {
+      const result = await this.request<{ episodes: TvdbEpisode[] }>(`/series/${id}/episodes/default/${language}`, { page })
+        ?? (page === 0 ? await this.request<{ episodes: TvdbEpisode[] }>(`/series/${id}/episodes/default`, { page }) : null);
+      if (!result?.episodes?.length) break;
+      for (const episode of result.episodes) {
+        if (episode.seasonNumber <= 0) continue;
+        bySeason.set(episode.seasonNumber, [...bySeason.get(episode.seasonNumber) ?? [], { number: episode.number, title: episode.name || null, airDate: episode.aired || null }]);
+      }
+      if (result.episodes.length < 500) break;
+    }
+    return { source: "tvdb", fetchedAt: new Date().toISOString(), seasons: [...bySeason].sort((a, b) => a[0] - b[0]).map(([number, episodes]) => ({ number, episodes })) };
   }
 
   public override async search(type: Extract<ItemType, "movie" | "show">, query: string, year: number | null): Promise<MatchCandidate[]> {

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { ItemDetail, ItemSummary } from "@shared/media.ts";
+import type { MissingEpisode, MissingSeason } from "@shared/upkeep.ts";
 import ItemsApi from "../../Api/ItemsApi.ts";
 import LibrariesApi from "../../Api/LibrariesApi.ts";
 import { Link, router } from "../../lib/Router.tsx";
@@ -230,10 +231,21 @@ function ShowView(props: ViewProps) {
   const [seasonId, setSeasonId] = useState<number | null>(initial?.id ?? null);
   const [next, setNext] = useState<ItemSummary | null>(null);
   const [seasonKey, setSeasonKey] = useState(0);
+  const [missing, setMissing] = useState<MissingSeason[]>([]);
+  const [showMissing, setShowMissing] = useState(readShowMissing);
 
   useEffect(() => {
     ItemsApi.next(item.id).then(setNext).catch(() => setNext(null));
   }, [item.id, item.userData?.unwatchedCount]);
+
+  useEffect(() => {
+    ItemsApi.missing(item.id).then((m) => setMissing(m.seasons)).catch(() => setMissing([]));
+  }, [item.id]);
+
+  // Seasons the guide has that aren't here at all get a tab too, with a negative id
+  const haveSeasons = new Set(seasons.map((s) => s.seasonNumber));
+  const missingSeasons = showMissing ? missing.filter((m) => !haveSeasons.has(m.number) && m.missing.length > 0) : [];
+  const missingCount = missing.reduce((sum, m) => sum + m.missing.length, 0);
 
   const refresh = useCallback(() => {
     reload();
@@ -268,8 +280,40 @@ function ShowView(props: ViewProps) {
                 {!!s.userData?.unwatchedCount && s.userData.unwatchedCount < s.childCount && <span className="cn-item__tab-count">{s.userData.unwatchedCount}</span>}
               </button>
             ))}
+            {missingSeasons.map((m) => (
+              <button
+                key={`missing-${m.number}`}
+                type="button"
+                role="tab"
+                aria-selected={seasonId === -m.number}
+                className={cx("cn-item__tab", "cn-item__tab--missing", seasonId === -m.number && "cn-item__tab--active")}
+                onClick={() => setSeasonId(-m.number)}
+              >
+                {t("item.missing.season", { number: m.number })}
+              </button>
+            ))}
           </div>
-          {seasonId !== null && <SeasonEpisodes key={`${seasonId}-${seasonKey}`} seasonId={seasonId} />}
+          {missingCount > 0 && (
+            <button type="button" className="cn-item__missing-toggle" onClick={() => {
+              writeShowMissing(!showMissing);
+              setShowMissing(!showMissing);
+              if (showMissing && seasonId !== null && seasonId < 0) setSeasonId(initial?.id ?? null);
+            }}>
+              {showMissing ? t("item.missing.hide", { count: missingCount }) : t("item.missing.show", { count: missingCount })}
+            </button>
+          )}
+          {seasonId !== null && seasonId > 0 && (
+            <SeasonEpisodes
+              key={`${seasonId}-${seasonKey}`}
+              seasonId={seasonId}
+              missing={showMissing ? missing.find((m) => m.number === seasons.find((s) => s.id === seasonId)?.seasonNumber)?.missing ?? [] : []}
+            />
+          )}
+          {seasonId !== null && seasonId < 0 && (
+            <div className="cn-item__episodes">
+              {missing.find((m) => m.number === -seasonId)?.missing.map((e) => <MissingCard key={e.episode} episode={e} />)}
+            </div>
+          )}
         </section>
       )}
 
@@ -284,13 +328,51 @@ function ShowView(props: ViewProps) {
   );
 }
 
-function SeasonEpisodes(props: { seasonId: number }) {
-  const { seasonId } = props;
+function SeasonEpisodes(props: { seasonId: number; missing: MissingEpisode[] }) {
+  const { seasonId, missing } = props;
   const { item: season } = useItem(seasonId);
   if (!season) return <div className="cn-item__loading"><Spinner /></div>;
+  // Missing episodes sit where they'd be, between the ones that are here
+  const entries = [
+    ...season.children.map((episode) => ({ number: episode.episodeNumber ?? 0, node: <WideCard key={episode.id} item={episode} variant="episode" /> })),
+    ...missing.map((e) => ({ number: e.episode, node: <MissingCard key={`missing-${e.episode}`} episode={e} /> })),
+  ].sort((a, b) => a.number - b.number);
+  return <div className="cn-item__episodes">{entries.map((e) => e.node)}</div>;
+}
+
+const SHOW_MISSING_KEY = "cn-show-missing";
+
+function readShowMissing() {
+  try {
+    return localStorage.getItem(SHOW_MISSING_KEY) !== "0";
+  } catch {
+    return true;
+  }
+}
+
+function writeShowMissing(value: boolean) {
+  try {
+    localStorage.setItem(SHOW_MISSING_KEY, value ? "1" : "0");
+  } catch {
+    // Only a preference for this device
+  }
+}
+
+/**
+ * An episode the show has that isn't in the library, greyed out.
+ */
+function MissingCard(props: { episode: MissingEpisode }) {
+  const { episode } = props;
   return (
-    <div className="cn-item__episodes">
-      {season.children.map((episode) => <WideCard key={episode.id} item={episode} variant="episode" />)}
+    <div className="cn-wide cn-wide--missing" aria-label={t("item.missing.label", { number: episode.episode, title: episode.title ?? "" })}>
+      <span className="cn-wide__art">
+        <span className="cn-wide__number">{t("cards.wide.episodeNumber", { number: String(episode.episode) })}</span>
+        <span className="cn-wide__missing">{t("item.missing.notHere")}</span>
+      </span>
+      <span className="cn-wide__meta">
+        <span className="cn-wide__line1">{episode.title ?? t("item.missing.untitled", { number: episode.episode })}</span>
+        <span className="cn-wide__line2">{episode.airDate ? t("item.missing.aired", { date: formatDate(episode.airDate) }) : ""}</span>
+      </span>
     </div>
   );
 }

@@ -962,6 +962,14 @@ Migration `20261107090000-upkeep`: `media_files.problem` and `checkedAt`, `media
   (task `check-files-*` in the `upkeep` queue) decodes the first 10 s and the last 20 s of every playable file;
   ffmpeg says "File ended prematurely" for cut-off files and still exits 0, so the words count, not only the exit
   code. A changed file is read again by the scan, which clears its problem.
+- **Missing episodes** (`library/MissingEpisodes.ts`): the show's guide (`TmdbProvider.episodeGuide`, one `/tv/:id`
+  call plus up to 20 seasons per call through `append_to_response=season/N`; `TvdbProvider.episodeGuide` by TheTVDB
+  or IMDb id only, never by name) is kept in `media_items.episodeGuide` for a week. Aired episodes (with an air date
+  up to today) that aren't here count as missing; multi-episode files count for every episode; specials are left
+  out. `GET /api/items/:id/missing` (looks the guide up when needed); the show page puts greyed "Not here" cards
+  between the episodes, adds tabs for seasons that are missing entirely, and hides them on this device with the
+  toggle (`localStorage["cn-show-missing"]`). Upkeep › Missing episodes lists shows by how many are missing, with
+  "Look up all shows" (task `missing-episodes`). Tested against the real TMDB with two Breaking Bad episodes.
 
 ## 6. Design decisions
 

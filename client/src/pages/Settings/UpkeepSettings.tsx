@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { CircleAlert, Copy, HardDrive, RefreshCw, SearchCheck } from "lucide-react";
+import { CircleAlert, Copy, HardDrive, ListX, RefreshCw, SearchCheck } from "lucide-react";
 import type { SpaceUsage, UpkeepFile, UpkeepItemRef } from "@shared/upkeep.ts";
 import UpkeepApi from "../../Api/UpkeepApi.ts";
 import ItemsApi from "../../Api/ItemsApi.ts";
@@ -14,11 +14,12 @@ import SegmentedControl from "../../components/SegmentedControl/SegmentedControl
 import Spinner from "../../components/Spinner/Spinner.tsx";
 import "./Admin.scss";
 
-type View = "space" | "duplicates" | "broken";
+type View = "space" | "duplicates" | "broken" | "missing";
 const VIEWS: { value: View; label: TranslationKey }[] = [
   { value: "space", label: "upkeep.views.space" },
   { value: "duplicates", label: "upkeep.views.duplicates" },
   { value: "broken", label: "upkeep.views.broken" },
+  { value: "missing", label: "upkeep.views.missing" },
 ];
 
 /**
@@ -36,7 +37,8 @@ export default function UpkeepSettings() {
       </header>
       <SegmentedControl<View> label={t("upkeep.viewLabel")} value={view} onChange={setView} options={VIEWS.map((v) => ({ value: v.value, label: t(v.label) }))} />
       {view === "space" && <SpaceView />}
-      {view !== "space" && <ProblemsView view={view} />}
+      {(view === "duplicates" || view === "broken") && <ProblemsView view={view} />}
+      {view === "missing" && <MissingView />}
     </>
   );
 }
@@ -200,6 +202,51 @@ function ProblemsView(props: { view: "duplicates" | "broken" }) {
         {data.broken.map((b) => (
           <ItemLine key={b.file.id} item={b.item} file={b.file}>
             <Button size="sm" icon={<RefreshCw />} loading={busy === `file-${b.file.id}`} onClick={() => checkOne(b.file.id)}>{t("upkeep.broken.checkAgain")}</Button>
+          </ItemLine>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+/**
+ * Shows with aired episodes that aren't here, from the episode lists looked up so far.
+ */
+function MissingView() {
+  const { data, error, reload } = usePoll(UpkeepApi.missing, 4000);
+  const [starting, setStarting] = useState(false);
+
+  async function lookUp() {
+    setStarting(true);
+    try {
+      await UpkeepApi.lookUpMissing();
+      toasts.success(t("upkeep.missing.started"));
+      reload();
+    } catch (e) {
+      toasts.error(t("upkeep.missing.failed"), (e as Error).message);
+    } finally {
+      setStarting(false);
+    }
+  }
+
+  if (!data) return error ? <p className="cn-settings__row-text"><span>{error}</span></p> : <Spinner size="2rem" />;
+  return (
+    <section className="cn-settings__card">
+      <h2><ListX className="cn-upkeep__heading-icon" aria-hidden="true" /> {t("upkeep.missing.title", { count: data.shows.length })}</h2>
+      <p className="cn-settings__row-text"><span>{t("upkeep.missing.text")}</span></p>
+      <div className="cn-settings__row">
+        <div className="cn-settings__row-text">
+          {data.lookingUp
+            ? <strong>{data.lookingUp.status}{data.lookingUp.progress !== null && ` · ${formatPercent(data.lookingUp.progress)}`}</strong>
+            : <span>{t("upkeep.missing.lookedUp", { done: data.lookedUp, total: data.total })}</span>}
+        </div>
+        <Button icon={<RefreshCw />} loading={starting || !!data.lookingUp} onClick={lookUp}>{t("upkeep.missing.lookUp")}</Button>
+      </div>
+      {data.shows.length === 0 && <p className="cn-settings__row-text"><strong>{t("upkeep.missing.none")}</strong></p>}
+      <div className="cn-settings__list">
+        {data.shows.map((show) => (
+          <ItemLine key={show.id} item={{ id: show.id, title: show.title, type: "show", image: show.image, libraryName: "" }}>
+            <span className="cn-stats__time">{t("upkeep.missing.count", { count: show.missing, aired: show.aired })}</span>
           </ItemLine>
         ))}
       </div>

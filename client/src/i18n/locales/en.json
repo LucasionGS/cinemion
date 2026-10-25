@@ -378,7 +378,20 @@
   "item": {
     "missing": {
       "title": "This title isn't available",
-      "goHome": "Go home"
+      "goHome": "Go home",
+      "season": "Season {number}",
+      "show": {
+        "one": "Show {count} missing episode",
+        "other": "Show {count} missing episodes"
+      },
+      "hide": {
+        "one": "Hide {count} missing episode",
+        "other": "Hide {count} missing episodes"
+      },
+      "notHere": "Not here",
+      "label": "Episode {number}, {title}, not in your library",
+      "untitled": "Episode {number}",
+      "aired": "Aired {date}"
     },
     "meta": {
       "seasons": {
@@ -3097,7 +3110,8 @@
     "views": {
       "space": "Space used",
       "duplicates": "Duplicates",
-      "broken": "Broken files"
+      "broken": "Broken files",
+      "missing": "Missing episodes"
     },
     "notInLibrary": "Not sorted into a title",
     "modified": "changed {date}",
@@ -3138,6 +3152,19 @@
       "stillBroken": "Still broken",
       "fine": "The file is fine now",
       "none": "No broken files found."
+    },
+    "missing": {
+      "title": {
+        "one": "{count} show with episodes missing",
+        "other": "{count} shows with episodes missing"
+      },
+      "text": "Episodes that have aired, according to TMDB or TheTVDB, but aren't in your libraries. Specials are left out. Show pages show them greyed out too.",
+      "lookedUp": "Episode lists looked up for {done} of {total} shows. Shows look theirs up when someone opens them.",
+      "lookUp": "Look up all shows",
+      "started": "Looking up episode lists in the background",
+      "failed": "Couldn't look them up",
+      "none": "No episodes missing in the shows looked up so far.",
+      "count": "{count} of {aired} missing"
     }
   }
 }

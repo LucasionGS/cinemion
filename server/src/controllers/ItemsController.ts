@@ -7,6 +7,7 @@ import Visibility from "../library/Visibility.ts";
 import Summaries from "../library/Summaries.ts";
 import ItemLabels from "../library/ItemLabels.ts";
 import Watchlist from "../library/Watchlist.ts";
+import MissingEpisodes from "../library/MissingEpisodes.ts";
 import VideoDetails from "../library/VideoDetails.ts";
 import ClipLibrary from "../clips/ClipLibrary.ts";
 import FolderTree from "../library/FolderTree.ts";
@@ -82,6 +83,19 @@ export namespace ItemsController {
    *   get:
    *     summary: Everything about a movie, show, season, episode, video or folder, with its children, cast, files and similar titles.
    */
+  /**
+   * @swagger
+   * /api/items/{id}/missing:
+   *   get:
+   *     summary: For a show, the aired episodes TMDB or TheTVDB list that aren't in the library, per season.
+   */
+  router.get("/:id/missing", User.$middleware(), async (c) => {
+    const user = c.get("user")!;
+    const show = await findVisible(user, Number(c.req.param("id")));
+    if (!show || show.type !== "show") return c.json({ message: "Only shows have missing episodes." }, 404);
+    return c.json({ seasons: await MissingEpisodes.forShow(show, { force: c.req.query("refresh") === "1" }), source: show.episodeGuide?.source ?? null, checkedAt: show.episodeGuide?.fetchedAt ?? null });
+  });
+
   router.get("/:id", User.$middleware(), async (c) => {
     const user = c.get("user")!;
     const item = await findVisible(user, Number(c.req.param("id")));

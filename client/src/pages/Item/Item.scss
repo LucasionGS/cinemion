@@ -234,3 +234,54 @@
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 //#endregion
+
+// Episodes the show has that aren't in the library
+.cn-item__tab--missing {
+  opacity: 0.55;
+  font-style: italic;
+}
+
+.cn-item__missing-toggle {
+  align-self: flex-start;
+  margin: -0.25rem 0 0.75rem;
+  padding: 0.3rem 0.6rem;
+  border: 0;
+  border-radius: var(--cn-radius-sm);
+  background: transparent;
+  color: var(--cn-text-subtle);
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--cn-glass-hover);
+    color: var(--cn-text);
+  }
+}
+
+.cn-wide--missing {
+  cursor: default;
+  opacity: 0.5;
+
+  .cn-wide__art {
+    background: repeating-linear-gradient(135deg, rgba(var(--cn-fg-rgb), 0.04) 0 0.75rem, rgba(var(--cn-fg-rgb), 0.08) 0.75rem 1.5rem);
+    border: 1px dashed rgba(var(--cn-fg-rgb), 0.2);
+  }
+
+  .cn-wide__number {
+    color: var(--cn-text);
+  }
+}
+
+.cn-wide__missing {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--cn-radius-pill);
+  background: rgba(var(--cn-fg-rgb), 0.12);
+  color: var(--cn-text);
+  font-size: 0.7rem;
+  font-weight: 700;
+}

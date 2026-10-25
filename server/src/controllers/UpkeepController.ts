@@ -2,6 +2,8 @@ import { Hono } from "hono";
 import { MediaFile, User } from "../models/index.ts";
 import Upkeep from "../library/Upkeep.ts";
 import FileHealth from "../library/FileHealth.ts";
+import MissingEpisodes from "../library/MissingEpisodes.ts";
+import ItemLabels from "../library/ItemLabels.ts";
 import Tasks from "../lib/Tasks.ts";
 import { readJson } from "../lib/http.ts";
 import type { AppEnv } from "../lib/types.ts";
@@ -56,6 +58,34 @@ export namespace UpkeepController {
     const problem = await FileHealth.check(file);
     await file.update({ problem, checkedAt: new Date() });
     return c.json({ problem });
+  });
+
+  /**
+   * @swagger
+   * /api/upkeep/missing:
+   *   get:
+   *     summary: Shows with aired episodes that aren't here, from the episode lists looked up so far.
+   */
+  router.get("/missing", async (c) => {
+    const { shows, lookedUp, total } = await MissingEpisodes.overview();
+    const running = Tasks.get("missing-episodes");
+    return c.json({
+      shows: await Promise.all(shows.map(async (s) => ({ id: s.show.id, title: s.show.title, image: (await ItemLabels.describe(s.show)).poster, missing: s.missing, aired: s.aired }))),
+      lookedUp,
+      total,
+      lookingUp: running ? { status: running.status, progress: running.progress } : null,
+    });
+  });
+
+  /**
+   * @swagger
+   * /api/upkeep/missing/lookup:
+   *   post:
+   *     summary: Look up the episode lists of every show, in the background.
+   */
+  router.post("/missing/lookup", (c) => {
+    MissingEpisodes.lookUpAll().catch(() => { });
+    return c.json({ started: true });
   });
 }
 

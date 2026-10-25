@@ -108,3 +108,28 @@ export interface MissingEpisode {
   title: string | null;
   airDate: string | null;
 }
+
+export interface MissingSeason {
+  number: number;
+  /**
+   * Episodes of the season that have aired.
+   */
+  aired: number;
+  missing: MissingEpisode[];
+}
+
+export interface MissingForShow {
+  seasons: MissingSeason[];
+  source: "tmdb" | "tvdb" | null;
+  checkedAt: string | null;
+}
+
+export interface MissingOverview {
+  shows: { id: number; title: string; image: string | null; missing: number; aired: number }[];
+  /**
+   * Shows whose episode lists were looked up, of all shows.
+   */
+  lookedUp: number;
+  total: number;
+  lookingUp: { status: string; progress: number | null } | null;
+}

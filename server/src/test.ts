@@ -39,6 +39,7 @@ import Der from "./https/Der.ts";
 import WebPush from "./notifications/WebPush.ts";
 import Statistics from "./stats/Statistics.ts";
 import FileHealth from "./library/FileHealth.ts";
+import MissingEpisodes from "./library/MissingEpisodes.ts";
 import { decodeBase64Url, encodeBase64Url } from "@std/encoding/base64url";
 
 /**
@@ -591,6 +592,11 @@ check("readable ffprobe complaints", [
   FileHealth.readable("Truncating packet of size 12898 to 4\n[matroska,webm @ 0x55] EBML header parsing failed\n/media/x.mkv: Invalid data found when processing input", "/media/x.mkv"),
   FileHealth.readable("[h264 @ 0x1] error while decoding MB 12 4"),
 ], ["File ended prematurely.", "EBML header parsing failed.", "Error while decoding MB 12 4."]);
+const guide = { source: "tmdb" as const, fetchedAt: "", seasons: [
+  { number: 1, episodes: [{ number: 1, title: "Pilot", airDate: "2008-01-20" }, { number: 2, title: "Two", airDate: "2008-01-27" }, { number: 3, title: "Three", airDate: "2008-02-10" }] },
+  { number: 2, episodes: [{ number: 1, title: "Later", airDate: "2030-01-01" }, { number: 2, title: "No date", airDate: null }] },
+] };
+check("missing episodes: aired ones only, multi-episode files count", MissingEpisodes.compare(guide, new Set(["1:1", "1:3"]), "2026-10-25").map((s) => [s.number, s.aired, s.missing.map((m) => m.episode)]), [[1, 3, [2]]]);
 //#endregion
 
 console.log(failed ? `\n${failed} failed` : "\nAll passed");

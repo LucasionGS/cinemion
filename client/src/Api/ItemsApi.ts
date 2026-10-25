@@ -1,4 +1,5 @@
 import type { CollectionDetail, CollectionSummary, EditDetailsRequest, HomeData, ItemDetail, ItemPage, ItemSummary, MatchCandidate, PersonDetail, SearchResults, SortOrder } from "@shared/media.ts";
+import type { MissingForShow } from "@shared/upkeep.ts";
 import BaseApi from "./BaseApi.ts";
 
 export namespace ItemsApi {
@@ -33,6 +34,13 @@ export namespace ItemsApi {
    */
   export function setWatched(id: number, watched: boolean) {
     return BaseApi.PUT<ItemSummary>(`/items/${id}/watched`, { watched });
+  }
+
+  /**
+   * For a show: aired episodes that aren't in the library, per season. `refresh` looks them up again.
+   */
+  export function missing(id: number, refresh = false) {
+    return BaseApi.GET<MissingForShow>(`/items/${id}/missing${refresh ? "?refresh=1" : ""}`);
   }
 
   export function home() {

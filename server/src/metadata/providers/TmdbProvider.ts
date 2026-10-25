@@ -1,8 +1,9 @@
-import type { ItemType, MatchCandidate } from "@shared/media.ts";
+import type { ExternalIds, ItemType, MatchCandidate } from "@shared/media.ts";
 import type { MetadataSettings } from "@shared/api.ts";
 import MetadataProvider from "../MetadataProvider.ts";
 import { Setting } from "../../models/index.ts";
 import BuiltInKeys from "../BuiltInKeys.ts";
+import type MediaItem from "../../models/MediaItem.ts";
 import log from "../../lib/Logger.ts";
 
 const API = "https://api.themoviedb.org/3";
@@ -348,6 +349,31 @@ export class TmdbProvider extends MetadataProvider {
       credits,
       seasons,
     };
+  }
+
+  /**
+   * Every season and episode of a show, for showing the episodes that aren't in the library. Specials are left out.
+   * @returns `null` when TMDB doesn't know the show.
+   */
+  public async episodeGuide(ids: ExternalIds): Promise<MediaItem.EpisodeGuide | null> {
+    const { language } = await this.settings();
+    const id = ids.tmdb ?? await this.findByExternalId(ids, "tv");
+    if (!id) return null;
+    const show = await this.request<{ seasons: { season_number: number }[] }>(`/tv/${id}`, { language });
+    const numbers = show.seasons.map((s) => s.season_number).filter((n) => n > 0);
+    type Season = { episodes: { episode_number: number; name: string; air_date: string | null }[] };
+    const seasons: MediaItem.EpisodeGuide["seasons"] = [];
+    // Up to 20 seasons come along with one request
+    for (let i = 0; i < numbers.length; i += 20) {
+      const chunk = numbers.slice(i, i + 20);
+      const result = await this.request<Record<string, Season | undefined>>(`/tv/${id}`, { language, append_to_response: chunk.map((n) => `season/${n}`).join(",") });
+      for (const number of chunk) {
+        const season = result[`season/${number}`];
+        if (!season) continue;
+        seasons.push({ number, episodes: season.episodes.map((e) => ({ number: e.episode_number, title: e.name || null, airDate: e.air_date || null })) });
+      }
+    }
+    return { source: "tmdb", fetchedAt: new Date().toISOString(), seasons };
   }
 
   public override async search(type: Extract<ItemType, "movie" | "show">, query: string, year: number | null): Promise<MatchCandidate[]> {
