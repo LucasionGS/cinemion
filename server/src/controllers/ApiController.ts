@@ -33,6 +33,7 @@ import WatchlistController from "./WatchlistController.ts";
 import HttpsController from "./HttpsController.ts";
 import NotificationsController from "./NotificationsController.ts";
 import StatsController from "./StatsController.ts";
+import UpkeepController from "./UpkeepController.ts";
 import type { AppEnv } from "../lib/types.ts";
 
 /**
@@ -75,6 +76,7 @@ export namespace ApiController {
   router.route("/https", HttpsController.router);
   router.route("/notifications", NotificationsController.router);
   router.route("/stats", StatsController.router);
+  router.route("/upkeep", UpkeepController.router);
 
   router.all("*", (c) => c.json({ message: `There's no API endpoint at ${c.req.method} ${c.req.path}.` }, 404));
 }

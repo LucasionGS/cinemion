@@ -84,6 +84,14 @@ export class MediaFile extends Model<InferAttributes<MediaFile>, InferCreationAt
    * When ffprobe last read the file. `null` = not read yet.
    */
   declare probedAt: CreationOptional<Date | null>;
+  /**
+   * Why the file is broken, like "It's cut short". `null` = nothing wrong found.
+   */
+  declare problem: CreationOptional<string | null>;
+  /**
+   * When "Check files" last played the file through ffmpeg. `null` = never.
+   */
+  declare checkedAt: CreationOptional<Date | null>;
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
 
@@ -197,6 +205,8 @@ MediaFile.init({
   subtitleSearches: jsonColumn<Record<string, MediaFile.SubtitleSearch> | null, MediaFile>("subtitleSearches", null, true),
   sha256: { type: DataTypes.STRING(64), allowNull: true, defaultValue: null },
   probedAt: { type: DataTypes.DATE, allowNull: true, defaultValue: null },
+  problem: { type: DataTypes.STRING(512), allowNull: true, defaultValue: null },
+  checkedAt: { type: DataTypes.DATE, allowNull: true, defaultValue: null },
   createdAt: DataTypes.DATE,
   updatedAt: DataTypes.DATE,
 }, { sequelize, tableName: "media_files" });

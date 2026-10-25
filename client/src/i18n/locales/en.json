@@ -1580,7 +1580,8 @@
         "other": "{count} running"
       },
       "backups": "Backups",
-      "https": "HTTPS"
+      "https": "HTTPS",
+      "upkeep": "Upkeep"
     },
     "about": {
       "title": "About",
@@ -3087,6 +3088,56 @@
         "one": "Longest streak: {count} day",
         "other": "Longest streak: {count} days"
       }
+    }
+  },
+  "upkeep": {
+    "title": "Upkeep",
+    "intro": "Keep the libraries tidy: see where the space goes, find titles that are there twice, and files that don't play.",
+    "viewLabel": "What to look at",
+    "views": {
+      "space": "Space used",
+      "duplicates": "Duplicates",
+      "broken": "Broken files"
+    },
+    "notInLibrary": "Not sorted into a title",
+    "modified": "changed {date}",
+    "space": {
+      "total": "{size} in all",
+      "files": {
+        "one": "{count} file",
+        "other": "{count} files"
+      },
+      "free": "{size} free on its drive",
+      "types": "By kind of file",
+      "shows": "Biggest shows",
+      "biggest": "Biggest files"
+    },
+    "duplicates": {
+      "title": {
+        "one": "{count} title more than once",
+        "other": "{count} titles more than once"
+      },
+      "text": "The same movie or episode in several files, or the same title in two places. Sometimes that's on purpose, like a 4K version next to a smaller one.",
+      "none": "Nothing is in your libraries twice.",
+      "extra": "The extra copies take {size}"
+    },
+    "broken": {
+      "title": {
+        "one": "{count} broken file",
+        "other": "{count} broken files"
+      },
+      "text": "Files Cinemion can't read, that are cut short or damaged, or that stopped converting partway. Replacing the file and scanning the library clears it.",
+      "unchecked": {
+        "one": "{count} file hasn't been played through yet. Checking finds files that are cut short.",
+        "other": "{count} files haven't been played through yet. Checking finds files that are cut short."
+      },
+      "checkAll": "Check all files",
+      "checkStarted": "Checking files in the background",
+      "checkFailed": "Couldn't check",
+      "checkAgain": "Check again",
+      "stillBroken": "Still broken",
+      "fine": "The file is fine now",
+      "none": "No broken files found."
     }
   }
 }

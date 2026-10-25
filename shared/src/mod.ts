@@ -16,3 +16,4 @@ export * from "./watchlist.ts";
 export * from "./https.ts";
 export * from "./notifications.ts";
 export * from "./stats.ts";
+export * from "./upkeep.ts";

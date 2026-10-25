@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { ArchiveRestore, Captions, LockKeyhole, Clapperboard, FolderOpen, Info, LayoutDashboard, Library as LibraryIcon, ListChecks, MonitorSmartphone, Plug, ScrollText, UserRound, Users, Webhook } from "lucide-react";
+import { ArchiveRestore, Broom, Captions, LockKeyhole, Clapperboard, FolderOpen, Info, LayoutDashboard, Library as LibraryIcon, ListChecks, MonitorSmartphone, Plug, ScrollText, UserRound, Users, Webhook } from "lucide-react";
 import { session } from "../../Session.ts";
 import AdminApi from "../../Api/AdminApi.ts";
 import { Link } from "../../lib/Router.tsx";
@@ -24,6 +24,7 @@ import LogsSettings from "./LogsSettings.tsx";
 import AboutSettings from "./AboutSettings.tsx";
 import BackupsSettings from "./BackupsSettings.tsx";
 import HttpsSettings from "./HttpsSettings.tsx";
+import UpkeepSettings from "./UpkeepSettings.tsx";
 import "./Settings.scss";
 
 interface Tab {
@@ -61,6 +62,7 @@ export default function Settings(props: SettingsProps) {
     { id: "about", label: t("settings.tabs.about"), icon: <Info />, group: "you", visible: true, dot: update && t("updates.isOut", { version: update.version }), render: () => <AboutSettings /> },
     { id: "dashboard", label: t("settings.tabs.dashboard"), icon: <LayoutDashboard />, group: "server", visible: canManage, wide: true, render: () => <Dashboard /> },
     { id: "libraries", label: t("settings.tabs.libraries"), icon: <FolderOpen />, group: "server", visible: session.can("LIBRARY_MANAGE"), render: () => <LibrariesSettings /> },
+    { id: "upkeep", label: t("settings.tabs.upkeep"), icon: <Broom />, group: "server", visible: session.can("LIBRARY_MANAGE"), render: () => <UpkeepSettings /> },
     { id: "users", label: t("settings.tabs.users"), icon: <Users />, group: "server", visible: session.can("USERS_MANAGE"), render: () => <UsersSettings /> },
     { id: "playback", label: t("settings.tabs.playback"), icon: <Clapperboard />, group: "server", visible: canManage, render: () => <PlaybackSettings /> },
     { id: "metadata", label: t("settings.tabs.metadata"), icon: <LibraryIcon />, group: "server", visible: canManage, render: () => <MetadataSettings /> },

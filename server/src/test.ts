@@ -38,6 +38,7 @@ import Certificates from "./https/Certificates.ts";
 import Der from "./https/Der.ts";
 import WebPush from "./notifications/WebPush.ts";
 import Statistics from "./stats/Statistics.ts";
+import FileHealth from "./library/FileHealth.ts";
 import { decodeBase64Url, encodeBase64Url } from "@std/encoding/base64url";
 
 /**
@@ -581,6 +582,15 @@ check("streak up to today", Statistics.streaks(new Set(["2026-10-23", "2026-10-2
 check("streak still alive before today's first play", Statistics.streaks(new Set(["2026-10-22", "2026-10-23", "2026-10-24"]), statsToday), { current: 3, longest: 3 });
 check("streak over month ends", Statistics.streaks(new Set(["2026-09-29", "2026-09-30", "2026-10-01", "2026-10-02", "2026-10-20"]), statsToday), { current: 0, longest: 4 });
 check("periods", [Statistics.dayOf(Statistics.periodStart("week", statsToday)!), Statistics.dayOf(Statistics.periodStart("month", statsToday)!), Statistics.dayOf(Statistics.periodStart("year", statsToday)!), Statistics.periodStart("all", statsToday)], ["2026-10-19", "2026-09-26", "2025-11-01", null]);
+//#endregion
+
+//#region Upkeep
+console.log("Upkeep");
+check("readable ffprobe complaints", [
+  FileHealth.readable("Could not read the file as media: [matroska,webm @ 0x5608dd64fc00] File ended prematurely\n[matroska,webm @ 0x56] Duplicate element\n[matroska,webm @ 0x56] 0x00 at pos 202 (0xca) invalid as first byte of an EBML number"),
+  FileHealth.readable("Truncating packet of size 12898 to 4\n[matroska,webm @ 0x55] EBML header parsing failed\n/media/x.mkv: Invalid data found when processing input", "/media/x.mkv"),
+  FileHealth.readable("[h264 @ 0x1] error while decoding MB 12 4"),
+], ["File ended prematurely.", "EBML header parsing failed.", "Error while decoding MB 12 4."]);
 //#endregion
 
 console.log(failed ? `\n${failed} failed` : "\nAll passed");

@@ -5,6 +5,7 @@ import type { HardwareAcceleration as Kind, PlaybackSettings } from "@shared/pla
 import AppSystem from "../AppSystem.ts";
 import HardwareAcceleration from "./HardwareAcceleration.ts";
 import type PlaybackDecider from "./PlaybackDecider.ts";
+import FileHealth from "../library/FileHealth.ts";
 import log from "../lib/Logger.ts";
 
 /**
@@ -26,6 +27,10 @@ export class TranscodeSession {
 
   private _child: Deno.ChildProcess | null = null;
   private _stderr: string[] = [];
+  /**
+   * Set once the first segment is there, so a failure after it can be blamed on the file.
+   */
+  private _streaming = false;
 
   constructor(
     public readonly userId: number,
@@ -111,6 +116,8 @@ export class TranscodeSession {
       if (this.status !== "running") return;
       this.status = status.success ? "finished" : "failed";
       if (!status.success) log.warn("ffmpeg stopped with an error", { session: this.id, code: status.code, error: this._stderr.join("\n") });
+      // Stopping partway through a stream that was playing points at the file, not at the GPU
+      if (!status.success && this._streaming) FileHealth.report(this.fileId, `Converting it stopped partway: ${this._stderr.at(-1) ?? "ffmpeg gave up"}`).catch(() => { });
     });
 
     // Wait for the first segment, or for ffmpeg to give up
@@ -120,7 +127,10 @@ export class TranscodeSession {
       const status = this._currentStatus();
       if (status === "stopped") throw new Error("Playback was stopped.");
       const playlist = await fsp.readFile(this.firstPlaylist, "utf8").catch(() => "");
-      if (playlist.includes("#EXTINF")) return;
+      if (playlist.includes("#EXTINF")) {
+        this._streaming = true;
+        return;
+      }
       if (status === "failed" || (status === "finished" && !playlist)) {
         throw new Error(`ffmpeg couldn't convert the video: ${this._stderr.at(-1) ?? "no details"}`);
       }

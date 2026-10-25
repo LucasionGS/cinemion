@@ -90,6 +90,10 @@ export class MediaItem extends Model<InferAttributes<MediaItem>, InferCreationAt
    */
   declare editedAt: CreationOptional<Date | null>;
   /**
+   * For shows: every episode TMDB or TheTVDB lists, to show the ones that aren't here. `null` = not looked up.
+   */
+  declare episodeGuide: CreationOptional<MediaItem.EpisodeGuide | null>;
+  /**
    * The thumbnail was uploaded or picked by hand, so refreshing keeps it.
    */
   declare customArtwork: CreationOptional<boolean>;
@@ -190,6 +194,7 @@ MediaItem.init({
   ageRating: { type: DataTypes.INTEGER, allowNull: true, defaultValue: null },
   metadataUpdatedAt: { type: DataTypes.DATE, allowNull: true, defaultValue: null },
   editedAt: { type: DataTypes.DATE, allowNull: true, defaultValue: null },
+  episodeGuide: jsonColumn<MediaItem.EpisodeGuide | null, MediaItem>("episodeGuide", null, true),
   customArtwork: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
   clip: jsonColumn<MediaItem.ClipInfo | null, MediaItem>("clip", null, true),
   addedAt: { type: DataTypes.DATE, allowNull: false, defaultValue: DataTypes.NOW },
@@ -198,6 +203,15 @@ MediaItem.init({
 }, { sequelize, tableName: "media_items" });
 
 export namespace MediaItem {
+  /**
+   * A show's episodes as an online source lists them, season by season.
+   */
+  export interface EpisodeGuide {
+    source: "tmdb" | "tvdb";
+    fetchedAt: string;
+    seasons: { number: number; episodes: { number: number; title: string | null; airDate: string | null }[] }[];
+  }
+
   /**
    * What a clip's names say about its game, and what picture recognition thinks it is.
    */

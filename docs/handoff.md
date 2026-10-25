@@ -283,6 +283,7 @@ and on amd64 Intel's non-free VA driver + Quick Sync runtime), `docker/entrypoin
 | 25 | done | Built-in HTTPS: a certificate made by Cinemion, from Let's Encrypt or your own, renewed by itself (below) |
 | 26 | done | Notifications: a bell, browser push and email for new titles and arrivals from My list (below) |
 | 27 | done | Statistics: time per profile and for everyone, top titles, streaks, binges, a year in review (below) |
+| 28 | done | Library upkeep: space used, duplicates, broken files, missing episodes, deleting files (below) |
 
 Not planned in these rounds: **built-in remote access** (needs a relay service on ionnet.io that doesn't exist yet).
 Photos were asked for on 2026-10-21 and became milestone 20. The owner asked for each milestone to be committed and pushed, and
@@ -947,6 +948,20 @@ Asked for on 2026-10-25 (with every other item on the "what's next" list).
   in review as cards with a share button (Web Share, or the summary copied). "Your stats" in the profile menu.
 - **Tested**: `test.ts` (streaks across months and before today's first play, periods); a simulated playback with a
   pause (30 s, then a new sitting of 10 s); a year of made-up sittings for screenshots.
+
+### Milestone 28: Library upkeep
+Settings › Upkeep (`LIBRARY_MANAGE`, `pages/Settings/UpkeepSettings.tsx`, API `/api/upkeep`, `library/Upkeep.ts`).
+Migration `20261107090000-upkeep`: `media_files.problem` and `checkedAt`, `media_items.episodeGuide`.
+- **Space used**: per library (with free space on its drive), per file extension, the biggest shows (episodes →
+  seasons → shows) and the 20 biggest files.
+- **Duplicates**: movies and episodes with more than one file (versions, like a 4K next to a 1080p), and movies or
+  shows that are in the libraries twice by their TMDB, TheTVDB or IMDb id (shows are compared whole).
+- **Broken files** (`library/FileHealth.ts`): the scan stores why ffprobe couldn't read a file (one readable line
+  from its complaint, `FileHealth.readable()`), or that a video library's file has no video or no length; a
+  conversion that stops after the stream started marks its file (`TranscodeSession._streaming`). "Check all files"
+  (task `check-files-*` in the `upkeep` queue) decodes the first 10 s and the last 20 s of every playable file;
+  ffmpeg says "File ended prematurely" for cut-off files and still exits 0, so the words count, not only the exit
+  code. A changed file is read again by the scan, which clears its problem.
 
 ## 6. Design decisions
 

@@ -11,6 +11,7 @@ import MetadataManager from "../metadata/MetadataManager.ts";
 import ItemLabels from "./ItemLabels.ts";
 import Watchlist from "./Watchlist.ts";
 import Notifications from "../notifications/Notifications.ts";
+import FileHealth from "./FileHealth.ts";
 import VideoDetails from "./VideoDetails.ts";
 import MusicLibrary from "../music/MusicLibrary.ts";
 import MusicTags from "../music/MusicTags.ts";
@@ -22,6 +23,7 @@ import SubtitleAutomation from "../subtitles/SubtitleAutomation.ts";
 import Events from "../integrations/Events.ts";
 import Tasks from "../lib/Tasks.ts";
 import { forEachLimit } from "../lib/async.ts";
+import { errorMessage } from "../lib/http.ts";
 import log from "../lib/Logger.ts";
 
 /**
@@ -276,11 +278,15 @@ export namespace Scanner {
           return;
         }
         const { tags, chapters, ...details } = await Probe.read(file.path);
+        // A video library's file without a picture, or one whose length can't be told, is most likely broken
+        const problem = hasVideo && !details.videoCodec ? "There's no video in it."
+          : !details.duration && !isPhotos ? "Cinemion can't read how long it is. It's probably damaged or cut short."
+          : null;
         // Clips keep their tags, since some recorders write the game into them
-        await file.update({ ...details, tags: (hasVideo && !isClips) || isPhotos ? null : tags, chapters: library.type === "audiobooks" ? chapters : null, probedAt: new Date() });
+        await file.update({ ...details, tags: (hasVideo && !isClips) || isPhotos ? null : tags, chapters: library.type === "audiobooks" ? chapters : null, probedAt: new Date(), problem, checkedAt: null });
       } catch (error) {
         log.warn(`Could not read ${file.path}`, { error });
-        await file.update({ probedAt: new Date() });
+        await file.update({ probedAt: new Date(), problem: `Cinemion can't read it: ${FileHealth.readable(errorMessage(error), file.path)}`.slice(0, 512) });
       }
       probed++;
     });
