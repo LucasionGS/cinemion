@@ -304,6 +304,9 @@ page: GitHub release with both binaries, `ghcr.io/lucasiongs/cinemion:0.3.0` (an
 `ghcr.io/lucasiongs/cinemion:0.5.0` (and `0.5`, `latest`), AUR `cinemion-bin` 0.5.0.
 **0.6.0 released** with the update check (21c): GitHub release with both binaries,
 `ghcr.io/lucasiongs/cinemion:0.6.0` (and `0.6`, `latest`), AUR `cinemion-bin` 0.6.0.
+**0.7.0 released** with milestones 22 to 30 (translations, backups, My list, HTTPS, notifications, statistics,
+upkeep, server messages, five languages): GitHub release with both binaries, `ghcr.io/lucasiongs/cinemion:0.7.0`
+(and `0.7`, `latest`), AUR `cinemion-bin` 0.7.0. The workflows run on Node 24 actions now.
 
 ### Milestone 6: what was built
 Follows the Round 3 admin mockup (artboard `Admin.dc.html` in the Round 3 canvas): app top bar + left settings nav.
