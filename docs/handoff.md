@@ -1,7 +1,7 @@
 # Cinemion handoff
 
 Everything an assistant needs to pick this project up with no earlier context. Read it fully before changing code.
-Last updated 2026-10-24, after translations (milestone 22).
+Last updated 2026-10-25, after the 0.7.0 release (milestones 23 to 30).
 
 ## 1. What Cinemion is
 
@@ -1087,4 +1087,10 @@ optional uploaded pictures, watch together as a side panel.
   NVIDIA, AMD, Xbox, Medal and Steam exports). SteamGridDB is untested (no key). Recognition confidence numbers are
   tuned on test patterns and store screenshots, not real gameplay. Steam's own recording folders (DASH pieces) aren't
   read; only exported files are.
+- **Push notifications** were only seen up to the push service taking them (201 from FCM) and the service worker
+  showing one delivered through DevTools; a real phone hasn't shown one yet. iPhones need Cinemion on the home screen.
+- **Let's Encrypt** is tested against Pebble only; a real domain hasn't been through it.
+- **The five translations** were drafted by Claude and haven't been read by native speakers.
+- **Backups** were tested on the scratch data (a few MB); a library with tens of thousands of items hasn't been backed
+  up or restored yet.
 - Ideas for later live in `docs/future-features.md`.
