@@ -284,6 +284,7 @@ and on amd64 Intel's non-free VA driver + Quick Sync runtime), `docker/entrypoin
 | 26 | done | Notifications: a bell, browser push and email for new titles and arrivals from My list (below) |
 | 27 | done | Statistics: time per profile and for everyone, top titles, streaks, binges, a year in review (below) |
 | 28 | done | Library upkeep: space used, duplicates, broken files, missing episodes, deleting files (below) |
+| 29 | done | Server messages translatable: collected into `en.json`, matched on the client, push and email in the profile's language (below) |
 
 Not planned in these rounds: **built-in remote access** (needs a relay service on ionnet.io that doesn't exist yet).
 Photos were asked for on 2026-10-21 and became milestone 20. The owner asked for each milestone to be committed and pushed, and
@@ -979,6 +980,24 @@ Migration `20261107090000-upkeep`: `media_files.problem` and `checkedAt`, `media
   scanned (`Scanner.scanFoldersNow`) and the activity feed gets "Ion deleted X from Movies". UI: "Delete from disk…"
   in a title's menu, "Delete Season N from disk…" on show pages, and trash buttons in Upkeep, all behind a dialog
   that lists the files and the folder.
+
+### Milestone 29: Server messages
+- **Collecting**: `deno task i18n server` (`scripts/i18n.ts`) reads the server's source and collects every message a
+  person can see into the `server` group of `en.json`: strings and template literals after `message:`,
+  `new Error(`, `task.update(`, `Tasks.run(<id>, `, `Activity.record("kind", `, `step(`, `_step = `, `problem:` and
+  `return` that have at least two words and start with a capital. `${…}` becomes `{name}` (the last identifier of the
+  expression; `{value}` for complicated ones). Keys are the first five words in camelCase plus a 6-hex hash of the
+  text (`aBackupIsBeingMade_395c69`). `deno task i18n` (and CI) fails when the group is out of date. Migrations and
+  `test.ts` are left out.
+- **Showing**: `serverText()` in `client/src/i18n/I18n.ts` turns each English template into an anchored pattern
+  (more literal text first), and fills the reader's line with the values, which are themselves matched once more
+  (for "…: {error}"). "Label · Library" task names are split and matched part by part. English skips all of it.
+  Used for every API error (`BaseApi`, `BackupsApi`, uploads), task names, statuses and errors, the activity feed,
+  file problems, backup and HTTPS errors and steps, the GPU test, watch-together notices.
+- **Push and email** are worded on the server in the profile's `preferences.language` by `lib/Translations.ts`, which
+  reads the client's locale files (`client/src/i18n/locales`, staged and `--include`d by `scripts/compile.sh`).
+- **Tested** with a made-up bracketed language: API errors, task names, the dashboard's activity lines and its next
+  scan all came out in brackets; `test.ts` checks the server's notification words.
 
 ## 6. Design decisions
 

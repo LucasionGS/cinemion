@@ -10,7 +10,7 @@ import { useUpdates } from "../../lib/Updates.ts";
 import { formatClock } from "../../lib/playback.ts";
 import { formatBitrate, formatBytes, formatPercent, formatSpan, timeAgo, timeUntil } from "../../lib/format.ts";
 import cx from "../../lib/cx.ts";
-import { i18n, rich, t } from "../../i18n/I18n.ts";
+import { i18n, rich, serverText, t } from "../../i18n/I18n.ts";
 import Avatar from "../../components/Avatar/Avatar.tsx";
 import Button from "../../components/Button/Button.tsx";
 import Spinner from "../../components/Spinner/Spinner.tsx";
@@ -79,8 +79,8 @@ export default function Dashboard() {
               {data.tasks.map((task) => (
                 <div key={task.id} className="cn-dashboard__task">
                   <div className="cn-dashboard__task-head">
-                    <span>{task.label}</span>
-                    <span>{task.progress !== null ? formatPercent(task.progress) : task.status}</span>
+                    <span>{serverText(task.label)}</span>
+                    <span>{task.progress !== null ? formatPercent(task.progress) : serverText(task.status)}</span>
                   </div>
                   <Meter value={task.progress} />
                 </div>
@@ -104,7 +104,7 @@ export default function Dashboard() {
               {data.activity.map((a) => (
                 <li key={a.id} className="cn-activity__item">
                   <span className={cx("cn-activity__dot", `cn-activity__dot--${dotFor(a.kind)}`)} aria-hidden="true" />
-                  <span className="cn-activity__text">{a.message}</span>
+                  <span className="cn-activity__text">{serverText(a.message)}</span>
                   <time className="cn-activity__time" dateTime={a.createdAt} title={new Date(a.createdAt).toLocaleString(i18n.locale)}>{timeAgo(a.createdAt)}</time>
                 </li>
               ))}

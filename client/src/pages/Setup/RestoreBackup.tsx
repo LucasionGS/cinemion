@@ -4,7 +4,7 @@ import type { BackupInfo, RestoreStatus } from "@shared/admin.ts";
 import BackupsApi from "../../Api/BackupsApi.ts";
 import { formatBytes, formatMoment, formatPercent } from "../../lib/format.ts";
 import cx from "../../lib/cx.ts";
-import { t } from "../../i18n/I18n.ts";
+import { serverText, t } from "../../i18n/I18n.ts";
 import Button from "../../components/Button/Button.tsx";
 import TextField from "../../components/TextField/TextField.tsx";
 
@@ -155,11 +155,11 @@ export default function RestoreBackup(props: RestoreBackupProps) {
       )}
 
       {error && <p className="cn-restore__error" role="alert">{error}</p>}
-      {status?.state === "failed" && status.error && <p className="cn-restore__error" role="alert">{t("setup.restore.failed", { error: status.error })}</p>}
+      {status?.state === "failed" && status.error && <p className="cn-restore__error" role="alert">{t("setup.restore.failed", { error: serverText(status.error) })}</p>}
 
       {busy && (
         <div className="cn-restore__progress" aria-live="polite">
-          <span>{sending !== null ? t("setup.restore.sending", { percent: formatPercent(sending) }) : status?.step}</span>
+          <span>{sending !== null ? t("setup.restore.sending", { percent: formatPercent(sending) }) : serverText(status?.step)}</span>
           <span className="cn-meter"><span style={{ width: formatPercent((sending ?? status?.progress) ?? 0.05) }} /></span>
         </div>
       )}

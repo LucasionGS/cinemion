@@ -5,7 +5,7 @@ import BaseApi from "../Api/BaseApi.ts";
 import { deviceMode } from "./DeviceMode.ts";
 import { session } from "../Session.ts";
 import { formatClock } from "./playback.ts";
-import { t } from "../i18n/I18n.ts";
+import { serverText, t } from "../i18n/I18n.ts";
 
 /**
  * Something another member did, for the short notice at the top of the player.
@@ -274,7 +274,7 @@ export class TogetherSession extends Controller {
         this._welcomeWaiters.splice(0).forEach((done) => done(false));
         break;
       case "error":
-        this._showNotice(message.message, null);
+        this._showNotice(serverText(message.message), null);
         break;
     }
     this.notify();

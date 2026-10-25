@@ -7,6 +7,7 @@ import { type Library, MediaItem, Notification, PushSubscription, Setting, User,
 import Visibility from "../library/Visibility.ts";
 import WebPush from "./WebPush.ts";
 import Mailer from "./Mailer.ts";
+import Translations from "../lib/Translations.ts";
 import { errorMessage } from "../lib/http.ts";
 import log from "../lib/Logger.ts";
 
@@ -188,21 +189,23 @@ export namespace Notifications {
   //#region Sending
 
   /**
-   * The words of a notification for push and email. The bell words it in the reader's language on the client.
+   * The words of a notification for push and email, in the profile's language. The bell words it on the client.
    */
-  export function describe(data: NotificationData): { title: string; body: string } {
+  export function describe(data: NotificationData, language: string | null = null): { title: string; body: string } {
+    const tr = (key: string, values?: Record<string, string | number>) => Translations.t(language, key, values);
     switch (data.kind) {
       case "episodes":
         if (data.count === 1 && data.season !== null && data.episode !== null) {
-          return { title: data.showTitle, body: `S${data.season} E${data.episode}${data.episodeTitle ? ` · ${data.episodeTitle}` : ""} is here to watch` };
+          const code = tr("notifications.episodeCode", { season: data.season, episode: data.episode });
+          return { title: data.showTitle, body: data.episodeTitle ? tr("notifications.episodeWithTitle", { code, title: data.episodeTitle }) : tr("notifications.episode", { code }) };
         }
-        return { title: data.showTitle, body: `${data.count} new ${data.count === 1 ? "episode" : "episodes"} to watch` };
+        return { title: data.showTitle, body: tr("notifications.episodes", { count: data.count }) };
       case "album":
-        return { title: data.title, body: data.artist ? `A new album by ${data.artist}` : `New in ${data.libraryName}` };
+        return { title: data.title, body: data.artist ? tr("notifications.albumBy", { artist: data.artist }) : tr("notifications.newIn", { library: data.libraryName }) };
       case "watchlist":
-        return { title: data.title, body: "From your list, now here to watch" };
+        return { title: data.title, body: tr("notifications.fromList") };
       default:
-        return { title: data.title, body: `New in ${data.libraryName}` };
+        return { title: data.title, body: tr("notifications.newIn", { library: data.libraryName }) };
     }
   }
 
@@ -212,8 +215,9 @@ export namespace Notifications {
 
   async function deliver(user: User, notifications: Notification[]) {
     const subscriptions = await PushSubscription.findAll({ where: { userId: user.id } });
+    const language = normalizePreferences(user.preferences).language;
     for (const notification of notifications) {
-      const words = describe(notification.data);
+      const words = describe(notification.data, language);
       const message = {
         ...words,
         url: notification.itemId ? `/item/${notification.itemId}` : "/",
@@ -232,10 +236,19 @@ export namespace Notifications {
     const email = normalizePreferences(user.preferences).notifications.email;
     if (email && await Mailer.isConfigured()) {
       const server = await Setting.get(Setting.Keys.SERVER_NAME, AppSystem.APP_NAME);
-      const lines = notifications.map((n) => describe(n.data));
+      const tr = (key: string, values?: Record<string, string | number>) => Translations.t(language, key, values);
+      const lines = notifications.map((n) => describe(n.data, language));
       const link = baseUrl();
-      const subject = lines.length === 1 ? `${lines[0].title}: ${lines[0].body}` : `${lines.length} new things on ${server}`;
-      const text = [`Hi ${user.name},`, "", ...lines.map((l) => `• ${l.title}: ${l.body}`), "", link ? `Open ${server}: ${link}` : `Open ${server} to watch.`, "", "You get these because of your notification settings in Cinemion (Settings › Your profile)."].join("\n");
+      const subject = lines.length === 1 ? tr("notifications.email.one", { title: lines[0].title, text: lines[0].body }) : tr("notifications.email.many", { count: lines.length, server });
+      const text = [
+        tr("notifications.email.greeting", { name: user.name }),
+        "",
+        ...lines.map((l) => tr("notifications.email.line", { title: l.title, text: l.body })),
+        "",
+        link ? tr("notifications.email.open", { server, link }) : tr("notifications.email.openPlain", { server }),
+        "",
+        tr("notifications.email.why"),
+      ].join("\n");
       Mailer.send({ to: email, subject, text }).catch((error) => log.warn("Could not send a notification email", { user: user.name, error: errorMessage(error) }));
     }
   }
@@ -306,7 +319,8 @@ export namespace Notifications {
   export async function testPush(user: User) {
     let sent = 0;
     for (const subscription of await PushSubscription.findAll({ where: { userId: user.id } })) {
-      const result = await WebPush.send(subscription, { title: "Cinemion", body: "Notifications work on this device.", url: "/settings/profile", tag: "test", icon: null }, { subject: PUSH_SUBJECT, topic: "test" });
+      const body = Translations.t(normalizePreferences(user.preferences).language, "notifications.testBody");
+      const result = await WebPush.send(subscription, { title: "Cinemion", body, url: "/settings/profile", tag: "test", icon: null }, { subject: PUSH_SUBJECT, topic: "test" });
       if (result === "sent") sent++;
       if (result === "gone") await subscription.destroy();
     }

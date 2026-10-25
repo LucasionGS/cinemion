@@ -1,5 +1,5 @@
 import type { BackupInfo, BackupSettingsUpdate, BackupsOverview, RestoreStatus } from "@shared/admin.ts";
-import { t } from "../i18n/I18n.ts";
+import { serverText, t } from "../i18n/I18n.ts";
 import BaseApi from "./BaseApi.ts";
 
 /**
@@ -62,7 +62,7 @@ export namespace BackupsApi {
 
   function failure(body: unknown, fallback: string) {
     const data = body as { message?: string; needsPassword?: boolean } | null;
-    return new RestoreError(data?.message || fallback, !!data?.needsPassword);
+    return new RestoreError(serverText(data?.message) || fallback, !!data?.needsPassword);
   }
 
   /**

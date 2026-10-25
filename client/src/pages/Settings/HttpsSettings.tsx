@@ -5,7 +5,7 @@ import HttpsApi from "../../Api/HttpsApi.ts";
 import { toasts } from "../../lib/Toasts.ts";
 import usePoll from "../../lib/usePoll.ts";
 import { formatMoment } from "../../lib/format.ts";
-import { rich, t, type TranslationKey } from "../../i18n/I18n.ts";
+import { rich, serverText, t, type TranslationKey } from "../../i18n/I18n.ts";
 import Button from "../../components/Button/Button.tsx";
 import SegmentedControl from "../../components/SegmentedControl/SegmentedControl.tsx";
 import Spinner from "../../components/Spinner/Spinner.tsx";
@@ -44,7 +44,7 @@ export default function HttpsSettings() {
     try {
       const result = await HttpsApi.update(changes);
       setData(result);
-      if (result.settings.enabled && !result.running && result.error) toasts.error(t("https.notStarted"), result.error);
+      if (result.settings.enabled && !result.running && result.error) toasts.error(t("https.notStarted"), serverText(result.error));
       else if (done) toasts.success(t(done));
       return true;
     } catch (e) {
@@ -61,7 +61,7 @@ export default function HttpsSettings() {
     try {
       const result = await HttpsApi.renew();
       setData(result);
-      if (result.error) toasts.error(t("https.renewFailed"), result.error);
+      if (result.error) toasts.error(t("https.renewFailed"), serverText(result.error));
       else toasts.success(t("https.renewed"));
     } catch (e) {
       toasts.error(t("https.renewFailed"), (e as Error).message);
@@ -93,7 +93,7 @@ export default function HttpsSettings() {
         />
         <PortField port={settings.port} saving={saving === "port"} onSave={(port) => save("port", { port }, "common.saved")} />
         {data.step && (
-          <p className="cn-https__step" aria-live="polite"><Spinner size="1em" /> {data.step}</p>
+          <p className="cn-https__step" aria-live="polite"><Spinner size="1em" /> {serverText(data.step)}</p>
         )}
         {settings.enabled && data.running && data.addresses.length > 0 && (
           <div className="cn-https__addresses">
@@ -101,7 +101,7 @@ export default function HttpsSettings() {
             {data.addresses.map((address) => <a key={address} href={address} target="_blank" rel="noreferrer">{address} <ExternalLink aria-hidden="true" /></a>)}
           </div>
         )}
-        {data.error && <p className={settings.enabled && !data.running ? "cn-backups__error" : "cn-https__warning"} role="alert">{data.error}</p>}
+        {data.error && <p className={settings.enabled && !data.running ? "cn-backups__error" : "cn-https__warning"} role="alert">{serverText(data.error)}</p>}
         {data.certificate && (
           <p className="cn-settings__row-text">
             <span>

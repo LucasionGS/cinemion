@@ -2,7 +2,7 @@ import type { UploadInfo, UploadRules } from "@shared/uploads.ts";
 import Controller from "./Controller.ts";
 import UploadsApi from "../Api/UploadsApi.ts";
 import { toasts } from "./Toasts.ts";
-import { t } from "../i18n/I18n.ts";
+import { serverText, t } from "../i18n/I18n.ts";
 
 // Pieces start this big and halve when a reverse proxy refuses them (nginx allows 1 MB by default)
 const START_CHUNK = 32 * 1024 * 1024;
@@ -111,7 +111,7 @@ export class UploadController extends Controller {
         sent: info.received,
         speed: null,
         server: info,
-        error: info.status === "failed" ? info.message : null,
+        error: info.status === "failed" ? serverText(info.message) : null,
       };
       this.entries.push(added);
       if (added.state === "processing") this._follow(added);
@@ -355,9 +355,9 @@ export class UploadController extends Controller {
         entry.server = info;
         if (info.status === "done" || info.status === "failed") {
           entry.state = info.status;
-          entry.error = info.status === "failed" ? info.message : null;
-          if (info.status === "done") toasts.success(t("uploads.toasts.added", { name: entry.path.split("/").pop() ?? "" }), info.isZip ? info.message ?? undefined : undefined);
-          else toasts.error(t("uploads.toasts.addFailed", { name: entry.path.split("/").pop() ?? "" }), info.message ?? undefined);
+          entry.error = info.status === "failed" ? serverText(info.message) : null;
+          if (info.status === "done") toasts.success(t("uploads.toasts.added", { name: entry.path.split("/").pop() ?? "" }), info.isZip ? serverText(info.message) || undefined : undefined);
+          else toasts.error(t("uploads.toasts.addFailed", { name: entry.path.split("/").pop() ?? "" }), serverText(info.message) || undefined);
           break;
         }
         this.notify();

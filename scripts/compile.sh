@@ -47,6 +47,9 @@ mkdir -p "$STAGE/server" "$STAGE/shared" "$STAGE/client"
 cp -r "$ROOT/server/src" "$STAGE/server/src"
 cp -r "$ROOT/shared/src" "$STAGE/shared/src"
 cp -r "$ROOT/client/dist" "$STAGE/client/dist"
+# The server words push notifications and emails in each profile's language, from the client's language files
+mkdir -p "$STAGE/client/src/i18n"
+cp -r "$ROOT/client/src/i18n/locales" "$STAGE/client/src/i18n/locales"
 # The server's own imports, with @shared pointing at the staged copy
 python3 -I - "$ROOT/server/deno.json" "$STAGE/server/deno.json" <<'EOF'
 import json, sys
@@ -58,6 +61,6 @@ EOF
 echo "Compiling for $TARGET..."
 mkdir -p "$(dirname "$OUTPUT")"
 # Workers are loaded by URL, so they have to be named to be compiled in
-(cd "$STAGE/server" && deno compile -A --quiet --target "$TARGET" --include ../client/dist --include src/clips/RecognitionWorker.ts -o "$OUTPUT" src/index.ts)
+(cd "$STAGE/server" && deno compile -A --quiet --target "$TARGET" --include ../client/dist --include ../client/src/i18n/locales --include src/clips/RecognitionWorker.ts -o "$OUTPUT" src/index.ts)
 
 echo "Done! Built $OUTPUT ($(du -h "$OUTPUT" | cut -f1))"

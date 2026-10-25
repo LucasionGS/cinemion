@@ -8,7 +8,7 @@ import { toasts } from "../../lib/Toasts.ts";
 import usePoll from "../../lib/usePoll.ts";
 import { formatBitrate, formatBytes, formatDate, formatPercent } from "../../lib/format.ts";
 import { formatDuration } from "../../lib/playback.ts";
-import { t, type TranslationKey } from "../../i18n/I18n.ts";
+import { serverText, t, type TranslationKey } from "../../i18n/I18n.ts";
 import Button from "../../components/Button/Button.tsx";
 import SegmentedControl from "../../components/SegmentedControl/SegmentedControl.tsx";
 import Spinner from "../../components/Spinner/Spinner.tsx";
@@ -54,7 +54,7 @@ export function ItemLine(props: { item: UpkeepItemRef | null; file?: UpkeepFile;
         {item ? <Link href={`/item/${item.id}`} className="cn-upkeep__title">{item.title}</Link> : <strong>{t("upkeep.notInLibrary")}</strong>}
         {file && <span className="cn-upkeep__path" title={file.path}>{`\u200e${file.path}\u200e`}</span>}
         {file && <span>{fileFacts(file)}</span>}
-        {file?.problem && <span className="cn-upkeep__problem">{file.problem}</span>}
+        {file?.problem && <span className="cn-upkeep__problem">{serverText(file.problem)}</span>}
       </div>
       {children}
     </div>
@@ -183,7 +183,7 @@ function ProblemsView(props: { view: "duplicates" | "broken" }) {
     setBusy(`file-${fileId}`);
     try {
       const { problem } = await UpkeepApi.checkFile(fileId);
-      if (problem) toasts.error(t("upkeep.broken.stillBroken"), problem);
+      if (problem) toasts.error(t("upkeep.broken.stillBroken"), serverText(problem));
       else toasts.success(t("upkeep.broken.fine"));
       reload();
     } catch (e) {
@@ -228,7 +228,7 @@ function ProblemsView(props: { view: "duplicates" | "broken" }) {
       <div className="cn-settings__row">
         <div className="cn-settings__row-text">
           {data.checking
-            ? <strong>{data.checking.status}{data.checking.progress !== null && ` · ${formatPercent(data.checking.progress)}`}</strong>
+            ? <strong>{serverText(data.checking.status)}{data.checking.progress !== null && ` · ${formatPercent(data.checking.progress)}`}</strong>
             : <span>{t("upkeep.broken.unchecked", { count: data.unchecked })}</span>}
         </div>
         <Button icon={<SearchCheck />} loading={busy === "all" || !!data.checking} onClick={checkAll}>{t("upkeep.broken.checkAll")}</Button>
@@ -275,7 +275,7 @@ function MissingView() {
       <div className="cn-settings__row">
         <div className="cn-settings__row-text">
           {data.lookingUp
-            ? <strong>{data.lookingUp.status}{data.lookingUp.progress !== null && ` · ${formatPercent(data.lookingUp.progress)}`}</strong>
+            ? <strong>{serverText(data.lookingUp.status)}{data.lookingUp.progress !== null && ` · ${formatPercent(data.lookingUp.progress)}`}</strong>
             : <span>{t("upkeep.missing.lookedUp", { done: data.lookedUp, total: data.total })}</span>}
         </div>
         <Button icon={<RefreshCw />} loading={starting || !!data.lookingUp} onClick={lookUp}>{t("upkeep.missing.lookUp")}</Button>

@@ -37,6 +37,8 @@ import Encryption from "./lib/Encryption.ts";
 import Certificates from "./https/Certificates.ts";
 import Der from "./https/Der.ts";
 import WebPush from "./notifications/WebPush.ts";
+import Translations from "./lib/Translations.ts";
+import Notifications from "./notifications/Notifications.ts";
 import Statistics from "./stats/Statistics.ts";
 import FileHealth from "./library/FileHealth.ts";
 import MissingEpisodes from "./library/MissingEpisodes.ts";
@@ -573,6 +575,11 @@ const browserPublic = new Uint8Array(await crypto.subtle.exportKey("raw", browse
 const browserAuth = new Uint8Array(16).map((_, i) => i * 7);
 const sealedPush = await WebPush.encrypt(encoded("{\"title\":\"Harbor Lights\"}"), { p256dh: encodeBase64Url(browserPublic), auth: encodeBase64Url(browserAuth) });
 check("push round trip with fresh keys", await decryptPush(sealedPush, browserKeys.privateKey, browserPublic, browserAuth), "{\"title\":\"Harbor Lights\"}");
+check("notification words", [
+  Notifications.describe({ kind: "episodes", showTitle: "Saltwater Kings", count: 3, season: null, episode: null, episodeTitle: null }).body,
+  Notifications.describe({ kind: "episodes", showTitle: "Saltwater Kings", count: 1, season: 2, episode: 4, episodeTitle: "Tides" }, "xx").body,
+  Translations.t("en", "notifications.email.many", { count: 1, server: "Home" }),
+], ["3 new episodes to watch", "S2 E4 · Tides is here to watch", "1 new thing on Home"]);
 check("push encryption (RFC 8291)", encodeBase64Url(pushBody), "DGv6ra1nlYgDCS1FRnbzlwAAEABBBP4z9KsN6nGRTbVYI_c7VJSPQTBtkgcy27mlmlMoZIIgDll6e3vCYLocInmYWAmS6TlzAC8wEqKK6PBru3jl7A_yl95bQpu6cVPTpK4Mqgkf1CXztLVBSt2Ks3oZwbuwXPXLWyouBWLVWGNWQexSgSxsj_Qulcy4a-fN");
 //#endregion
 

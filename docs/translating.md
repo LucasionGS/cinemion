@@ -53,7 +53,22 @@ Cinemion talks like a friendly person, not a manual: short, plain sentences, no 
 works ("converted", not "transcoded"). Please keep that feel in your language, and use the informal "you" where your
 language has a choice (like German "du").
 
-## What isn't translated yet
+## Messages from the server
 
-Messages that come from the server, like error messages, the dashboard's activity feed and task names, are still in
-English. Titles, plots and artwork come from the metadata sources in the language set in Settings › Metadata.
+The server speaks English: error messages, task names, the activity feed and so on. They're lines too, in the
+`server` group of the English file, collected straight from the server's code. Translate them like any other line;
+Cinemion recognises each English message when it arrives and shows your line instead, with the values (names,
+numbers, paths) carried over into your `{placeholders}`.
+
+The `server` group is made by a tool, so don't edit it in `en.json` by hand. When the server's messages change, run
+`deno task i18n server` to collect them again (`deno task i18n` says when that's needed), then
+`deno task i18n sync <CODE>` for each language. The keys come from the first words and a short hash of the English
+text, so a changed message becomes a new line to translate.
+
+Push notifications and emails are worded by the server in each profile's own language (Settings › Your profile ›
+Language), from the `notifications` group.
+
+## What isn't translated
+
+Titles, plots and artwork come from the metadata sources in the language set in Settings › Metadata. The server log
+(Settings › Logs) stays in English, so it reads the same in bug reports.

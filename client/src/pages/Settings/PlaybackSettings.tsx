@@ -5,7 +5,7 @@ import PlaybackApi from "../../Api/PlaybackApi.ts";
 import { toasts } from "../../lib/Toasts.ts";
 import { formatBytes } from "../../lib/format.ts";
 import cx from "../../lib/cx.ts";
-import { t, type TranslationKey } from "../../i18n/I18n.ts";
+import { serverText, t, type TranslationKey } from "../../i18n/I18n.ts";
 import Button from "../../components/Button/Button.tsx";
 import Select from "../../components/Select/Select.tsx";
 import Switch from "../../components/Switch/Switch.tsx";
@@ -177,7 +177,7 @@ export default function PlaybackSettings() {
               {test && (
                 <span className={cx("cn-playback__test", test.ok ? "cn-playback__test--ok" : "cn-playback__test--failed")}>
                   {test.ok ? <CircleCheck /> : <CircleAlert />}
-                  {test.message}
+                  {serverText(test.message)}
                 </span>
               )}
             </div>

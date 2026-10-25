@@ -4,7 +4,7 @@ import type { GameCandidate, GameChoice } from "@shared/clips.ts";
 import ClipsApi from "../../Api/ClipsApi.ts";
 import ItemsApi from "../../Api/ItemsApi.ts";
 import { toasts } from "../../lib/Toasts.ts";
-import { t } from "../../i18n/I18n.ts";
+import { serverText, t } from "../../i18n/I18n.ts";
 import Dialog from "../Dialog/Dialog.tsx";
 import TextField from "../TextField/TextField.tsx";
 import Spinner from "../Spinner/Spinner.tsx";
@@ -56,7 +56,7 @@ export default function SetGameDialog(props: SetGameDialogProps) {
         .then((r) => {
           if (cancelled) return;
           setResults(r.results);
-          setMessage(r.message);
+          setMessage(r.message ? serverText(r.message) : r.message);
         })
         .catch((e: Error) => !cancelled && setMessage(e.message));
     }, query ? SEARCH_DELAY_MS : 0);

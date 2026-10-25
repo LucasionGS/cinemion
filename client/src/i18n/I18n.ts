@@ -225,6 +225,63 @@ function lookup(messages: Messages, key: string): string | PluralForms | undefin
 
 export const i18n = new I18nController();
 
+//#region Server messages
+
+interface ServerPattern {
+  key: TranslationKey;
+  regex: RegExp;
+  names: string[];
+  /**
+   * Characters that aren't placeholders, so more specific patterns are tried first.
+   */
+  weight: number;
+}
+
+let _serverPatterns: ServerPattern[] | null = null;
+
+/**
+ * The English server messages (the "server" group, collected from the server's code by `deno task i18n server`) as
+ * patterns that pick out the values in a message.
+ */
+function serverPatterns() {
+  if (_serverPatterns) return _serverPatterns;
+  const group = (en as unknown as { server?: Record<string, string> }).server ?? {};
+  _serverPatterns = Object.entries(group).map(([key, template]) => {
+    const names: string[] = [];
+    const source = template.split(/(\{\w+\})/).map((part) => {
+      const placeholder = part.match(/^\{(\w+)\}$/);
+      if (!placeholder) return part.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      names.push(placeholder[1]);
+      return "([\\s\\S]+?)";
+    }).join("");
+    return { key: `server.${key}` as TranslationKey, regex: new RegExp(`^${source}$`), names, weight: template.replace(/\{\w+\}/g, "").length };
+  }).sort((a, b) => b.weight - a.weight);
+  return _serverPatterns;
+}
+
+/**
+ * A message the server sent (an error, a task's status, an activity line) in the reader's language. The server
+ * speaks English; its messages are matched to their line here, and the values in them carried over. Anything not
+ * found stays as it is.
+ */
+export function serverText(message: string | null | undefined, depth = 0): string {
+  if (!message) return message ?? "";
+  // The server already speaks English
+  if (i18n.language === "en") return message;
+  for (const pattern of serverPatterns()) {
+    const match = pattern.regex.exec(message);
+    if (!match) continue;
+    // A value can be a message of its own, like the reason in "The copy couldn't be made: …"
+    const values = Object.fromEntries(pattern.names.map((name, i) => [name, depth < 2 ? serverText(match[i + 1], depth + 1) : match[i + 1]]));
+    return i18n.t(pattern.key, values);
+  }
+  // Labels with the library after them: "Scanning · Movies"
+  if (depth === 0 && message.includes(" · ")) return message.split(" · ").map((part) => serverText(part, 1)).join(" · ");
+  return message;
+}
+
+//#endregion
+
 /**
  * The text of a line in the current language. See `I18nController.t`.
  */

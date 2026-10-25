@@ -5,6 +5,7 @@
  *   check            Compare every language with English (the default)
  *   new <CODE>       Start a language: a copy of English with empty lines to fill in
  *   sync <CODE>      Add lines English gained (empty) and drop ones it lost, in English's order
+ *   server           Collect the server's messages into the English file's "server" group
  *   help             Show this
  */
 import fs from "node:fs";
@@ -20,6 +21,7 @@ interface Group {
 
 const LOCALES_DIR = Path.join(import.meta.dirname!, "..", "client", "src", "i18n", "locales");
 const SOURCE_DIR = Path.join(import.meta.dirname!, "..", "client", "src");
+const SERVER_DIR = Path.join(import.meta.dirname!, "..", "server", "src");
 const PLURAL_FORMS = ["zero", "one", "two", "few", "many", "other"];
 
 function isPlural(entry: Entry): entry is Plural {
@@ -96,11 +98,19 @@ function check() {
 
   // Lines nobody uses any more make the template longer for every translator
   const source = sourceText();
-  const unused = [...english.keys()].filter((key) => !source.includes(`"${key}"`));
+  // The server's messages are matched by their English text, not used by key
+  const unused = [...english.keys()].filter((key) => !key.startsWith("server.") && !source.includes(`"${key}"`));
   console.log(`English: ${english.size} lines.`);
   if (unused.length > 0) {
-    console.log(`  ${unused.length} not used anywhere in the client:`);
+    console.log(`  ${unused.length} not used anywhere in the client or server:`);
     for (const key of unused) console.log(`    ${key}`);
+  }
+
+  const collected = serverMessages();
+  const stored = read("en").server ?? {};
+  if (JSON.stringify(collected) !== JSON.stringify(stored)) {
+    console.log(`  The server's messages changed. Run "deno task i18n server" to collect them again.`);
+    errors++;
   }
 
   for (const code of languages()) {
@@ -181,6 +191,143 @@ function create(code: string | undefined) {
   return 0;
 }
 
+//#region Server messages
+
+/**
+ * Where a server message starts: an API error, a thrown error, a task's label or status, an activity line, a restore
+ * step. Each pattern ends right before the string.
+ */
+const MESSAGE_CONTEXTS = [
+  /\bmessage:\s*$/,
+  /\bnew Error\(\s*$/,
+  /\b(?:task|handle)\.update\(\s*$/,
+  /\bTasks\.run\([^,()]+,\s*$/,
+  /\bActivity\.record\("\w+",\s*$/,
+  /\bstep\(\s*$/,
+  /\b_step = \s*$/,
+  /\bproblem:\s*$/,
+  /\breturn\s*$/,
+];
+
+/**
+ * Reads the string or template literal that starts at `start`, with `${…}` turned into `{name}` placeholders.
+ * @returns `null` when it isn't a string literal.
+ */
+function readLiteral(text: string, start: number): { template: string; end: number } | null {
+  const quote = text[start];
+  if (quote !== "\"" && quote !== "`") return null;
+  let i = start + 1;
+  let out = "";
+  const names: string[] = [];
+  while (i < text.length) {
+    const ch = text[i];
+    if (ch === "\\") {
+      const next = text[i + 1];
+      out += next === "n" ? "\n" : next === "t" ? "\t" : next;
+      i += 2;
+      continue;
+    }
+    if (ch === quote) return { template: out, end: i + 1 };
+    if (quote === "\"" && ch === "\n") return null;
+    if (quote === "`" && ch === "$" && text[i + 1] === "{") {
+      // Find the matching brace, past nested strings and braces
+      let depth = 1;
+      let j = i + 2;
+      while (j < text.length && depth > 0) {
+        const c = text[j];
+        if (c === "{") depth++;
+        else if (c === "}") depth--;
+        else if (c === "\"" || c === "'" || c === "`") {
+          const inner = c === "`" ? readLiteral(text, j) : null;
+          if (inner) {
+            j = inner.end;
+            continue;
+          }
+          j++;
+          while (j < text.length && text[j] !== c) j += text[j] === "\\" ? 2 : 1;
+        }
+        j++;
+      }
+      const expression = text.slice(i + 2, j - 1);
+      // Example: ${library.name} → {name}, ${errorMessage(error)} → {error}, ${a ? "x" : "y"} → {value}
+      const words = expression.replace(/["'`][^"'`]*["'`]/g, "").match(/[A-Za-z_]\w*/g) ?? [];
+      const simple = /^[\w.?!]+(\(\w*\))?$/.test(expression.replace(/\s/g, ""));
+      let name = simple ? words.filter((w) => !/^(toISOString|toString|toFixed|slice|length|trim)$/.test(w)).at(-1) ?? "value" : words.length <= 3 ? words.at(-1) ?? "value" : "value";
+      if (name === "message" && /error/i.test(expression)) name = "error";
+      let unique = name;
+      for (let n = 2; names.includes(unique); n++) unique = `${name}${n}`;
+      names.push(unique);
+      out += `{${unique}}`;
+      i = j;
+      continue;
+    }
+    out += ch;
+    i++;
+  }
+  return null;
+}
+
+/**
+ * A stable key for a message: its first words in camelCase and a short hash of the whole text.
+ */
+function messageKey(template: string) {
+  const words = template.replace(/\{\w+\}/g, " ").replace(/['’]/g, "").replace(/[^A-Za-z ]+/g, " ").trim().split(/\s+/).filter(Boolean).slice(0, 5);
+  const camel = words.map((w, i) => i === 0 ? w.toLowerCase() : w[0].toUpperCase() + w.slice(1).toLowerCase()).join("") || "message";
+  let hash = 0;
+  for (const ch of template) hash = (hash * 31 + ch.charCodeAt(0)) >>> 0;
+  return `${camel}_${hash.toString(16).padStart(8, "0").slice(-6)}`;
+}
+
+/**
+ * Whether a template says enough by itself to be told apart from others: a few real words besides the placeholders,
+ * and not a debugging line.
+ */
+function isMessage(template: string) {
+  const plain = template.replace(/\{\w+\}/g, "").trim();
+  return (plain.match(/[A-Za-z]{2,}/g) ?? []).length >= 2 && /^[A-Z{"]/.test(template.trim()) && !/^[a-z]+(\.[a-z]+)+$/.test(template);
+}
+
+/**
+ * Every message the server can show people, collected from its source, by key.
+ */
+function serverMessages(): Group {
+  const found = new Map<string, string>();
+  const walk = (dir: string) => {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const path = Path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        if (entry.name !== "migrations") walk(path);
+        continue;
+      }
+      if (!entry.name.endsWith(".ts") || entry.name === "test.ts") continue;
+      const text = fs.readFileSync(path, "utf8");
+      for (let i = 0; i < text.length; i++) {
+        if (text[i] !== "\"" && text[i] !== "`") continue;
+        const before = text.slice(Math.max(0, i - 80), i);
+        if (!MESSAGE_CONTEXTS.some((p) => p.test(before))) continue;
+        const literal = readLiteral(text, i);
+        if (!literal) continue;
+        const template = literal.template.trim();
+        if (isMessage(template)) found.set(messageKey(template), template);
+        i = literal.end - 1;
+      }
+    }
+  };
+  walk(SERVER_DIR);
+  return Object.fromEntries([...found].sort((a, b) => a[0].localeCompare(b[0])));
+}
+
+function collectServer() {
+  const english = read("en");
+  const messages = serverMessages();
+  english.server = messages;
+  write("en", english);
+  console.log(`Done! The "server" group has ${Object.keys(messages).length} messages. Run "deno task i18n sync <CODE>" for each language.`);
+  return 0;
+}
+
+//#endregion
+
 function sync(code: string | undefined) {
   if (!code) {
     console.log("Bring a language in step with English: add its new lines (empty) and drop the ones it lost.\nUsage: deno task i18n sync <CODE>");
@@ -205,6 +352,8 @@ function sourceText() {
     }
   };
   walk(SOURCE_DIR);
+  // The server words push notifications and emails from the same lines
+  walk(SERVER_DIR);
   return text;
 }
 
@@ -214,6 +363,7 @@ function help() {
   check            Compare every language with English (the default)
   new <CODE>       Start a language: a copy of English with empty lines to fill in
   sync <CODE>      Add lines English gained (empty) and drop ones it lost
+  server           Collect the server's messages into the English file's "server" group
   help             Show this
 
 Run "deno task i18n help" for this list.`);
@@ -233,6 +383,9 @@ switch (command ?? "check") {
     break;
   case "sync":
     exitCode = sync(code);
+    break;
+  case "server":
+    exitCode = collectServer();
     break;
   case "help":
     exitCode = help();

@@ -7,7 +7,7 @@ import useController from "../../lib/useController.ts";
 import { formatBytes } from "../../lib/format.ts";
 import { toasts } from "../../lib/Toasts.ts";
 import cx from "../../lib/cx.ts";
-import { rich, t, type TranslationKey } from "../../i18n/I18n.ts";
+import { rich, serverText, t, type TranslationKey } from "../../i18n/I18n.ts";
 import Dialog from "../Dialog/Dialog.tsx";
 import Button from "../Button/Button.tsx";
 import IconButton from "../IconButton/IconButton.tsx";
@@ -95,7 +95,7 @@ export default function UploadDialog(props: UploadDialogProps) {
     if (!library || !folder) return;
     let cancelled = false;
     UploadsApi.check(library.id, folder)
-      .then((result) => !cancelled && setFolderProblem(result.message))
+      .then((result) => !cancelled && setFolderProblem(result.message ? serverText(result.message) : null))
       .catch(() => { });
     return () => {
       cancelled = true;
@@ -309,12 +309,12 @@ function UploadRow(props: { entry: UploadEntry; onPickFile: () => void }) {
       bar = fraction;
       break;
     case "processing":
-      status = server?.message ?? t("uploads.status.adding");
+      status = server?.message ? serverText(server.message) : t("uploads.status.adding");
       if (server?.progress) status = t("uploads.status.processingProgress", { status, percent: Math.floor(server.progress * 100) });
       bar = server?.progress ?? 0;
       break;
     case "done":
-      status = server?.message ?? t("uploads.status.added");
+      status = server?.message ? serverText(server.message) : t("uploads.status.added");
       break;
     case "failed":
       status = entry.error ?? t("uploads.status.stopped");

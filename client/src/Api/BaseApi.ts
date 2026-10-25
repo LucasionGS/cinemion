@@ -1,5 +1,5 @@
 import { deviceMode } from "../lib/DeviceMode.ts";
-import { t } from "../i18n/I18n.ts";
+import { serverText, t } from "../i18n/I18n.ts";
 
 /**
  * Thin wrapper around `fetch` for the Cinemion API. Holds the login token.
@@ -64,7 +64,7 @@ export namespace BaseApi {
     if (res.status === 401 && _token && !path.startsWith("/auth/")) _onUnauthorized?.();
     if (!res.ok) {
       const data = await res.json().catch(() => null);
-      throw new Error(data?.message || res.statusText);
+      throw new Error(serverText(data?.message) || res.statusText);
     }
     if (res.status === 204) return undefined as T;
     return await res.json() as T;

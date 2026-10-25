@@ -5,7 +5,7 @@ import AdminApi from "../../Api/AdminApi.ts";
 import { toasts } from "../../lib/Toasts.ts";
 import usePoll from "../../lib/usePoll.ts";
 import { formatPercent, timeAgo, timeUntil } from "../../lib/format.ts";
-import { t, type TranslationKey } from "../../i18n/I18n.ts";
+import { serverText, t, type TranslationKey } from "../../i18n/I18n.ts";
 import Button from "../../components/Button/Button.tsx";
 import Select from "../../components/Select/Select.tsx";
 import Spinner from "../../components/Spinner/Spinner.tsx";
@@ -62,8 +62,8 @@ export default function TasksSettings() {
         {data.running.map((task) => (
           <div key={task.id} className="cn-dashboard__task">
             <div className="cn-dashboard__task-head">
-              <span>{task.label}</span>
-              <span>{task.status}{task.progress !== null && ` · ${formatPercent(task.progress)}`}</span>
+              <span>{serverText(task.label)}</span>
+              <span>{serverText(task.status)}{task.progress !== null && ` · ${formatPercent(task.progress)}`}</span>
             </div>
             {task.progress !== null && <span className="cn-meter"><span style={{ width: formatPercent(task.progress) }} /></span>}
           </div>
@@ -157,8 +157,8 @@ function HistoryRow(props: { task: TaskRecord }) {
   return (
     <div className="cn-tasks__row">
       {failed ? <CircleAlert className="cn-tasks__icon cn-tasks__icon--failed" aria-label={t("admin.tasks.history.failed")} /> : <CircleCheck className="cn-tasks__icon" aria-label={t("admin.tasks.history.done")} />}
-      <strong>{task.label}</strong>
-      <span>{failed ? t("admin.tasks.history.failedAgo", { error: task.error ?? t("admin.tasks.history.failed"), ago: timeAgo(task.finishedAt) }) : t("admin.tasks.history.tookAgo", { duration: duration(task), ago: timeAgo(task.finishedAt) })}</span>
+      <strong>{serverText(task.label)}</strong>
+      <span>{failed ? t("admin.tasks.history.failedAgo", { error: serverText(task.error) || t("admin.tasks.history.failed"), ago: timeAgo(task.finishedAt) }) : t("admin.tasks.history.tookAgo", { duration: duration(task), ago: timeAgo(task.finishedAt) })}</span>
     </div>
   );
 }

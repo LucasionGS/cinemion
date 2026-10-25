@@ -5,7 +5,7 @@ import BackupsApi from "../../Api/BackupsApi.ts";
 import { toasts } from "../../lib/Toasts.ts";
 import usePoll from "../../lib/usePoll.ts";
 import { formatBytes, formatMoment, formatPercent, timeUntil } from "../../lib/format.ts";
-import { rich, t, type TranslationKey } from "../../i18n/I18n.ts";
+import { rich, serverText, t, type TranslationKey } from "../../i18n/I18n.ts";
 import Button from "../../components/Button/Button.tsx";
 import IconButton from "../../components/IconButton/IconButton.tsx";
 import Select from "../../components/Select/Select.tsx";
@@ -94,7 +94,7 @@ export default function BackupsSettings() {
           <div className="cn-dashboard__task">
             <div className="cn-dashboard__task-head">
               <span>{t("backups.making")}</span>
-              <span>{data.running.status}{data.running.progress !== null && ` · ${formatPercent(data.running.progress)}`}</span>
+              <span>{serverText(data.running.status)}{data.running.progress !== null && ` · ${formatPercent(data.running.progress)}`}</span>
             </div>
             <span className="cn-meter"><span style={{ width: formatPercent(data.running.progress ?? 0.05) }} /></span>
           </div>
@@ -190,7 +190,7 @@ function ScheduleCard(props: CardProps) {
           <span>{t("backups.schedule.next", { when: timeUntil(data.nextAt) })}</span>
         </p>
       )}
-      {data.lastError && <p className="cn-backups__error" role="alert">{t("backups.schedule.lastFailed", { error: data.lastError })}</p>}
+      {data.lastError && <p className="cn-backups__error" role="alert">{t("backups.schedule.lastFailed", { error: serverText(data.lastError) })}</p>}
       <p className="cn-settings__row-text">
         <span>{t("backups.schedule.beforeUpdates")}</span>
       </p>
