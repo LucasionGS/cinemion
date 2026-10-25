@@ -467,7 +467,8 @@
       "sortDate": "Date",
       "sortAdded": "Recently added",
       "empty": "Nothing in here that this profile can watch."
-    }
+    },
+    "deleteSeason": "Delete {season} from disk…"
   },
   "itemActions": {
     "play": "Play",
@@ -488,7 +489,8 @@
     "addToList": "Add to My list",
     "removeFromList": "Take off My list",
     "addedToList": "{title} is on your list",
-    "removedFromList": "{title} is off your list"
+    "removedFromList": "{title} is off your list",
+    "delete": "Delete from disk…"
   },
   "editDetails": {
     "videoTitle": "Edit video details",
@@ -3165,6 +3167,27 @@
       "failed": "Couldn't look them up",
       "none": "No episodes missing in the shows looked up so far.",
       "count": "{count} of {aired} missing"
-    }
+    },
+    "deleteFile": "Delete {path}",
+    "deleteTitle": "Delete this file?",
+    "deleteDescription": "{path} ({size}) goes from the disk for good, with its subtitles and NFO file.",
+    "deleted": "The file is deleted"
+  },
+  "deleteDialog": {
+    "title": "Delete {title}?",
+    "description": "The files go from the disk for good, with their subtitles and NFO files. This can't be undone.",
+    "summary": {
+      "one": "{count} file, {size}",
+      "other": "{count} files, {size}"
+    },
+    "folder": "The folder {folder} goes too, since nothing else is in it.",
+    "more": {
+      "one": "and {count} more file",
+      "other": "and {count} more files"
+    },
+    "readOnly": "Cinemion can only read this folder, so it can't delete anything here. Allow writing to the library folder (in Docker, mount it without :ro) to delete from Cinemion.",
+    "confirm": "Delete for good",
+    "deleted": "{title} is deleted",
+    "failed": "Couldn't delete"
   }
 }

@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { ItemDetail, ItemSummary } from "@shared/media.ts";
 import type { MissingEpisode, MissingSeason } from "@shared/upkeep.ts";
 import ItemsApi from "../../Api/ItemsApi.ts";
+import { session } from "../../Session.ts";
 import LibrariesApi from "../../Api/LibrariesApi.ts";
 import { Link, router } from "../../lib/Router.tsx";
 import { applyAmbient } from "../../lib/ambient.ts";
@@ -22,6 +23,7 @@ import PersonCard from "../../components/PersonCard/PersonCard.tsx";
 import Select from "../../components/Select/Select.tsx";
 import Spinner from "../../components/Spinner/Spinner.tsx";
 import Button from "../../components/Button/Button.tsx";
+import DeleteDialog from "../../components/DeleteDialog/DeleteDialog.tsx";
 import GameView from "../Clips/GameView.tsx";
 import ClipView from "../Clips/ClipView.tsx";
 import "./Item.scss";
@@ -246,6 +248,9 @@ function ShowView(props: ViewProps) {
   const haveSeasons = new Set(seasons.map((s) => s.seasonNumber));
   const missingSeasons = showMissing ? missing.filter((m) => !haveSeasons.has(m.number) && m.missing.length > 0) : [];
   const missingCount = missing.reduce((sum, m) => sum + m.missing.length, 0);
+  const canDelete = session.can("MEDIA_DELETE");
+  const selectedSeason = seasonId !== null && seasonId > 0 ? seasons.find((s) => s.id === seasonId) ?? null : null;
+  const [deletingSeason, setDeletingSeason] = useState(false);
 
   const refresh = useCallback(() => {
     reload();
@@ -293,15 +298,33 @@ function ShowView(props: ViewProps) {
               </button>
             ))}
           </div>
-          {missingCount > 0 && (
-            <button type="button" className="cn-item__missing-toggle" onClick={() => {
-              writeShowMissing(!showMissing);
-              setShowMissing(!showMissing);
-              if (showMissing && seasonId !== null && seasonId < 0) setSeasonId(initial?.id ?? null);
-            }}>
-              {showMissing ? t("item.missing.hide", { count: missingCount }) : t("item.missing.show", { count: missingCount })}
-            </button>
+          {(missingCount > 0 || (canDelete && selectedSeason)) && (
+            <div className="cn-item__season-tools">
+              {missingCount > 0 && (
+                <button type="button" className="cn-item__missing-toggle" onClick={() => {
+                  writeShowMissing(!showMissing);
+                  setShowMissing(!showMissing);
+                  if (showMissing && seasonId !== null && seasonId < 0) setSeasonId(initial?.id ?? null);
+                }}>
+                  {showMissing ? t("item.missing.hide", { count: missingCount }) : t("item.missing.show", { count: missingCount })}
+                </button>
+              )}
+              {canDelete && selectedSeason && (
+                <button type="button" className="cn-item__missing-toggle cn-item__delete-season" onClick={() => setDeletingSeason(true)}>
+                  {t("item.deleteSeason", { season: selectedSeason.title })}
+                </button>
+              )}
+            </div>
           )}
+          <DeleteDialog
+            item={deletingSeason && selectedSeason ? selectedSeason : null}
+            onClose={() => setDeletingSeason(false)}
+            onDeleted={() => {
+              setDeletingSeason(false);
+              setSeasonId(seasons.find((s) => s.id !== selectedSeason?.id)?.id ?? null);
+              refresh();
+            }}
+          />
           {seasonId !== null && seasonId > 0 && (
             <SeasonEpisodes
               key={`${seasonId}-${seasonKey}`}

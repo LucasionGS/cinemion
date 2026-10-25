@@ -31,6 +31,13 @@ export namespace UpkeepApi {
     return BaseApi.POST<{ started: boolean }>("/upkeep/missing/lookup");
   }
 
+  /**
+   * Delete one file from disk, with its subtitles and NFO.
+   */
+  export function deleteFile(fileId: number) {
+    return BaseApi.DELETE<UpkeepOverview>(`/upkeep/files/${fileId}`);
+  }
+
   export function checkFile(fileId: number) {
     return BaseApi.POST<{ problem: string | null }>(`/upkeep/files/${fileId}/check`);
   }

@@ -9,13 +9,6 @@ Planned, but not part of the first version. Roughly in the order they're likely 
 
 ## Library upkeep
 
-- **Missing episodes**: show which episodes of a season you don't have (from TMDB or TheTVDB), as greyed-out entries
-  that can be hidden.
-- **Duplicates**: the same movie or episode in several files, side by side with their quality, size and age.
-- **Broken files**: files that can't be read, are cut short or fail to play, in one list, with the reason.
-- **Space used**: disk use per library, per show and per file type, and the biggest files.
-- **Deleting from Cinemion**: remove a file (or a whole season) from its page, for people with permission, behind a
-  confirmation. Needs write access to the folder, like uploads.
 - **Ready-made versions**: convert chosen titles ahead of time for devices that can't play them, so they play straight
   away without the server converting them live.
 

@@ -133,3 +133,26 @@ export interface MissingOverview {
   total: number;
   lookingUp: { status: string; progress: number | null } | null;
 }
+
+/**
+ * What deleting a title would remove, shown before anything happens.
+ */
+export interface DeletePreview {
+  files: number;
+  /**
+   * Unit is in bytes.
+   */
+  size: number;
+  /**
+   * The folder that goes as a whole, or `null` when only files go.
+   */
+  folder: string | null;
+  /**
+   * The first few files, for the confirmation.
+   */
+  paths: string[];
+  /**
+   * `false` when Cinemion only has read access there.
+   */
+  canDelete: boolean;
+}

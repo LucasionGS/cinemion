@@ -1,5 +1,5 @@
 import type { CollectionDetail, CollectionSummary, EditDetailsRequest, HomeData, ItemDetail, ItemPage, ItemSummary, MatchCandidate, PersonDetail, SearchResults, SortOrder } from "@shared/media.ts";
-import type { MissingForShow } from "@shared/upkeep.ts";
+import type { DeletePreview, MissingForShow } from "@shared/upkeep.ts";
 import BaseApi from "./BaseApi.ts";
 
 export namespace ItemsApi {
@@ -41,6 +41,20 @@ export namespace ItemsApi {
    */
   export function missing(id: number, refresh = false) {
     return BaseApi.GET<MissingForShow>(`/items/${id}/missing${refresh ? "?refresh=1" : ""}`);
+  }
+
+  /**
+   * What deleting a title would remove from disk.
+   */
+  export function deletePreview(id: number) {
+    return BaseApi.GET<DeletePreview>(`/items/${id}/delete`);
+  }
+
+  /**
+   * Delete a title's files from disk, and the title from the library.
+   */
+  export function remove(id: number) {
+    return BaseApi.POST<{ deleted: boolean }>(`/items/${id}/delete`);
   }
 
   export function home() {

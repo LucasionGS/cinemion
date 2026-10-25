@@ -1,6 +1,6 @@
 import { type ReactNode, useState } from "react";
 import { Menu } from "@base-ui/react/menu";
-import { BookmarkCheck, BookmarkPlus, Check, EllipsisVertical, Pencil, Plus, RefreshCw, RotateCcw, Wand2 } from "lucide-react";
+import { BookmarkCheck, BookmarkPlus, Check, EllipsisVertical, Pencil, Plus, RefreshCw, RotateCcw, Trash2, Wand2 } from "lucide-react";
 import { type ItemDetail, type ItemSummary, isPlayable } from "@shared/media.ts";
 import ItemsApi from "../../Api/ItemsApi.ts";
 import WatchlistApi from "../../Api/WatchlistApi.ts";
@@ -13,6 +13,8 @@ import IconButton from "../IconButton/IconButton.tsx";
 import FixMatchDialog from "../FixMatchDialog/FixMatchDialog.tsx";
 import EditDetailsDialog from "../EditDetailsDialog/EditDetailsDialog.tsx";
 import DownloadButton from "../DownloadButton/DownloadButton.tsx";
+import DeleteDialog from "../DeleteDialog/DeleteDialog.tsx";
+import { router } from "../../lib/Router.tsx";
 import "./ItemActions.scss";
 
 export interface ItemActionsProps {
@@ -37,6 +39,11 @@ export interface ItemActionsProps {
 const LIST_TYPES: string[] = ["movie", "show", "video"];
 
 /**
+ * Kinds of titles that can be deleted from disk here.
+ */
+const DELETABLE: string[] = ["movie", "show", "episode", "video"];
+
+/**
  * Play or Resume, Play from start, the watched toggle, My list, Download, and (for managers) Fix match or Edit details, and
  * Refresh.
  */
@@ -45,6 +52,9 @@ export default function ItemActions(props: ItemActionsProps) {
   const [fixing, setFixing] = useState(false);
   const [editing, setEditing] = useState(false);
   const [onList, setOnList] = useState(item.onList);
+  const [deleting, setDeleting] = useState(false);
+  const canManage = session.can("LIBRARY_MANAGE");
+  const canDelete = session.can("MEDIA_DELETE") && DELETABLE.includes(item.type);
   const target = playTarget ?? (isPlayable(item.type) ? item : null);
   const editable = item.type === "video" || item.type === "folder";
   const resumable = !!target?.userData?.position;
@@ -120,15 +130,16 @@ export default function ItemActions(props: ItemActionsProps) {
         )}
         {isPlayable(item.type) && session.can("MEDIA_DOWNLOAD") && <DownloadButton item={item} />}
         {children}
-        {session.can("LIBRARY_MANAGE") && (
+        {(canManage || canDelete) && (
           <Menu.Root>
             <Menu.Trigger className="cn-icon-button cn-icon-button--glass cn-icon-button--lg" aria-label={t("itemActions.moreOptions")}><EllipsisVertical /></Menu.Trigger>
             <Menu.Portal>
               <Menu.Positioner sideOffset={8} align="start" className="cn-menu__positioner">
                 <Menu.Popup className="cn-menu">
-                  {(item.type === "movie" || item.type === "show") && <Menu.Item className="cn-menu__item" onClick={() => setFixing(true)}><Wand2 /> {t("itemActions.fixMatch")}</Menu.Item>}
-                  {editable && <Menu.Item className="cn-menu__item" onClick={() => setEditing(true)}><Pencil /> {t("itemActions.editDetails")}</Menu.Item>}
-                  <Menu.Item className="cn-menu__item" onClick={refresh}><RefreshCw /> {t("itemActions.refresh")}</Menu.Item>
+                  {canManage && (item.type === "movie" || item.type === "show") && <Menu.Item className="cn-menu__item" onClick={() => setFixing(true)}><Wand2 /> {t("itemActions.fixMatch")}</Menu.Item>}
+                  {canManage && editable && <Menu.Item className="cn-menu__item" onClick={() => setEditing(true)}><Pencil /> {t("itemActions.editDetails")}</Menu.Item>}
+                  {canManage && <Menu.Item className="cn-menu__item" onClick={refresh}><RefreshCw /> {t("itemActions.refresh")}</Menu.Item>}
+                  {canDelete && <Menu.Item className="cn-menu__item cn-menu__item--danger" onClick={() => setDeleting(true)}><Trash2 /> {t("itemActions.delete")}</Menu.Item>}
                 </Menu.Popup>
               </Menu.Positioner>
             </Menu.Portal>
@@ -143,6 +154,17 @@ export default function ItemActions(props: ItemActionsProps) {
       )}
       <FixMatchDialog item={fixing ? item : null} onClose={() => setFixing(false)} onMatched={() => onChanged()} />
       {editable && <EditDetailsDialog item={editing ? item : null} onClose={() => setEditing(false)} onSaved={onChanged} />}
+      {canDelete && (
+        <DeleteDialog
+          item={deleting ? item : null}
+          onClose={() => setDeleting(false)}
+          onDeleted={() => {
+            setDeleting(false);
+            // An episode goes back to its show; anything else to its library
+            router.navigate(item.type === "episode" && item.showId ? `/item/${item.showId}` : `/library/${item.libraryId}`, { replace: true });
+          }}
+        />
+      )}
     </div>
   );
 }

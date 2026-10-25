@@ -970,6 +970,15 @@ Migration `20261107090000-upkeep`: `media_files.problem` and `checkedAt`, `media
   between the episodes, adds tabs for seasons that are missing entirely, and hides them on this device with the
   toggle (`localStorage["cn-show-missing"]`). Upkeep › Missing episodes lists shows by how many are missing, with
   "Look up all shows" (task `missing-episodes`). Tested against the real TMDB with two Breaking Bad episodes.
+- **Deleting** (`library/Deleter.ts`, permission `MEDIA_DELETE`, which only admins have since roles don't grant it):
+  `GET|POST /api/items/:id/delete` for movies, shows, seasons, episodes and videos, `DELETE /api/upkeep/files/:id` for
+  one file (an extra copy or a broken file). Files go with their subtitle sidecars and `<name>.nfo`/`-thumb.jpg`; a
+  whole title takes its own folder (the folder all its files share, when it's inside a library folder and no other
+  file of the library is in it); a single file's folder goes only when it's left completely empty. Write access is
+  checked first (a read-only mount gets a sentence saying how to allow it). Then the nearest existing folder is
+  scanned (`Scanner.scanFoldersNow`) and the activity feed gets "Ion deleted X from Movies". UI: "Delete from disk…"
+  in a title's menu, "Delete Season N from disk…" on show pages, and trash buttons in Upkeep, all behind a dialog
+  that lists the files and the folder.
 
 ## 6. Design decisions
 

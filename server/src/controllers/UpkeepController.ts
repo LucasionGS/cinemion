@@ -1,11 +1,13 @@
+import Path from "node:path";
 import { Hono } from "hono";
 import { MediaFile, User } from "../models/index.ts";
 import Upkeep from "../library/Upkeep.ts";
 import FileHealth from "../library/FileHealth.ts";
 import MissingEpisodes from "../library/MissingEpisodes.ts";
 import ItemLabels from "../library/ItemLabels.ts";
+import Deleter from "../library/Deleter.ts";
 import Tasks from "../lib/Tasks.ts";
-import { readJson } from "../lib/http.ts";
+import { errorMessage, readJson } from "../lib/http.ts";
 import type { AppEnv } from "../lib/types.ts";
 
 /**
@@ -22,7 +24,7 @@ export namespace UpkeepController {
    *   get:
    *     summary: Duplicates and broken files.
    */
-  router.get("/", async (c) => c.json(await Upkeep.overview(false)));
+  router.get("/", async (c) => c.json(await Upkeep.overview(await c.get("user")!.hasPermission("MEDIA_DELETE"))));
 
   /**
    * @swagger
@@ -43,7 +45,7 @@ export namespace UpkeepController {
     if (Tasks.list().some((t) => t.id.startsWith("check-files-"))) return c.json({ message: "Files are being checked already." }, 409);
     const body = await readJson<{ libraryId: number; onlyNew: boolean }>(c);
     FileHealth.checkAll(typeof body?.libraryId === "number" ? body.libraryId : null, !!body?.onlyNew).catch(() => { });
-    return c.json(await Upkeep.overview(false));
+    return c.json(await Upkeep.overview(await c.get("user")!.hasPermission("MEDIA_DELETE")));
   });
 
   /**
@@ -58,6 +60,24 @@ export namespace UpkeepController {
     const problem = await FileHealth.check(file);
     await file.update({ problem, checkedAt: new Date() });
     return c.json({ problem });
+  });
+
+  /**
+   * @swagger
+   * /api/upkeep/files/{id}:
+   *   delete:
+   *     summary: Delete one file from disk, like an extra copy of a movie, with its subtitles and NFO.
+   */
+  router.delete("/files/:id", User.$middleware({ permissions: ["MEDIA_DELETE"] }), async (c) => {
+    const user = c.get("user")!;
+    const file = await MediaFile.findByPk(Number(c.req.param("id")));
+    if (!file) return c.json({ message: "That file isn't in a library any more." }, 404);
+    try {
+      await Deleter.run(await Deleter.planFile(file), user, Path.basename(file.path));
+    } catch (error) {
+      return c.json({ message: errorMessage(error) }, 400);
+    }
+    return c.json(await Upkeep.overview(true));
   });
 
   /**

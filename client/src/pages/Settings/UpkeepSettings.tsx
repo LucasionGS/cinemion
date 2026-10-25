@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { CircleAlert, Copy, HardDrive, ListX, RefreshCw, SearchCheck } from "lucide-react";
+import { CircleAlert, Copy, HardDrive, ListX, RefreshCw, SearchCheck, Trash2 } from "lucide-react";
 import type { SpaceUsage, UpkeepFile, UpkeepItemRef } from "@shared/upkeep.ts";
 import UpkeepApi from "../../Api/UpkeepApi.ts";
 import ItemsApi from "../../Api/ItemsApi.ts";
@@ -12,6 +12,8 @@ import { t, type TranslationKey } from "../../i18n/I18n.ts";
 import Button from "../../components/Button/Button.tsx";
 import SegmentedControl from "../../components/SegmentedControl/SegmentedControl.tsx";
 import Spinner from "../../components/Spinner/Spinner.tsx";
+import IconButton from "../../components/IconButton/IconButton.tsx";
+import { ConfirmDialog } from "../../components/Dialog/Dialog.tsx";
 import "./Admin.scss";
 
 type View = "space" | "duplicates" | "broken" | "missing";
@@ -135,6 +137,35 @@ function ProblemsView(props: { view: "duplicates" | "broken" }) {
   const { view } = props;
   const { data, error, reload, setData } = usePoll(UpkeepApi.overview, 4000);
   const [busy, setBusy] = useState<string | null>(null);
+  const [removing, setRemoving] = useState<UpkeepFile | null>(null);
+
+  async function removeFile() {
+    if (!removing) return;
+    setBusy(`delete-${removing.id}`);
+    try {
+      setData(await UpkeepApi.deleteFile(removing.id));
+      toasts.success(t("upkeep.deleted"));
+      setRemoving(null);
+    } catch (e) {
+      toasts.error(t("deleteDialog.failed"), (e as Error).message);
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  const confirmDelete = (
+    <ConfirmDialog
+      open={removing !== null}
+      onOpenChange={(open) => !open && setRemoving(null)}
+      title={t("upkeep.deleteTitle")}
+      description={t("upkeep.deleteDescription", { path: removing?.path ?? "", size: removing ? formatBytes(removing.size) : "" })}
+      confirmLabel={t("deleteDialog.confirm")}
+      danger
+      loading={busy?.startsWith("delete-")}
+      onConfirm={removeFile}
+    />
+  );
+  const deleteButton = (file: UpkeepFile) => data?.canDelete && <IconButton label={t("upkeep.deleteFile", { path: file.path })} icon={<Trash2 />} onClick={() => setRemoving(file)} />;
 
   async function checkAll() {
     setBusy("all");
@@ -177,10 +208,15 @@ function ProblemsView(props: { view: "duplicates" | "broken" }) {
               <span>{t("upkeep.duplicates.extra", { size: formatBytes(group.extra) })}</span>
             </div>
             <div className="cn-settings__list">
-              {group.copies.map((copy) => <ItemLine key={`${copy.item.id}-${copy.file.id}`} item={copy.item} file={copy.file} />)}
+              {group.copies.map((copy) => (
+                <ItemLine key={`${copy.item.id}-${copy.file.id}`} item={copy.item} file={copy.file}>
+                  {copy.item.type !== "show" && deleteButton(copy.file)}
+                </ItemLine>
+              ))}
             </div>
           </div>
         ))}
+        {confirmDelete}
       </section>
     );
   }
@@ -202,9 +238,11 @@ function ProblemsView(props: { view: "duplicates" | "broken" }) {
         {data.broken.map((b) => (
           <ItemLine key={b.file.id} item={b.item} file={b.file}>
             <Button size="sm" icon={<RefreshCw />} loading={busy === `file-${b.file.id}`} onClick={() => checkOne(b.file.id)}>{t("upkeep.broken.checkAgain")}</Button>
+            {deleteButton(b.file)}
           </ItemLine>
         ))}
       </div>
+      {confirmDelete}
     </section>
   );
 }

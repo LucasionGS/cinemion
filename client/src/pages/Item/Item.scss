@@ -241,9 +241,19 @@
   font-style: italic;
 }
 
+.cn-item__season-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: -0.25rem 0 0.25rem;
+}
+
+.cn-item__delete-season {
+  color: var(--cn-danger-text) !important;
+}
+
 .cn-item__missing-toggle {
   align-self: flex-start;
-  margin: -0.25rem 0 0.75rem;
   padding: 0.3rem 0.6rem;
   border: 0;
   border-radius: var(--cn-radius-sm);

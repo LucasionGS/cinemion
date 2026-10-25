@@ -8,6 +8,7 @@ import Summaries from "../library/Summaries.ts";
 import ItemLabels from "../library/ItemLabels.ts";
 import Watchlist from "../library/Watchlist.ts";
 import MissingEpisodes from "../library/MissingEpisodes.ts";
+import Deleter from "../library/Deleter.ts";
 import VideoDetails from "../library/VideoDetails.ts";
 import ClipLibrary from "../clips/ClipLibrary.ts";
 import FolderTree from "../library/FolderTree.ts";
@@ -15,6 +16,7 @@ import ContentRatings from "../library/ContentRatings.ts";
 import Events from "../integrations/Events.ts";
 import Trakt from "../integrations/Trakt.ts";
 import { errorMessage, readJson } from "../lib/http.ts";
+import type { DeletePreview } from "@shared/upkeep.ts";
 import type { AppEnv } from "../lib/types.ts";
 
 export namespace ItemsController {
@@ -83,6 +85,49 @@ export namespace ItemsController {
    *   get:
    *     summary: Everything about a movie, show, season, episode, video or folder, with its children, cast, files and similar titles.
    */
+  //#region Deleting
+
+  const deleting = User.$middleware({ permissions: ["MEDIA_DELETE"] });
+
+  /**
+   * @swagger
+   * /api/items/{id}/delete:
+   *   get:
+   *     summary: What deleting a movie, show, season, episode or video would remove from disk.
+   */
+  router.get("/:id/delete", deleting, async (c) => {
+    const item = await findVisible(c.get("user")!, Number(c.req.param("id")));
+    if (!item) return c.json({ message: "That title doesn't exist." }, 404);
+    try {
+      const plan = await Deleter.plan(item);
+      const preview: DeletePreview = { files: plan.files.length, size: plan.size, folder: plan.folder, paths: plan.files.slice(0, 8).map((f) => f.path), canDelete: await Deleter.canDelete(plan) };
+      return c.json(preview);
+    } catch (error) {
+      return c.json({ message: errorMessage(error) }, 400);
+    }
+  });
+
+  /**
+   * @swagger
+   * /api/items/{id}/delete:
+   *   post:
+   *     summary: Delete a movie, show, season, episode or video from disk, and from the library.
+   */
+  router.post("/:id/delete", deleting, async (c) => {
+    const user = c.get("user")!;
+    const item = await findVisible(user, Number(c.req.param("id")));
+    if (!item) return c.json({ message: "That title doesn't exist." }, 404);
+    try {
+      const what = await Deleter.describe(item);
+      await Deleter.run(await Deleter.plan(item), user, what);
+    } catch (error) {
+      return c.json({ message: errorMessage(error) }, 400);
+    }
+    return c.json({ deleted: true });
+  });
+
+  //#endregion
+
   /**
    * @swagger
    * /api/items/{id}/missing:
