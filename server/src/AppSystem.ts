@@ -14,7 +14,7 @@ function env(key: string, fallback: string): string {
  */
 export namespace AppSystem {
   export const APP_NAME = "Cinemion";
-  export const VERSION = "0.6.0";
+  export const VERSION = "0.7.0";
   /**
    * When this server process started, for the dashboard's uptime.
    */
