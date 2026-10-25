@@ -735,8 +735,10 @@ export namespace Uploads {
   async function report(s: Session, library: Library) {
     const user = await User.findByPk(s.userId).catch(() => null);
     const count = s.info.placed.length;
-    const what = count === 1 ? `"${Path.basename(s.info.placed[0])}"` : `${count} files`;
-    Events.activity({ kind: "upload", message: `${user?.name ?? "Someone"} uploaded ${what} to ${library.name}`, userId: user?.id ?? null });
+    const name = user?.name ?? "?";
+    const file = Path.basename(s.info.placed[0] ?? "");
+    const message = count === 1 ? `${name} uploaded "${file}" to ${library.name}` : `${name} uploaded ${count} files to ${library.name}`;
+    Events.activity({ kind: "upload", message, userId: user?.id ?? null });
   }
 
   //#endregion

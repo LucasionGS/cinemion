@@ -71,8 +71,10 @@ export class Library extends Model<InferAttributes<Library>, InferCreationAttrib
       const taken = other.paths.find((p) => Library.overlaps(path, p));
       if (!taken) continue;
       const [mine, theirs] = [Path.resolve(path), Path.resolve(taken)];
-      const how = mine === theirs ? "is already" : mine.startsWith(theirs + Path.sep) ? "is inside a folder that's already" : "holds a folder that's already";
-      return `The folder "${path}" ${how} in the library "${other.name}". A video can only be in one library, so give each library its own folders.`;
+      const name = other.name;
+      if (mine === theirs) return `The folder "${path}" is already in the library "${name}". A video can only be in one library, so give each library its own folders.`;
+      if (mine.startsWith(theirs + Path.sep)) return `The folder "${path}" is inside a folder that's already in the library "${name}". A video can only be in one library, so give each library its own folders.`;
+      return `The folder "${path}" holds a folder that's already in the library "${name}". A video can only be in one library, so give each library its own folders.`;
     }
     return null;
   }

@@ -274,7 +274,6 @@ check("iphone safari", UserAgent.describe(ua.iphone), "Phone · Safari");
 check("edge isn't chrome", UserAgent.describe(ua.edge), "Desktop · Edge");
 check("smart tv", UserAgent.describe(ua.tizen), "TV · Samsung Internet");
 check("tv layout on a pc", UserAgent.describe(ua.chrome, "tv"), "TV · Chrome");
-check("phrase", UserAgent.phrase("Phone · Safari"), "a phone with Safari");
 //#endregion
 
 //#region Music

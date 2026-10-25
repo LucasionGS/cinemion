@@ -20,7 +20,7 @@ export namespace AuthController {
     // Switching profiles on the same TV all evening is one line in the feed, not ten
     Events.emit("user.signedIn", { user: { id: user.id, name: user.name }, device, isRemote }, {
       kind: "signIn",
-      message: `${user.name} signed in on ${UserAgent.phrase(device)}${isRemote ? ", away from home" : ""}`,
+      message: isRemote ? `${user.name} signed in away from home (${device})` : `${user.name} signed in (${device})`,
       userId: user.id,
       dedupeHours: 6,
     });

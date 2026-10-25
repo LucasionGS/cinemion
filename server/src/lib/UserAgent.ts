@@ -40,15 +40,6 @@ export namespace UserAgent {
     return name ? `${kind} · ${name}` : kind;
   }
 
-  /**
-   * A device name for sentences: "TV · Chrome" becomes "a TV with Chrome".
-   */
-  export function phrase(device: string) {
-    const [kind, name] = device.split(" · ");
-    const noun = kind === "TV" ? "TV" : kind.toLowerCase();
-    return name ? `a ${noun} with ${name}` : `a ${noun}`;
-  }
-
   export function fromRequest(c: Context) {
     return describe(c.req.header("User-Agent") ?? "", c.req.header(MODE_HEADER));
   }

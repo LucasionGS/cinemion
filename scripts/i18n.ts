@@ -207,6 +207,9 @@ const MESSAGE_CONTEXTS = [
   /\b_step = \s*$/,
   /\bproblem:\s*$/,
   /\breturn\s*$/,
+  // Either side of a choice between two messages: cond ? "…" : "…"
+  /[^?]\?\s*$/,
+  /[`"')\]]\s*:\s*$/,
 ];
 
 /**
@@ -284,7 +287,7 @@ function messageKey(template: string) {
  */
 function isMessage(template: string) {
   const plain = template.replace(/\{\w+\}/g, "").trim();
-  return (plain.match(/[A-Za-z]{2,}/g) ?? []).length >= 2 && /^[A-Z{"]/.test(template.trim()) && !/^[a-z]+(\.[a-z]+)+$/.test(template);
+  return (plain.match(/[A-Za-z]{2,}/g) ?? []).length >= 2 && /[a-z]{2,}/.test(plain) && /^[A-Z{"]/.test(template.trim()) && !/^[a-z]+(\.[a-z]+)+$/.test(template);
 }
 
 /**
@@ -299,7 +302,8 @@ function serverMessages(): Group {
         if (entry.name !== "migrations") walk(path);
         continue;
       }
-      if (!entry.name.endsWith(".ts") || entry.name === "test.ts") continue;
+      // The command line and the scratch checks speak English
+      if (!entry.name.endsWith(".ts") || ["test.ts", "cli.ts", "migrate.ts"].includes(entry.name)) continue;
       const text = fs.readFileSync(path, "utf8");
       for (let i = 0; i < text.length; i++) {
         if (text[i] !== "\"" && text[i] !== "`") continue;

@@ -164,14 +164,14 @@ export namespace Acme {
     }
   }
 
-  async function poll<T>(what: string, check: () => Promise<{ done: boolean; value: T }>) {
+  async function poll<T>(tooLong: Error, check: () => Promise<{ done: boolean; value: T }>) {
     const until = Date.now() + POLL_TIMEOUT_MS;
     for (let wait = 1000; Date.now() < until; wait = Math.min(wait * 2, 10_000)) {
       const { done, value } = await check();
       if (done) return value;
       await new Promise((r) => setTimeout(r, wait));
     }
-    throw new Error(`The certificate authority took too long ${what}.`);
+    throw tooLong;
   }
 
   /**
@@ -199,7 +199,7 @@ export namespace Acme {
         tokens.push(challenge.token);
         onStep?.(`Checking that ${auth.identifier.value} leads here`);
         await client.post(challenge.url, {});
-        await poll("to check the domain", async () => {
+        await poll(new Error("The certificate authority took too long to check the domain."), async () => {
           const now = (await client.post<Authorization>(authUrl, null)).data;
           if (now.status === "invalid") {
             const reason = now.challenges.find((c) => c.type === "http-01")?.error?.detail;
@@ -216,7 +216,7 @@ export namespace Acme {
     const keys = await Certificates.generateKey();
     const csr = await Certificates.makeRequest(keys, domains);
     await client.post(order.finalize, { csr: b64(csr) });
-    const done = await poll("to make the certificate", async () => {
+    const done = await poll(new Error("The certificate authority took too long to make the certificate."), async () => {
       const now = (await client.post<Order>(orderUrl, null)).data;
       if (now.status === "invalid") throw new Error(`Let's Encrypt refused the request${now.error?.detail ? `: ${now.error.detail}` : "."}`);
       return { done: now.status === "valid" && !!now.certificate, value: now };

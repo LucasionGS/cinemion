@@ -32,13 +32,16 @@ export class OpenSubtitlesProvider extends SubtitleProvider {
   /**
    * Readable error for a failed request.
    */
-  private async failure(res: Response, action: string) {
+  private async failure(res: Response, action: "sign in" | "search" | "download") {
     const body = await res.json().catch(() => null) as { message?: string; errors?: string[] } | null;
     const detail = body?.message ?? body?.errors?.join(" ") ?? res.statusText;
     if (res.status === 401 || res.status === 403) return new Error(`OpenSubtitles didn't accept the API key or sign-in (${detail}). Check them in Settings › Subtitles.`);
     if (res.status === 406 || res.status === 407) return new Error(`The OpenSubtitles download limit for today is reached. ${detail}`);
     if (res.status === 429) return new Error("OpenSubtitles is getting too many requests. Wait a few seconds and try again.");
-    return new Error(`Couldn't ${action} on OpenSubtitles: ${res.status} ${detail}`);
+    const status = res.status;
+    if (action === "sign in") return new Error(`Couldn't sign in to OpenSubtitles: ${status} ${detail}`);
+    if (action === "search") return new Error(`Couldn't search OpenSubtitles: ${status} ${detail}`);
+    return new Error(`Couldn't download from OpenSubtitles: ${status} ${detail}`);
   }
 
   /**
@@ -153,7 +156,11 @@ export class OpenSubtitlesProvider extends SubtitleProvider {
     });
     if (!res.ok) throw await this.failure(res, "download");
     const body = await res.json() as { link?: string; remaining?: number; reset_time?: string };
-    if (!body.link) throw new Error(`OpenSubtitles didn't send a download link. ${body.remaining === 0 ? `The daily limit is reached; it resets ${body.reset_time ?? "tomorrow"}.` : ""}`.trim());
+    if (!body.link) {
+      if (body.remaining !== 0) throw new Error("OpenSubtitles didn't send a download link.");
+      const reset = body.reset_time;
+      throw reset ? new Error(`OpenSubtitles didn't send a download link. The daily limit is reached; it resets ${reset}.`) : new Error("OpenSubtitles didn't send a download link. The daily limit is reached; it resets tomorrow.");
+    }
 
     const file = await fetch(body.link);
     if (!file.ok) throw new Error(`Couldn't download the subtitle file: ${file.status} ${file.statusText}`);

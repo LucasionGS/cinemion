@@ -373,9 +373,7 @@ export namespace Scanner {
     }
     if (firstScan) {
       const count = library.type === "shows" ? new Set([...shows.values()].map((s) => s?.id)).size : library.type === "music" ? new Set(items.map((i) => i.parentId)).size : items.length;
-      const nouns = { movies: ["movie", "movies"], shows: ["show", "shows"], videos: ["video", "videos"], music: ["album", "albums"], audiobooks: ["audiobook", "audiobooks"], books: ["book", "books"], photos: ["photo", "photos"], clips: ["clip", "clips"] }[library.type];
-      const noun = nouns[count === 1 ? 0 : 1];
-      Events.activity({ kind: "added", message: `${library.name} is ready, with ${count} ${noun}` });
+      Events.activity({ kind: "added", message: readyMessage(library, count) });
       return;
     }
 
@@ -416,7 +414,11 @@ export namespace Scanner {
 
     if (library.type === "movies" || library.type === "audiobooks" || library.type === "books") {
       if (items.length > ACTIVITY_GROUP_OVER) {
-        Events.activity({ kind: "added", message: `${items.length} ${{ movies: "movies", audiobooks: "audiobooks", books: "books" }[library.type]} were added to ${library.name}` });
+        const count = items.length;
+        const message = library.type === "movies" ? `${count} movies were added to ${library.name}`
+          : library.type === "audiobooks" ? `${count} audiobooks were added to ${library.name}`
+          : `${count} books were added to ${library.name}`;
+        Events.activity({ kind: "added", message });
         return;
       }
       for (const item of items) Events.activity({ kind: "added", message: `${item.title} was added to ${library.name}`, itemId: item.id });
@@ -445,10 +447,56 @@ export namespace Scanner {
     for (const clip of clips) byGame.set(clip.parentId, [...byGame.get(clip.parentId) ?? [], clip]);
     for (const [gameId, list] of byGame) {
       const game = gameId ? await MediaItem.findByPk(gameId, { attributes: ["id", "title"] }) : null;
-      const what = list.length === 1 ? "A clip" : `${list.length} clips`;
-      const message = game ? `${what} of ${game.title} ${list.length === 1 ? "was" : "were"} added to ${library.name}` : `${what} ${list.length === 1 ? "was" : "were"} added to ${library.name}`;
+      const count = list.length;
+      const message = game
+        ? count === 1 ? `A clip of ${game.title} was added to ${library.name}` : `${count} clips of ${game.title} were added to ${library.name}`
+        : count === 1 ? `A clip was added to ${library.name}` : `${count} clips were added to ${library.name}`;
       Events.activity({ kind: "added", message, itemId: list.length === 1 ? list[0].id : game?.id ?? null });
     }
+  }
+
+  /**
+   * "Movies is ready, with 12 movies", as whole sentences so every language can word them its own way.
+   */
+  function readyMessage(library: Library, count: number) {
+    const name = library.name;
+    if (count === 1) {
+      switch (library.type) {
+        case "movies": return `${name} is ready, with 1 movie`;
+        case "shows": return `${name} is ready, with 1 show`;
+        case "videos": return `${name} is ready, with 1 video`;
+        case "music": return `${name} is ready, with 1 album`;
+        case "audiobooks": return `${name} is ready, with 1 audiobook`;
+        case "books": return `${name} is ready, with 1 book`;
+        default: return `${name} is ready, with 1 clip`;
+      }
+    }
+    switch (library.type) {
+      case "movies": return `${name} is ready, with ${count} movies`;
+      case "shows": return `${name} is ready, with ${count} shows`;
+      case "videos": return `${name} is ready, with ${count} videos`;
+      case "music": return `${name} is ready, with ${count} albums`;
+      case "audiobooks": return `${name} is ready, with ${count} audiobooks`;
+      case "books": return `${name} is ready, with ${count} books`;
+      default: return `${name} is ready, with ${count} clips`;
+    }
+  }
+
+  /**
+   * "12 photos were added to Lisbon in Photos", as whole sentences.
+   */
+  function photosMessage(list: MediaItem[], folder: string | null, library: string) {
+    const photos = list.filter((i) => i.type === "photo").length;
+    const videos = list.length - photos;
+    const count = list.length;
+    if (folder) {
+      if (videos === 0) return photos === 1 ? `A photo was added to ${folder} in ${library}` : `${count} photos were added to ${folder} in ${library}`;
+      if (photos === 0) return videos === 1 ? `A video was added to ${folder} in ${library}` : `${count} videos were added to ${folder} in ${library}`;
+      return `${count} photos and videos were added to ${folder} in ${library}`;
+    }
+    if (videos === 0) return photos === 1 ? `A photo was added to ${library}` : `${count} photos were added to ${library}`;
+    if (photos === 0) return videos === 1 ? `A video was added to ${library}` : `${count} videos were added to ${library}`;
+    return `${count} photos and videos were added to ${library}`;
   }
 
   /**
@@ -456,13 +504,8 @@ export namespace Scanner {
    * Photos come in hundreds, so they don't send a webhook each.
    */
   function reportPhotos(library: Library, items: MediaItem[], firstScan: boolean) {
-    const describe = (list: MediaItem[]) => {
-      const photos = list.filter((i) => i.type === "photo").length;
-      const videos = list.length - photos;
-      return [photos ? `${photos} ${photos === 1 ? "photo" : "photos"}` : null, videos ? `${videos} ${videos === 1 ? "video" : "videos"}` : null].filter(Boolean).join(" and ");
-    };
     if (firstScan) {
-      Events.activity({ kind: "added", message: `${library.name} is ready, with ${describe(items)}` });
+      Events.activity({ kind: "added", message: `${library.name} is ready, with ${items.length} photos and videos` });
       return;
     }
     const byFolder = new Map<number | null, MediaItem[]>();
@@ -470,9 +513,7 @@ export namespace Scanner {
     (async () => {
       for (const [folderId, list] of byFolder) {
         const folder = folderId ? await MediaItem.findByPk(folderId, { attributes: ["id", "title"] }) : null;
-        const place = folder ? `${folder.title} in ${library.name}` : library.name;
-        const verb = list.length === 1 ? "was" : "were";
-        Events.activity({ kind: "added", message: `${describe(list)} ${verb} added to ${place}`, itemId: folder?.id ?? null });
+        Events.activity({ kind: "added", message: photosMessage(list, folder?.title ?? null, library.name), itemId: folder?.id ?? null });
       }
     })().catch((error) => log.warn("Could not report new photos", { error }));
   }

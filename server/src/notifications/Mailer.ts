@@ -110,11 +110,12 @@ export namespace Mailer {
 
     /**
      * Send a command and check the reply's code.
+     * @param refused The error for any other reply; whole sentences, so they can be translated.
      */
-    public async command(line: string, expect: number[], what: string) {
+    public async command(line: string, expect: number[], refused: (reply: { code: number; text: string }) => Error) {
       await this.send(line);
       const reply = await this.reply();
-      if (!expect.includes(reply.code)) throw new Error(`The mail server refused ${what}: ${reply.code} ${reply.text}`);
+      if (!expect.includes(reply.code)) throw refused(reply);
       return reply;
     }
   }
@@ -191,27 +192,27 @@ export namespace Mailer {
       });
       if (greeting.code !== 220) throw new Error(`The mail server didn't say hello: ${greeting.code} ${greeting.text}`);
       const name = "cinemion.local";
-      let hello = await conn.command(`EHLO ${name}`, [250], "the greeting");
+      let hello = await conn.command(`EHLO ${name}`, [250], (r) => new Error(`The mail server refused the greeting: ${r.code} ${r.text}`));
       if (settings.security === "starttls") {
         if (!/STARTTLS/i.test(hello.text)) throw new Error("The mail server doesn't offer STARTTLS. Pick another kind of encryption or port.");
-        await conn.command("STARTTLS", [220], "to encrypt the connection");
+        await conn.command("STARTTLS", [220], (r) => new Error(`The mail server refused to encrypt the connection: ${r.code} ${r.text}`));
         conn.upgrade(await Deno.startTls(conn.conn as Deno.TcpConn, { hostname: settings.host }));
-        hello = await conn.command(`EHLO ${name}`, [250], "the greeting");
+        hello = await conn.command(`EHLO ${name}`, [250], (r) => new Error(`The mail server refused the greeting: ${r.code} ${r.text}`));
       }
       if (settings.username) {
         if (/AUTH[ =][^\n]*PLAIN/i.test(hello.text)) {
           const token = btoa(String.fromCharCode(...encoder.encode(`\0${settings.username}\0${settings.password ?? ""}`)));
-          await conn.command(`AUTH PLAIN ${token}`, [235], "the user name or password");
+          await conn.command(`AUTH PLAIN ${token}`, [235], (r) => new Error(`The mail server refused the user name or password: ${r.code} ${r.text}`));
         }
         else {
-          await conn.command("AUTH LOGIN", [334], "to sign in");
-          await conn.command(btoa(String.fromCharCode(...encoder.encode(settings.username))), [334], "the user name");
-          await conn.command(btoa(String.fromCharCode(...encoder.encode(settings.password ?? ""))), [235], "the user name or password");
+          await conn.command("AUTH LOGIN", [334], (r) => new Error(`The mail server refused to sign in: ${r.code} ${r.text}`));
+          await conn.command(btoa(String.fromCharCode(...encoder.encode(settings.username))), [334], (r) => new Error(`The mail server refused the user name: ${r.code} ${r.text}`));
+          await conn.command(btoa(String.fromCharCode(...encoder.encode(settings.password ?? ""))), [235], (r) => new Error(`The mail server refused the user name or password: ${r.code} ${r.text}`));
         }
       }
-      await conn.command(`MAIL FROM:<${address(settings.from)}>`, [250], "the sender address");
-      await conn.command(`RCPT TO:<${message.to}>`, [250, 251], `the address ${message.to}`);
-      await conn.command("DATA", [354], "the message");
+      await conn.command(`MAIL FROM:<${address(settings.from)}>`, [250], (r) => new Error(`The mail server refused the sender address: ${r.code} ${r.text}`));
+      await conn.command(`RCPT TO:<${message.to}>`, [250, 251], (r) => new Error(`The mail server refused the address ${message.to}: ${r.code} ${r.text}`));
+      await conn.command("DATA", [354], (r) => new Error(`The mail server refused the message: ${r.code} ${r.text}`));
       // Lines starting with a dot get another one, so they don't end the message
       await conn.send(build(settings, message).split("\r\n").map((l) => l.startsWith(".") ? `.${l}` : l).join("\r\n") + "\r\n.");
       const done = await conn.reply();
