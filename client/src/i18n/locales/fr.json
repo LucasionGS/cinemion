@@ -1809,6 +1809,15 @@
         "light": "Clair",
         "system": "Comme l'appareil"
       },
+      "install": {
+        "title": "Installer comme application",
+        "button": "Installer",
+        "installed": "Cinemion est installé sur cet appareil et s'ouvre dans sa propre fenêtre.",
+        "prompt": "Ouvrez Cinemion depuis l'écran d'accueil, le dock ou le menu Démarrer, dans sa propre fenêtre.",
+        "ios": "Dans Safari, touchez Partager, puis Sur l'écran d'accueil.",
+        "insecure": "Seules les pages ouvertes en https peuvent être installées. Activez HTTPS dans les réglages du serveur, ou ouvrez Cinemion depuis une adresse sécurisée.",
+        "browser": "Si votre navigateur peut installer des applications, vous trouverez Installer dans son menu ou sa barre d'adresse."
+      },
       "playback": "Lecture",
       "speakers": "Haut-parleurs",
       "speakersDescription": "Le son surround que cet appareil ne peut pas lire est converti en ce qu'il peut lire. Avec un ampli ou une barre de son, le Dolby Digital est transmis tel quel pour qu'il le décode.",

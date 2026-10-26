@@ -1,10 +1,13 @@
+import { Download } from "lucide-react";
 import { deviceMode, type Mode, type ModeSetting } from "../../lib/DeviceMode.ts";
 import { devicePrefs, type SkipIntros, type Speakers } from "../../lib/DevicePrefs.ts";
 import { type Theme, themes, type ThemeSetting } from "../../lib/Theme.ts";
+import { install, type InstallState } from "../../lib/Install.ts";
 import useController from "../../lib/useController.ts";
 import { rich, t, type TranslationKey } from "../../i18n/I18n.ts";
 import SegmentedControl from "../../components/SegmentedControl/SegmentedControl.tsx";
 import Select from "../../components/Select/Select.tsx";
+import Button from "../../components/Button/Button.tsx";
 
 const SPEAKERS: { value: Speakers; label: TranslationKey }[] = [
   { value: "auto", label: "settings.device.speakerOptions.auto" },
@@ -31,6 +34,14 @@ const THEME_SYSTEM: Record<Theme, TranslationKey> = {
   light: "settings.device.themeSystem.light",
 };
 
+const INSTALL_TEXT: Record<InstallState, TranslationKey> = {
+  installed: "settings.device.install.installed",
+  prompt: "settings.device.install.prompt",
+  ios: "settings.device.install.ios",
+  insecure: "settings.device.install.insecure",
+  browser: "settings.device.install.browser",
+};
+
 /**
  * Settings that only apply to this browser, like the layout.
  */
@@ -38,6 +49,7 @@ export default function DeviceSettings() {
   const { mode, setting, host } = useController(deviceMode);
   const prefs = useController(devicePrefs);
   const theme = useController(themes);
+  const { state: installState } = useController(install);
 
   return (
     <>
@@ -90,6 +102,20 @@ export default function DeviceSettings() {
           />
         </div>
       </section>
+
+      {host !== "mediahub" && (
+        <section className="cn-settings__card">
+          <div className="cn-settings__row">
+            <p className="cn-settings__row-text">
+              <strong>{t("settings.device.install.title")}</strong>
+              <span>{t(INSTALL_TEXT[installState])}</span>
+            </p>
+            {installState === "prompt" && (
+              <Button icon={<Download />} onClick={() => install.install()}>{t("settings.device.install.button")}</Button>
+            )}
+          </div>
+        </section>
+      )}
 
       <section className="cn-settings__card">
         <h2>{t("settings.device.playback")}</h2>

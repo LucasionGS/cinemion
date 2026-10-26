@@ -11,6 +11,8 @@ import { deviceMode } from "./lib/DeviceMode.ts";
 import { i18n, t } from "./i18n/I18n.ts";
 // Applies the theme picked for this device and follows the system setting when asked to
 import "./lib/Theme.ts";
+// Made at once, so the browser's offer to install the app isn't missed
+import "./lib/Install.ts";
 import { initSpatialNavigation } from "./lib/spatialNavigation.ts";
 import { initGamepad } from "./lib/gamepad.ts";
 import { applyAmbient } from "./lib/ambient.ts";

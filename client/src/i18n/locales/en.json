@@ -1745,6 +1745,15 @@
         "light": "Light",
         "system": "Match device"
       },
+      "install": {
+        "title": "Install as an app",
+        "button": "Install",
+        "installed": "Cinemion is installed on this device and opens in its own window.",
+        "prompt": "Open Cinemion from your home screen, dock or start menu, in its own window.",
+        "ios": "In Safari, tap Share, then Add to Home Screen.",
+        "insecure": "Only pages opened over https can be installed. Turn on HTTPS in the server settings, or open Cinemion through a secure address.",
+        "browser": "If your browser can install apps, you'll find Install in its menu or address bar."
+      },
       "playback": "Playback",
       "speakers": "Speakers",
       "speakersDescription": "Surround sound that this device can't play is converted to what it can. With a receiver or soundbar, Dolby Digital is passed on untouched for it to decode.",

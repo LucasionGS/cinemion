@@ -1745,6 +1745,15 @@
         "light": "Licht",
         "system": "Zoals apparaat"
       },
+      "install": {
+        "title": "Installeren als app",
+        "button": "Installeren",
+        "installed": "Cinemion is op dit apparaat geïnstalleerd en opent in een eigen venster.",
+        "prompt": "Open Cinemion vanaf je beginscherm, dock of startmenu, in een eigen venster.",
+        "ios": "Tik in Safari op Deel en daarna op Zet op beginscherm.",
+        "insecure": "Alleen pagina's die via https zijn geopend kunnen worden geïnstalleerd. Zet HTTPS aan in de serverinstellingen, of open Cinemion via een beveiligd adres.",
+        "browser": "Als je browser apps kan installeren, vind je Installeren in het menu of in de adresbalk."
+      },
       "playback": "Afspelen",
       "speakers": "Speakers",
       "speakersDescription": "Surround-geluid dat dit apparaat niet kan afspelen, wordt omgezet naar wat het wel kan. Met een receiver of soundbar gaat Dolby Digital onaangeroerd door, zodat die het zelf decodeert.",

@@ -1745,6 +1745,15 @@
         "light": "Lys",
         "system": "Som enheden"
       },
+      "install": {
+        "title": "Installer som app",
+        "button": "Installer",
+        "installed": "Cinemion er installeret på denne enhed og åbner i sit eget vindue.",
+        "prompt": "Åbn Cinemion fra din startskærm, dock eller startmenu, i sit eget vindue.",
+        "ios": "Tryk på Del i Safari, og vælg derefter Føj til hjemmeskærm.",
+        "insecure": "Kun sider åbnet over https kan installeres. Slå HTTPS til i serverindstillingerne, eller åbn Cinemion via en sikker adresse.",
+        "browser": "Hvis din browser kan installere apps, finder du Installer i dens menu eller adresselinje."
+      },
       "playback": "Afspilning",
       "speakers": "Højttalere",
       "speakersDescription": "Surroundlyd, som denne enhed ikke kan afspille, konverteres til noget, den kan. Med en receiver eller soundbar sendes Dolby Digital uændret videre, så den selv kan afkode det.",

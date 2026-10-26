@@ -2,13 +2,13 @@
 // from Cache Storage: they're stored in pieces (see lib/Offline.ts), and range requests are answered from those
 // pieces, so seeking works offline too.
 
-const APP_CACHE = "cn-app-v1";
+const APP_CACHE = "cn-app-v2";
 const MEDIA_CACHE = "cn-media-v1";
 const MEDIA_PREFIX = "/offline-media/";
 
 self.addEventListener("install", (event) => {
   self.skipWaiting();
-  event.waitUntil(caches.open(APP_CACHE).then((cache) => cache.addAll(["/", "/favicon.svg", "/manifest.webmanifest"])).catch(() => { }));
+  event.waitUntil(caches.open(APP_CACHE).then((cache) => cache.addAll(["/", "/favicon.svg", "/icon-192.png", "/manifest.webmanifest"])).catch(() => { }));
 });
 
 self.addEventListener("activate", (event) => {
@@ -126,7 +126,7 @@ self.addEventListener("push", (event) => {
   }
   event.waitUntil(self.registration.showNotification(message.title || "Cinemion", {
     body: message.body || "",
-    icon: message.icon || "/favicon.svg",
+    icon: message.icon || "/icon-192.png",
     badge: "/favicon.svg",
     // A newer message about the same show replaces the older one
     tag: message.tag || undefined,
