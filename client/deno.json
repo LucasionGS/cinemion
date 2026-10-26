@@ -1,6 +1,6 @@
 {
   "name": "@cinemion/client",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "exports": "./src/main.tsx",
   "tasks": {
     "dev": "deno run -A npm:vite",
