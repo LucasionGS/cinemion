@@ -35,7 +35,7 @@ Clips libraries are there (see the handoff, milestone 21); ideas left over:
 
 ## Clients
 
-- **Android TV / Google TV app**: a thin native wrapper around the TV layout, so Cinemion installs from the TV's app store and can use the TV's own video decoders.
+- **Native player in the TV app**: play through the TV's own player inside the Android TV app, so Dolby and DTS audio can go straight to a soundbar instead of being converted.
 - **Smart-TV browsers**: a lighter TV layout that works in the older built-in browsers of Samsung (Tizen) and LG (webOS) TVs, with IR remotes.
 - **Chromecast / casting**: cast from the phone layout to a Chromecast or Google TV, using a registered receiver app.
 

@@ -15,6 +15,7 @@ import { session } from "../../Session.ts";
 import ItemsApi from "../../Api/ItemsApi.ts";
 import { defaultSubtitle, displayLanguage, tracksFor } from "../../lib/playback.ts";
 import { t } from "../../i18n/I18n.ts";
+import TvApp from "../../lib/TvApp.ts";
 
 export type PanelTab = "subtitles" | "audio" | "quality";
 
@@ -225,6 +226,7 @@ export class PlayerController extends Controller {
       video.load();
     }
     if ("mediaSession" in navigator) navigator.mediaSession.metadata = null;
+    TvApp.keepAwake(false);
   }
 
   /**
@@ -436,6 +438,7 @@ export class PlayerController extends Controller {
       this.scheduleHide();
     }
     if ("mediaSession" in navigator) navigator.mediaSession.playbackState = this.playing ? "playing" : "paused";
+    TvApp.keepAwake(this.playing);
     this.notify();
   };
 

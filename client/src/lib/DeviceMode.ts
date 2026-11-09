@@ -6,7 +6,7 @@ export type ModeSetting = Mode | "auto";
 const STORAGE_KEY = "cn-device-mode";
 const HOST_KEY = "cn-host";
 // User agents of smart TVs, TV sticks and TV-style browsers
-const TV_AGENTS = /SMART-TV|SmartTV|Tizen|Web0S|webOS|NetCast|HbbTV|BRAVIA|AFT[A-Z]|CrKey|GoogleTV|Android TV|AppleTV/i;
+const TV_AGENTS = /SMART-TV|SmartTV|Tizen|Web0S|webOS|NetCast|HbbTV|BRAVIA|AFT[A-Z]|CrKey|GoogleTV|Android TV|AppleTV|CinemionTV/i;
 
 function storageGet(key: string) {
   try {

@@ -102,3 +102,46 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+  # The Android TV app, attached to the same release as the binaries. It has its own version (android/app/build.gradle.kts),
+  # and is skipped when the signing key isn't set up, so releases of the server never wait on it.
+  android:
+    needs: binaries
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - id: key
+        env:
+          KEYSTORE_BASE64: ${{ secrets.CINEMION_TV_KEYSTORE_BASE64 }}
+        run: |
+          if [ -z "$KEYSTORE_BASE64" ]; then
+            echo "::notice::CINEMION_TV_KEYSTORE_BASE64 isn't set, so the Android TV app was not built."
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/cinemion-tv-release.jks"
+          echo "present=true" >> "$GITHUB_OUTPUT"
+      - if: steps.key.outputs.present == 'true'
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 21
+      - name: Android SDK packages
+        if: steps.key.outputs.present == 'true'
+        run: |
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-36" "build-tools;36.0.0" > /dev/null
+      - name: Build the signed APK
+        if: steps.key.outputs.present == 'true'
+        working-directory: android
+        env:
+          CINEMION_TV_KEYSTORE: ${{ runner.temp }}/cinemion-tv-release.jks
+          CINEMION_TV_KEYSTORE_PASSWORD: ${{ secrets.CINEMION_TV_KEYSTORE_PASSWORD }}
+          CINEMION_TV_KEY_ALIAS: ${{ secrets.CINEMION_TV_KEY_ALIAS }}
+          CINEMION_TV_KEY_PASSWORD: ${{ secrets.CINEMION_TV_KEY_PASSWORD }}
+        run: ./gradlew assembleRelease --no-daemon
+      - name: Attach it to the release
+        if: steps.key.outputs.present == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "$GITHUB_REF_NAME" android/app/build/outputs/tv/cinemion-tv-*.apk --clobber

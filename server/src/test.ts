@@ -274,6 +274,7 @@ check("iphone safari", UserAgent.describe(ua.iphone), "Phone · Safari");
 check("edge isn't chrome", UserAgent.describe(ua.edge), "Desktop · Edge");
 check("smart tv", UserAgent.describe(ua.tizen), "TV · Samsung Internet");
 check("tv layout on a pc", UserAgent.describe(ua.chrome, "tv"), "TV · Chrome");
+check("android tv app", UserAgent.describe("Mozilla/5.0 (Linux; Android 12; Chromecast HD; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/142.0.0.0 Safari/537.36 CinemionTV/1.0.0 (Android TV)"), "TV · Cinemion app");
 //#endregion
 
 //#region Music

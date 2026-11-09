@@ -10,7 +10,8 @@ export namespace UserAgent {
   export const MODE_HEADER = "X-Cinemion-Device-Mode";
 
   export function browser(ua: string) {
-    // Order matters: Edge and Opera say "Chrome", Chrome says "Safari"
+    // Order matters: the TV app and Edge and Opera say "Chrome", Chrome says "Safari"
+    if (/CinemionTV\//.test(ua)) return "Cinemion app";
     if (/Edg\//.test(ua)) return "Edge";
     if (/OPR\/|Opera/.test(ua)) return "Opera";
     if (/SamsungBrowser\//.test(ua)) return "Samsung Internet";
@@ -21,7 +22,7 @@ export namespace UserAgent {
   }
 
   function guessKind(ua: string): string {
-    if (/SmartTV|SMART-TV|Tizen|Web0S|webOS|AFT[A-Z]|BRAVIA|GoogleTV|Android TV|CrKey/i.test(ua)) return "TV";
+    if (/SmartTV|SMART-TV|Tizen|Web0S|webOS|AFT[A-Z]|BRAVIA|GoogleTV|Android TV|CrKey|CinemionTV/i.test(ua)) return "TV";
     if (/iPad|Tablet/i.test(ua) || (/Android/i.test(ua) && !/Mobile/i.test(ua))) return "Tablet";
     if (/Mobile|iPhone|Android/i.test(ua)) return "Phone";
     return "Desktop";

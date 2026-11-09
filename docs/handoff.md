@@ -271,7 +271,7 @@ and on amd64 Intel's non-free VA driver + Quick Sync runtime), `docker/entrypoin
 | 16c | done | Uploading media and zip files into libraries from the browser, resumable (below) |
 | 16d | done | A TMDB key built into Cinemion, so TMDB works out of the box (below) |
 | 17 | on hold | Casting to Chromecast / Google TV, and a lighter layout for old smart-TV browsers |
-| 18 | on hold | Android TV app (WebView wrapper; the SDK is in `~/Android/Sdk` on this machine) |
+| 18 | done | Android TV app: a launcher that opens any Cinemion server's own page in a WebView, server list, network scan, self-update (below) |
 | 19 | on hold | Live TV: IPTV playlists, a guide and recordings |
 | 20 | done | Photos libraries: folders as albums, hand-made albums, timeline, viewer with details and slideshows (below) |
 | 21 | done | Clips libraries: game clips sorted by game, picture recognition, cutting, small copies, stars (below) |
@@ -1012,6 +1012,57 @@ Migration `20261107090000-upkeep`: `media_files.problem` and `checkedAt`, `media
 - The agents found server messages built from English pieces ("was"/"were", "movies", "is already", ", away from
   home"); those were rewritten as whole sentences (one per case) in the server, and the collector now also takes both
   sides of `cond ? "…" : "…"`. Write new server messages the same way: never glue English words into a message.
+
+### Milestone 18: Android TV app
+
+Asked for on 2026-11-09 for a Chromecast with Google TV (HD). The owner wanted it to work with **any Cinemion server of
+any version**, to be easy to update, and to be able to switch between servers.
+
+- **Design**: `android/` is a small Kotlin app (package `dev.ionnet.cinemion`, minSdk 24, targetSdk 36) holding one
+  WebView. It opens on a server list bundled in `assets/` (plain HTML/CSS/JS served by `WebViewAssetLoader` at
+  `https://appassets.androidplatform.net/index.html`, styled like the TV layout). Picking a server loads that server's
+  own page, so the interface always matches the server's version, and the app itself rarely changes. Each server keeps
+  its own sign-in (storage is per address). Its version (`appVersion` in `android/app/build.gradle.kts`, 1.0.0) is
+  separate from the server's.
+- **What the app and server share** (keep these stable): `GET /api/server` (name + version, public, in every version)
+  to recognise a server; the user agent suffix ` CinemionTV/<version> (Android TV)` (`DeviceMode` and
+  `UserAgent.ts` already matched "Android TV" before this, so 0.7.0 servers switch to TV mode unchanged; the dashboard
+  now says "TV · Cinemion app"); and the optional `window.CinemionTV` bridge, used only through `client/src/lib/TvApp.ts`,
+  which checks every method first: `version()`, `showServers()`, `exit()`, `keepAwake(on)`. The list page talks to the
+  app over a separate channel (`ListBridge.kt`, a `WebViewCompat.addWebMessageListener` named `CinemionList`, main
+  frame of `https://appassets.androidplatform.net` only; `{ method, args, id }` in, `response`/`event` messages out), so
+  a server page can never read the saved servers or plant a certificate pin, not even while it's still loading.
+- **Client side**: "Switch server" in the profile menu and on the profile picker (only inside the app), and the player
+  calls `TvApp.keepAwake(playing)`.
+- **Startup**: the last used server opens straight away if it answers; otherwise the list shows why ("Couldn't reach
+  … Check it's running, or pick another server."). **Find servers** probes `/api/server` on ports 8600 and 8443 across
+  the device's /24 (about 7 s). Addresses can be typed as `192.168.1.31`, `host:port` or a full URL (http and 8600 by
+  default).
+- **Back key** (`MainActivity.handleBack`): on a server's first screens (`/`, `/profiles`, `/sign-in`, `/setup`) with
+  nothing open, Back goes to the server list (the client takes Escape there but has nowhere to go). Elsewhere it sends
+  the page an `Escape` keydown; if the page doesn't `preventDefault`, the app goes back in history or to the list. On
+  the list, Back exits. D-pad arrives as arrow keys and Enter, and the WebView passes media keys
+  (`MediaPlayPause`, …) through by itself.
+- **Certificates**: a server whose certificate the device doesn't trust (Cinemion's own CA) gets a one-time question
+  showing the SHA-256 fingerprint; exactly that certificate is then accepted for that host:port, in the native probe
+  and the WebView. A renewed certificate asks again, and removing a server forgets its certificate. Mixed content is
+  never allowed, so a trusted https page can't pull in http scripts.
+- **Self-update**: once a day the list page checks the latest GitHub release for `cinemion-tv-<semver>.apk` and offers
+  it if newer; the APK downloads to the cache and goes to the system installer (first time: the "install unknown apps"
+  permission screen). Bump `appVersion` in `android/app/build.gradle.kts` when the app changes (`versionCode` is derived from it, so Android also refuses downgrades), or nobody is offered the update.
+- **Building**: `cd android && ./gradlew assembleRelease` → `app/build/outputs/tv/cinemion-tv-<version>.apk`. Gradle
+  9.8 / AGP 9.4 don't run on the system Java 25; use `JAVA_HOME=~/.gradle/jdks/eclipse_adoptium-21-amd64-linux.2`.
+  Release signing comes from `CINEMION_TV_KEYSTORE`, `CINEMION_TV_KEYSTORE_PASSWORD`, `CINEMION_TV_KEY_ALIAS`,
+  `CINEMION_TV_KEY_PASSWORD` (debug signing without them). The owner's key is `~/.android/cinemion-tv-release.jks`
+  with its password in `~/.android/cinemion-tv-release.properties` (outside the repo): **never lose it**, updates only
+  install over an app signed with the same key. The Release workflow's `android` job attaches the APK to the release
+  when the secret `CINEMION_TV_KEYSTORE_BASE64` (plus the three others) is set, and skips otherwise.
+- **Testing**: a headless Google TV emulator (AVD `cinemion_tv`, android-31 x86, `emulator -no-window`) against
+  `deno task dev`; the host is `10.0.2.2` from inside it. Debug builds point the update check at
+  `http://10.0.2.2:8701/releases/latest` so it can be mocked. Not tested yet: real hardware, Cinemion's own HTTPS
+  endpoint (only a mock with its own certificate), a CI run of the `android` job.
+- **Later**: a native video player behind the same bridge would allow Dolby/DTS passthrough (a WebView can't, so the
+  server converts that audio); trusting Cinemion's CA instead of each certificate.
 
 ## 6. Design decisions
 

@@ -1,5 +1,5 @@
 import { Menu } from "@base-ui/react/menu";
-import { Bookmark, ChartColumn, CircleArrowUp, Download, House, LayoutDashboard, LogOut, Popcorn, Search, Settings, Users } from "lucide-react";
+import { Bookmark, ChartColumn, CircleArrowUp, Download, House, LayoutDashboard, LogOut, Popcorn, Search, Server, Settings, Users } from "lucide-react";
 import type { LibraryInfo } from "@shared/api.ts";
 import { Link, router } from "../../lib/Router.tsx";
 import useController from "../../lib/useController.ts";
@@ -7,6 +7,7 @@ import { deviceMode } from "../../lib/DeviceMode.ts";
 import cx from "../../lib/cx.ts";
 import { session } from "../../Session.ts";
 import { useUpdates } from "../../lib/Updates.ts";
+import TvApp from "../../lib/TvApp.ts";
 import { t, type TranslationKey } from "../../i18n/I18n.ts";
 import Logo from "../Logo/Logo.tsx";
 import Avatar from "../Avatar/Avatar.tsx";
@@ -120,6 +121,7 @@ function ProfileMenu() {
             <Menu.Item className="cn-menu__item" onClick={() => router.navigate("/together")}><Popcorn /> {t("topbar.menu.together")}</Menu.Item>
             {session.can("MEDIA_DOWNLOAD") && <Menu.Item className="cn-menu__item" onClick={() => router.navigate("/downloads")}><Download /> {t("topbar.menu.downloads")}</Menu.Item>}
             <Menu.Item className="cn-menu__item" onClick={() => router.navigate("/profiles")}><Users /> {t("topbar.menu.switchProfile")}</Menu.Item>
+            {TvApp.canSwitchServer() && <Menu.Item className="cn-menu__item" onClick={() => TvApp.showServers()}><Server /> {t("topbar.menu.switchServer")}</Menu.Item>}
             <Menu.Separator className="cn-menu__separator" />
             <Menu.Item className="cn-menu__item" onClick={() => session.signOut()}><LogOut /> {t("topbar.menu.signOut")}</Menu.Item>
           </Menu.Popup>

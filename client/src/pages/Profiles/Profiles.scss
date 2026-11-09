@@ -124,6 +124,12 @@
     font-size: 0.95rem;
     font-weight: 600;
     color: var(--cn-text-muted);
+    // Also used on a <button> ("Switch server" in the TV app)
+    padding: 0;
+    border: 0;
+    background: none;
+    font-family: inherit;
+    cursor: pointer;
   }
 
   &__entry {

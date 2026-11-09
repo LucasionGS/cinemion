@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cinemion</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+  <div class="glow"></div>
+
+  <header class="header">
+    <span class="logo" role="img" aria-label="Cinemion">
+      <svg class="logo__symbol" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+        <path d="M48.85 17.86A22 22 0 1 0 48.85 46.14" stroke="currentColor" stroke-width="7" stroke-linecap="round"/>
+        <circle cx="55" cy="32" r="5" fill="var(--cn-accent)"/>
+      </svg>
+      <span class="logo__wordmark">cinemion</span>
+    </span>
+    <span class="header__version" id="appVersion"></span>
+  </header>
+
+  <main class="main" id="main">
+    <section class="banner" id="updateBanner" hidden>
+      <div class="banner__text">
+        <strong id="updateTitle">A new version of the app is ready</strong>
+        <span id="updateSub"></span>
+      </div>
+      <button class="btn btn--primary" id="updateButton" data-focusable>Update now</button>
+    </section>
+
+    <h1 class="title">Choose a server</h1>
+    <p class="status" id="status" role="status"></p>
+
+    <div class="grid" id="serverGrid"></div>
+
+    <section class="found" id="foundSection" hidden>
+      <h2 class="found__title">Found on this network</h2>
+      <div class="grid" id="foundGrid"></div>
+    </section>
+  </main>
+
+  <form class="modal modal--top" id="addPanel" novalidate hidden>
+    <div class="modal__card">
+      <label class="modal__title" for="addressInput">Server address</label>
+      <input class="field" id="addressInput" type="url" inputmode="url" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="192.168.1.31" data-focusable>
+      <p class="modal__hint">The server's IP address or name is enough. Cinemion's usual port, 8600, is used unless you add another, like 192.168.1.31:8700.</p>
+      <div class="panel__buttons">
+        <button class="btn btn--primary" type="submit" id="addSubmit" data-focusable>Add and open</button>
+        <button class="btn" type="button" id="addCancel" data-focusable>Cancel</button>
+      </div>
+    </div>
+  </form>
+
+  <div class="connecting" id="connecting" hidden>
+    <div class="spinner"></div>
+    <p class="connecting__text" id="connectingText">Connecting…</p>
+  </div>
+
+  <div class="modal" id="trustModal" hidden>
+    <div class="modal__card">
+      <h2 class="modal__title">This server uses its own certificate. Trust it?</h2>
+      <p class="modal__text" id="trustText"></p>
+      <code class="modal__fingerprint" id="trustFingerprint"></code>
+      <p class="modal__hint">If you set this server up yourself, it's fine to trust it. If you're not sure, choose Cancel.</p>
+      <div class="panel__buttons">
+        <button class="btn btn--primary" id="trustYes" data-focusable>Trust this server</button>
+        <button class="btn" id="trustNo" data-focusable>Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

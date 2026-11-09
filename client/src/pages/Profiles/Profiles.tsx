@@ -8,6 +8,7 @@ import { Link, router } from "../../lib/Router.tsx";
 import { applyAmbient } from "../../lib/ambient.ts";
 import { toasts } from "../../lib/Toasts.ts";
 import useController from "../../lib/useController.ts";
+import TvApp from "../../lib/TvApp.ts";
 import { t } from "../../i18n/I18n.ts";
 import Logo from "../../components/Logo/Logo.tsx";
 import Avatar from "../../components/Avatar/Avatar.tsx";
@@ -83,6 +84,7 @@ export default function Profiles() {
             )}
           </div>
           <Link href="/sign-in" className="cn-profiles__alt">{t("profiles.usePassword")}</Link>
+          {TvApp.canSwitchServer() && <button type="button" className="cn-profiles__alt" onClick={() => TvApp.showServers()}>{t("topbar.menu.switchServer")}</button>}
         </div>
       )}
 
