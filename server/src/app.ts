@@ -27,6 +27,11 @@ const CONTENT_TYPES: Record<string, string> = {
 };
 
 /**
+ * Where `/tv` leads: the Android TV app in the newest release. Short enough to type with a TV remote in the Downloader app.
+ */
+export const TV_APP_URL = "https://github.com/LucasionGS/cinemion/releases/latest/download/cinemion-tv.apk";
+
+/**
  * In development, everything outside `/api` comes from the Vite dev server, so the whole app runs on one port.
  */
 async function proxyToVite(c: Context<AppEnv>) {
@@ -81,6 +86,7 @@ export function createApp() {
   });
 
   app.route("/api", ApiController.router);
+  app.get("/tv", (c) => c.redirect(TV_APP_URL, 302));
   // Request apps and dashboards that only know other media servers (Settings › Integrations)
   app.route("/", CompatController.router);
   if (AppSystem.isDev()) app.all("*", proxyToVite);

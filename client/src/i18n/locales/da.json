@@ -1755,6 +1755,12 @@
         "insecure": "Kun sider åbnet over https kan installeres. Slå HTTPS til i serverindstillingerne, eller åbn Cinemion via en sikker adresse.",
         "browser": "Hvis din browser kan installere apps, finder du Installer i dens menu eller adresselinje."
       },
+      "tvApp": {
+        "title": "TV-app",
+        "text": "På et Android TV eller en Chromecast med Google TV skal du installere appen Downloader fra TV'ets appbutik og derefter skrive {address} i den. Cinemion installeres og holder sig selv opdateret.",
+        "download": "Hent til Android TV",
+        "running": "Du ser i Cinemions TV-app {version}."
+      },
       "playback": "Afspilning",
       "speakers": "Højttalere",
       "speakersDescription": "Surroundlyd, som denne enhed ikke kan afspille, konverteres til noget, den kan. Med en receiver eller soundbar sendes Dolby Digital uændret videre, så den selv kan afkode det.",
@@ -3241,6 +3247,7 @@
     "checkingForUpdatesIsTurned_5432ee": "Tjek for opdateringer er slået fra med UPDATE_CHECK=false.",
     "checkingTheBackup_c58a37": "Tjekker sikkerhedskopien",
     "chooseAtLeastOneFolder_4e75bd": "Vælg mindst én mappe til biblioteket \"{name}\".",
+    "cinemionApp_b074b9": "Cinemion-app",
     "cinemionCantDeleteFilesIn_01f4ec": "Cinemion kan ikke slette filer i denne mappe: den har kun læseadgang. Tillad skrivning til biblioteksmappen (i Docker skal den monteres uden :ro), og prøv igen.",
     "cinemionCantReadHowLong_74c5b2": "Cinemion kan ikke læse, hvor lang den er. Den er nok beskadiget eller afkortet.",
     "cinemionCantReadIt_b53657": "Cinemion kan ikke læse den: {value}",

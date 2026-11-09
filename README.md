@@ -137,7 +137,7 @@ Download `cinemion-<version>-linux_x64.tar.gz` (or `linux_arm64`) from the [rele
 
 ### On your TV (Android TV / Google TV)
 
-Install the Cinemion app on a Chromecast with Google TV or any other Android TV box. It finds Cinemion servers on your network (or takes an address), remembers them, and opens each one's own TV layout, so it works with every Cinemion version and you can switch servers from the profile menu. Download `cinemion-tv-<version>.apk` from the [releases](https://github.com/LucasionGS/cinemion/releases) with the **Downloader** app on the TV, or install it from a PC with `adb connect <tv-address>:5555` and `adb install cinemion-tv-<version>.apk` (turn on developer options and network debugging first). The app updates itself when a newer version is out. See [`android/README.md`](android/README.md) for building it.
+Install the Cinemion app on a Chromecast with Google TV or any other Android TV box. It finds Cinemion servers on your network (or takes an address), remembers them, and opens each one's own TV layout, so it works with every Cinemion version and you can switch servers from the profile menu. To install it, get the **Downloader** app from the TV's app store, open it and enter `<your-server>:8600/tv` (for example `192.168.1.31:8600/tv`); that address leads to the newest `cinemion-tv.apk` on the [releases](https://github.com/LucasionGS/cinemion/releases) page, and Settings › This device shows the exact address. From a PC you can also use `adb connect <tv-address>:5555` and `adb install cinemion-tv.apk` (turn on developer options and network debugging first). The app updates itself when a newer version is out. See [`android/README.md`](android/README.md) for building it.
 
 ### Uploading from the browser
 

@@ -1755,6 +1755,12 @@
         "insecure": "Nur über https geöffnete Seiten lassen sich installieren. Schalte HTTPS in den Servereinstellungen ein oder öffne Cinemion über eine sichere Adresse.",
         "browser": "Wenn dein Browser Apps installieren kann, findest du Installieren in seinem Menü oder in der Adressleiste."
       },
+      "tvApp": {
+        "title": "TV-App",
+        "text": "Installiere auf einem Android TV oder einem Chromecast mit Google TV die App Downloader aus dem App-Store des Fernsehers und gib dort {address} ein. Cinemion wird installiert und hält sich selbst aktuell.",
+        "download": "Für Android TV herunterladen",
+        "running": "Du schaust in der Cinemion-TV-App {version}."
+      },
       "playback": "Wiedergabe",
       "speakers": "Lautsprecher",
       "speakersDescription": "Surround-Ton, den dieses Gerät nicht abspielen kann, wird in etwas umgewandelt, das es kann. Mit einem Receiver oder einer Soundbar wird Dolby Digital unverändert zum Dekodieren weitergegeben.",
@@ -3241,6 +3247,7 @@
     "checkingForUpdatesIsTurned_5432ee": "Die Suche nach Updates ist mit UPDATE_CHECK=false ausgeschaltet.",
     "checkingTheBackup_c58a37": "Backup wird geprüft",
     "chooseAtLeastOneFolder_4e75bd": "Wähle mindestens einen Ordner für die Mediathek „{name}“.",
+    "cinemionApp_b074b9": "Cinemion-App",
     "cinemionCantDeleteFilesIn_01f4ec": "Cinemion kann in diesem Ordner keine Dateien löschen: Es hat nur Lesezugriff. Erlaube Schreibzugriff auf den Mediathek-Ordner (in Docker ohne :ro einbinden) und versuch es nochmal.",
     "cinemionCantReadHowLong_74c5b2": "Cinemion kann nicht lesen, wie lang sie ist. Sie ist wahrscheinlich beschädigt oder abgeschnitten.",
     "cinemionCantReadIt_b53657": "Cinemion kann es nicht lesen: {value}",

@@ -1755,6 +1755,12 @@
         "insecure": "Only pages opened over https can be installed. Turn on HTTPS in the server settings, or open Cinemion through a secure address.",
         "browser": "If your browser can install apps, you'll find Install in its menu or address bar."
       },
+      "tvApp": {
+        "title": "TV app",
+        "text": "On an Android TV or a Chromecast with Google TV, install the Downloader app from the TV's app store, then enter {address} in it. Cinemion installs and keeps itself up to date.",
+        "download": "Download for Android TV",
+        "running": "You're watching in the Cinemion TV app {version}."
+      },
       "playback": "Playback",
       "speakers": "Speakers",
       "speakersDescription": "Surround sound that this device can't play is converted to what it can. With a receiver or soundbar, Dolby Digital is passed on untouched for it to decode.",
@@ -3241,6 +3247,7 @@
     "checkingForUpdatesIsTurned_5432ee": "Checking for updates is turned off with UPDATE_CHECK=false.",
     "checkingTheBackup_c58a37": "Checking the backup",
     "chooseAtLeastOneFolder_4e75bd": "Choose at least one folder for the library \"{name}\".",
+    "cinemionApp_b074b9": "Cinemion app",
     "cinemionCantDeleteFilesIn_01f4ec": "Cinemion can't delete files in this folder: it only has read access. Allow writing to the library folder (in Docker, mount it without :ro) and try again.",
     "cinemionCantReadHowLong_74c5b2": "Cinemion can't read how long it is. It's probably damaged or cut short.",
     "cinemionCantReadIt_b53657": "Cinemion can't read it: {value}",

@@ -1,9 +1,10 @@
-import { Download } from "lucide-react";
+import { Download, Tv } from "lucide-react";
 import { deviceMode, type Mode, type ModeSetting } from "../../lib/DeviceMode.ts";
 import { devicePrefs, type SkipIntros, type Speakers } from "../../lib/DevicePrefs.ts";
 import { type Theme, themes, type ThemeSetting } from "../../lib/Theme.ts";
 import { install, type InstallState } from "../../lib/Install.ts";
 import useController from "../../lib/useController.ts";
+import TvApp from "../../lib/TvApp.ts";
 import { rich, t, type TranslationKey } from "../../i18n/I18n.ts";
 import SegmentedControl from "../../components/SegmentedControl/SegmentedControl.tsx";
 import Select from "../../components/Select/Select.tsx";
@@ -117,6 +118,8 @@ export default function DeviceSettings() {
         </section>
       )}
 
+      {host !== "mediahub" && <TvAppCard />}
+
       <section className="cn-settings__card">
         <h2>{t("settings.device.playback")}</h2>
         <Select
@@ -145,5 +148,25 @@ export default function DeviceSettings() {
         </div>
       </section>
     </>
+  );
+}
+
+/**
+ * How to get the Android TV app, or which version this is when running inside it.
+ */
+function TvAppCard() {
+  const version = TvApp.version();
+  const address = `${location.host}/tv`;
+
+  return (
+    <section className="cn-settings__card">
+      <div className="cn-settings__row">
+        <p className="cn-settings__row-text">
+          <strong>{t("settings.device.tvApp.title")}</strong>
+          <span>{version ? t("settings.device.tvApp.running", { version }) : rich("settings.device.tvApp.text", { address: <code>{address}</code> })}</span>
+        </p>
+        {!version && <Button icon={<Tv />} variant="ghost" onClick={() => location.assign("/tv")}>{t("settings.device.tvApp.download")}</Button>}
+      </div>
+    </section>
   );
 }

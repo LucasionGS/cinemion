@@ -1819,6 +1819,12 @@
         "insecure": "Solo se pueden instalar las páginas abiertas por https. Activa HTTPS en los ajustes del servidor o abre Cinemion desde una dirección segura.",
         "browser": "Si tu navegador puede instalar apps, encontrarás Instalar en su menú o en la barra de direcciones."
       },
+      "tvApp": {
+        "title": "App para TV",
+        "text": "En un Android TV o un Chromecast con Google TV, instala la app Downloader desde la tienda de apps de la tele y escribe {address} en ella. Cinemion se instala y se mantiene actualizada sola.",
+        "download": "Descargar para Android TV",
+        "running": "Estás viendo en la app de TV de Cinemion {version}."
+      },
       "playback": "Reproducción",
       "speakers": "Altavoces",
       "speakersDescription": "El sonido envolvente que este dispositivo no puede reproducir se convierte a lo que sí puede. Con un receptor o barra de sonido, el Dolby Digital se le pasa tal cual para que lo decodifique.",
@@ -3361,6 +3367,7 @@
     "checkingForUpdatesIsTurned_5432ee": "La búsqueda de actualizaciones está desactivada con UPDATE_CHECK=false.",
     "checkingTheBackup_c58a37": "Comprobando la copia",
     "chooseAtLeastOneFolder_4e75bd": "Elige al menos una carpeta para la biblioteca \"{name}\".",
+    "cinemionApp_b074b9": "App de Cinemion",
     "cinemionCantDeleteFilesIn_01f4ec": "Cinemion no puede borrar archivos en esta carpeta: solo puede leerla. Permite escribir en la carpeta de la biblioteca (en Docker, móntala sin :ro) y vuelve a intentarlo.",
     "cinemionCantReadHowLong_74c5b2": "Cinemion no puede leer cuánto dura. Probablemente esté dañado o cortado.",
     "cinemionCantReadIt_b53657": "Cinemion no puede leerlo: {value}",

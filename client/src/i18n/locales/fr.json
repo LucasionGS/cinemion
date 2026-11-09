@@ -1819,6 +1819,12 @@
         "insecure": "Seules les pages ouvertes en https peuvent être installées. Activez HTTPS dans les réglages du serveur, ou ouvrez Cinemion depuis une adresse sécurisée.",
         "browser": "Si votre navigateur peut installer des applications, vous trouverez Installer dans son menu ou sa barre d'adresse."
       },
+      "tvApp": {
+        "title": "Application TV",
+        "text": "Sur une Android TV ou un Chromecast avec Google TV, installe l'application Downloader depuis la boutique d'applications de la télé, puis saisis {address} dedans. Cinemion s'installe et se tient à jour toute seule.",
+        "download": "Télécharger pour Android TV",
+        "running": "Tu regardes dans l'application TV de Cinemion {version}."
+      },
       "playback": "Lecture",
       "speakers": "Haut-parleurs",
       "speakersDescription": "Le son surround que cet appareil ne peut pas lire est converti en ce qu'il peut lire. Avec un ampli ou une barre de son, le Dolby Digital est transmis tel quel pour qu'il le décode.",
@@ -3361,6 +3367,7 @@
     "checkingForUpdatesIsTurned_5432ee": "La vérification des mises à jour est désactivée avec UPDATE_CHECK=false.",
     "checkingTheBackup_c58a37": "Vérification de la sauvegarde",
     "chooseAtLeastOneFolder_4e75bd": "Choisis au moins un dossier pour la bibliothèque « {name} ».",
+    "cinemionApp_b074b9": "Appli Cinemion",
     "cinemionCantDeleteFilesIn_01f4ec": "Cinemion ne peut pas supprimer de fichiers dans ce dossier : il n'a qu'un accès en lecture. Autorise l'écriture dans le dossier de la bibliothèque (dans Docker, monte-le sans :ro) et réessaie.",
     "cinemionCantReadHowLong_74c5b2": "Cinemion ne peut pas lire sa durée. Il est sûrement endommagé ou tronqué.",
     "cinemionCantReadIt_b53657": "Cinemion ne peut pas le lire : {value}",

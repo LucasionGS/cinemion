@@ -1755,6 +1755,12 @@
         "insecure": "Alleen pagina's die via https zijn geopend kunnen worden geïnstalleerd. Zet HTTPS aan in de serverinstellingen, of open Cinemion via een beveiligd adres.",
         "browser": "Als je browser apps kan installeren, vind je Installeren in het menu of in de adresbalk."
       },
+      "tvApp": {
+        "title": "Tv-app",
+        "text": "Installeer op een Android TV of een Chromecast met Google TV de app Downloader uit de appwinkel van de tv en typ daarin {address}. Cinemion installeert zichzelf en blijft vanzelf up-to-date.",
+        "download": "Downloaden voor Android TV",
+        "running": "Je kijkt in de Cinemion-tv-app {version}."
+      },
       "playback": "Afspelen",
       "speakers": "Speakers",
       "speakersDescription": "Surround-geluid dat dit apparaat niet kan afspelen, wordt omgezet naar wat het wel kan. Met een receiver of soundbar gaat Dolby Digital onaangeroerd door, zodat die het zelf decodeert.",
@@ -3241,6 +3247,7 @@
     "checkingForUpdatesIsTurned_5432ee": "Controleren op updates is uitgezet met UPDATE_CHECK=false.",
     "checkingTheBackup_c58a37": "De back-up controleren",
     "chooseAtLeastOneFolder_4e75bd": "Kies minstens één map voor de bibliotheek \"{name}\".",
+    "cinemionApp_b074b9": "Cinemion-app",
     "cinemionCantDeleteFilesIn_01f4ec": "Cinemion kan in deze map geen bestanden verwijderen: het mag er alleen lezen. Sta schrijven toe in de bibliotheekmap (koppel hem in Docker zonder :ro) en probeer het opnieuw.",
     "cinemionCantReadHowLong_74c5b2": "Cinemion kan niet lezen hoe lang het is. Waarschijnlijk is het beschadigd of afgekapt.",
     "cinemionCantReadIt_b53657": "Cinemion kan het niet lezen: {value}",

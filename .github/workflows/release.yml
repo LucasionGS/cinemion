@@ -144,4 +144,7 @@ jobs:
         if: steps.key.outputs.present == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release upload "$GITHUB_REF_NAME" android/app/build/outputs/tv/cinemion-tv-*.apk --clobber
+        # Also as plain cinemion-tv.apk, so releases/latest/download/cinemion-tv.apk (a server's /tv) always works
+        run: |
+          cp android/app/build/outputs/tv/cinemion-tv-*.apk "$RUNNER_TEMP/cinemion-tv.apk"
+          gh release upload "$GITHUB_REF_NAME" android/app/build/outputs/tv/cinemion-tv-*.apk "$RUNNER_TEMP/cinemion-tv.apk" --clobber

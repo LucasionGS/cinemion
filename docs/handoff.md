@@ -1047,6 +1047,9 @@ any version**, to be easy to update, and to be able to switch between servers.
   showing the SHA-256 fingerprint; exactly that certificate is then accepted for that host:port, in the native probe
   and the WebView. A renewed certificate asks again, and removing a server forgets its certificate. Mixed content is
   never allowed, so a trusted https page can't pull in http scripts.
+- **Getting it**: every server answers `/tv` with a redirect to `releases/latest/download/cinemion-tv.apk` (the Release
+  job uploads that plain name next to `cinemion-tv-<version>.apk`), so on a TV you type `<server>:8600/tv` into the
+  Downloader app. Settings › This device has a "TV app" card with that address (or the app's version inside the app).
 - **Self-update**: once a day the list page checks the latest GitHub release for `cinemion-tv-<semver>.apk` and offers
   it if newer; the APK downloads to the cache and goes to the system installer (first time: the "install unknown apps"
   permission screen). Bump `appVersion` in `android/app/build.gradle.kts` when the app changes (`versionCode` is derived from it, so Android also refuses downgrades), or nobody is offered the update.
