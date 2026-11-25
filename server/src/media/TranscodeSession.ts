@@ -402,6 +402,9 @@ export namespace TranscodeSession {
       for (let i = 0; i < (ladder ? rungs.length : 1); i++) output.push("-map", `0:${audio.index}`);
       if (audio.action === "copy") output.push("-c:a", "copy");
       else output.push("-c:a", "aac", "-ac", String(audio.channels), "-b:a", audio.channels > 2 ? "384k" : "192k");
+      // Copied sound keeps the stretch before the seek point that the converted picture drops, which would put the
+      // picture seconds behind the sound and the stream's start; drop those packets too
+      if (video.action === "convert" && audio.action === "copy") output.push("-ss", "0");
     }
 
     output.push(
@@ -409,6 +412,9 @@ export namespace TranscodeSession {
       "-f", "hls", "-hls_time", String(SEGMENT_SECONDS), "-hls_playlist_type", "event", "-hls_list_size", "0",
       "-hls_segment_type", "fmp4", "-hls_fmp4_init_filename", "init.mp4",
       "-hls_flags", "temp_file+independent_segments",
+      // Write each track's real start time into its fragments. Otherwise the sound's delay from a seek only lives in
+      // the init segment's edit list, which browsers and hls.js ignore, so sound plays up to half a second early
+      "-hls_segment_options", "movflags=+frag_discont",
     );
     if (ladder) {
       const map = rungs.map((_, i) => audio ? `v:${i},a:${i}` : `v:${i}`).join(" ");
